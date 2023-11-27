@@ -6,7 +6,8 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-# PyCharm config files
+# IDE config files
 /.idea/
+/.vscode/
 # Python Virtual Environment
 /venv/

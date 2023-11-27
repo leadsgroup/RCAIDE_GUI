@@ -22,11 +22,12 @@ class App(QMainWindow):
         tabs.addTab(solve.get_widget(), "Solve")
 
         self.setCentralWidget(tabs)
+        self.resize(800, 450)
 
 
 app = QApplication(sys.argv)
 
-window = App()
+window = App()  
 window.show()
 
 app.exec()
