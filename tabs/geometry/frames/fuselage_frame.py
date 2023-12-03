@@ -17,7 +17,7 @@ class FuselageFrame(QWidget):
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
 
-        header_layout.addWidget(QLabel("Fuselage Frame"))
+        header_layout.addWidget(QLabel("Add Fuselage Component"))
 
         # Add buttons for appending and deleting data
         append_button = QPushButton("Append Data", self)
@@ -87,11 +87,12 @@ class FuselageFrame(QWidget):
         popup = QMessageBox(parent)
         popup.setWindowTitle("Info")
         popup.setText(message)
-        popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
+        # This line seemed to make it impossible to close the popup
+        # popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
         popup.setStyleSheet("QLabel{min-width: 300px;}")
         popup.show()
-
-        # Use QTimer to close the popup after 2 seconds
+        #
+        # # Use QTimer to close the popup after 2 seconds
         timer = QTimer(popup)
         timer.setSingleShot(True)
         timer.timeout.connect(popup.close)
