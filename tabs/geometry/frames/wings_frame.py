@@ -1,12 +1,13 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
-from color import Color
+from widgets.color import Color
 
-class LandingGearFrame(QWidget):
+
+class WingsFrame(QWidget):
     def __init__(self):
-        super(LandingGearFrame, self).__init__()
+        super(WingsFrame, self).__init__()
 
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("Landing Gear Frame"))
+        layout.addWidget(QLabel("Wings Frame"))
         layout.addWidget(Color("lightblue"))
         self.setLayout(layout)

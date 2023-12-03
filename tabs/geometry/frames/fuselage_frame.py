@@ -1,7 +1,8 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtCore import Qt, QTimer
-from color import Color
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+
+from widgets.color import Color
 
 
 class FuselageFrame(QWidget):
@@ -10,7 +11,6 @@ class FuselageFrame(QWidget):
 
         # Dictionary to store the entered values
         self.data_values = {}
-
 
         layout = QVBoxLayout()
 
@@ -41,7 +41,7 @@ class FuselageFrame(QWidget):
                        "Height at Quarter", "Height at Three Quarters", "Height at Wing Root Quarter Chord",
                        "Areas Side Projected", "Area Wetted", "Area Front Projected", "Effective Diameter"]
 
-        # Create QLineEdit widgets with QDoubleValidator for numerical input
+        # Create QLineEdit frames with QDoubleValidator for numerical input
         for index, label in enumerate(data_labels):
             row, col = divmod(index, 3)
             line_edit = QLineEdit(self)
