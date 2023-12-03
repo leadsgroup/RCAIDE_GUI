@@ -2,7 +2,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox
 
 
-from color import Color
+
+from widgets.color import Color
 from tabs.frames.default_frame import DefaultFrame
 from tabs.frames.wings_frame import WingsFrame
 from tabs.frames.fuselage_frame import FuselageFrame
@@ -90,6 +91,7 @@ class GeometryWidget(QWidget):
     
         # Update the reference to the current main_extra_frame
         self.main_extra_frame = new_frame
+
 
 
 
