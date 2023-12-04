@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtCore import Qt, QTimer
-from color import Color
+from widgets.color import Color
 
 
 class FuselageFrame(QWidget):

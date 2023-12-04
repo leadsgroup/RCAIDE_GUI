@@ -2,8 +2,12 @@ import sys
 
 from PyQt6.QtWidgets import QMainWindow, QApplication, QTabWidget
 
-from tabs import main, geometry, analysis, mission, solve
 
+from tabs.main import main
+from tabs.geometry import geometry
+from tabs.analysis import analysis
+from tabs.mission import mission
+from tabs.solve import solve
 
 class App(QMainWindow):
     def __init__(self):
@@ -21,6 +25,8 @@ class App(QMainWindow):
         tabs.addTab(mission.get_widget(), "Mission")
         tabs.addTab(solve.get_widget(), "Solve")
 
+
+ 
         self.setCentralWidget(tabs)
         self.resize(800, 450)
 

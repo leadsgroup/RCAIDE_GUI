@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
-from color import Color
+from widgets.color import Color
 
 class NacellesFrame(QWidget):
     def __init__(self):
