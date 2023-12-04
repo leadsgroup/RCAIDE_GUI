@@ -3,7 +3,7 @@ import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication, QTabWidget
 
 
-from tabs.main import main
+from tabs.home import home
 from tabs.geometry import geometry
 from tabs.analysis import analysis
 from tabs.mission import mission
@@ -19,7 +19,7 @@ class App(QMainWindow):
         tabs.setTabPosition(QTabWidget.TabPosition.North)
         tabs.setMovable(True)
 
-        tabs.addTab(main.get_widget(), "Home")
+        tabs.addTab(home.get_widget(), "Home")
         tabs.addTab(geometry.get_widget(), "Geometry")
         tabs.addTab(analysis.get_widget(), "Analysis")
         tabs.addTab(mission.get_widget(), "Mission")
