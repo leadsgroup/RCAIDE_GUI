@@ -68,7 +68,7 @@ class NacelleFrame(QWidget):
         get_file_button = QPushButton("...", self)
         get_file_button.clicked.connect(self.get_file_name)
         grid_layout.addWidget(get_file_button, row, col * 3 + 1, 1, 2)
-        # Add the grid layout to the main layout
+        # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
 
         self.setLayout(layout)

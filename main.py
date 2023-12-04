@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QTabWidget
 
 from tabs.analysis import analysis
 from tabs.geometry import geometry
-from tabs.main import main
+from tabs.home import home
 from tabs.mission import mission
 from tabs.solve import solve
 

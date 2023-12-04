@@ -60,7 +60,7 @@ class LandingGearFrame(QWidget):
             # Store a reference to the QLineEdit in the dictionary
             self.data_values[label] = line_edit
 
-        # Add the grid layout to the main layout
+        # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
 
         self.setLayout(layout)
