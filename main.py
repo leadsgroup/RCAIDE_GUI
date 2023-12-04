@@ -2,7 +2,11 @@ import sys
 
 from PyQt6.QtWidgets import QMainWindow, QApplication, QTabWidget
 
-from tabs import main, geometry, analysis, mission, solve
+from tabs.analysis import analysis
+from tabs.geometry import geometry
+from tabs.home import home
+from tabs.mission import mission
+from tabs.solve import solve
 
 
 class App(QMainWindow):
@@ -27,7 +31,7 @@ class App(QMainWindow):
 
 app = QApplication(sys.argv)
 
-window = App()  
+window = App()
 window.show()
 
 app.exec()
