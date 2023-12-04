@@ -20,11 +20,11 @@ PyQt6-sip==13.6.0
 python-dateutil==2.8.2
 pytz==2023.3.post1
 # Editable Git install with no remote (RCAIDE==1.0.0)
--e /home/aadit/g/College/Research/RCAIDE_UIUC
+# -e /home/aadit/g/College/Research/RCAIDE_UIUC
 scikit-learn==1.3.2
 scipy==1.11.3
 six==1.16.0
-SUAVE==2.5.2
+# SUAVE==2.5.2
 tenacity==8.2.3
 threadpoolctl==3.2.0
 tzdata==2023.3
