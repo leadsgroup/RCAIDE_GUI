@@ -1,7 +1,6 @@
-from PyQt6.QtCore import QTimer
-from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
-
+from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtCore import Qt, QTimer
 from widgets.color import Color
 
 
@@ -12,12 +11,13 @@ class FuselageFrame(QWidget):
         # Dictionary to store the entered values
         self.data_values = {}
 
+
         layout = QVBoxLayout()
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
 
-        header_layout.addWidget(QLabel("Add Fuselage Component"))
+        header_layout.addWidget(QLabel("Fuselage Frame"))
 
         # Add buttons for appending and deleting data
         append_button = QPushButton("Append Data", self)
@@ -41,7 +41,7 @@ class FuselageFrame(QWidget):
                        "Height at Quarter", "Height at Three Quarters", "Height at Wing Root Quarter Chord",
                        "Areas Side Projected", "Area Wetted", "Area Front Projected", "Effective Diameter"]
 
-        # Create QLineEdit frames with QDoubleValidator for numerical input
+        # Create QLineEdit widgets with QDoubleValidator for numerical input
         for index, label in enumerate(data_labels):
             row, col = divmod(index, 3)
             line_edit = QLineEdit(self)
@@ -56,7 +56,7 @@ class FuselageFrame(QWidget):
             # Store a reference to the QLineEdit in the dictionary
             self.data_values[label] = line_edit
 
-        # Add the grid layout to the home layout
+        # Add the grid layout to the main layout
         layout.addLayout(grid_layout)
 
         self.setLayout(layout)
@@ -87,12 +87,11 @@ class FuselageFrame(QWidget):
         popup = QMessageBox(parent)
         popup.setWindowTitle("Info")
         popup.setText(message)
-        # This line seemed to make it impossible to close the popup
-        # popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
+        popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
         popup.setStyleSheet("QLabel{min-width: 300px;}")
         popup.show()
-        #
-        # # Use QTimer to close the popup after 2 seconds
+
+        # Use QTimer to close the popup after 2 seconds
         timer = QTimer(popup)
         timer.setSingleShot(True)
         timer.timeout.connect(popup.close)
