@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from widgets.color import Color
 
+
 class WingsFrame(QWidget):
     def __init__(self):
         super(WingsFrame, self).__init__()
