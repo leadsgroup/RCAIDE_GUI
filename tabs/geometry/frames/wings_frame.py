@@ -29,9 +29,9 @@ class WingsFrame(QWidget):
         # Header layout with bold label and buttons
         header_layout = QHBoxLayout()
         wing_title_label = QLabel("Add Wing Component")
-        bold_font = QFont()  # Create a QFont object
-        bold_font.setBold(True)  # Set the font to bold
-        wing_title_label.setFont(bold_font)  # Apply the bold font to the label
+        bold_font = QFont()  
+        bold_font.setBold(True)  
+        wing_title_label.setFont(bold_font)  
         header_layout.addWidget(wing_title_label)
 
         append_button = QPushButton("Append Wing Data", self)
