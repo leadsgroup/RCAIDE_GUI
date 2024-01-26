@@ -4,7 +4,6 @@
 
 # RCAIDE imports
 '''Will use later'''
-import RCAIDE
 
 # QT imports
 from PyQt6.QtCore import QTimer
@@ -45,7 +44,7 @@ class WingsFrame(QWidget):
 
         # Grid layout for wing components
         grid_layout = QGridLayout()
-        wing_data_labels = ["Taper Ratio", "Dihedral", "Aspect Ratio", "Thickness to Chord", "Aerodynamic Center",
+        wing_data_labels = ["Wing Name", "Taper Ratio", "Dihedral", "Aspect Ratio", "Thickness to Chord", "Aerodynamic Center",
                             "Exposed Root Chord Offset", "Total Length", "Spans Projected", "Spans Total", "Areas Reference",
                             "Areas Exposed", "Areas Affected", "Areas Wetted", "Root Chord", "Tip Chord", "Mean Aerodynamic Chord",
                             "Mean Geometric Chord", "Quarter Chord Sweep Angle", "Half Chord Sweep Angle", "Leading Edge Sweep Angle",
