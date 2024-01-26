@@ -121,7 +121,11 @@ class FuselageFrame(QWidget):
 
         # Clear additional fuselage sections
         for i in reversed(range(self.additional_layout.count())):
-            self.additional_layout.itemAt(i).widget().setParent(None)
+            item = self.additional_layout.itemAt(i)
+            if item is not None:
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
 
         self.show_popup("Data Erased!", self)
 
