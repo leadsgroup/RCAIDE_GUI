@@ -1,4 +1,3 @@
-from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, \
     QScrollArea, QSizePolicy, QSpacerItem
@@ -153,15 +152,9 @@ class FuselageFrame(QWidget):
         popup = QMessageBox(parent)
         popup.setWindowTitle("Info")
         popup.setText(message)
-        popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
+        # popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
         popup.setStyleSheet("QLabel{min-width: 300px;}")
         popup.show()
-
-        # Use QTimer to close the popup after 2 seconds
-        timer = QTimer(popup)
-        timer.setSingleShot(True)
-        timer.timeout.connect(popup.close)
-        timer.start(2000)  # 2000 milliseconds (2 seconds)
 
     # ================================================================================================================================================
 
@@ -264,7 +257,8 @@ class FuselageFrame(QWidget):
 
     def display_data(self):
         """Displays the data after a section is deleted."""
-        print("Updated Section Data after deletion:", self.get_section_data_values())
+        # print("Updated Section Data after deletion:", self.get_section_data_values())
+        pass
 
     def delete_and_display_data(self):
         """Combining display_data and delete_section function so button can call both."""
