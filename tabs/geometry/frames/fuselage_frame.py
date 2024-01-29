@@ -1,15 +1,16 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, QScrollArea, QSizePolicy, QSpacerItem
+from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, \
+    QScrollArea, QSizePolicy, QSpacerItem
+
 from widgets.color import Color
 
 
+# ================================================================================================================================================
 
-#================================================================================================================================================
-        
-                                                                #Main Fuselage Frame
-    
-#================================================================================================================================================
+# Main Fuselage Frame
+
+# ================================================================================================================================================
 
 class FuselageFrame(QWidget):
     def __init__(self):
@@ -42,7 +43,7 @@ class FuselageFrame(QWidget):
 
         header_layout.addWidget(append_button)
         header_layout.addWidget(delete_button)
-        
+
         layout.addLayout(header_layout)
         layout.addWidget(Color("lightblue"))
 
@@ -69,30 +70,28 @@ class FuselageFrame(QWidget):
             # Store a reference to the QLineEdit in the dictionary for the main fuselage section
             self.main_data_values[label] = line_edit
 
-        
         # Add the grid layout for the main fuselage section to the main layout
         layout.addLayout(grid_layout)
-        
+
         # Initialize additional layout for fuselage sections
         self.additional_layout = QVBoxLayout()
-        
+
         # Add the layout for additional fuselage sections to the main layout
         layout.addLayout(self.additional_layout)
-        
+
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
-        
+
         add_section_button = QPushButton("Add Fuselage Section", self)
         add_section_button.clicked.connect(self.add_fuselage_section)
         button_layout.addWidget(add_section_button)
-        
+
         append_all_data_button = QPushButton("Append All Fuselage Section Data", self)
         append_all_data_button.clicked.connect(self.append_all_data)
         button_layout.addWidget(append_all_data_button)
-        
+
         # Add the button layout to the main layout
         layout.addLayout(button_layout)
-        
 
         # Adds scroll function
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
@@ -163,84 +162,78 @@ class FuselageFrame(QWidget):
         timer.setSingleShot(True)
         timer.timeout.connect(popup.close)
         timer.start(2000)  # 2000 milliseconds (2 seconds)
-        
-        
-#================================================================================================================================================
-        
-                                                                #Fuselage Section
-    
-#================================================================================================================================================
+
+    # ================================================================================================================================================
+
+    # Fuselage Section
+
+    # ================================================================================================================================================
 
     def add_fuselage_section(self):
         """Add a new fuselage section with input boxes for Percent X Location, Percent Z Location, Height, and Width."""
         additional_section_layout = QGridLayout()
-    
+
         percent_x_location = QLineEdit(self)
         percent_x_location.setValidator(QDoubleValidator())
         percent_x_location.setFixedWidth(100)
-    
+
         percent_z_location = QLineEdit(self)
         percent_z_location.setValidator(QDoubleValidator())
         percent_z_location.setFixedWidth(100)
-    
+
         height = QLineEdit(self)
         height.setValidator(QDoubleValidator())
         height.setFixedWidth(100)
-    
+
         width = QLineEdit(self)
         width.setValidator(QDoubleValidator())
         width.setFixedWidth(100)
-    
+
         additional_section_layout.addWidget(QLabel("Percent X Location:"), 0, 0)
         additional_section_layout.addWidget(percent_x_location, 0, 1)
-    
+
         additional_section_layout.addWidget(QLabel("Percent Z Location:"), 1, 0)
         additional_section_layout.addWidget(percent_z_location, 1, 1)
-    
+
         additional_section_layout.addWidget(QLabel("Height:"), 0, 2)
         additional_section_layout.addWidget(height, 0, 3)
-    
+
         additional_section_layout.addWidget(QLabel("Width:"), 1, 2)
         additional_section_layout.addWidget(width, 1, 3)
-    
+
         delete_section_button = QPushButton("Delete Fuselage Section", self)
         append_data_button = QPushButton("Append Fuselage Section Data", self)
-        
-        delete_section_button.clicked.connect(self.delete_and_display_data)    
-    
+
+        delete_section_button.clicked.connect(self.delete_and_display_data)
+
         # Connect the "Append Fuselage Section Data" button to a lambda function
         # that captures the index of the button and calls append_section_data with that index
-        append_data_button.clicked.connect(lambda _, index=len(self.additional_data_values): self.append_section_data(index))
-    
+        append_data_button.clicked.connect(
+            lambda _, index=len(self.additional_data_values): self.append_section_data(index))
+
         # Add buttons to the layout
         additional_section_layout.addWidget(delete_section_button, 0, 4)
         additional_section_layout.addWidget(append_data_button, 1, 4)
-    
+
         self.additional_layout.addLayout(additional_section_layout)
         self.additional_data_values.append({"Percent X Location": percent_x_location,
                                             "Percent Z Location": percent_z_location,
                                             "Height": height,
                                             "Width": width})
-    
-        print("Number of sections after addition:", len(self.additional_data_values))  # Debugging statement
-        
-        
-        
 
-    
-    
+        print("Number of sections after addition:", len(self.additional_data_values))  # Debugging statement
+
     def append_section_data(self, section_index):
         """Append the entered data for the specified fuselage section."""
         entered_data = self.get_section_data_values(section_index)
         print("Appending Section Data for section", section_index, ":", entered_data)
         self.show_popup("Section Data Saved!", self)
-    
+
     def get_section_data_values(self, section_index):
         """Retrieve the entered data values for the specified fuselage section."""
         data_values = self.additional_data_values[section_index]
         return {label: float(line_edit.text()) if line_edit.text() else 0.0
-                 for label, line_edit in data_values.items()}
-
+                for label, line_edit in data_values.items()}
 
     def delete_section(self):
         """Delete the last added fuselage section."""
@@ -269,25 +262,22 @@ class FuselageFrame(QWidget):
         except Exception as e:
             print(f"An error occurred while deleting section: {e}")
 
-
-
     def display_data(self):
         """Displays the data after a section is deleted."""
         print("Updated Section Data after deletion:", self.get_section_data_values())
 
-    
     def delete_and_display_data(self):
         """Combining display_data and delete_section function so button can call both."""
         self.delete_section()
         self.display_data()
 
-    
     def append_all_data(self):
         """Append the entered data for the additional fuselage section."""
         all_entered_data = self.get_all_data_values()
         print("Appending All Data:", all_entered_data)
 
-        self.show_popup("Section Data Saved!", self)    
+        self.show_popup("Section Data Saved!", self)
+
     def get_all_data_values(self):
         """Retrieve the entered data values for additional fuselage sections."""
         return [{label + f"_{i}": float(line_edit.text()) if line_edit.text() else 0.0

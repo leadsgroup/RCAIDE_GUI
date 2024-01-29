@@ -1,15 +1,13 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox
 
-from widgets.color import Color
 from tabs.geometry.frames.default_frame import DefaultFrame
-from tabs.geometry.frames.wings_frame import WingsFrame
-from tabs.geometry.frames.fuselage_frame import FuselageFrame
-
-
-from tabs.geometry.frames.nacelle_frame import NacelleFrame
-from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
 from tabs.geometry.frames.energy_network_frame import EnergyNetworkFrame
+from tabs.geometry.frames.fuselage_frame import FuselageFrame
+from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
+from tabs.geometry.frames.nacelle_frame import NacelleFrame
+from tabs.geometry.frames.wings_frame import WingsFrame
+from widgets.color import Color
 
 
 class GeometryWidget(QWidget):
@@ -32,7 +30,8 @@ class GeometryWidget(QWidget):
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
-        options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear", "Add Energy Network"]
+        options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
+                   "Add Energy Network"]
         self.dropdown.addItems(options)
 
         # Style the dropdown with a colored background
