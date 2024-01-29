@@ -1,13 +1,15 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QLayout
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox
 
-from tabs.geometry.frames.default_frame import DefaultFrame
-from tabs.geometry.frames.energy_network_frame import EnergyNetworkFrame
-from tabs.geometry.frames.fuselage_frame import FuselageFrame
-from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
-from tabs.geometry.frames.nacelle_frame import NacelleFrame
-from tabs.geometry.frames.wings_frame import WingsFrame
 from widgets.color import Color
+from tabs.geometry.frames.default_frame import DefaultFrame
+from tabs.geometry.frames.wings_frame import WingsFrame
+from tabs.geometry.frames.fuselage_frame import FuselageFrame
+
+
+from tabs.geometry.frames.nacelle_frame import NacelleFrame
+from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
+from tabs.geometry.frames.energy_network_frame import EnergyNetworkFrame
 
 
 class GeometryWidget(QWidget):
@@ -26,12 +28,11 @@ class GeometryWidget(QWidget):
         tree_frame_style = """
             background-color: navy
         """
-        # self.tree_frame.setStyleSheet(tree_frame_style)
+        self.tree_frame.setStyleSheet(tree_frame_style)
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
-        options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
-                   "Add Energy Network"]
+        options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear", "Add Energy Network"]
         self.dropdown.addItems(options)
 
         # Style the dropdown with a colored background
@@ -47,12 +48,11 @@ class GeometryWidget(QWidget):
                 border: 1px solid #5A5A5A;
             }
         """
-        # self.dropdown.setStyleSheet(dropdown_style)
+        self.dropdown.setStyleSheet(dropdown_style)
 
         self.tree_frame_layout.addWidget(self.dropdown, alignment=Qt.AlignmentFlag.AlignTop)
 
         main_layout.addWidget(Color("navy"), 7)
-        main_layout.addWidget(self.main_extra_frame, 3)
         base_layout.addWidget(self.tree_frame, 1)
         base_layout.addLayout(main_layout, 4)
 
@@ -64,12 +64,16 @@ class GeometryWidget(QWidget):
         # Connect the dropdown's currentIndexChanged signal to a slot
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
 
+        # Initially display the DefaultFrame
+        initial_frame = DefaultFrame()
+        self.replace_main_extra_frame(initial_frame)
+
     def on_dropdown_change(self, index):
         # Define actions based on the selected index
         frames = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame, LandingGearFrame, EnergyNetworkFrame]
 
         if 0 <= index < len(frames):
-            # Replace main_extra_frame with the selected frames
+            # Replace main_extra_frame with the selected frame
             new_frame = frames[index]()
             self.replace_main_extra_frame(new_frame)
 
@@ -79,15 +83,13 @@ class GeometryWidget(QWidget):
         if old_frame is not None:
             main_layout = self.layout().itemAt(1)  # Assuming main_extra_frame is at index 1
 
-            assert isinstance(main_layout, QLayout)
             if main_layout is not None:
-                # Remove the old frames from the layout
+                # Remove the old frame from the layout
                 main_layout.removeWidget(old_frame)
                 old_frame.setParent(None)
 
-        # Add the new frames to the layout
+        # Add the new frame to the layout
         main_layout = self.layout().itemAt(1)  # Assuming main_extra_frame is at index 1
-        assert isinstance(main_layout, QLayout)
         main_layout.addWidget(new_frame, 3)
 
         # Update the reference to the current main_extra_frame
