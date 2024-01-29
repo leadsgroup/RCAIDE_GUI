@@ -1,7 +1,8 @@
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, \
-    QScrollArea, QSizePolicy, QSpacerItem
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QHBoxLayout, QScrollArea, \
+    QSizePolicy, QSpacerItem
 
+from utilities import show_popup
 from widgets.color import Color
 
 
@@ -110,7 +111,7 @@ class FuselageFrame(QWidget):
         entered_data = self.get_data_values()
         # Implement appending logic here, e.g., append to a list
         print("Appending Data:", entered_data)
-        self.show_popup("Data Saved!", self)
+        show_popup("Data Saved!", self)
 
     def delete_data(self):
         """Delete the entered data or perform any other action."""
@@ -133,7 +134,7 @@ class FuselageFrame(QWidget):
                 if widget is not None:
                     widget.setParent(None)
 
-        self.show_popup("Data Erased!", self)
+        show_popup("Data Erased!", self)
 
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary for the main fuselage section."""
@@ -146,15 +147,6 @@ class FuselageFrame(QWidget):
                                   for i, data_values in enumerate(self.additional_data_values, start=1)]
 
         return {"main_data": main_data_values, "additional_data": additional_data_values}
-
-    def show_popup(self, message, parent):
-        """Display a pop-up message for 2 seconds."""
-        popup = QMessageBox(parent)
-        popup.setWindowTitle("Info")
-        popup.setText(message)
-        # popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
-        popup.setStyleSheet("QLabel{min-width: 300px;}")
-        popup.show()
 
     # ================================================================================================================================================
 
@@ -220,7 +212,7 @@ class FuselageFrame(QWidget):
         """Append the entered data for the specified fuselage section."""
         entered_data = self.get_section_data_values(section_index)
         print("Appending Section Data for section", section_index, ":", entered_data)
-        self.show_popup("Section Data Saved!", self)
+        show_popup("Section Data Saved!", self)
 
     def get_section_data_values(self, section_index):
         """Retrieve the entered data values for the specified fuselage section."""
@@ -270,7 +262,7 @@ class FuselageFrame(QWidget):
         all_entered_data = self.get_all_data_values()
         print("Appending All Data:", all_entered_data)
 
-        self.show_popup("Section Data Saved!", self)
+        show_popup("Section Data Saved!", self)
 
     def get_all_data_values(self):
         """Retrieve the entered data values for additional fuselage sections."""
