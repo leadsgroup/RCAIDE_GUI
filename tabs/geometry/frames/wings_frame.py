@@ -59,6 +59,10 @@ class WingsFrame(QWidget):
             grid_layout.addWidget(line_edit, row, col * 2 + 1)
             self.data_values['wing_' + label] = line_edit
         content_layout.addLayout(grid_layout)
+        
+        # -------------------------------------------------------------------------------------------------------------------------------
+        #   Preliminary Wing Shape Simulation
+        # -------------------------------------------------------------------------------------------------------------------------------        
 
         # -------------------------------------------------------------------------------------------------------------------------------
         #   Control Surfaces
@@ -142,3 +146,45 @@ class WingsFrame(QWidget):
         timer.setSingleShot(True)
         timer.timeout.connect(popup.close)
         timer.start(2000)
+        
+        # -------------------------------------------------------------------------------------------------------------------------------
+        #   Wing Sections
+        # -------------------------------------------------------------------------------------------------------------------------------
+        
+        
+           
+        
+    def add_wing_section(self):
+        """Add a new fuselage section with input boxes for Percent X Location, Percent Z Location, Height, and Width."""
+        additional_section_layout = QGridLayout()    
+        
+        percent_x_location = QLineEdit(self)
+        percent_x_location.setValidator(QDoubleValidator())
+        percent_x_location.setFixedWidth(100)
+    
+        percent_z_location = QLineEdit(self)
+        percent_z_location.setValidator(QDoubleValidator())
+        percent_z_location.setFixedWidth(100)
+    
+        height = QLineEdit(self)
+        height.setValidator(QDoubleValidator())
+        height.setFixedWidth(100)
+    
+        width = QLineEdit(self)
+        width.setValidator(QDoubleValidator())
+        width.setFixedWidth(100)
+    
+        additional_section_layout.addWidget(QLabel("Percent X Location:"), 0, 0)
+        additional_section_layout.addWidget(percent_x_location, 0, 1)
+    
+        additional_section_layout.addWidget(QLabel("Percent Z Location:"), 1, 0)
+        additional_section_layout.addWidget(percent_z_location, 1, 1)
+    
+        additional_section_layout.addWidget(QLabel("Height:"), 0, 2)
+        additional_section_layout.addWidget(height, 0, 3)
+    
+        additional_section_layout.addWidget(QLabel("Width:"), 1, 2)
+        additional_section_layout.addWidget(width, 1, 3)
+    
+        #delete_section_button = QPushButton("Delete Fuselage Section", self)
+        #append_data_button = QPushButton("Append Fuselage Section Data", self)        
