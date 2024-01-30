@@ -1,8 +1,7 @@
-from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QMessageBox, QLineEdit, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout
 
-from widgets.color import Color
+from utilities import show_popup
 
 
 class LandingGearFrame(QWidget):
@@ -28,7 +27,7 @@ class LandingGearFrame(QWidget):
         header_layout.addWidget(delete_button)
 
         layout.addLayout(header_layout)
-        layout.addWidget(Color("lightblue"))
+        # layout.addWidget(Color("lightblue"))
 
         # Create a grid layout with 3 columns
         grid_layout = QGridLayout()
@@ -60,7 +59,7 @@ class LandingGearFrame(QWidget):
             # Store a reference to the QLineEdit in the dictionary
             self.data_values[label] = line_edit
 
-        # Add the grid layout to the main layout
+        # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
 
         self.setLayout(layout)
@@ -70,7 +69,7 @@ class LandingGearFrame(QWidget):
         entered_data = self.get_data_values()
         # Implement appending logic here, e.g., append to a list
         print("Appending Data:", entered_data)
-        self.show_popup("Data Saved!", self)
+        show_popup("Data Saved!", self)
 
     def delete_data(self):
         """Delete the entered data or perform any other action."""
@@ -79,25 +78,9 @@ class LandingGearFrame(QWidget):
         print("Deleting Data:", entered_data)
         for line_edit in self.data_values.values():
             line_edit.clear()
-        self.show_popup("Data Erased!", self)
+        show_popup("Data Erased!", self)
 
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary."""
         return {label: float(line_edit.text()) if line_edit.text() else 0.0
                 for label, line_edit in self.data_values.items()}
-
-    def show_popup(self, message, parent):
-        """Display a pop-up message for 2 seconds."""
-        popup = QMessageBox(parent)
-        popup.setWindowTitle("Info")
-        popup.setText(message)
-        # This line seemed to make it impossible to close the popup
-        # popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
-        popup.setStyleSheet("QLabel{min-width: 300px;}")
-        popup.show()
-        #
-        # # Use QTimer to close the popup after 2 seconds
-        timer = QTimer(popup)
-        timer.setSingleShot(True)
-        timer.timeout.connect(popup.close)
-        timer.start(2000)  # 2000 milliseconds (2 seconds)
