@@ -2,7 +2,6 @@
 /shelf/
 /workspace.xml
 **/__pycache__/
-**/.DS_STORE
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
