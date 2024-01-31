@@ -93,26 +93,6 @@ class FuselageFrame(QWidget):
         # Add the button layout to the main layout
         layout.addLayout(button_layout)
 
-        # Initialize additional layout for fuselage sections
-        self.additional_layout = QVBoxLayout()
-
-        # Add the layout for additional fuselage sections to the main layout
-        layout.addLayout(self.additional_layout)
-
-        # Create a QHBoxLayout to contain the buttons
-        button_layout = QHBoxLayout()
-
-        add_section_button = QPushButton("Add Fuselage Section", self)
-        add_section_button.clicked.connect(self.add_fuselage_section)
-        button_layout.addWidget(add_section_button)
-
-        append_all_data_button = QPushButton("Append All Fuselage Section Data", self)
-        append_all_data_button.clicked.connect(self.append_all_data)
-        button_layout.addWidget(append_all_data_button)
-
-        # Add the button layout to the main layout
-        layout.addLayout(button_layout)
-
         # Adds scroll function
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
