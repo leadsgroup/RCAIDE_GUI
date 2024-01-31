@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
 from widgets.color import Color
 
+
 class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -75,7 +76,6 @@ class MyWidget(QWidget):
         delete_button.clicked.connect(lambda: self.delete_horizontal_layout(new_horizontal_layout))
         new_horizontal_layout.addWidget(delete_button)
 
-
         # Get the main layout
         main_layout = self.layout()
 
@@ -94,6 +94,7 @@ class MyWidget(QWidget):
 
         # Add the new horizontal layout to the main layout
         self.layout().addLayout(self.horizontal_layouts[-1])
+
 
 def get_widget() -> QWidget:
     return MyWidget()
