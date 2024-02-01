@@ -89,19 +89,31 @@ class FuselageFrame(QWidget):
         # Add the layout for additional fuselage sections to the main layout
         layout.addLayout(self.additional_layout)
         
+        # Add line above the buttons
+        line_above_buttons = QFrame()
+        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
+        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
+        line_above_buttons.setStyleSheet("background-color: white;")
+        
+        layout.addWidget(line_above_buttons)
+        
+       
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
         
+        # Add Fuselage Section Button
         add_section_button = QPushButton("Add Fuselage Section", self)
         add_section_button.clicked.connect(self.add_fuselage_section)
         button_layout.addWidget(add_section_button)
         
+        # Append All Fuselage Section Data Button
         append_all_data_button = QPushButton("Append All Fuselage Section Data", self)
         append_all_data_button.clicked.connect(self.append_all_data)
         button_layout.addWidget(append_all_data_button)
         
         # Add the button layout to the main layout
         layout.addLayout(button_layout)
+
 
         # Adds scroll function
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
@@ -194,16 +206,16 @@ class FuselageFrame(QWidget):
 
 
         additional_section_layout.addWidget(QLabel("Percent X Location:"), 1, 0)
-        additional_section_layout.addWidget(percent_x_location, 1, 1 * 3 + 1, 1, 2)
+        additional_section_layout.addWidget(percent_x_location, 1, 4, 1, 2)
 
         additional_section_layout.addWidget(QLabel("Percent Z Location:"), 2, 0)
-        additional_section_layout.addWidget(percent_z_location, 2, 1 * 3 + 1, 1, 2)
+        additional_section_layout.addWidget(percent_z_location, 2, 4, 1, 2)
 
         additional_section_layout.addWidget(QLabel("Height:"), 1, 2 * 3)
-        additional_section_layout.addWidget(height, 1, 3 * 3 + 1, 1, 2)
+        additional_section_layout.addWidget(height, 1, 9, 1, 4)
 
         additional_section_layout.addWidget(QLabel("Width:"), 2, 2 * 3)
-        additional_section_layout.addWidget(width, 2, 3 * 3 + 1, 1, 2)
+        additional_section_layout.addWidget(width, 2, 9, 1, 4)
 
         delete_section_button = QPushButton("Delete Fuselage Section", self)
         append_data_button = QPushButton("Append Fuselage Section Data", self)
