@@ -25,6 +25,7 @@ class App(QMainWindow):
         tabs.addTab(mission.get_widget(), "Mission")
         tabs.addTab(solve.get_widget(), "Solve")
 
+ 
         self.setCentralWidget(tabs)
         self.resize(800, 450)
 
