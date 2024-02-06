@@ -9,6 +9,8 @@ class LandingGearFrame(QWidget):
     def __init__(self):
         super(LandingGearFrame, self).__init__()
 
+        # TODO: Add landing gear types in the future
+
         self.main_data_values = {}
 
         scroll_area = QScrollArea()
