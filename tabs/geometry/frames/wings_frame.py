@@ -108,7 +108,7 @@ class WingsFrame(QWidget):
     def add_wing_section(self):
         # Create new QVBoxLayout for the entire section, including the header and data fields
         section_layout = QVBoxLayout()
-        section_layout.addSpacing(15)
+        section_layout.addSpacing(20)
         
         # Section header layout with segment name, append, and delete buttons
         section_header_layout = QHBoxLayout()
