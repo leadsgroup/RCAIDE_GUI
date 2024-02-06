@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QSizePolicy, QSpacerItem, QGridLayout
 from PyQt6.QtGui import QDoubleValidator
-
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, \
+    QSizePolicy, QSpacerItem, QGridLayout
 
 from utilities import show_popup
 from widgets.color import Color
@@ -32,7 +32,7 @@ class FuselageFrame(QWidget):
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
-        label = QLabel("<u><b>Fuselage Frame</b></u>")  
+        label = QLabel("<u><b>Fuselage Frame</b></u>")
         header_layout.addWidget(label)
 
         # Add buttons for appending and deleting data
@@ -50,70 +50,68 @@ class FuselageFrame(QWidget):
 
         # Create a grid layout with 3 columns for main
         grid_layout = QGridLayout()
-        
+
         # List of data labels for the main fuselage section
         main_data_labels = ["Fineness Nose", "Fineness Tail", "Lengths Nose", "Lengths Tail", "Lengths Cabin",
                             "Lengths Total", "Lengths Forespace", "Lengths Aftspace", "Width", "Heights Maximum",
                             "Height at Quarter", "Height at Three Quarters", "Height at Wing Root Quarter Chord",
                             "Areas Side Projected", "Area Wetted", "Area Front Projected", "Effective Diameter"]
-        
+
         for index, label in enumerate(main_data_labels):
             row, col = divmod(index, 3)
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
-        
+
             # Set the width of the line edit
             line_edit.setFixedWidth(100)  # Adjust the width as needed
-        
+
             grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
             grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-        
+
             # Store a reference to the QLineEdit in the dictionary for the main fuselage section
             self.main_data_values[label] = line_edit
-        
+
         # Add the grid layout for the main fuselage section to the main layout
         layout.addLayout(grid_layout)
-        
+
         # Create a horizontal line
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         line_bar.setStyleSheet("background-color: white;")
-        
+
         # Add the line bar to the main layout
         layout.addWidget(line_bar)
-        
+
         # Initialize additional layout for fuselage sections
         self.additional_layout = QVBoxLayout()
-        
+
         # Add the layout for additional fuselage sections to the main layout
         layout.addLayout(self.additional_layout)
-        
+
         # Add line above the buttons
         line_above_buttons = QFrame()
         line_above_buttons.setFrameShape(QFrame.Shape.HLine)
         line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
         line_above_buttons.setStyleSheet("background-color: white;")
-        
+
         layout.addWidget(line_above_buttons)
-        
-       
+
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
-        
+
         # Add Fuselage Section Button
         add_section_button = QPushButton("Add Fuselage Section", self)
         add_section_button.clicked.connect(self.add_fuselage_section)
         button_layout.addWidget(add_section_button)
-        
+
         # Append All Fuselage Section Data Button
         append_all_data_button = QPushButton("Append All Fuselage Section Data", self)
         append_all_data_button.clicked.connect(self.append_all_data)
         button_layout.addWidget(append_all_data_button)
-        
+
         # Add the button layout to the main layout
         layout.addLayout(button_layout)
-
 
         # Adds scroll function
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
@@ -180,13 +178,11 @@ class FuselageFrame(QWidget):
         """Add a new fuselage section with input boxes for Percent X Location, Percent Z Location, Height, and Width."""
         additional_section_layout = QGridLayout()
 
-
-
         # Add segment number label
         segment_label = QLabel()
         segment_label.setText(f"<b><u>Segment {len(self.additional_data_values)}</b></u>")
         additional_section_layout.addWidget(segment_label)
-        
+
         percent_x_location = QLineEdit(self)
         percent_x_location.setValidator(QDoubleValidator())
         percent_x_location.setFixedWidth(100)
@@ -202,8 +198,6 @@ class FuselageFrame(QWidget):
         width = QLineEdit(self)
         width.setValidator(QDoubleValidator())
         width.setFixedWidth(100)
-
-
 
         additional_section_layout.addWidget(QLabel("Percent X Location:"), 1, 0)
         additional_section_layout.addWidget(percent_x_location, 1, 4, 1, 2)
@@ -238,7 +232,6 @@ class FuselageFrame(QWidget):
                                             "Width": width})
 
         print("Number of sections after addition:", len(self.additional_data_values))  # Debugging statement
-
 
     def append_section_data(self, section_index):
         """Append the entered data for the specified fuselage section."""
@@ -279,9 +272,7 @@ class FuselageFrame(QWidget):
             print("Number of sections after deletion:", len(self.additional_data_values))
         except Exception as e:
             print(f"An error occurred while deleting section: {e}")
-            
 
-            
     def display_data(self):
         """Displays the data after a section is deleted."""
         # \\print("Updated Section Data after deletion:", self.get_section_data_values())

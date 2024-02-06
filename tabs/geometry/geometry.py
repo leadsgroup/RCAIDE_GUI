@@ -78,28 +78,6 @@ class GeometryWidget(QWidget):
         main_layout: QStackedLayout = cast(QStackedLayout, self.layout().itemAt(1))
         main_layout.setCurrentIndex(index)
 
-    # def replace_main_extra_frame(self, new_frame):
-    #     old_frame = self.main_extra_frame
-    #
-    #     if old_frame is not None:
-    #         assert isinstance(self.layout().itemAt(1), QVBoxLayout)
-    #         main_layout: QVBoxLayout = cast(QVBoxLayout,
-    #                                         self.layout().itemAt(1))  # Assuming main_extra_frame is at index 1
-    #         print(type(main_layout))
-    #         if main_layout is not None:
-    #             # Remove the old frame from the layout
-    #             main_layout.removeWidget(old_frame)
-    #             old_frame.setParent(None)
-    #
-    #     # Add the new frame to the layout
-    #     assert isinstance(self.layout().itemAt(1), QLayout)
-    #     main_layout: QVBoxLayout = cast(QVBoxLayout,
-    #                                     self.layout().itemAt(1))
-    #     main_layout.addWidget(new_frame, 3)
-    #
-    #     # Update the reference to the current main_extra_frame
-    #     self.main_extra_frame = new_frame
-
 
 def get_widget() -> QWidget:
     return GeometryWidget()
