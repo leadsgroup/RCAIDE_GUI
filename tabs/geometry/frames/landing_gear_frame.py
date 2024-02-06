@@ -1,5 +1,5 @@
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, QScrollArea, QFrame, QSpacerItem, QSizePolicy
 
 from utilities import show_popup
 
@@ -7,14 +7,19 @@ from utilities import show_popup
 class LandingGearFrame(QWidget):
     def __init__(self):
         super(LandingGearFrame, self).__init__()
-        self.data_values = {}
 
-        layout = QVBoxLayout()
+        self.main_data_values = {}
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+        scroll_content = QWidget()
+
+        layout = QVBoxLayout(scroll_content)
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
-
-        header_layout.addWidget(QLabel("Add Landing Gear"))
+        header_layout.addWidget(QLabel("<b>Landing Gear</b>"))
 
         # Add buttons for appending and deleting data
         append_button = QPushButton("Append Data", self)
@@ -33,7 +38,7 @@ class LandingGearFrame(QWidget):
         grid_layout = QGridLayout()
 
         # List of data labels
-        data_labels = landing_gear_names = [
+        data_labels = [
             "Main Tire Diameter",
             "Nose Tire Diameter",
             "Main Strut Length",
@@ -57,12 +62,23 @@ class LandingGearFrame(QWidget):
             grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
 
             # Store a reference to the QLineEdit in the dictionary
-            self.data_values[label] = line_edit
+            self.main_data_values[label] = line_edit
 
         # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
 
-        self.setLayout(layout)
+        # Adds scroll function
+        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+
+        # Set the scroll content as the widget for the scroll area
+        scroll_area.setWidget(scroll_content)
+
+        # Set the main layout of the scroll area
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+
+        # Set the layout to the main window/widget
+        self.setLayout(layout_scroll)
 
     def append_data(self):
         """Append the entered data to a list or perform any other action."""
@@ -76,11 +92,11 @@ class LandingGearFrame(QWidget):
         entered_data = self.get_data_values()
         # Implement deletion logic here, e.g., clear the entries
         print("Deleting Data:", entered_data)
-        for line_edit in self.data_values.values():
+        for line_edit in self.main_data_values.values():
             line_edit.clear()
         show_popup("Data Erased!", self)
 
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary."""
         return {label: float(line_edit.text()) if line_edit.text() else 0.0
-                for label, line_edit in self.data_values.items()}
+                for label, line_edit in self.main_data_values.items()}
