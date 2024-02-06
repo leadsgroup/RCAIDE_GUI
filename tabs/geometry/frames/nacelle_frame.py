@@ -1,8 +1,9 @@
 import os
 
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, \
-    QFileDialog
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, QScrollArea, QFrame, QSpacerItem, QSizePolicy, QFileDialog
+
+
 
 from utilities import show_popup
 
@@ -10,15 +11,23 @@ from utilities import show_popup
 class NacelleFrame(QWidget):
     def __init__(self):
         super(NacelleFrame, self).__init__()
-        self.coordinate_filename = ""
-        self.data_values = {}
+        self.coordinate_filenames = {}
+        self.main_data_values = {}
 
-        layout = QVBoxLayout()
+         # List to store data values for additional fuselage sections
+        self.additional_data_values = {}
+
+        # Create a scroll area
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
+
+        # Create a widget to contain the layout
+        scroll_content = QWidget()
+        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
-
-        header_layout.addWidget(QLabel("Add Nacelle"))
+        header_layout.addWidget(QLabel("<b>Nacelles</b>"))
 
         # Add buttons for appending and deleting data
         append_button = QPushButton("Append Data", self)
@@ -60,28 +69,79 @@ class NacelleFrame(QWidget):
             grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
 
             # Store a reference to the QLineEdit in the dictionary
-            self.data_values[label] = line_edit
+            self.main_data_values[label] = line_edit
 
         row, col = divmod(len(data_labels), 3)
         grid_layout.addWidget(QLabel("Coordinate File:"), row, col * 3)
         get_file_button = QPushButton("...", self)
         get_file_button.clicked.connect(self.get_file_name)
         grid_layout.addWidget(get_file_button, row, col * 3 + 1, 1, 2)
+
         # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
+        
+        # Create a horizontal line
+        # line_bar = QFrame()
+        # line_bar.setFrameShape(QFrame.Shape.HLine)
+        # line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        # line_bar.setStyleSheet("background-color: white;")
+        
+        # Add the line bar to the main layout
+        # layout.addWidget(line_bar)
+        
+        # Initialize additional layout for fuselage sections
+        self.additional_layout = QVBoxLayout()
+        
+        # Add the layout for additional fuselage sections to the main layout
+        layout.addLayout(self.additional_layout)
+        
+        # Add line above the buttons
+        # line_above_buttons = QFrame()
+        # line_above_buttons.setFrameShape(QFrame.Shape.HLine)
+        # line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
+        # line_above_buttons.setStyleSheet("background-color: white;")
+        
+        # layout.addWidget(line_above_buttons)
+       
+        # Create a QHBoxLayout to contain the buttons
+        button_layout = QHBoxLayout()
+        
+        # Add Fuselage Section Button
+        add_section_button = QPushButton("Add Nacelle", self)
+        # add_section_button.clicked.connect(self.add_fuselage_section)
+        button_layout.addWidget(add_section_button)
+        
+        # Append All Fuselage Section Data Button
+        append_all_data_button = QPushButton("Append All Nacelle Data", self)
+        # append_all_data_button.clicked.connect(self.append_all_data)
+        button_layout.addWidget(append_all_data_button)
+        
+        # Add the button layout to the main layout
+        layout.addLayout(button_layout)
 
-        self.setLayout(layout)
+        # Adds scroll function
+        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+
+        # Set the scroll content as the widget for the scroll area
+        scroll_area.setWidget(scroll_content)
+
+        # Set the main layout of the scroll area
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+
+        # Set the layout to the main window/widget
+        self.setLayout(layout_scroll)
 
     def get_file_name(self):
         file_filter = "Data File (*.csv)"
-        self.coordinate_filename = QFileDialog.getOpenFileName(
+        self.coordinate_filenames = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select a file',
             directory=os.getcwd(),
             filter=file_filter
         )[0]
 
-        print(self.coordinate_filename)
+        print(self.coordinate_filenames)
 
     def append_data(self):
         """Append the entered data to a list or perform any other action."""
@@ -95,7 +155,7 @@ class NacelleFrame(QWidget):
         entered_data = self.get_data_values()
         # Implement deletion logic here, e.g., clear the entries
         print("Deleting Data:", entered_data)
-        for line_edit in self.data_values.values():
+        for line_edit in self.main_data_values.values():
             line_edit.clear()
         show_popup("Data Erased!", self)
 
@@ -103,6 +163,6 @@ class NacelleFrame(QWidget):
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary."""
         temp = {label: float(line_edit.text()) if line_edit.text() else 0.0
-                for label, line_edit in self.data_values.items()}
-        temp["Coordinate Filename"] = self.coordinate_filename
+                for label, line_edit in self.main_data_values.items()}
+        temp["Coordinate Filename"] = self.coordinate_filenames
         return temp
