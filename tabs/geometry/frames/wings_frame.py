@@ -44,7 +44,7 @@ class WingsFrame(QWidget):
         header_layout.addWidget(wing_name_label)
         header_layout.addWidget(wing_name_entry)
 
-        append_button = QPushButton("Append Wing Data", self)
+        append_button = QPushButton("Save Wing Data", self)
         delete_button = QPushButton("Delete Wing Data", self)
         append_button.setFixedWidth(346)
         delete_button.setFixedWidth(346)        
@@ -127,14 +127,14 @@ class WingsFrame(QWidget):
         section_header_layout.addWidget(segment_name)
     
         # Append and Delete buttons for this wing section
-        append_data_button = QPushButton("Append Wing Section Data", self)
+        append_data_button = QPushButton("Save Wing Section Data", self)
         delete_section_button = QPushButton("Delete Wing Section", self)
         append_data_button.setFixedWidth(346)
         delete_section_button.setFixedWidth(346)
     
         # Connections for append and delete buttons
-        append_data_button.clicked.connect(lambda: print("Append Section Data"))  # Placeholder action
-        delete_section_button.clicked.connect(lambda: print("Delete Section"))  # Placeholder action
+        append_data_button.clicked.connect(lambda: print("Append Section Data"))
+        delete_section_button.clicked.connect(lambda: print("Delete Section"))
     
         # Add buttons to the header layout
         section_header_layout.addWidget(append_data_button)
