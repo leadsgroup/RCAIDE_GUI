@@ -141,15 +141,3 @@ class WingsFrame(QWidget):
         """ Retrieve data values from line edits. """
         return {label: float(line_edit.text()) if line_edit.text() else 0.0 for label, line_edit in
                 self.data_values.items()}
-
-    def show_popup(self, message, parent):
-        """ Show a pop-up message. """
-        popup = QMessageBox(parent)
-        popup.setWindowTitle("Info")
-        popup.setText(message)
-        popup.setStyleSheet("QLabel{min-width: 300px;}")
-        popup.show()
-        timer = QTimer(popup)
-        timer.setSingleShot(True)
-        timer.timeout.connect(popup.close)
-        timer.start(2000)
