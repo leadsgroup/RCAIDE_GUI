@@ -30,14 +30,14 @@ class NacelleFrame(QWidget):
         header_layout.addWidget(QLabel("<b>Nacelles</b>"))
 
         # Add buttons for appending and deleting data
-        append_button = QPushButton("Append Data", self)
-        delete_button = QPushButton("Delete Data", self)
+        # append_button = QPushButton("Append Data", self)
+        # delete_button = QPushButton("Delete Data", self)
 
-        append_button.clicked.connect(self.append_data)
-        delete_button.clicked.connect(self.delete_data)
+        # append_button.clicked.connect(self.append_data)
+        # delete_button.clicked.connect(self.delete_data)
 
-        header_layout.addWidget(append_button)
-        header_layout.addWidget(delete_button)
+        # header_layout.addWidget(append_button)
+        # header_layout.addWidget(delete_button)
 
         layout.addLayout(header_layout)
         # layout.addWidget(Color("lightblue"))
@@ -77,17 +77,19 @@ class NacelleFrame(QWidget):
         get_file_button.clicked.connect(self.get_file_name)
         grid_layout.addWidget(get_file_button, row, col * 3 + 1, 1, 2)
 
+        
+        # Create a horizontal line
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        line_bar.setStyleSheet("background-color: white;")
+        
+        # Add the line bar to the main layout
+        layout.addWidget(line_bar)
+
         # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
         
-        # Create a horizontal line
-        # line_bar = QFrame()
-        # line_bar.setFrameShape(QFrame.Shape.HLine)
-        # line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        # line_bar.setStyleSheet("background-color: white;")
-        
-        # Add the line bar to the main layout
-        # layout.addWidget(line_bar)
         
         # Initialize additional layout for fuselage sections
         self.additional_layout = QVBoxLayout()
@@ -96,19 +98,19 @@ class NacelleFrame(QWidget):
         layout.addLayout(self.additional_layout)
         
         # Add line above the buttons
-        # line_above_buttons = QFrame()
-        # line_above_buttons.setFrameShape(QFrame.Shape.HLine)
-        # line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
-        # line_above_buttons.setStyleSheet("background-color: white;")
+        line_above_buttons = QFrame()
+        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
+        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
+        line_above_buttons.setStyleSheet("background-color: white;")
         
-        # layout.addWidget(line_above_buttons)
+        layout.addWidget(line_above_buttons)
        
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
         
-        # Add Fuselage Section Button
+        # Add Nacelle Button
         add_section_button = QPushButton("Add Nacelle", self)
-        # add_section_button.clicked.connect(self.add_fuselage_section)
+        # add_section_button.clicked.connect(self.add_nacelle)
         button_layout.addWidget(add_section_button)
         
         # Append All Fuselage Section Data Button
