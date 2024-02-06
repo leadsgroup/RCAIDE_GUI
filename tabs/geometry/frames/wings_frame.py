@@ -24,16 +24,20 @@ class WingsFrame(QWidget):
 
         # (Temporary) dictionary to store the entered values
         self.data_values = {}
+        
+        # List to store data values for additional wing sections
+        self.additional_data_values = []
 
         # Create the main layout for the content
-        content_layout = QVBoxLayout() 
-        content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.content_layout = QVBoxLayout() 
+        self.setLayout(self.content_layout)
+        self.content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
         # Header layout with bold label and buttons
         header_layout = QHBoxLayout()
         wing_name_label = QLabel("Wing Name:")
         wing_name_entry = QLineEdit(self)
-        wing_name_entry.setFixedWidth(265)
+        wing_name_entry.setFixedWidth(255)
         bold_font = QFont()
         bold_font.setBold(True)
         wing_name_label.setFont(bold_font)        
@@ -42,13 +46,13 @@ class WingsFrame(QWidget):
 
         append_button = QPushButton("Append Wing Data", self)
         delete_button = QPushButton("Delete Wing Data", self)
-        append_button.setFixedWidth(341)
-        delete_button.setFixedWidth(341)        
+        append_button.setFixedWidth(346)
+        delete_button.setFixedWidth(346)        
         append_button.clicked.connect(self.append_data)
         delete_button.clicked.connect(self.delete_data)
         header_layout.addWidget(append_button)
         header_layout.addWidget(delete_button)
-        content_layout.addLayout(header_layout)
+        self.content_layout.addLayout(header_layout)
 
         # Grid layout for wing components
         grid_layout = QGridLayout()
@@ -69,8 +73,16 @@ class WingsFrame(QWidget):
             grid_layout.addWidget(QLabel(label + ":"), row, col * 2)
             grid_layout.addWidget(line_edit, row, col * 2 + 1)
             self.data_values['wing_' + label] = line_edit
-        content_layout.addLayout(grid_layout)
+        self.content_layout.addLayout(grid_layout)
 
+        # -------------------------------------------------------------------------------------------------------------------------------
+        #   Wings Sections
+        # -------------------------------------------------------------------------------------------------------------------------------
+        
+        self.additional_layout = QVBoxLayout()
+        self.additional_header_layout = QHBoxLayout()
+        self.additional_layout.addLayout(self.additional_header_layout)
+        self.content_layout.addLayout(self.additional_layout)
         add_wing_section_button = QPushButton("Add Wing Section", self)
         append_all_section_button = QPushButton("Append All Wing Section Data", self)
         add_cs_button = QPushButton("Add Control Surface", self)
@@ -80,87 +92,83 @@ class WingsFrame(QWidget):
         '''alter'''
         ''''''
         
-        #add_wing_section_button.clicked.connect(self.append_data)
+        add_wing_section_button.clicked.connect(self.add_wing_section)
         append_all_section_button.clicked.connect(self.append_all_data)
-        #add_cs_button.clicked.connect(self.delete_data)
+        #add_cs_button.clicked.connect(self.add_cs_section)
         append_all_cs_button.clicked.connect(self.append_all_data)
         
         buttons_layout = QHBoxLayout()
-        content_layout.addLayout(buttons_layout)
+        self.content_layout.addLayout(buttons_layout)
         
         buttons_layout.addWidget(add_wing_section_button)
         buttons_layout.addWidget(append_all_section_button)
         buttons_layout.addWidget(add_cs_button)
-        buttons_layout.addWidget(append_all_cs_button)
-
-        # -------------------------------------------------------------------------------------------------------------------------------
-        #   Wings Sections
-        # -------------------------------------------------------------------------------------------------------------------------------
-
-        self.add_section_button = QPushButton("Add Wing Section", self)
-        self.add_section_button.clicked.connect(self.add_wing_section)
-        self.content_layout.addWidget(self.add_section_button)        
+        buttons_layout.addWidget(append_all_cs_button)    
         
     def add_wing_section(self):
-        """Add a new wing section"""
-        additional_wing_section_layout = QGridLayout()
+        # Create new QVBoxLayout for the entire section, including the header and data fields
+        section_layout = QVBoxLayout()
+        section_layout.addSpacing(15)
         
+        # Section header layout with segment name, append, and delete buttons
+        section_header_layout = QHBoxLayout()
+    
+        bold_font = QFont()
+        bold_font.setBold(True)
+    
+        # Segment Name Label and Entry
+        segment_name_label = QLabel("Segment Name:")
+        segment_name_label.setFont(bold_font)
         segment_name = QLineEdit(self)
-        segment_name.setFixedWidth(100)
-        
-        percent_span_location = QLineEdit(self)
-        percent_span_location.setFixedWidth(100)
-        
-        twist = QLineEdit(self)
-        twist.setFixedWidth(100)
-        
-        root_chord_percent = QLineEdit(self)
-        root_chord_percent.setFixedWidth(100)
-        
-        thickness_to_chord = QLineEdit(self)
-        thickness_to_chord.setFixedWidth(100)
-        
-        dihedral_outboard = QLineEdit(self)
-        dihedral_outboard.setFixedWidth(100)
-        
-        quarter_chord_sweep = QLineEdit(self)
-        quarter_chord_sweep.setFixedWidth(100)
-        
-        airfoil = QLineEdit(self)
-        airfoil.setFixedWidth(100)
-        
-        additional_wing_section_layout.addWidget(QLabel("Segment Name:"), 0, 0)
-        additional_wing_section_layout.addWidget(segment_name, 0, 1)
-
-        additional_wing_section_layout.addWidget(QLabel("Percent Span Location:"), 1, 0)
-        additional_wing_section_layout.addWidget(percent_span_location, 1, 1)
-
-        additional_wing_section_layout.addWidget(QLabel("Twist:"), 0, 2)
-        additional_wing_section_layout.addWidget(twist, 0, 3)
-
-        additional_wing_section_layout.addWidget(QLabel("Root Chord Percent:"), 1, 2)
-        additional_wing_section_layout.addWidget(root_chord_percent, 1, 3)  
-        
-        additional_wing_section_layout.addWidget(QLabel("Thickness to Chord:"), 2, 0)
-        additional_wing_section_layout.addWidget(thickness_to_chord, 2, 1)
-
-        additional_wing_section_layout.addWidget(QLabel("Dihedral Outboard:"), 2, 2)
-        additional_wing_section_layout.addWidget(dihedral_outboard, 2, 3)
-
-        additional_wing_section_layout.addWidget(QLabel("Quarter Chord Sweep:"), 3, 0)
-        additional_wing_section_layout.addWidget(quarter_chord_sweep, 3, 1)
-
-        additional_wing_section_layout.addWidget(QLabel("Airfoil:"), 3, 2)
-        additional_wing_section_layout.addWidget(airfoil, 3, 3)   
-        
+        segment_name.setFixedWidth(233)
+    
+        # Add segment name label and entry to the header
+        section_header_layout.addWidget(segment_name_label)
+        section_header_layout.addWidget(segment_name)
+    
+        # Append and Delete buttons for this wing section
+        append_data_button = QPushButton("Append Wing Section Data", self)
         delete_section_button = QPushButton("Delete Wing Section", self)
-        append_data_button = QPushButton("Append Wing Section Data", self)  
-        
-        delete_section_button.clicked.connect(self.delete_and_display_data)
-        append_data_button.clicked.connect(lambda _, index=len(self.additional_data_values): self.append_section_data(index))   
-        
-        additional_wing_section_layout.addWidget(delete_section_button, 0, 4)
-        additional_wing_section_layout.addWidget(append_data_button, 1, 4)
+        append_data_button.setFixedWidth(346)
+        delete_section_button.setFixedWidth(346)
+    
+        # Connections for append and delete buttons
+        append_data_button.clicked.connect(lambda: print("Append Section Data"))  # Placeholder action
+        delete_section_button.clicked.connect(lambda: print("Delete Section"))  # Placeholder action
+    
+        # Add buttons to the header layout
+        section_header_layout.addWidget(append_data_button)
+        section_header_layout.addWidget(delete_section_button)
+    
+        # Add the header layout to the section layout
+        section_layout.addLayout(section_header_layout)
+    
+        # Data fields for the wing section
+        additional_section_layout = QGridLayout()
+    
+        # Adding data fields
+        labels_and_fields = [
+            ("Percent Span Location:", QLineEdit(self)),
+            ("Twist:", QLineEdit(self)),
+            ("Root Chord Percent:", QLineEdit(self)),
+            ("Thickness to Chord:", QLineEdit(self)),
+            ("Dihedral Outboard:", QLineEdit(self)),
+            ("Quarter Chord Sweep:", QLineEdit(self)),
+            ("Airfoil:", QLineEdit(self)),
+        ]
+    
+        for i, (label_text, field) in enumerate(labels_and_fields):
+            label = QLabel(label_text)
+            field.setFixedWidth(100)
+            row, col = divmod(i, 3)
+            additional_section_layout.addWidget(label, row, col * 2)
+            additional_section_layout.addWidget(field, row, col * 2 + 1)
+    
+        # Add the grid layout for data fields to the section layout
+        section_layout.addLayout(additional_section_layout)
+    
+        # Add the entire section layout to the additional layout
+        self.additional_layout.addLayout(section_layout)
 
 
         # -------------------------------------------------------------------------------------------------------------------------------
@@ -205,7 +213,7 @@ class WingsFrame(QWidget):
 
         # Scroll area setup
         content_widget = QWidget()
-        content_widget.setLayout(content_layout)
+        content_widget.setLayout(self.content_layout)
         scroll_area = QScrollArea(self)
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(content_widget)
@@ -231,6 +239,11 @@ class WingsFrame(QWidget):
         """ Retrieve data values from line edits."""
         return {label: float(line_edit.text()) if line_edit.text() else 0.0 for label, line_edit in
                 self.data_values.items()} 
+    
+    def delete_and_display_data(self):
+        """Combining display_data and delete_section function so button can call both."""
+        self.delete_section()
+        self.display_data()    
     
     def append_all_data(self):
         """Append the entered data for the additional wing section."""
