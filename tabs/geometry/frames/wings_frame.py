@@ -26,8 +26,9 @@ class WingsFrame(QWidget):
         self.data_values = {}
 
         # Create the main layout for the content
-        content_layout = QVBoxLayout()
-
+        content_layout = QVBoxLayout() 
+        content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
         # Header layout with bold label and buttons
         header_layout = QHBoxLayout()
         wing_name_label = QLabel("Wing Name:")
@@ -48,7 +49,6 @@ class WingsFrame(QWidget):
         header_layout.addWidget(append_button)
         header_layout.addWidget(delete_button)
         content_layout.addLayout(header_layout)
-        #content_layout.addWidget(Color("lightblue"))
 
         # Grid layout for wing components
         grid_layout = QGridLayout()
@@ -119,7 +119,7 @@ class WingsFrame(QWidget):
         scroll_area.setWidget(content_widget)
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(scroll_area)
-        self.setLayout(main_layout)
+        self.setLayout(main_layout)   
 
     '''Functions subject to change due to RCAIDE integration''' 
 
@@ -140,4 +140,4 @@ class WingsFrame(QWidget):
     def get_data_values(self):
         """ Retrieve data values from line edits. """
         return {label: float(line_edit.text()) if line_edit.text() else 0.0 for label, line_edit in
-                self.data_values.items()}
+                self.data_values.items()} 
