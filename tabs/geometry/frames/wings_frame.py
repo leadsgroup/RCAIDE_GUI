@@ -81,9 +81,9 @@ class WingsFrame(QWidget):
         ''''''
         
         #add_wing_section_button.clicked.connect(self.append_data)
-        #append_all_section_button.clicked.connect(self.append_data)
+        append_all_section_button.clicked.connect(self.append_all_data)
         #add_cs_button.clicked.connect(self.delete_data)
-        #append_all_cs_button.clicked.connect(self.delete_data)
+        append_all_cs_button.clicked.connect(self.append_all_data)
         
         buttons_layout = QHBoxLayout()
         content_layout.addLayout(buttons_layout)
@@ -97,67 +97,71 @@ class WingsFrame(QWidget):
         #   Wings Sections
         # -------------------------------------------------------------------------------------------------------------------------------
 
-        #self.add_section_button = QPushButton("Add Wing Section", self)
-        #self.add_section_button.clicked.connect(self.add_wing_section)
-        #self.content_layout.addWidget(self.add_section_button)        
+        self.add_section_button = QPushButton("Add Wing Section", self)
+        self.add_section_button.clicked.connect(self.add_wing_section)
+        self.content_layout.addWidget(self.add_section_button)        
         
-    #def add_wing_section(self):
-        #"""Add a new wing section"""
-        #additional_wing_section_layout = QGridLayout()
+    def add_wing_section(self):
+        """Add a new wing section"""
+        additional_wing_section_layout = QGridLayout()
         
-        #segment_name = QLineEdit(self)
-        #segment_name.setFixedWidth(100)
+        segment_name = QLineEdit(self)
+        segment_name.setFixedWidth(100)
         
-        #percent_span_location = QLineEdit(self)
-        #percent_span_location.setFixedWidth(100)
+        percent_span_location = QLineEdit(self)
+        percent_span_location.setFixedWidth(100)
         
-        #twist = QLineEdit(self)
-        #twist.setFixedWidth(100)
+        twist = QLineEdit(self)
+        twist.setFixedWidth(100)
         
-        #root_chord_percent = QLineEdit(self)
-        #root_chord_percent.setFixedWidth(100)
+        root_chord_percent = QLineEdit(self)
+        root_chord_percent.setFixedWidth(100)
         
-        #thickness_to_chord = QLineEdit(self)
-        #thickness_to_chord.setFixedWidth(100)
+        thickness_to_chord = QLineEdit(self)
+        thickness_to_chord.setFixedWidth(100)
         
-        #dihedral_outboard = QLineEdit(self)
-        #dihedral_outboard.setFixedWidth(100)
+        dihedral_outboard = QLineEdit(self)
+        dihedral_outboard.setFixedWidth(100)
         
-        #quarter_chord_sweep = QLineEdit(self)
-        #quarter_chord_sweep.setFixedWidth(100)
+        quarter_chord_sweep = QLineEdit(self)
+        quarter_chord_sweep.setFixedWidth(100)
         
-        #airfoil = QLineEdit(self)
-        #airfoil.setFixedWidth(100)
+        airfoil = QLineEdit(self)
+        airfoil.setFixedWidth(100)
         
-        #additional_wing_section_layout.addWidget(QLabel("Segment Name:"), 0, 0)
-        #additional_wing_section_layout.addWidget(segment_name, 0, 1)
+        additional_wing_section_layout.addWidget(QLabel("Segment Name:"), 0, 0)
+        additional_wing_section_layout.addWidget(segment_name, 0, 1)
 
-        #additional_wing_section_layout.addWidget(QLabel("Percent Span Location:"), 1, 0)
-        #additional_wing_section_layout.addWidget(percent_span_location, 1, 1)
+        additional_wing_section_layout.addWidget(QLabel("Percent Span Location:"), 1, 0)
+        additional_wing_section_layout.addWidget(percent_span_location, 1, 1)
 
-        #additional_wing_section_layout.addWidget(QLabel("Twist:"), 0, 2)
-        #additional_wing_section_layout.addWidget(twist, 0, 3)
+        additional_wing_section_layout.addWidget(QLabel("Twist:"), 0, 2)
+        additional_wing_section_layout.addWidget(twist, 0, 3)
 
-        #additional_wing_section_layout.addWidget(QLabel("Root Chord Percent:"), 1, 2)
-        #additional_wing_section_layout.addWidget(root_chord_percent, 1, 3)  
+        additional_wing_section_layout.addWidget(QLabel("Root Chord Percent:"), 1, 2)
+        additional_wing_section_layout.addWidget(root_chord_percent, 1, 3)  
         
-        #additional_wing_section_layout.addWidget(QLabel("Thickness to Chord:"), 2, 0)
-        #additional_wing_section_layout.addWidget(thickness_to_chord, 2, 1)
+        additional_wing_section_layout.addWidget(QLabel("Thickness to Chord:"), 2, 0)
+        additional_wing_section_layout.addWidget(thickness_to_chord, 2, 1)
 
-        #additional_wing_section_layout.addWidget(QLabel("Dihedral Outboard:"), 2, 2)
-        #additional_wing_section_layout.addWidget(dihedral_outboard, 2, 3)
+        additional_wing_section_layout.addWidget(QLabel("Dihedral Outboard:"), 2, 2)
+        additional_wing_section_layout.addWidget(dihedral_outboard, 2, 3)
 
-        #additional_wing_section_layout.addWidget(QLabel("Quarter Chord Sweep:"), 3, 0)
-        #additional_wing_section_layout.addWidget(quarter_chord_sweep, 3, 1)
+        additional_wing_section_layout.addWidget(QLabel("Quarter Chord Sweep:"), 3, 0)
+        additional_wing_section_layout.addWidget(quarter_chord_sweep, 3, 1)
 
-        #additional_wing_section_layout.addWidget(QLabel("Airfoil:"), 3, 2)
-        #additional_wing_section_layout.addWidget(airfoil, 3, 3)   
+        additional_wing_section_layout.addWidget(QLabel("Airfoil:"), 3, 2)
+        additional_wing_section_layout.addWidget(airfoil, 3, 3)   
         
-        #delete_section_button = QPushButton("Delete Wing Section", self)
-        #append_data_button = QPushButton("Append Wing Section Data", self)  
+        delete_section_button = QPushButton("Delete Wing Section", self)
+        append_data_button = QPushButton("Append Wing Section Data", self)  
         
-        #delete_section_button.clicked.connect(self.delete_and_display_data)
-        #append_data_button.clicked.connect(lambda _, index=len(self.additional_data_values): self.append_section_data(index))        
+        delete_section_button.clicked.connect(self.delete_and_display_data)
+        append_data_button.clicked.connect(lambda _, index=len(self.additional_data_values): self.append_section_data(index))   
+        
+        additional_wing_section_layout.addWidget(delete_section_button, 0, 4)
+        additional_wing_section_layout.addWidget(append_data_button, 1, 4)
+
 
         # -------------------------------------------------------------------------------------------------------------------------------
         #   Control Surfaces
@@ -212,20 +216,23 @@ class WingsFrame(QWidget):
     '''Functions subject to change due to RCAIDE integration''' 
 
     def append_data(self):
-        """ Append data action. """
+        """Append data action."""
         entered_data = self.get_data_values()
         print("Appending Data:", entered_data)
-        self.show_popup("Data Saved!", self)
 
     def delete_data(self):
-        """ Delete data action. """
+        """Delete data action."""
         entered_data = self.get_data_values()
         print("Deleting Data:", entered_data)
         for line_edit in self.data_values.values():
             line_edit.clear()
-        self.show_popup("Data Erased!", self)
 
     def get_data_values(self):
-        """ Retrieve data values from line edits. """
+        """ Retrieve data values from line edits."""
         return {label: float(line_edit.text()) if line_edit.text() else 0.0 for label, line_edit in
                 self.data_values.items()} 
+    
+    def append_all_data(self):
+        """Append the entered data for the additional wing section."""
+        all_entered_data = self.get_all_data_values()
+        print("Appending All Data:", all_entered_data)    
