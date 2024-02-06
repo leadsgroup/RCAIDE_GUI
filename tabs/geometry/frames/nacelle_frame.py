@@ -1,4 +1,4 @@
-rom PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
     QFrame, QSpacerItem, QSizePolicy
 
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
@@ -49,7 +49,7 @@ class NacelleFrame(QWidget):
         line_above_buttons = QFrame()
         line_above_buttons.setFrameShape(QFrame.Shape.HLine)
         line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
-        # line_above_buttons.setStyleSheet("background-color: white;")
+        line_above_buttons.setStyleSheet("background-color: light grey;")
 
         layout.addWidget(line_above_buttons)
 
@@ -110,4 +110,12 @@ class NacelleFrame(QWidget):
         self.data_entry_layout.addWidget(NacelleWidget(self.data_entry_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
+        # TODO: Update indices of the nacelle widgets after the deleted index
         self.data_entry_layout.itemAt(index).widget().deleteLater()
+        self.data_entry_layout.removeWidget(self.data_entry_layout.itemAt(index).widget())
+        self.data_entry_layout.update()
+        print("Deleted Nacelle at Index:", index)
+
+        for i in range(index, self.data_entry_layout.count()):
+            self.data_entry_layout.itemAt(i).widget().index = i
+            print("Updated Index:", i)

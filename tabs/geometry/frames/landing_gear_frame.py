@@ -23,13 +23,13 @@ class LandingGearFrame(QWidget):
         header_layout.addWidget(QLabel("<b>Landing Gear</b>"))
 
         # Add buttons for appending and deleting data
-        append_button = QPushButton("Append Data", self)
+        save_button = QPushButton("Save Data", self)
         delete_button = QPushButton("Delete Data", self)
 
-        append_button.clicked.connect(self.append_data)
+        save_button.clicked.connect(self.append_data)
         delete_button.clicked.connect(self.delete_data)
 
-        header_layout.addWidget(append_button)
+        header_layout.addWidget(save_button)
         header_layout.addWidget(delete_button)
 
         layout.addLayout(header_layout)

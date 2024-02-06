@@ -14,14 +14,17 @@ class NacelleWidget(QWidget):
         self.on_delete = on_delete
 
         grid_layout = QGridLayout()
+        # TODO: Add nacelle name
 
         # List of data labels
         data_labels = [
             "Length",
             "Inlet Diameter",
             "Diameter",
+            "Origin X",
+            "Origin Y",
+            "Origin Z",
             "Wetted Area",
-            "Origin",
             "Flow Through",
             "Airfoil Flag",
         ]
