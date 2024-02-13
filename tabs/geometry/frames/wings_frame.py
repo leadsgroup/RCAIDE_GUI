@@ -97,13 +97,16 @@ class WingsFrame(QWidget):
         #add_cs_button.clicked.connect(self.add_cs_section)
         append_all_cs_button.clicked.connect(self.append_all_data)
         
-        buttons_layout = QHBoxLayout()
-        self.content_layout.addLayout(buttons_layout)
+        sections_buttons_layout = QHBoxLayout()
+        self.content_layout.addLayout(sections_buttons_layout)
         
-        buttons_layout.addWidget(add_wing_section_button)
-        buttons_layout.addWidget(append_all_section_button)
-        buttons_layout.addWidget(add_cs_button)
-        buttons_layout.addWidget(append_all_cs_button)    
+        surface_buttons_layout = QHBoxLayout()
+        self.content_layout.addLayout(surface_buttons_layout)
+        
+        sections_buttons_layout.addWidget(add_wing_section_button)
+        sections_buttons_layout.addWidget(append_all_section_button)
+        surface_buttons_layout.addWidget(add_cs_button)
+        surface_buttons_layout.addWidget(append_all_cs_button)    
         
     def add_wing_section(self):
         # Create new QVBoxLayout for the entire section, including the header and data fields
@@ -221,7 +224,7 @@ class WingsFrame(QWidget):
         main_layout.addWidget(scroll_area)
         self.setLayout(main_layout)   
 
-    '''Functions subject to change due to RCAIDE integration''' 
+    
 
     def append_data(self):
         """Append data action."""
