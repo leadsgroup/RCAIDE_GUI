@@ -84,31 +84,36 @@ class WingsFrame(QWidget):
         #   Wings Sections / Control Surfaces
         # -------------------------------------------------------------------------------------------------------------------------------
         
+        # Wing Section Buttons
         self.additional_layout = QVBoxLayout()
         self.additional_header_layout = QHBoxLayout()
         self.additional_layout.addLayout(self.additional_header_layout)
-        self.content_layout.addLayout(self.additional_layout)
-        
+        self.content_layout.addLayout(self.additional_layout)     
+    
         add_wing_section_button = QPushButton("Add Wing Section", self)
         append_all_section_button = QPushButton("Append All Wing Section Data", self)
-        add_cs_button = QPushButton("Add Control Surface", self)
-        append_all_cs_button = QPushButton("Append All C.S. Data", self)
-        
         add_wing_section_button.clicked.connect(self.add_wing_section)
         append_all_section_button.clicked.connect(self.append_all_data)
-        add_cs_button.clicked.connect(self.add_control_surface)
-        append_all_cs_button.clicked.connect(self.append_all_data)
         
         sections_buttons_layout = QHBoxLayout()
         self.content_layout.addLayout(sections_buttons_layout)
+        sections_buttons_layout.addWidget(add_wing_section_button)
+        sections_buttons_layout.addWidget(append_all_section_button) 
+        
+        # Control Surface Buttons
+        self.cs_additional_layout = QVBoxLayout()
+        self.content_layout.addLayout(self.cs_additional_layout)           
+        
+        add_cs_button = QPushButton("Add Control Surface", self)
+        append_all_cs_button = QPushButton("Append All C.S. Data", self)        
+        add_cs_button.clicked.connect(self.add_control_surface)
+        append_all_cs_button.clicked.connect(self.append_all_data)     
         
         surface_buttons_layout = QHBoxLayout()
         self.content_layout.addLayout(surface_buttons_layout)
-        
-        sections_buttons_layout.addWidget(add_wing_section_button)
-        sections_buttons_layout.addWidget(append_all_section_button)
         surface_buttons_layout.addWidget(add_cs_button)
-        surface_buttons_layout.addWidget(append_all_cs_button)        
+        surface_buttons_layout.addWidget(append_all_cs_button)         
+        
         
     def add_wing_section(self):
         # Create new QVBoxLayout for the entire section, including the header and data fields
@@ -191,7 +196,7 @@ class WingsFrame(QWidget):
         
         # Section header layout with segment name, append, and delete buttons
         surface_header_layout = QHBoxLayout()
-    
+        
         bold_font = QFont()
         bold_font.setBold(True)
     
@@ -237,8 +242,7 @@ class WingsFrame(QWidget):
                              ("Flap: Chord Fraction:", QLineEdit(self)),
                              ("Slat: Chord Fraction:", QLineEdit(self)),
                              ("Aileron: Chord Fraction:", QLineEdit(self)),
-                             ("Flap: Configuration:", QLineEdit(self)),
-                              ]
+                             ("Flap: Configuration:", QLineEdit(self)),]
     
         for i, (label_text, field) in enumerate(labels_and_fields):
             label = QLabel(label_text)
@@ -251,7 +255,7 @@ class WingsFrame(QWidget):
         surface_layout.addLayout(additional_surface_layout)
     
         # Add the entire section layout to the additional layout
-        self.additional_layout.addLayout(surface_layout)  
+        self.cs_additional_layout.addLayout(surface_layout)
 
     def append_data(self):
         """Append data action."""
