@@ -1,9 +1,9 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
+rom PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
     QFrame, QSpacerItem, QSizePolicy
 
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy, QLayoutItem
+    QFrame, QSpacerItem, QSizePolicy
 
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
 

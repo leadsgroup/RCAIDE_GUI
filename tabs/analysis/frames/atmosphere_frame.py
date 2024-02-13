@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollArea, \
     QFrame, QSpacerItem, QSizePolicy
+
 
 # TODO: Add atmospheric analysis
 

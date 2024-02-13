@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget)
 
+
 # TODO - Add nacelle subsections in the future
 class NacelleWidget(QWidget):
     def __init__(self, index, on_delete):

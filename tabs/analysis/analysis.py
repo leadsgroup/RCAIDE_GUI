@@ -2,12 +2,11 @@ from typing import cast
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout
-from matplotlib.pylab import f
 
-from tabs.analysis.frames.default_frame import DefaultFrame
 from tabs.analysis.frames.aerodynamics_frame import AerodynamicsFrame
 from tabs.analysis.frames.atmosphere_frame import AtmosphereFrame
 from tabs.analysis.frames.costs_frame import CostsFrame
+from tabs.analysis.frames.default_frame import DefaultFrame
 from tabs.analysis.frames.energy_frame import EnergyFrame
 from tabs.analysis.frames.noise_frame import NoiseFrame
 from tabs.analysis.frames.planets_frame import PlanetsFrame
@@ -43,7 +42,7 @@ class AnalysisWidget(QWidget):
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
-        options = ["Select an option", "Aerodynamics", "Atmospheric", "Costs", "Energy", "Noise", 
+        options = ["Select an option", "Aerodynamics", "Atmospheric", "Costs", "Energy", "Noise",
                    "Planets", "Propulsion", "Stability", "Weights"]
         self.dropdown.addItems(options)
 
