@@ -90,8 +90,8 @@ class WingsFrame(QWidget):
         self.additional_layout.addLayout(self.additional_header_layout)
         self.content_layout.addLayout(self.additional_layout)     
     
-        add_wing_section_button = QPushButton("Add Wing Section", self)
-        append_all_section_button = QPushButton("Append All Wing Section Data", self)
+        add_wing_section_button = QPushButton("Add Wing Segment", self)
+        append_all_section_button = QPushButton("Append All Wing Segment Data", self)
         add_wing_section_button.clicked.connect(self.add_wing_section)
         append_all_section_button.clicked.connect(self.append_all_data)
         
@@ -141,8 +141,8 @@ class WingsFrame(QWidget):
         section_header_layout.addWidget(segment_name)
     
         # Append and Delete buttons for this wing section
-        append_data_button = QPushButton("Save Wing Section Data", self)
-        delete_section_button = QPushButton("Delete Wing Section", self)
+        append_data_button = QPushButton("Save Wing Segment Data", self)
+        delete_section_button = QPushButton("Delete Wing Segment", self)
         append_data_button.setFixedWidth(346)
         delete_section_button.setFixedWidth(346)
     
