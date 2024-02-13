@@ -75,8 +75,10 @@ class GeometryWidget(QWidget):
         # Initially display the DefaultFrame
 
     def on_dropdown_change(self, index):
-        main_layout: QStackedLayout = cast(QStackedLayout, self.layout().itemAt(1))
-        main_layout.setCurrentIndex(index)
+        layout = self.layout()
+        if layout:
+            main_layout: QStackedLayout = cast(QStackedLayout, layout.itemAt(1))
+            main_layout.setCurrentIndex(index)
 
 
 def get_widget() -> QWidget:
