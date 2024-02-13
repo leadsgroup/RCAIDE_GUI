@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayo
 
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy
+    QFrame, QSpacerItem, QSizePolicy, QLayoutItem
 
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
 
@@ -16,11 +16,13 @@ class NacelleFrame(QWidget):
 
         # Create a scroll area
         scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
+        # Allow the widget inside to resize with the scroll area
+        scroll_area.setWidgetResizable(True)
 
         # Create a widget to contain the layout
         scroll_content = QWidget()
-        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
+        # Set the main layout inside the scroll content
+        layout = QVBoxLayout(scroll_content)
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
@@ -40,7 +42,8 @@ class NacelleFrame(QWidget):
         layout.addWidget(line_bar)
 
         # Add the grid layout to the home layout
-        self.data_entry_layout.addWidget(NacelleWidget(0, self.on_delete_button_pressed))
+        self.data_entry_layout.addWidget(
+            NacelleWidget(0, self.on_delete_button_pressed))
         layout.addLayout(self.data_entry_layout)
 
         # Add the layout for additional fuselage sections to the main layout
@@ -70,7 +73,8 @@ class NacelleFrame(QWidget):
         layout.addLayout(button_layout)
 
         # Adds scroll function
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
         # Set the scroll content as the widget for the scroll area
         scroll_area.setWidget(scroll_content)
@@ -107,15 +111,31 @@ class NacelleFrame(QWidget):
     #     return temp
 
     def add_nacelle(self):
-        self.data_entry_layout.addWidget(NacelleWidget(self.data_entry_layout.count(), self.on_delete_button_pressed))
+        self.data_entry_layout.addWidget(NacelleWidget(
+            self.data_entry_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
-        # TODO: Update indices of the nacelle widgets after the deleted index
-        self.data_entry_layout.itemAt(index).widget().deleteLater()
-        self.data_entry_layout.removeWidget(self.data_entry_layout.itemAt(index).widget())
+        item = self.data_entry_layout.itemAt(index)
+        if item is None:
+            return
+
+        widget = item.widget()
+        if widget is None:
+            return
+
+        widget.deleteLater()
+        self.data_entry_layout.removeWidget(widget)
         self.data_entry_layout.update()
         print("Deleted Nacelle at Index:", index)
 
         for i in range(index, self.data_entry_layout.count()):
-            self.data_entry_layout.itemAt(i).widget().index = i
+            item = self.data_entry_layout.itemAt(i)
+            if item is None or item.widget() is None:
+                continue
+
+            widget = item.widget()
+            if not isinstance(widget, NacelleWidget):
+                return
+
+            widget.index = i
             print("Updated Index:", i)

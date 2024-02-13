@@ -1,9 +1,11 @@
 import os
 
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QFileDialog, QPushButton, QLabel, QLineEdit, QGridLayout
+from PyQt6.QtWidgets import (QFileDialog, QGridLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+                             QVBoxLayout, QWidget)
 
-
+# TODO - Add nacelle subsections in the future
 class NacelleWidget(QWidget):
     def __init__(self, index, on_delete):
         super(NacelleWidget, self).__init__()
@@ -13,8 +15,19 @@ class NacelleWidget(QWidget):
         self.index = index
         self.on_delete = on_delete
 
+        main_layout = QVBoxLayout()
         grid_layout = QGridLayout()
-        # TODO: Add nacelle name
+
+        name_layout = QHBoxLayout()
+        # add spacing
+        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        name_layout.addItem(spacer_left)
+        name_layout.addWidget(QLabel("Name: "))
+        name_layout.addWidget(QLineEdit(self))
+        name_layout.addItem(spacer_right)
+
+        main_layout.addLayout(name_layout)
 
         # List of data labels
         data_labels = [
@@ -57,7 +70,9 @@ class NacelleWidget(QWidget):
         delete_button.clicked.connect(self.delete_button_pressed)
         grid_layout.addWidget(delete_button, row, col * 3, 1, 2)
 
-        self.setLayout(grid_layout)
+        main_layout.addLayout(grid_layout)
+
+        self.setLayout(main_layout)
 
     def get_file_name(self):
         file_filter = "Data File (*.csv)"
