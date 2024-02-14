@@ -11,6 +11,7 @@ from PyQt6.QtGui import QDoubleValidator, QFont
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QMessageBox, \
     QScrollArea
 
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.color import Color
 
 
@@ -18,7 +19,7 @@ from widgets.color import Color
 #   Wings
 # ------------------------------------------------------------------------------------------------------------------------------------
 
-class WingsFrame(QWidget):
+class WingsFrame(QWidget, GeometryFrame):
     def __init__(self):
         super(WingsFrame, self).__init__()
 
