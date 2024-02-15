@@ -13,6 +13,7 @@ from tabs.geometry.frames.wings_frame import WingsFrame
 
 class GeometryWidget(QWidget):
     def __init__(self):
+        """Create a widget for entering vehicle geometry."""
         super(GeometryWidget, self).__init__()
 
         # Define actions based on the selected index
@@ -67,11 +68,23 @@ class GeometryWidget(QWidget):
         self.setLayout(base_layout)
 
     def on_dropdown_change(self, index):
+        """Change the index of the main layout based on the selected index of the dropdown.
+
+        Args:
+            index: The index of the selected item in the dropdown.
+        """
         layout = self.layout()
         if layout:
             self.main_layout.setCurrentIndex(index)
 
-    def on_tree_item_clicked(self, item, _):
+    def on_tree_item_clicked(self, item, _col):
+        """Change the index of the main layout based on the selected item in the tree.
+
+        Args:
+            item: The selected item in the tree.
+            _col: The column index of the selected item. (Not used)
+
+        """
         # get item index
         is_top_level = not item.parent()
         if is_top_level:
@@ -87,7 +100,13 @@ class GeometryWidget(QWidget):
         self.main_layout.setCurrentIndex(tab_index + 1)
         print(tab_index, index)
 
-    def on_tree_item_double_clicked(self, item, _):
+    def on_tree_item_double_clicked(self, item, _col):
+        """Create a new structure for the selected item in the tree.
+
+        Args:
+            item: The selected item in the tree.
+            _col: The column index of the selected item. (Not used)
+        """
         is_top_level = not item.parent()
         if not is_top_level:
             return
@@ -98,6 +117,14 @@ class GeometryWidget(QWidget):
         self.main_layout.setCurrentIndex(tab_index + 1)
 
     def save_data(self, tab_index, index=0, data=None, new=False):
+        """Save the entered data in a frame to the list.
+
+        Args:
+            tab_index: The index of the tab.
+            index: The index of the vehicle element in the list. (Within its type, eg fuselage #0, #1, etc.)
+            data: The data to be saved.
+            new: A flag to indicate if the data is of a new element.
+        """
         if new:
             self.data[tab_index].append(data)
             child = QTreeWidgetItem([data["name"]])
@@ -112,4 +139,9 @@ class GeometryWidget(QWidget):
 
 
 def get_widget() -> QWidget:
+    """Return the geometry widget.
+
+    Returns:
+        The geometry widget.
+    """
     return GeometryWidget()

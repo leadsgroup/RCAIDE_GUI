@@ -144,16 +144,28 @@ class LandingGearFrame(QWidget, GeometryFrame):
         return data
 
     def load_data(self, data, index):
-        """Load the data into the widgets."""
+        """Load the data into the widgets.
+
+        Args:
+            data: The data to be loaded into the widgets.
+            index: The index of the data in the list.
+        """
         for label, line_edit in self.main_data_values.items():
             line_edit.setText(str(data[label]))
 
         self.index = index
 
     def set_save_function(self, function):
-        """Set the save function to be called when the save button is pressed."""
+        """Set the save function to be called when the save button is pressed.
+
+        Args:
+            function: The function to be called.
+        """
         self.save_function = function
 
     def set_tab_index(self, index):
-        """Set the tab index for the frame."""
+        """Set the tab index for the frame.
+
+        Args:
+            index: The index of the tab."""
         self.tab_index = index
