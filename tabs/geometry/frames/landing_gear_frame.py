@@ -32,12 +32,15 @@ class LandingGearFrame(QWidget, GeometryFrame):
         # Add buttons for appending and deleting data
         save_button = QPushButton("Save Data", self)
         delete_button = QPushButton("Delete Data", self)
+        new_button = QPushButton("New Landing Gear Structure", self)
 
         save_button.clicked.connect(self.save_data)
         delete_button.clicked.connect(self.delete_data)
+        new_button.clicked.connect(self.create_new_lg)
 
         header_layout.addWidget(save_button)
         header_layout.addWidget(delete_button)
+        header_layout.addWidget(new_button)
 
         layout.addLayout(header_layout)
 
@@ -124,6 +127,13 @@ class LandingGearFrame(QWidget, GeometryFrame):
         for line_edit in self.main_data_values.values():
             line_edit.clear()
         show_popup("Data Erased!", self)
+
+    def create_new_lg(self):
+        """Create a new landing gear structure."""
+        for line_edit in self.main_data_values.values():
+            line_edit.clear()
+        self.name_line_edit.clear()
+        self.index = -1
 
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary."""
