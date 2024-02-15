@@ -93,6 +93,8 @@ class GeometryWidget(QWidget):
             return
 
         tab_index = self.tree.indexFromItem(item).row()
+        frame: GeometryFrame = self.main_layout.widget(tab_index + 1)
+        frame.create_new_structure()
         self.main_layout.setCurrentIndex(tab_index + 1)
 
     def save_data(self, tab_index, index=0, data=None, new=False):

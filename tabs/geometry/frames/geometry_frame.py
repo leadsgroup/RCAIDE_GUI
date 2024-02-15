@@ -7,3 +7,6 @@ class GeometryFrame:
 
     def set_tab_index(self, index):
         pass
+
+    def create_new_structure(self):
+        pass

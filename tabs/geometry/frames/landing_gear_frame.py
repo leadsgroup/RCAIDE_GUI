@@ -36,7 +36,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
         save_button.clicked.connect(self.save_data)
         delete_button.clicked.connect(self.delete_data)
-        new_button.clicked.connect(self.create_new_lg)
+        new_button.clicked.connect(self.create_new_structure)
 
         header_layout.addWidget(save_button)
         header_layout.addWidget(delete_button)
@@ -128,7 +128,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
             line_edit.clear()
         show_popup("Data Erased!", self)
 
-    def create_new_lg(self):
+    def create_new_structure(self):
         """Create a new landing gear structure."""
         for line_edit in self.main_data_values.values():
             line_edit.clear()
