@@ -1,6 +1,4 @@
-rom PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy
-
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
     QFrame, QSpacerItem, QSizePolicy
@@ -8,7 +6,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayo
 from tabs.geometry.widgets.nacelle_widget import NacelleWidget
 
 
-class NacelleFrame(QWidget):
+class NacelleFrame(QWidget, GeometryFrame):
     def __init__(self):
         super(NacelleFrame, self).__init__()
         self.data_values = {}

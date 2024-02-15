@@ -1,10 +1,11 @@
-from typing import cast
+from typing import Type
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem
 
 from tabs.geometry.frames.default_frame import DefaultFrame
 from tabs.geometry.frames.energy_network_frame import EnergyNetworkFrame
 from tabs.geometry.frames.fuselage_frame import FuselageFrame
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
 from tabs.geometry.frames.nacelle_frame import NacelleFrame
 from tabs.geometry.frames.wings_frame import WingsFrame
@@ -14,18 +15,26 @@ class GeometryWidget(QWidget):
     def __init__(self):
         super(GeometryWidget, self).__init__()
 
-        base_layout = QHBoxLayout()
-        main_layout = QStackedLayout()
-        self.tree_frame_layout = QVBoxLayout()
-
         # Define actions based on the selected index
-        self.frames = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame, LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["Fuselage", "Wings", "Nacelle", "Landing Gear", "Energy Network"]
+        self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
+                                                  LandingGearFrame, EnergyNetworkFrame]
+        self.tabs = ["Fuselage", "Wings", "Nacelles", "Landing Gear", "Energy Network"]
         options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
                    "Add Energy Network"]
+        self.data = []
 
-        for frame in self.frames:
-            main_layout.addWidget(frame())
+        for i in range(len(self.tabs)):
+            self.data.append([])
+
+        base_layout = QHBoxLayout()
+        self.main_layout = QStackedLayout()
+        self.tree_frame_layout = QVBoxLayout()
+
+        for index, frame in enumerate(self.frames):
+            frame_widget = frame()
+            frame_widget.set_save_function(self.save_data)
+            frame_widget.set_tab_index(index - 1)
+            self.main_layout.addWidget(frame_widget)
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
@@ -35,6 +44,8 @@ class GeometryWidget(QWidget):
         self.tree = QTreeWidget()
         self.tree.setColumnCount(1)
         self.tree.setHeaderLabels(["Vehicle Elements"])
+        self.tree.itemClicked.connect(self.on_tree_item_clicked)
+        self.tree.itemDoubleClicked.connect(self.on_tree_item_double_clicked)
 
         for tab in self.tabs:
             item = QTreeWidgetItem([f"{tab}"])
@@ -43,27 +54,59 @@ class GeometryWidget(QWidget):
         self.tree_frame_layout.addWidget(self.dropdown)
         self.tree_frame_layout.addWidget(self.tree)
 
-        # Make the dropdown take as little space as possible and make the tree frame take as much space as possible
-        # self.dropdown.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum))
-        # self.tree.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
-
         # main_layout.addWidget(Color("navy"), 7)
         base_layout.addLayout(self.tree_frame_layout, 1)
-        base_layout.addLayout(main_layout, 4)
+        base_layout.addLayout(self.main_layout, 4)
 
-        main_layout.setSpacing(3)
+        self.main_layout.setSpacing(3)
         base_layout.setSpacing(3)
 
         # Initially display the DefaultFrame
-        main_layout.setCurrentIndex(0)
+        self.main_layout.setCurrentIndex(0)
 
         self.setLayout(base_layout)
 
     def on_dropdown_change(self, index):
         layout = self.layout()
         if layout:
-            main_layout: QStackedLayout = cast(QStackedLayout, layout.itemAt(1))
-            main_layout.setCurrentIndex(index)
+            self.main_layout.setCurrentIndex(index)
+
+    def on_tree_item_clicked(self, item, _):
+        # get item index
+        is_top_level = not item.parent()
+        if is_top_level:
+            tab_index = self.tree.indexFromItem(item).row()
+            print(tab_index, "top level")
+            return
+
+        tab_index = self.tree.indexFromItem(item.parent()).row()
+        index = self.tree.topLevelItem(tab_index).indexOfChild(item)
+        frame: GeometryFrame = self.main_layout.widget(tab_index + 1)
+        frame.load_data(self.data[tab_index][index], index)
+
+        self.main_layout.setCurrentIndex(tab_index + 1)
+        print(tab_index, index)
+
+    def on_tree_item_double_clicked(self, item, _):
+        is_top_level = not item.parent()
+        if not is_top_level:
+            return
+
+        tab_index = self.tree.indexFromItem(item).row()
+        self.main_layout.setCurrentIndex(tab_index + 1)
+
+    def save_data(self, tab_index, index=0, data=None, new=False):
+        if new:
+            self.data[tab_index].append(data)
+            child = QTreeWidgetItem([data["name"]])
+            item = self.tree.topLevelItem(tab_index)
+            item.addChild(child)
+            index = item.indexOfChild(child)
+            return index
+
+        self.data[tab_index][index] = data
+        self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
+        return index
 
 
 def get_widget() -> QWidget:
