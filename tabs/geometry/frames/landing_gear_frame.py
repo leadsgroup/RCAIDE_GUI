@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, QScrollArea, \
-    QSpacerItem, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup
@@ -105,6 +105,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.setLayout(layout_scroll)
 
     # def save_data(self, tab_index, index=0, data=None, new=False):
+    # noinspection DuplicatedCode
     def save_data(self):
         """Append the entered data to a list or perform any other action."""
         entered_data = self.get_data_values()
@@ -119,6 +120,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
         show_popup("Data Saved!", self)
 
+    # @TODO: Implement proper deletion of data
     def delete_data(self):
         """Delete the entered data or perform any other action."""
         entered_data = self.get_data_values()

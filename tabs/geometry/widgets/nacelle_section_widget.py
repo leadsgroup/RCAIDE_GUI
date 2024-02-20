@@ -2,11 +2,10 @@ from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import (QGridLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget)
-from cv2 import line
 
 
 class NacelleSectionWidget(QWidget):
-    def __init__(self, index, on_delete):
+    def __init__(self, index, on_delete, section_data=None):
         super(NacelleSectionWidget, self).__init__()
 
         self.data_values = {}
@@ -59,6 +58,11 @@ class NacelleSectionWidget(QWidget):
         grid_layout.addWidget(delete_button, row, col * 3, 1, 2)
 
         main_layout.addLayout(grid_layout)
+
+        if section_data:
+            for label, line_edit in self.data_values.items():
+                line_edit.setText(str(section_data[label]))
+            self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
 
         self.setLayout(main_layout)
     

@@ -125,6 +125,7 @@ class GeometryWidget(QWidget):
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
         """
+        print("Saving data:", data)
         if new:
             self.data[tab_index].append(data)
             child = QTreeWidgetItem([data["name"]])
