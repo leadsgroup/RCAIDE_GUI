@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QComboBox, QSizePolicy, QSpacerItem, QGridLayout
-
+from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QComboBox, QSizePolicy, QSpacerItem, QGridLayout
+from PyQt6.QtCore import Qt
 from utilities import show_popup
 from tabs.geometry.widgets.fuselage_widget import FuselageWidget
 from widgets.color import Color
@@ -89,14 +89,15 @@ class FuselageFrame(QWidget):
             line_edit.setValidator(QDoubleValidator())
 
             # Set the width of the line edit
-            line_edit.setFixedWidth(100)  # Adjust the width as needed
+            line_edit.setFixedWidth(150)  # Adjust the width as needed
 
             grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
             grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
 
             unit_combobox = QComboBox()
             unit_combobox.addItems(self.unit_options.get(label, []))
-            grid_layout.addWidget(unit_combobox, row, col * 3 + 2)            
+            unit_combobox.setFixedWidth(80)
+            grid_layout.addWidget(unit_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)            
             
     
             
