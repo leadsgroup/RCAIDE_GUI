@@ -1,11 +1,11 @@
-from PyQt6.QtGui import QDoubleValidator
-
-from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QComboBox, QSizePolicy, QSpacerItem, QGridLayout
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, \
+    QComboBox, QSizePolicy, QSpacerItem, QGridLayout
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
-from utilities import show_popup
 from tabs.geometry.widgets.fuselage_widget import FuselageWidget
+from utilities import show_popup
 from widgets.color import Color
 
 
@@ -20,30 +20,24 @@ class FuselageFrame(QWidget, GeometryFrame):
         super(FuselageFrame, self).__init__()
 
         self.unit_options = {
-            "Fineness Nose"                         : ["NA"],
-            "Fineness Tail"                         : ["NA"],
-            "Lengths Nose"                          : ["cm", "m", "km"],
-            "Lengths Tail"                          : ["cm", "m", "km"],
-            "Lengths Cabin"                         : ["cm", "m", "km"],
-            "Lengths Total"                         : ["cm", "m", "km"],
-            "Lengths Forespace"                     : ["cm", "m", "km"],
-            "Lengths Aftspace"                      : ["cm", "m", "km"],
-            "Width"                                 : ["cm", "m", "km"],
-            "Heights Maximum"                       : ["cm", "m", "km"],
-            "Height at Quarter"                     : ["cm", "m", "km"],
-            "Height at Three Quarters"              : ["cm", "m", "km"],
-            "Height at Wing Root Quarter Chord"     : ["cm", "m", "km"],
-            "Areas Side Projected"                  : ["cm\u00B2", "m\u00B2", "km\u00B2"],
-            "Area Wetted"                           : ["cm\u00B2", "m\u00B2", "km\u00B2"],
-            "Area Front Projected"                  : ["cm\u00B2", "m\u00B2", "km\u00B2"],
-            "Effective Diameter"                    : ["cm", "m", "km"],
+            "Fineness Nose": ["NA"],
+            "Fineness Tail": ["NA"],
+            "Lengths Nose": ["cm", "m", "km"],
+            "Lengths Tail": ["cm", "m", "km"],
+            "Lengths Cabin": ["cm", "m", "km"],
+            "Lengths Total": ["cm", "m", "km"],
+            "Lengths Forespace": ["cm", "m", "km"],
+            "Lengths Aftspace": ["cm", "m", "km"],
+            "Width": ["cm", "m", "km"],
+            "Heights Maximum": ["cm", "m", "km"],
+            "Height at Quarter": ["cm", "m", "km"],
+            "Height at Three Quarters": ["cm", "m", "km"],
+            "Height at Wing Root Quarter Chord": ["cm", "m", "km"],
+            "Areas Side Projected": ["cm\u00B2", "m\u00B2", "km\u00B2"],
+            "Area Wetted": ["cm\u00B2", "m\u00B2", "km\u00B2"],
+            "Area Front Projected": ["cm\u00B2", "m\u00B2", "km\u00B2"],
+            "Effective Diameter": ["cm", "m", "km"],
         }
-        
-        
-        
-        
-        
-        # Dictionary to store the main fuselage data
         self.main_data_values = {}
 
         # List to store data values fuselage sections
@@ -60,17 +54,17 @@ class FuselageFrame(QWidget, GeometryFrame):
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
         label = QLabel("<u><b>Main Fuselage Frame</b></u>")
+
         header_layout.addWidget(label)
 
         # Add buttons for appending and deleting data
-        #append_button = QPushButton("Append Data", self)
+        # append_button = QPushButton("Append Data", self)
         delete_button = QPushButton("Delete Main Fuselage Frame Data", self)
 
-        #append_button.clicked.connect(self.append_data)
+        # append_button.clicked.connect(self.append_data)
         delete_button.clicked.connect(self.delete_data)
 
-        #header_layout.addWidget(append_button)
-        
+        # header_layout.addWidget(append_button)
 
         layout.addLayout(header_layout)
         layout.addWidget(Color("lightblue"))
@@ -78,8 +72,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         # Create a grid layout with 3 columns for main
         grid_layout = QGridLayout()
 
-        grid_layout.addWidget(delete_button,8,3,1,2)
-        
+        grid_layout.addWidget(delete_button, 8, 3, 1, 2)
+
         # List of data labels for the main fuselage section
         main_data_labels = ["Fineness Nose", "Fineness Tail", "Lengths Nose", "Lengths Tail", "Lengths Cabin",
                             "Lengths Total", "Lengths Forespace", "Lengths Aftspace", "Width", "Heights Maximum",
@@ -92,6 +86,7 @@ class FuselageFrame(QWidget, GeometryFrame):
             line_edit.setValidator(QDoubleValidator())
 
             # Set the width of the line edit
+
             line_edit.setFixedWidth(150)  # Adjust the width as needed
 
             grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
@@ -100,10 +95,8 @@ class FuselageFrame(QWidget, GeometryFrame):
             unit_combobox = QComboBox()
             unit_combobox.addItems(self.unit_options.get(label, []))
             unit_combobox.setFixedWidth(80)
-            grid_layout.addWidget(unit_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)            
-            
-    
-            
+            grid_layout.addWidget(unit_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
+
             # Store a reference to the QLineEdit and QComboBox in the dictionary for the main fuselage section
             self.main_data_values[label] = {
                 'line_edit': line_edit,
@@ -111,8 +104,8 @@ class FuselageFrame(QWidget, GeometryFrame):
             }
 
             # Connect signal to handle unit change
-            unit_combobox.currentIndexChanged.connect(lambda _, le=line_edit, uc=unit_combobox: self.update_units(le, uc))
-
+            unit_combobox.currentIndexChanged.connect(
+                lambda _, le=line_edit, uc=unit_combobox: self.update_units(le, uc))
 
         # Add the grid layout for the main fuselage section to the main layout
         layout.addLayout(grid_layout)
@@ -127,7 +120,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         layout.addWidget(line_bar)
 
         # Initialize additional layout for fuselage sections
-        self.additional_data_values.addWidget(FuselageWidget(0,self.on_delete_button_pressed))
+        self.additional_data_values.addWidget(FuselageWidget(0, self.on_delete_button_pressed))
 
         # Add the layout for additional fuselage sections to the main layout
         layout.addLayout(self.additional_data_values)
@@ -172,26 +165,22 @@ class FuselageFrame(QWidget, GeometryFrame):
     def append_all_data(self):
         """Append the entered data to a list or perform any other action."""
         main_data = self.get_data_values()  # Get data from the main fuselage section
-    
+
         # Collect data from additional fuselage_widget
         additional_data = []
         for index in range(self.additional_data_values.count()):
             widget = self.additional_data_values.itemAt(index).widget()
             additional_data.append(widget.get_data_values())
-    
+
         print("Main Fuselage Data:", main_data)
         print("Additional Fuselage Data:", additional_data)
         show_popup("Data Saved!", self)
-
 
     def delete_data(self):
         """Delete the entered data or perform any other action."""
         for line_edit in self.main_data_values.values():
             line_edit.clear()
-            
-            
 
-        
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary for the main fuselage section."""
         main_data_values = {label: float(line_edit.text()) if line_edit.text() else 0.0
@@ -199,12 +188,11 @@ class FuselageFrame(QWidget, GeometryFrame):
 
         return main_data_values
 
-
     def add_fuselage_section(self):
-        self.additional_data_values.addWidget(FuselageWidget(self.additional_data_values.count(), self.on_delete_button_pressed))
+        self.additional_data_values.addWidget(
+            FuselageWidget(self.additional_data_values.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
-
         self.additional_data_values.itemAt(index).widget().deleteLater()
         self.additional_data_values.removeWidget(self.additional_data_values.itemAt(index).widget())
         self.additional_data_values.update()
@@ -214,7 +202,7 @@ class FuselageFrame(QWidget, GeometryFrame):
             self.additional_data_values.itemAt(i).widget().index = i
             print("Updated Index:", i)
 
+        # \\print("Updated Section Data after deletion:", self.get_section_data_values())
 
     def update_units(self, line_edit, unit_combobox):
         pass
-    
