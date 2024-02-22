@@ -1,17 +1,22 @@
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, QScrollArea, \
-    QSpacerItem, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea
 
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup
 
 
-class LandingGearFrame(QWidget):
+class LandingGearFrame(QWidget, GeometryFrame):
     def __init__(self):
+        """Create a frame for entering landing gear data."""
         super(LandingGearFrame, self).__init__()
 
         # TODO: Add landing gear types in the future
 
         self.main_data_values = {}
+        self.tab_index = -1
+        self.index = -1
+        self.save_function = None
 
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -27,14 +32,30 @@ class LandingGearFrame(QWidget):
         # Add buttons for appending and deleting data
         save_button = QPushButton("Save Data", self)
         delete_button = QPushButton("Delete Data", self)
+        new_button = QPushButton("New Landing Gear Structure", self)
 
-        save_button.clicked.connect(self.append_data)
+        save_button.clicked.connect(self.save_data)
         delete_button.clicked.connect(self.delete_data)
+        new_button.clicked.connect(self.create_new_structure)
 
         header_layout.addWidget(save_button)
         header_layout.addWidget(delete_button)
+        header_layout.addWidget(new_button)
 
         layout.addLayout(header_layout)
+
+        name_layout = QHBoxLayout()
+        # add spacing
+        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        name_layout.addItem(spacer_left)
+        name_layout.addWidget(QLabel("Name: "))
+
+        self.name_line_edit = QLineEdit(self)
+        name_layout.addWidget(self.name_line_edit)
+        name_layout.addItem(spacer_right)
+
+        layout.addLayout(name_layout)
         # layout.addWidget(Color("lightblue"))
 
         # Create a grid layout with 3 columns
@@ -83,13 +104,23 @@ class LandingGearFrame(QWidget):
         # Set the layout to the main window/widget
         self.setLayout(layout_scroll)
 
-    def append_data(self):
+    # def save_data(self, tab_index, index=0, data=None, new=False):
+    # noinspection DuplicatedCode
+    def save_data(self):
         """Append the entered data to a list or perform any other action."""
         entered_data = self.get_data_values()
         # Implement appending logic here, e.g., append to a list
-        print("Appending Data:", entered_data)
+        print("Saving Data:", entered_data)
+        if self.save_function:
+            if self.index >= 0:
+                self.index = self.save_function(self.tab_index, self.index, entered_data)
+                return
+            else:
+                self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+
         show_popup("Data Saved!", self)
 
+    # @TODO: Implement proper deletion of data
     def delete_data(self):
         """Delete the entered data or perform any other action."""
         entered_data = self.get_data_values()
@@ -99,7 +130,44 @@ class LandingGearFrame(QWidget):
             line_edit.clear()
         show_popup("Data Erased!", self)
 
+    def create_new_structure(self):
+        """Create a new landing gear structure."""
+        for line_edit in self.main_data_values.values():
+            line_edit.clear()
+        self.name_line_edit.clear()
+        self.index = -1
+
     def get_data_values(self):
         """Retrieve the entered data values from the dictionary."""
-        return {label: float(line_edit.text()) if line_edit.text() else 0.0
+        data = {label: float(line_edit.text()) if line_edit.text() else 0.0
                 for label, line_edit in self.main_data_values.items()}
+
+        data["name"] = self.name_line_edit.text()
+        return data
+
+    def load_data(self, data, index):
+        """Load the data into the widgets.
+
+        Args:
+            data: The data to be loaded into the widgets.
+            index: The index of the data in the list.
+        """
+        for label, line_edit in self.main_data_values.items():
+            line_edit.setText(str(data[label]))
+
+        self.index = index
+
+    def set_save_function(self, function):
+        """Set the save function to be called when the save button is pressed.
+
+        Args:
+            function: The function to be called.
+        """
+        self.save_function = function
+
+    def set_tab_index(self, index):
+        """Set the tab index for the frame.
+
+        Args:
+            index: The index of the tab."""
+        self.tab_index = index

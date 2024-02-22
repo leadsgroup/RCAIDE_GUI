@@ -1,4 +1,5 @@
 from PyQt6.QtGui import QDoubleValidator
+
 from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QComboBox, QSizePolicy, QSpacerItem, QGridLayout
 from PyQt6.QtCore import Qt
 from utilities import show_popup
@@ -12,7 +13,7 @@ from widgets.color import Color
 
 # ================================================================================================================================================
 
-class FuselageFrame(QWidget):
+class FuselageFrame(QWidget, GeometryFrame):
     def __init__(self):
         super(FuselageFrame, self).__init__()
 
