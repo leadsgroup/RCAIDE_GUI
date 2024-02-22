@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
 
+
 class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -115,6 +116,7 @@ class MyWidget(QWidget):
 
         # Add the new horizontal layout to the main layout
         self.layout().addLayout(self.horizontal_layouts[-1])
+
 
 # Function to get the widget
 def get_widget() -> QWidget:

@@ -8,8 +8,8 @@
 /dataSources/
 /dataSources.local.xml
 # IDE config files
-/.vscode/
-/.idea/
+.vscode/
+.idea/
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
@@ -261,3 +261,5 @@ cython_debug/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+/.fleet/
