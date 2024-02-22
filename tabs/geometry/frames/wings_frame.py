@@ -62,7 +62,7 @@ class WingsFrame(QWidget):
                             "Root Chord Twist Angle", "Tip Chord Twist Angle"]
 
         for index, label in enumerate(wing_data_labels):
-            row, col = divmod(index, 3)
+            row, col = divmod(index, 2)
             line_edit = QLineEdit(self)
             line_edit.setFixedWidth(100)
             grid_layout.addWidget(QLabel(label + ":"), row, col * 2)
@@ -175,7 +175,7 @@ class WingsFrame(QWidget):
         for i, (label_text, field) in enumerate(labels_and_fields):
             label = QLabel(label_text)
             field.setFixedWidth(100)
-            row, col = divmod(i, 3)
+            row, col = divmod(i, 2)
             additional_section_layout.addWidget(label, row, col * 2)
             additional_section_layout.addWidget(field, row, col * 2 + 1)
     
@@ -247,7 +247,7 @@ class WingsFrame(QWidget):
         for i, (label_text, field) in enumerate(labels_and_fields):
             label = QLabel(label_text)
             field.setFixedWidth(100)
-            row, col = divmod(i, 3)
+            row, col = divmod(i, 2)
             additional_surface_layout.addWidget(label, row, col * 2)
             additional_surface_layout.addWidget(field, row, col * 2 + 1)    
             
