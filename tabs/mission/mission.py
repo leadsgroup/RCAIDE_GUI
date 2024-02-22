@@ -100,11 +100,18 @@ class MyWidget(QWidget):
         top_dropdown.addItems(['Climb', 'Desent', 'Cruise'])
         nested_dropdown = QComboBox()
 
+        # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
+        self.populate_nested_dropdown(0, nested_dropdown)
+
+        # Add label for subsegment type
+        subsegment_type_label = QLabel('Sub Segment Type:')
+
         # Connect top dropdown index change to populate the nested dropdown
         top_dropdown.currentIndexChanged.connect(lambda index, nd=nested_dropdown: self.populate_nested_dropdown(index, nd))
 
         layout = QHBoxLayout()
         layout.addWidget(top_dropdown)
+        layout.addWidget(subsegment_type_label)
         layout.addWidget(nested_dropdown)
 
         return layout
