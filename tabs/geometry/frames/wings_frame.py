@@ -218,89 +218,105 @@ class WingsFrame(QWidget, GeometryFrame):
         self.additional_layout.addLayout(segment_layout)
         
     def add_control_surface(self):
-        
         surface_layout = QVBoxLayout()
-        
+
         horizontal_line = QFrame()
-        horizontal_line.setFrameShape(QFrame.Shape.HLine)        
+        horizontal_line.setFrameShape(QFrame.Shape.HLine)
         surface_layout.addWidget(horizontal_line)
-        horizontal_line.setStyleSheet("color: gray")    
-        
-        # Section header layout with segment name, append, and delete buttons
+        horizontal_line.setStyleSheet("color: gray")
+
+        # Section header layout
         surface_header_layout = QHBoxLayout()
-        
+
         bold_font = QFont()
         bold_font.setBold(True)
-    
-        # Segment Name Label and Entry
+
+        # Control Surface Name Label and Entry
         surface_name_label = QLabel("Control Surface Name:")
         surface_name_label.setFont(bold_font)
         surface_name = QLineEdit(self)
         surface_name.setFixedWidth(196)
-    
-        # Add segment name label and entry to the header
         surface_header_layout.addWidget(surface_name_label)
         surface_header_layout.addWidget(surface_name)
-        
-        control_surface_combobox = QComboBox()
-        control_surface_combobox.setFixedWidth(80)
-        control_surface_combobox.addItems(["Slat", "Flap", "Aileron"])
-        surface_header_layout.addWidget(control_surface_combobox)
 
+        # Control Surface ComboBox
+        self.control_surface_combobox = QComboBox()
+        self.control_surface_combobox.setFixedWidth(80)
+        self.control_surface_combobox.addItems(["Slat", "Flap", "Aileron"])
+        surface_header_layout.addWidget(self.control_surface_combobox)
         surface_header_layout.addStretch(1)
-    
-        # Append and Delete buttons for this wing section
+
+        # Delete Button
         delete_section_button = QPushButton("Delete Control Surface", self)
         delete_section_button.setFixedWidth(329)
-    
-        # Connections for append and delete buttons
         delete_section_button.clicked.connect(lambda: print("Delete Section"))
-    
-        # Add buttons to the header layout
         surface_header_layout.addWidget(delete_section_button)
-    
-        # Add the header layout to the section layout
         surface_layout.addLayout(surface_header_layout)
-    
-        # Data fields for the wing section
-        additional_surface_layout = QGridLayout()     
-        
-        labels_and_fields = [("Flap: Span Fraction Start:", QLineEdit(self)),
-                             ("Slat: Span Fraction Start:", QLineEdit(self)),
-                             ("Aileron: Span Fraction Start:", QLineEdit(self)),
-                             ("Flap: Span Fraction End:", QLineEdit(self)),
-                             ("Slat: Span Fraction End:", QLineEdit(self)),
-                             ("Aileron: Span Fraction End:", QLineEdit(self)),
-                             ("Flap: Deflection:", QLineEdit(self)),
-                             ("Slat: Deflection:", QLineEdit(self)),
-                             ("Aileron: Deflection:", QLineEdit(self)),
-                             ("Flap: Chord Fraction:", QLineEdit(self)),
-                             ("Slat: Chord Fraction:", QLineEdit(self)),
-                             ("Aileron: Chord Fraction:", QLineEdit(self)),
-                             ("Flap: Configuration:", QLineEdit(self)),]
-    
-        for i, (label_text, field) in enumerate(labels_and_fields):
-            label = QLabel(label_text)
-            field.setFixedWidth(150)
-            row, col = divmod(i, 2)
-            additional_surface_layout.addWidget(label, row, col * 3)
-            additional_surface_layout.addWidget(field, row, col * 3 + 1)    
-            
-            surface_combobox = QComboBox()
-            surface_combobox.setFixedWidth(80)            
-            
-            if label_text in ["Flap: Deflection:", "Slat: Deflection:", "Aileron: Deflection:"]:
-                surface_combobox.addItems(["degrees", "rad"])
-            else:
-                surface_combobox.addItems(["NA"])            
-                
-            additional_surface_layout.addWidget(surface_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)            
-            
-        # Add the grid layout for data fields to the section layout
-        surface_layout.addLayout(additional_surface_layout)
-    
-        # Add the entire section layout to the additional layout
+
+        # Data fields layout
+        self.additional_surface_layout = QGridLayout()
+        surface_layout.addLayout(self.additional_surface_layout)
+
+        self.populateDataFields()
+
+        # Connect the combobox signal
+        self.control_surface_combobox.currentTextChanged.connect(self.update_visibility)
+
         self.cs_additional_layout.addLayout(surface_layout)
+
+        # Set initial visibility for Slat fields
+        self.update_visibility("Slat")
+
+    def populateDataFields(self):
+    # Example data fields for "Slat", "Flap", and "Aileron"
+        data_fields = [
+            ("Slat: Span Fraction Start:", "Slat"),
+            ("Slat: Span Fraction End:", "Slat"),
+            ("Slat: Deflection:", "Slat"),
+            ("Slat: Chord Fraction:", "Slat"),
+            ("Aileron: Span Fraction Start:", "Aileron"),
+            ("Aileron: Span Fraction End:", "Aileron"),
+            ("Aileron: Deflection:", "Aileron"),
+            ("Aileron: Chord Fraction:", "Aileron"),            
+            ("Flap: Span Fraction Start:", "Flap"),
+            ("Flap: Span Fraction End:", "Flap"),
+            ("Flap: Deflection:", "Flap"),
+            ("Flap: Chord Fraction:", "Flap"),
+            ("Flap: Configuration:", "Flap"),
+        ]
+    
+        for index, (label_text, control_surface) in enumerate(data_fields):
+            row, col = divmod(index, 2)  # Calculate row, column for two-column layout
+            label = QLabel(label_text)
+            field = QLineEdit(self)
+            field.setFixedWidth(150)
+            unit_combobox = QComboBox()
+            unit_combobox.addItems(["degrees", "rad"] if "Deflection" in label_text else ["NA"])
+            unit_combobox.setFixedWidth(80)
+    
+            # Add label, field, and combobox to the grid; adjust col * 3 to fit two-column layout
+            self.additional_surface_layout.addWidget(label, row, col * 6)  # Adjust multiplier for label placement
+            self.additional_surface_layout.addWidget(field, row, col * 6 + 1)  # Next to label
+            self.additional_surface_layout.addWidget(unit_combobox, row, col * 6 + 2, alignment=Qt.AlignmentFlag.AlignLeft)  # Next to field
+    
+            # Initially set all widgets to invisible; visibility is controlled by combobox selection
+            label.setVisible(False)
+            field.setVisible(False)
+            unit_combobox.setVisible(False)
+    
+            # Tag widgets with their control surface for easier identification during updates
+            label.setProperty("control_surface", control_surface)
+            field.setProperty("control_surface", control_surface)
+            unit_combobox.setProperty("control_surface", control_surface)
+
+    def update_visibility(self, selected_surface):
+        # Iterate through all widgets in the layout and update visibility based on the control surface
+        for i in range(self.additional_surface_layout.count()):
+            widget = self.additional_surface_layout.itemAt(i).widget()
+            if widget and widget.property("control_surface") == selected_surface:
+                widget.setVisible(True)
+            elif widget:
+                widget.setVisible(False)
 
     def append_data(self):
         """Append data action."""
