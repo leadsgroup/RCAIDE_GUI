@@ -71,7 +71,7 @@ class WingsFrame(QWidget, GeometryFrame):
         header_layout.addWidget(wing_name_entry)
         header_layout.addStretch(1)
 
-        delete_button = QPushButton("Delete Wing Data", self)
+        delete_button = QPushButton("Create New Wing Structure", self)
         delete_button.setFixedWidth(329)        
         delete_button.clicked.connect(self.delete_data)
         header_layout.addWidget(delete_button)
