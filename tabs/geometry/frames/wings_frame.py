@@ -334,13 +334,3 @@ class WingsFrame(QWidget, GeometryFrame):
         """ Retrieve data values from line edits."""
         return {label: float(line_edit.text()) if line_edit.text() else 0.0 for label, line_edit in
                 self.data_values.items()} 
-    
-    def delete_and_display_data(self):
-        """Combining display_data and delete_section function so button can call both."""
-        self.delete_section()
-        self.display_data()    
-    
-    def append_all_data(self):
-        """Append the entered data for the additional wing section."""
-        all_entered_data = self.get_all_data_values()
-        print("Appending All Data:", all_entered_data)    
