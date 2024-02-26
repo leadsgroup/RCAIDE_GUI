@@ -63,7 +63,7 @@ class WingsFrame(QWidget, GeometryFrame):
         header_layout = QHBoxLayout()
         wing_name_label = QLabel("Wing Name:")
         wing_name_entry = QLineEdit(self)
-        wing_name_entry.setFixedWidth(250)
+        wing_name_entry.setFixedWidth(255)
         bold_font = QFont()
         bold_font.setBold(True)
         wing_name_label.setFont(bold_font)        
@@ -72,7 +72,7 @@ class WingsFrame(QWidget, GeometryFrame):
         header_layout.addStretch(1)
 
         delete_button = QPushButton("Delete Wing Data", self)
-        delete_button.setFixedWidth(340)        
+        delete_button.setFixedWidth(329)        
         delete_button.clicked.connect(self.delete_data)
         header_layout.addWidget(delete_button)
         self.content_layout.addLayout(header_layout)
@@ -90,7 +90,7 @@ class WingsFrame(QWidget, GeometryFrame):
             line_edit = QLineEdit(self)
             line_edit.setFixedWidth(150)
             grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)      
+            grid_layout.addWidget(line_edit, row, col * 3 + 1)      
 
             unit_combobox = QComboBox()
             unit_combobox.addItems(self.unit_options.get(label, []))
@@ -162,7 +162,7 @@ class WingsFrame(QWidget, GeometryFrame):
         segment_name_label = QLabel("Segment Name:")
         segment_name_label.setFont(bold_font)
         segment_name = QLineEdit(self)
-        segment_name.setFixedWidth(227)
+        segment_name.setFixedWidth(233)
     
         # Add segment name label and entry to the header
         section_header_layout.addWidget(segment_name_label)
@@ -170,7 +170,7 @@ class WingsFrame(QWidget, GeometryFrame):
         section_header_layout.addStretch(1)
         
         delete_section_button = QPushButton("Delete Wing Segment", self)
-        delete_section_button.setFixedWidth(340)
+        delete_section_button.setFixedWidth(329)
     
         # Connections for append and delete buttons
         delete_section_button.clicked.connect(lambda: print("Delete Section"))
@@ -199,7 +199,7 @@ class WingsFrame(QWidget, GeometryFrame):
             field.setFixedWidth(150)
             row, col = divmod(i, 2)
             additional_segment_layout.addWidget(label, row, col * 3)
-            additional_segment_layout.addWidget(field, row, col * 3 + 1, 1, 2) 
+            additional_segment_layout.addWidget(field, row, col * 3 + 1) 
             
             segment_combobox = QComboBox()
             segment_combobox.setFixedWidth(80)
@@ -236,23 +236,22 @@ class WingsFrame(QWidget, GeometryFrame):
         surface_name_label = QLabel("Control Surface Name:")
         surface_name_label.setFont(bold_font)
         surface_name = QLineEdit(self)
-        surface_name.setFixedWidth(193)
+        surface_name.setFixedWidth(196)
     
         # Add segment name label and entry to the header
         surface_header_layout.addWidget(surface_name_label)
         surface_header_layout.addWidget(surface_name)
         
-        surface_header_layout.addStretch(1)
-        
         control_surface_combobox = QComboBox()
         control_surface_combobox.setFixedWidth(80)
         control_surface_combobox.addItems(["Slat", "Flap", "Aileron"])
         surface_header_layout.addWidget(control_surface_combobox)
-        
+
+        surface_header_layout.addStretch(1)
     
         # Append and Delete buttons for this wing section
         delete_section_button = QPushButton("Delete Control Surface", self)
-        delete_section_button.setFixedWidth(340)
+        delete_section_button.setFixedWidth(329)
     
         # Connections for append and delete buttons
         delete_section_button.clicked.connect(lambda: print("Delete Section"))
@@ -282,10 +281,20 @@ class WingsFrame(QWidget, GeometryFrame):
     
         for i, (label_text, field) in enumerate(labels_and_fields):
             label = QLabel(label_text)
-            field.setFixedWidth(100)
+            field.setFixedWidth(150)
             row, col = divmod(i, 2)
-            additional_surface_layout.addWidget(label, row, col * 2)
-            additional_surface_layout.addWidget(field, row, col * 2 + 1)    
+            additional_surface_layout.addWidget(label, row, col * 3)
+            additional_surface_layout.addWidget(field, row, col * 3 + 1)    
+            
+            surface_combobox = QComboBox()
+            surface_combobox.setFixedWidth(80)            
+            
+            if label_text in ["Flap: Deflection:", "Slat: Deflection:", "Aileron: Deflection:"]:
+                surface_combobox.addItems(["degrees", "rad"])
+            else:
+                surface_combobox.addItems(["NA"])            
+                
+            additional_surface_layout.addWidget(surface_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)            
             
         # Add the grid layout for data fields to the section layout
         surface_layout.addLayout(additional_surface_layout)
