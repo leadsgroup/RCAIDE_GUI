@@ -173,7 +173,7 @@ class WingsFrame(QWidget, GeometryFrame):
         delete_section_button.setFixedWidth(329)
     
         # Connections for append and delete buttons
-        delete_section_button.clicked.connect(lambda: print("Delete Section"))
+        delete_section_button.clicked.connect(lambda: print("Delete Wing Section"))
     
         # Add buttons to the header layout
         section_header_layout.addWidget(delete_section_button)        
@@ -213,7 +213,7 @@ class WingsFrame(QWidget, GeometryFrame):
     
         # Add the grid layout for data fields to the section layout
         segment_layout.addLayout(additional_segment_layout)
-    
+        
         # Add the entire section layout to the additional layout
         self.additional_layout.addLayout(segment_layout)
         
@@ -249,7 +249,7 @@ class WingsFrame(QWidget, GeometryFrame):
         # Delete Button
         delete_section_button = QPushButton("Delete Control Surface", self)
         delete_section_button.setFixedWidth(329)
-        delete_section_button.clicked.connect(lambda: print("Delete Section"))
+        delete_section_button.clicked.connect(lambda: print("Delete Control Surface"))
         surface_header_layout.addWidget(delete_section_button)
         surface_layout.addLayout(surface_header_layout)
 
@@ -297,7 +297,7 @@ class WingsFrame(QWidget, GeometryFrame):
             # Add label, field, and combobox to the grid; adjust col * 3 to fit two-column layout
             self.additional_surface_layout.addWidget(label, row, col * 6)  # Adjust multiplier for label placement
             self.additional_surface_layout.addWidget(field, row, col * 6 + 1)  # Next to label
-            self.additional_surface_layout.addWidget(unit_combobox, row, col * 6 + 2, alignment=Qt.AlignmentFlag.AlignLeft)  # Next to field
+            self.additional_surface_layout.addWidget(unit_combobox, row, col * 6 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
     
             # Initially set all widgets to invisible; visibility is controlled by combobox selection
             label.setVisible(False)
