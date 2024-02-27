@@ -33,8 +33,6 @@ class MyWidget(QWidget):
         append_button.clicked.connect(self.append_section)
         left_layout.addWidget(append_button)
 
-        
-
         # Add left layout to the main layout
         main_layout.addLayout(left_layout, 2)
 
@@ -91,13 +89,19 @@ class MyWidget(QWidget):
 
     def populate_nested_dropdown(self, index, nested_dropdown):
         nested_dropdown.clear()
-        options = ["Climb", "Descent, Cruise"]
-        nested_options = [["Climb 1", "Climb 2", "Climb 3"], ["Descent 1", "Descent 2", "Descent 3"], ["Cruise 1", "Cruise 2", "Cruise 3"]]
+        options = ["Climb", "Cruise", "Descent", "Ground", "Single_Point", "Transition", "Vertical Flight"]
+        nested_options = [["Constant CAS/Constant_Rate", "Constant Dynamic Pressure/Constant Angle", "Constant EAS/Constant Rate", "Constant Mach/Constant Angle", "Constant Mach/Constant Rate", "Constant Mach/Linear Altitude", "Constant Speed/Constant Angle/Noise", "Constant Speed/Constant Angle", "Constant Speed/Constant Rate", "Constant Speed/Linear Altitude", "Constant Throttle/Constant Speed", "Linear Mach/Constant Rate", "Linear Speed/Constant Rate"], 
+                          ["Constant Acceleration/Constant Altitude", "Constant Dynamic Pressure/Constant Altitude Loiter", "Constant Mach/Constant Altitude", "Constant Pitch Rate/Constant Altitude", "Constant Speed/Constant Altitude Loiter", "Constant Speed/Constant Altitude", "Constant Throttle/Constant Altitude"], 
+                          ["Constant CAS/Constant_Rate", "Constant EAS/Constant Rate", "Constant Speed/Constant Angle/Noise", "Constant Speed/Constant Angle", "Constant Speed/Constant Rate", "Linear Mach/Constant Rate", "Linear Speed/Constant Rate"], 
+                          ["Battery Discharge", "Battery Recharge", "Ground", "Landing", "Takeoff"], 
+                          ["Set Speed/Set Altitude/No Propulsion", "Set Speed/Set Altitude", "Set Speed/Set Throttle"], 
+                          ["Constant Acceleration/Constant Angle/Linear Climb", "Constant Acceleration/Constant Pitchrate/Constant Altitude"],
+                          ["Climb", "Desent", "Hover"]]
         nested_dropdown.addItems(nested_options[index])
 
     def create_nested_dropdown(self):
         top_dropdown = QComboBox()
-        top_dropdown.addItems(['Climb', 'Desent', 'Cruise'])
+        top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground", "Single_Point", "Transition", "Vertical Flight"])
         nested_dropdown = QComboBox()
 
         # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
