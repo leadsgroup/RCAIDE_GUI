@@ -103,7 +103,7 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     def get_file_name(self):
         """Open a file dialog to select a file and store the file name.
-        
+
         The file name is stored in the self.coordinate_filename attribute.
         """
         file_filter = "Data File (*.csv)"
@@ -118,7 +118,7 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     def make_nacelle_widget(self):
         """Create a widget for the nacelle section.
-        
+
         Returns:
             QWidget: The main nacelle widget."""
         main_nacelle_widget = QWidget()
@@ -134,7 +134,6 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.name_line_edit = QLineEdit(self)
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
-
         main_layout.addLayout(name_layout)
 
         # List of data labels
@@ -183,13 +182,9 @@ class NacelleFrame(QWidget, GeometryFrame):
             self.nacelle_sections_layout.count(), self.on_delete_button_pressed))
 
     def set_save_function(self, function):
-        super().set_save_function(function)
-
         self.save_function = function
 
     def set_tab_index(self, index):
-        super().set_tab_index(index)
-
         self.tab_index = index
 
     def on_delete_button_pressed(self, index):

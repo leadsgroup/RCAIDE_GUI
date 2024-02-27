@@ -1,7 +1,7 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, \
-    QComboBox, QSizePolicy, QSpacerItem, QGridLayout
+	QComboBox, QSizePolicy, QSpacerItem, QGridLayout
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.widgets.fuselage_widget import FuselageWidget
@@ -202,7 +202,7 @@ class FuselageFrame(QWidget, GeometryFrame):
             self.additional_data_values.itemAt(i).widget().index = i
             print("Updated Index:", i)
 
-        # \\print("Updated Section Data after deletion:", self.get_section_data_values())
+    # \\print("Updated Section Data after deletion:", self.get_section_data_values())
 
     def update_units(self, line_edit, unit_combobox):
         pass

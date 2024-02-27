@@ -65,13 +65,13 @@ class NacelleSectionWidget(QWidget):
             self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
 
         self.setLayout(main_layout)
-    
+
     def get_data_values(self):
         data = {}
         for label, line_edit in self.data_values.items():
             data[label] = float(line_edit.text()) if line_edit.text() else 0.0
-        
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()              
+
+        data["segment name"] = self.name_layout.itemAt(2).widget().text()
         return data
 
     def delete_button_pressed(self):
