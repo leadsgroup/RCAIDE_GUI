@@ -114,6 +114,10 @@ class MyWidget(QWidget):
         # Add the segment layout to the segments layout
         self.segments_layout.addLayout(self.segment_layout)
 
+        # Create the subsegment layout for the initial subsegment type
+        #initial_subsegment_type = nested_dropdown.itemText(0)  # Get the initial subsegment type
+        #self.create_subsegment_layout(initial_subsegment_type)
+
     def create_subsegment_layout(self, subsegment_type):
         print("Creating subsegment layout for type:", subsegment_type)
         # Clear any existing layout for subsegment type
