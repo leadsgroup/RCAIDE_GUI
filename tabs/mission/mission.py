@@ -1,121 +1,216 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
+import sys
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QApplication
 
 
 class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Create layouts
-        base_layout = QVBoxLayout()
+        # Create the main layout
+        main_layout = QHBoxLayout(self)
 
-        # Create the initial horizontal layout for the title, input box, and "Create" button
-        self.horizontal_layouts = []  # Maintain a list to keep track of created horizontal layouts
-        self.add_horizontal_layout()
+        # Create the left side layout for Mission
+        left_layout = QVBoxLayout()
 
-        # Add the initial horizontal layout to the main vertical layout
-        base_layout.addLayout(self.horizontal_layouts[0])
+        # Create the mission layout
+        mission_layout = QHBoxLayout()
 
-        # Set spacings
-        base_layout.setSpacing(3)
+        # Align mission_layout to the top of left_layout
+        mission_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        # Add mission name label and input box to the mission layout
+        mission_name_label = QLabel("Mission Name:")
+        self.mission_name_input = QLineEdit()
+        mission_layout.addWidget(mission_name_label)
+        mission_layout.addWidget(self.mission_name_input)
+
+        # Add mission layout to the left layout
+        left_layout.addLayout(mission_layout)
+
+        # Create Horizontal Layout for Append Button
+        append_button = QPushButton("Add New Segment")
+        append_button.clicked.connect(self.append_section)
+        left_layout.addWidget(append_button)
+
+        # Dictionary to map subsegment types to their corresponding data fields
+        self.subsegment_data_fields = {
+            # Climb Subsegments
+            "Constant CAS/Constant Rate": ["Altitude Start:", "Altitude End:", "Climb Rate:", "CAS:", "True Course Angle:"],
+            "Constant Dynamic Pressure/Constant Angle": ["Altitude Start:", "Altitude End:", "Climb Angle:", "Dynamic Pressure", "True Course Angle"],
+            "Constant Dynamic Pressure/Constant Rate": ["Altitude Start:", "Altitude End:", "Climb Angle:", "Dynamic Pressure", "True Course Angle"],
+            "Constant EAS/Constant Rate": ["Altitude Start:", "Altitude End:", "Climb Rate", "EAS", "True Course Angle"],
+            "Constant Mach/Constant Angle": ["Altitude Start:", "Altitude End:", "Climb Rate", "Mach Number", "True Course Angle"],
+
+            # Cruise Subsegments
+            "Constant Acceleration/Constant Altitude": ["Altitude", "Acceleration", "Air Speed Start", "Air Speed End", "True Course Angle"], 
+            "Constant Dynamic Pressure/Constant Altitude Loiter": ["Altitude", "Dynamic Pressure", "Time", "True Course Angle"],
+            "Constant Dynamics Pressure/Constant Altitude": ["Altitude", "Acceleration", "Air Speed Start", "Air Speed End", "True Course Angle"]
+
+            # Descent Subsegments
+
+            #Ground Subsegments
+
+            #Single Point Subsegments
+
+            #Transition Subsegments
+
+            #Vertical Flight Subsegments
+
+            
+        }
+
+        # Add left layout to the main layout
+        main_layout.addLayout(left_layout, 2)
+
+        # Create a scroll area for the right side (segments)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+
+        # Create a widget to contain the segments layout
+        self.segments_widget = QWidget()
+        self.segments_layout = QVBoxLayout(self.segments_widget)
+        self.scroll_area.setWidget(self.segments_widget)
+
+        # Add scroll area to the main layout
+        main_layout.addWidget(self.scroll_area, 6)
+
+        # Add initial segment
+        self.add_segment()
 
         # Set up the base widget
-        base_widget = QWidget()
-        base_widget.setLayout(base_layout)
+        self.setWindowTitle("Mission Manager")
+        self.resize(800, 600)
 
-        self.setLayout(base_layout)
+    def add_segment(self):
+        # Create the vertical layout for the segment
+        self.segment_layout = QVBoxLayout()
 
-    def add_horizontal_layout(self):
-        # Create a new horizontal layout for the title, input box, and "Create" button
-        new_horizontal_layout = QHBoxLayout()
+        # Create each horizontal layout for the segment name and type
+        segment_name = QHBoxLayout()
+        segment_type = QHBoxLayout()
 
-        # Add a QLabel with the title "Energy Network Frame" to the left side of the horizontal layout
-        title_label = QLabel("Mission Name:")
-        new_horizontal_layout.addWidget(title_label)
+        # Add segment name label and input box
+        segment_name_label = QLabel("Segment Name:")
+        segment_name_input = QLineEdit()
+        segment_name.addWidget(segment_name_label)
+        segment_name.addWidget(segment_name_input)
 
-        # Add a QLineEdit (input box) to the right side of the horizontal layout
-        mission_name_input = QLineEdit(self)
-        new_horizontal_layout.addWidget(mission_name_input)
+        # Add segment type label and nested dropdown
+        segment_type_label = QLabel("Segment Type:")
+        nested_dropdown = self.create_nested_dropdown()  # Call method to create nested dropdown
+        segment_type.addWidget(segment_type_label)
+        segment_type.addLayout(nested_dropdown)
 
-        # Add a "Create" button to the horizontal layout
-        create_button = QPushButton("Append Segment", self)
-        create_button.clicked.connect(self.create_action)  # Connect the button click to a function (create_action)
-        new_horizontal_layout.addWidget(create_button)
+        # Add delete button
+        delete_button = QPushButton("Delete")
+        delete_button.clicked.connect(lambda: self.delete_segment(self.segment_layout))
+        segment_type.addWidget(delete_button)
 
-        # Add the new horizontal layout to the list
-        self.horizontal_layouts.append(new_horizontal_layout)
+        # Adding Horizontal Layouts to Vertical Layout
+        self.segment_layout.addLayout(segment_name)
+        self.segment_layout.addLayout(segment_type)
 
-    def add_new_horizontal_layout(self):
-        # Create a new horizontal layout for the label, dropdown menu, and button
-        new_horizontal_layout = QHBoxLayout()
+        # Add the segment layout to the segments layout
+        self.segments_layout.addLayout(self.segment_layout)
 
-        # Add a QLabel
-        label = QLabel("Segment Type:")
-        new_horizontal_layout.addWidget(label)
+        # Create the subsegment layout for the initial subsegment type
+        #initial_subsegment_type = nested_dropdown.itemText(0)  # Get the initial subsegment type
+        #self.create_subsegment_layout(initial_subsegment_type)
 
-        # Add a QComboBox (dropdown menu)
-        combo_box = QComboBox(self)
-        options = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
-        combo_box.addItems(options)
-        new_horizontal_layout.addWidget(combo_box)
+    def create_subsegment_layout(self, subsegment_type):
+        print("Creating subsegment layout for type:", subsegment_type)
+        # Clear any existing layout for subsegment type
+        self.clear_subsegment_type_layout()
 
-        # Add a QLabel
-        label = QLabel("Segment Name:")
-        new_horizontal_layout.addWidget(label)
+        # Create a layout for the selected subsegment type
+        subsegment_layout = QHBoxLayout()
 
-        # Add a QLineEdit
-        line_edit = QLineEdit(self)
-        new_horizontal_layout.addWidget(line_edit)
+        # Get data fields for the selected subsegment type from the dictionary
+        data_fields = self.subsegment_data_fields.get(subsegment_type, [])
 
-        # Add a "Delete" button to the horizontal layout
-        delete_button = QPushButton("Delete", self)
-        delete_button.clicked.connect(lambda: self.delete_horizontal_layout(new_horizontal_layout))
-        new_horizontal_layout.addWidget(delete_button)
+        # Add QLineEdit boxes for each data field
+        for field in data_fields:
+            print("Adding QLineEdit for field:", field)
+            label = QLabel(field)
+            line_edit = QLineEdit()
+            subsegment_layout.addWidget(label)
+            subsegment_layout.addWidget(line_edit)
 
-        # Get the main layout
-        main_layout = self.layout()
+        # Set the subsegment layout as an attribute
+        self.subsegment_layout = subsegment_layout
 
-        # Insert the new horizontal layout below the first one
-        main_layout.insertLayout(1, new_horizontal_layout)  # Assuming the first layout is at index 1
+        # Add the subsegment layout to the segments layout
+        self.segments_layout.addLayout(self.subsegment_layout)
+        print("Subsegment layout created and added.")
 
-        # Add the new horizontal layout to the list
-        self.horizontal_layouts.append(new_horizontal_layout)
+    def clear_subsegment_type_layout(self):
+        # Clear any existing layout for subsegment type
+        if hasattr(self, 'subsegment_layout'):
+            layout = self.subsegment_layout
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
+            self.segments_layout.removeItem(layout)
 
-    def delete_horizontal_layout(self, layout):
-        """Delete the last added horizontal layout."""
+    def populate_nested_dropdown(self, index, nested_dropdown):
+        nested_dropdown.clear()
+        options = ["Climb", "Cruise", "Descent", "Ground", "Single_Point", "Transition", "Vertical Flight"]
+        nested_options = [["Constant CAS/Constant Rate", "Constant Dynamic Pressure/Constant Angle", "Constant EAS/Constant Rate", "Constant Mach/Constant Angle", "Constant Mach/Constant Rate", "Constant Mach/Linear Altitude", "Constant Speed/Constant Angle/Noise", "Constant Speed/Constant Angle", "Constant Speed/Constant Rate", "Constant Speed/Linear Altitude", "Constant Throttle/Constant Speed", "Linear Mach/Constant Rate", "Linear Speed/Constant Rate"], 
+                          ["Constant Acceleration/Constant Altitude", "Constant Dynamic Pressure/Constant Altitude Loiter", "Constant Mach/Constant Altitude", "Constant Pitch Rate/Constant Altitude", "Constant Speed/Constant Altitude Loiter", "Constant Speed/Constant Altitude", "Constant Throttle/Constant Altitude"], 
+                          ["Constant CAS/Constant_Rate", "Constant EAS/Constant Rate", "Constant Speed/Constant Angle/Noise", "Constant Speed/Constant Angle", "Constant Speed/Constant Rate", "Linear Mach/Constant Rate", "Linear Speed/Constant Rate"], 
+                          ["Battery Discharge", "Battery Recharge", "Ground", "Landing", "Takeoff"], 
+                          ["Set Speed/Set Altitude/No Propulsion", "Set Speed/Set Altitude", "Set Speed/Set Throttle"], 
+                          ["Constant Acceleration/Constant Angle/Linear Climb", "Constant Acceleration/Constant Pitchrate/Constant Altitude"],
+                          ["Climb", "Desent", "Hover"]]
+        nested_dropdown.addItems(nested_options[index])
+
+    def create_nested_dropdown(self):
+        top_dropdown = QComboBox()
+        top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground", "Single_Point", "Transition", "Vertical Flight"])
+        nested_dropdown = QComboBox()
+
+        # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
+        self.populate_nested_dropdown(0, nested_dropdown)
+
+        # Add label for subsegment type
+        subsegment_type_label = QLabel('Sub Segment Type:')
+
+        # Connect top dropdown index change to populate the nested dropdown
+        top_dropdown.currentIndexChanged.connect(lambda index, nd=nested_dropdown: self.populate_nested_dropdown(index, nd))
+
+        # Connect nested dropdown index change to create subsegment layout
+        nested_dropdown.currentIndexChanged.connect(lambda index, nd=nested_dropdown: self.create_subsegment_layout(nd.currentText()))
+
+        layout = QHBoxLayout()
+        layout.addWidget(top_dropdown)
+        layout.addWidget(subsegment_type_label)
+        layout.addWidget(nested_dropdown)
+
+        return layout
+
+    
+
+    def delete_segment(self, segment_layout):
+        """Delete the segment layout."""
         try:
-            print("Number of layouts before deletion:", len(self.horizontal_layouts))  # Debugging statement
-            if self.horizontal_layouts:
-                # Get the main layout
-                main_layout = self.layout()
-
-                # Remove the widgets from the layout
-                for i in reversed(range(layout.count())):
-                    widget = layout.itemAt(i).widget()
-                    layout.removeWidget(widget)
+            # Remove all widgets from the segment layout
+            while segment_layout.count():
+                item = segment_layout.takeAt(0)
+                widget = item.widget()
+                if widget:
                     widget.deleteLater()
 
-                # Remove the layout item if the layout is empty
-                if layout.count() == 0:
-                    main_layout.removeItem(layout)
-
-                # Remove the layout from the list
-                self.horizontal_layouts.remove(layout)
-
-                print("Number of layouts after deletion:", len(self.horizontal_layouts))  # Debugging statement
-            else:
-                print("No layouts to delete.")
+            # Remove the segment layout from the segments layout
+            self.segments_layout.removeItem(self.segment_layout)
         except Exception as e:
-            print(f"An error occurred while deleting layout: {e}")
+            print(f"An error occurred while deleting segment layout: {e}")
 
-    def create_action(self):
-        # This function will be called when the "Create" button is clicked
-        print("Create button clicked!")
-
-        # Add a new horizontal layout for the title, input box, and "Create" button
-        self.add_new_horizontal_layout()
-
-        # Add the new horizontal layout to the main layout
-        self.layout().addLayout(self.horizontal_layouts[-1])
+    def append_section(self):
+        """Append a new segment."""
+        self.add_segment()
 
 
 # Function to get the widget
