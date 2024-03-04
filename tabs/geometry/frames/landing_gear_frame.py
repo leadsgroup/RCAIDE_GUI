@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayout, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+    QSpacerItem, QSizePolicy, QScrollArea, QFrame
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup
@@ -29,32 +29,25 @@ class LandingGearFrame(QWidget, GeometryFrame):
         header_layout = QHBoxLayout()
         header_layout.addWidget(QLabel("<b>Landing Gear</b>"))
 
-        # Add buttons for appending and deleting data
-        save_button = QPushButton("Save Data", self)
-        delete_button = QPushButton("Delete Data", self)
-        new_button = QPushButton("New Landing Gear Structure", self)
-
-        save_button.clicked.connect(self.save_data)
-        delete_button.clicked.connect(self.delete_data)
-        new_button.clicked.connect(self.create_new_structure)
-
-        header_layout.addWidget(save_button)
-        header_layout.addWidget(delete_button)
-        header_layout.addWidget(new_button)
-
         layout.addLayout(header_layout)
+
+        # Create a horizontal line
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+
+        # Add the line bar to the main layout
+        layout.addWidget(line_bar)
 
         name_layout = QHBoxLayout()
         # add spacing
         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
-
         self.name_line_edit = QLineEdit(self)
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
-
         layout.addLayout(name_layout)
         # layout.addWidget(Color("lightblue"))
 
@@ -91,6 +84,27 @@ class LandingGearFrame(QWidget, GeometryFrame):
         # Add the grid layout to the home layout
         layout.addLayout(grid_layout)
 
+        line_above_buttons = QFrame()
+        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
+        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
+        line_above_buttons.setStyleSheet("background-color: light grey;")
+        layout.addWidget(line_above_buttons)
+
+        # Add buttons for appending and deleting data
+        save_button = QPushButton("Save Data", self)
+        delete_button = QPushButton("Delete Data", self)
+        new_button = QPushButton("New Landing Gear Structure", self)
+
+        save_button.clicked.connect(self.save_data)
+        delete_button.clicked.connect(self.delete_data)
+        new_button.clicked.connect(self.create_new_structure)
+
+        buttons_layout = QHBoxLayout(scroll_content)
+        buttons_layout.addWidget(save_button)
+        buttons_layout.addWidget(delete_button)
+        buttons_layout.addWidget(new_button)
+        layout.addLayout(buttons_layout)
+
         # Adds scroll function
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
@@ -107,7 +121,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
     # def save_data(self, tab_index, index=0, data=None, new=False):
     # noinspection DuplicatedCode
     def save_data(self):
-        """Append the entered data to a list or perform any other action."""
+        """Call the save function and pass the entered data to it."""
         entered_data = self.get_data_values()
         # Implement appending logic here, e.g., append to a list
         print("Saving Data:", entered_data)
@@ -118,7 +132,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
             else:
                 self.index = self.save_function(self.tab_index, data=entered_data, new=True)
 
-        show_popup("Data Saved!", self)
+            show_popup("Data Saved!", self)
 
     # @TODO: Implement proper deletion of data
     def delete_data(self):
@@ -138,7 +152,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.index = -1
 
     def get_data_values(self):
-        """Retrieve the entered data values from the dictionary."""
+        """Retrieve the entered data values from the text fields."""
         data = {label: float(line_edit.text()) if line_edit.text() else 0.0
                 for label, line_edit in self.main_data_values.items()}
 

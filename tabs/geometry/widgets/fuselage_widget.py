@@ -1,7 +1,5 @@
-import os
-
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QWidget, QFileDialog, QPushButton, QLabel, QLineEdit, QGridLayout
+from PyQt6.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout
 
 
 class FuselageWidget(QWidget):
@@ -13,8 +11,7 @@ class FuselageWidget(QWidget):
         self.on_delete = on_delete
 
         grid_layout = QGridLayout()
- 
- 
+
         self.section_name_edit = QLineEdit(self)
         grid_layout.addWidget(QLabel("<u><b>Fuselage Section: </b></u>"), 0, 0)
         grid_layout.addWidget(self.section_name_edit, 0, 1, 1, 2)
@@ -29,20 +26,18 @@ class FuselageWidget(QWidget):
 
         # Create QLineEdit frames with QDoubleValidator for numerical input
         for index, label in enumerate(data_labels):
-            row, col = divmod(index , 2)
+            row, col = divmod(index, 2)
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
 
             # Set the width of the line edit
             line_edit.setFixedWidth(100)  # Adjust the width as needed
 
-            grid_layout.addWidget(QLabel(label + ":"), row+1, col * 3)
-            grid_layout.addWidget(line_edit, row+1, col * 3 + 1, 1, 2)
+            grid_layout.addWidget(QLabel(label + ":"), row + 1, col * 3)
+            grid_layout.addWidget(line_edit, row + 1, col * 3 + 1, 1, 2)
 
             # Store a reference to the QLineEdit in the dictionary
             self.data_values[label] = line_edit
-
-
 
         # Add a delete button
         row, col = divmod(len(data_labels) + 2, 1)
@@ -52,7 +47,6 @@ class FuselageWidget(QWidget):
 
         self.setLayout(grid_layout)
 
-
     def delete_button_pressed(self):
         print("Delete button pressed")
 
@@ -61,7 +55,7 @@ class FuselageWidget(QWidget):
             return
 
         self.on_delete(self.index)
-        
+
     def get_data_values(self):
         title = self.section_name_edit.text()
         data_values = {label: float(line_edit.text()) if line_edit.text() else 0.0

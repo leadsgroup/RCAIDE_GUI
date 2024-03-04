@@ -62,7 +62,7 @@ class AnalysisWidget(QWidget):
         # Connect the dropdown's currentIndexChanged signal to a slot
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
 
-        # Initially display the DefaultFrame
+    # Initially display the DefaultFrame
 
     def on_dropdown_change(self, index):
         layout = self.layout()
