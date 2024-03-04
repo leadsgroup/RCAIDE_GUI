@@ -121,7 +121,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
     # def save_data(self, tab_index, index=0, data=None, new=False):
     # noinspection DuplicatedCode
     def save_data(self):
-        """Append the entered data to a list or perform any other action."""
+        """Call the save function and pass the entered data to it."""
         entered_data = self.get_data_values()
         # Implement appending logic here, e.g., append to a list
         print("Saving Data:", entered_data)
@@ -132,7 +132,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
             else:
                 self.index = self.save_function(self.tab_index, data=entered_data, new=True)
 
-        show_popup("Data Saved!", self)
+            show_popup("Data Saved!", self)
 
     # @TODO: Implement proper deletion of data
     def delete_data(self):
@@ -152,7 +152,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.index = -1
 
     def get_data_values(self):
-        """Retrieve the entered data values from the dictionary."""
+        """Retrieve the entered data values from the text fields."""
         data = {label: float(line_edit.text()) if line_edit.text() else 0.0
                 for label, line_edit in self.main_data_values.items()}
 
