@@ -29,3 +29,8 @@ class UnitPickerWidget(QWidget):
 
     def apply_unit(self, value):
         return self.unit_list[self.current_index][1](value)
+
+    def set_index(self, index):
+        self.current_index = index
+        self.unit_picker.setCurrentIndex(index)
+        print(f"Unit changed to {self.unit_list[index][0]}")
