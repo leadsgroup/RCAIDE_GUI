@@ -94,3 +94,8 @@ class Units:
         POUND_PER_SQUARE_INCH = ("psi", lambda x: x * 6894.76)
 
         unit_list = [PASCAL, KILOPASCAL, MEGAPASCAL, BAR, ATMOSPHERE, POUND_PER_SQUARE_INCH]
+
+    class Unitless:
+        PERCENT = ("%", lambda x: x / 100)
+        NONE = ("", lambda x: x)
+        unit_list = [PERCENT, NONE]
