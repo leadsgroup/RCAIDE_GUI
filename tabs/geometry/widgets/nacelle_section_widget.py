@@ -68,9 +68,7 @@ class NacelleSectionWidget(QWidget):
         main_layout.addLayout(grid_layout)
 
         if section_data:
-            for label, line_edit in self.data_fields.items():
-                line_edit.setText(str(section_data[label]))
-            self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
+            self.load_data_values(section_data)
 
         self.setLayout(main_layout)
 
@@ -78,12 +76,20 @@ class NacelleSectionWidget(QWidget):
         data = {}
         for label, data_field in self.data_fields.items():
             line_edit, unit_picker = data_field
-            print(unit_picker.current_index)
             value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = unit_picker.apply_unit(value)
+            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
 
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
         return data
+
+    def load_data_values(self, section_data):
+        for label, data_field in self.data_fields.items():
+            line_edit, unit_picker = data_field
+            value, index = section_data[label]
+            line_edit.setText(str(value))
+            unit_picker.set_index(index)
+
+        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")
