@@ -67,7 +67,7 @@ class Units:
 
         unit_list = [SECOND, MINUTE, HOUR, DAY, MILLISECOND, MICROSECOND]
 
-    class Speed:
+    class Velocity:
         METER_PER_SECOND = ("m/s", lambda x: x)
         KILOMETER_PER_HOUR = ("km/h", lambda x: x / 3.6)
         MILE_PER_HOUR = ("mph", lambda x: x * 0.44704)
