@@ -6,7 +6,8 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayo
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
-from utilities import show_popup
+from utilities import show_popup, Units
+from widgets.unit_picker_widget import UnitPickerWidget
 
 
 class NacelleFrame(QWidget, GeometryFrame):
@@ -137,35 +138,37 @@ class NacelleFrame(QWidget, GeometryFrame):
         main_layout.addLayout(name_layout)
 
         # List of data labels
-        data_labels = [
-            "Length",
-            "Inlet Diameter",
-            "Diameter",
-            "Origin X",
-            "Origin Y",
-            "Origin Z",
-            "Wetted Area",
-            "Flow Through",
-            "Airfoil Flag",
+        data_units_labels = [
+            ("Length", Units.Length),
+            ("Inlet Diameter", Units.Length),
+            ("Diameter", Units.Length),
+            ("Origin X", Units.Length),
+            ("Origin Y", Units.Length),
+            ("Origin Z", Units.Length),
+            ("Wetted Area", Units.Area),
+            ("Flow Through", Units.Unitless),
+            ("Airfoil Flag", Units.Unitless),
         ]
 
         # Create QLineEdit frames with QDoubleValidator for numerical input
         # Create a grid layout with 3 columns
-        for index, label in enumerate(data_labels):
-            row, col = divmod(index, 3)
+        for index, label in enumerate(data_units_labels):
+            row, col = divmod(index, 2)
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
-
             # Set the width of the line edit
             line_edit.setFixedWidth(100)  # Adjust the width as needed
 
-            grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
+            unit_picker = UnitPickerWidget(label[1])
+
+            grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
             grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
+            grid_layout.addWidget(unit_picker, row, col * 3 + 2, 1, 1)
 
             # Store a reference to the QLineEdit in the dictionary
-            self.data_fields[label] = line_edit
+            self.data_fields[label[0]] = (line_edit, unit_picker)
 
-        row, col = divmod(len(data_labels), 3)
+        row, col = divmod(len(data_units_labels), 2)
         grid_layout.addWidget(QLabel("Coordinate File:"), row, col * 3)
         get_file_button = QPushButton("...", self)
         get_file_button.clicked.connect(self.get_file_name)
@@ -207,8 +210,10 @@ class NacelleFrame(QWidget, GeometryFrame):
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         data = {}
-        for key, value in self.data_fields.items():
-            data[key] = value.text()
+        for label, data_field in self.data_fields.items():
+            line_edit, unit_picker = data_field
+            value = float(line_edit.text()) if line_edit.text() else 0.0
+            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
 
         # Get the values from the text fields
         data["Coordinate File"] = self.coordinate_filename
@@ -250,8 +255,12 @@ class NacelleFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
-        for key, value in self.data_fields.items():
-            value.setText(str(data[key]))
+        for label, data_field in self.data_fields.items():
+            line_edit, unit_picker = data_field
+            value, index = data[label]
+            line_edit.setText(str(value))
+            unit_picker.set_index(index)
+
 
         self.coordinate_filename = data["Coordinate File"]
 
@@ -273,8 +282,10 @@ class NacelleFrame(QWidget, GeometryFrame):
         """Create a new nacelle structure."""
 
         # Clear the main data values
-        for line_edit in self.data_fields.values():
+        for data_field in self.data_fields.values():
+            line_edit, unit_picker = data_field
             line_edit.clear()
+            unit_picker.set_index(0)
 
         # Clear the name line edit
         while self.nacelle_sections_layout.count():
