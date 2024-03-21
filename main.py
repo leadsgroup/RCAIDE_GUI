@@ -1,5 +1,4 @@
 import sys
-
 from PyQt6.QtWidgets import QMainWindow, QApplication, QTabWidget
 
 from tabs.analysis import analysis
