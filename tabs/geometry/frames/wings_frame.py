@@ -9,9 +9,10 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QScrollArea, \
-    QFrame
+                            QFrame, QComboBox, QSpacerItem, QSizePolicy
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
+from widgets.color import Color
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------
@@ -21,18 +22,43 @@ from tabs.geometry.frames.geometry_frame import GeometryFrame
 class WingsFrame(QWidget, GeometryFrame):
     def __init__(self):
         super(WingsFrame, self).__init__()
-
+              
+        self.unit_options = {
+            "Taper Ratio": ["NA"],
+            "Dihedral": ["degrees", "rad"],
+            "Aspect Ratio": ["NA"],
+            "Thickness to Chord": ["NA"],
+            "Aerodynamic Center": ["cm", "m", "in", "ft"],
+            "Exposed Root Chord Offset": ["cm", "m", "in", "ft"],
+            "Total Length": ["cm", "m", "in", "ft"],
+            "Spans Projected": ["cm", "m", "in", "ft"],
+            "Spans Total": ["cm", "m", "in", "ft"],
+            "Areas Reference": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
+            "Areas Exposed": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
+            "Areas Affected": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
+            "Areas Wetted": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
+            "Root Chord": ["cm", "m", "in", "ft"],
+            "Tip Chord": ["cm", "m", "in", "ft"],
+            "Mean Aerodynamic Chord": ["cm", "m", "in", "ft"],
+            "Mean Geometric Chord": ["cm", "m", "in", "ft"],
+            "Quarter Chord Sweep Angle": ["degrees", "rad"],
+            "Half Chord Sweep Angle": ["degrees", "rad"],
+            "Leading Edge Sweep Angle": ["degrees", "rad"],
+            "Root Chord Twist Angle": ["degrees", "rad"],
+            "Tip Chord Twist Angle": ["degrees", "rad"],
+        }        
+        
         # (Temporary) dictionary to store the entered values
         self.data_values = {}
-
+        
         # List to store data values for additional wing sections
         self.additional_data_values = []
 
         # Create the main layout for the content
-        self.content_layout = QVBoxLayout()
+        self.content_layout = QVBoxLayout() 
         self.setLayout(self.content_layout)
         self.content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
+        
         # Header layout with bold label and buttons
         header_layout = QHBoxLayout()
         wing_name_label = QLabel("Wing Name:")
@@ -40,40 +66,41 @@ class WingsFrame(QWidget, GeometryFrame):
         wing_name_entry.setFixedWidth(255)
         bold_font = QFont()
         bold_font.setBold(True)
-        wing_name_label.setFont(bold_font)
+        wing_name_label.setFont(bold_font)        
         header_layout.addWidget(wing_name_label)
         header_layout.addWidget(wing_name_entry)
+        header_layout.addStretch(1)
 
-        append_button = QPushButton("Save Wing Data", self)
-        delete_button = QPushButton("Delete Wing Data", self)
-        append_button.setFixedWidth(346)
-        delete_button.setFixedWidth(346)
-        append_button.clicked.connect(self.append_data)
+        delete_button = QPushButton("Create New Wing Structure", self)
+        delete_button.setFixedWidth(329)        
         delete_button.clicked.connect(self.delete_data)
-        header_layout.addWidget(append_button)
         header_layout.addWidget(delete_button)
         self.content_layout.addLayout(header_layout)
 
         # Grid layout for wing components
         grid_layout = QGridLayout()
         wing_data_labels = ["Taper Ratio", "Dihedral", "Aspect Ratio", "Thickness to Chord", "Aerodynamic Center",
-                            "Exposed Root Chord Offset", "Total Length", "Spans Projected", "Spans Total",
-                            "Areas Reference",
-                            "Areas Exposed", "Areas Affected", "Areas Wetted", "Root Chord", "Tip Chord",
-                            "Mean Aerodynamic Chord",
-                            "Mean Geometric Chord", "Quarter Chord Sweep Angle", "Half Chord Sweep Angle",
-                            "Leading Edge Sweep Angle",
+                            "Exposed Root Chord Offset", "Total Length", "Spans Projected", "Spans Total", "Areas Reference",
+                            "Areas Exposed", "Areas Affected", "Areas Wetted", "Root Chord", "Tip Chord", "Mean Aerodynamic Chord",
+                            "Mean Geometric Chord", "Quarter Chord Sweep Angle", "Half Chord Sweep Angle", "Leading Edge Sweep Angle",
                             "Root Chord Twist Angle", "Tip Chord Twist Angle"]
 
-        for index, label in enumerate(wing_data_labels):
-            row, col = divmod(index, 2)
+        for index, label in enumerate(wing_data_labels):           
+            row, col = divmod(index, 2)           
             line_edit = QLineEdit(self)
-            line_edit.setFixedWidth(100)
-            grid_layout.addWidget(QLabel(label + ":"), row, col * 2)
-            grid_layout.addWidget(line_edit, row, col * 2 + 1)
-            self.data_values['wing_' + label] = line_edit
-        self.content_layout.addLayout(grid_layout)
+            line_edit.setFixedWidth(150)
+            grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
+            grid_layout.addWidget(line_edit, row, col * 3 + 1)      
 
+            unit_combobox = QComboBox()
+            unit_combobox.addItems(self.unit_options.get(label, []))
+            unit_combobox.setFixedWidth(80)
+            grid_layout.addWidget(unit_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)            
+            self.data_values['wing_' + label] = line_edit
+
+        self.content_layout.addLayout(grid_layout)
+        
+        
         # Scroll area setup
         content_widget = QWidget()
         content_widget.setLayout(self.content_layout)
@@ -82,89 +109,81 @@ class WingsFrame(QWidget, GeometryFrame):
         scroll_area.setWidget(content_widget)
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(scroll_area)
-        self.setLayout(main_layout)
+        self.setLayout(main_layout) 
 
         # -------------------------------------------------------------------------------------------------------------------------------
         #   Wings Sections / Control Surfaces
         # -------------------------------------------------------------------------------------------------------------------------------
-
+        
         # Wing Section Buttons
         self.additional_layout = QVBoxLayout()
         self.additional_header_layout = QHBoxLayout()
         self.additional_layout.addLayout(self.additional_header_layout)
         self.content_layout.addLayout(self.additional_layout)
-
-        add_wing_section_button = QPushButton("Add Wing Segment", self)
-        append_all_section_button = QPushButton("Append All Wing Segment Data", self)
-        add_wing_section_button.clicked.connect(self.add_wing_section)
-        append_all_section_button.clicked.connect(self.append_all_data)
-
+    
+        add_wing_segment_button = QPushButton("Add Wing Segment", self)
+        add_wing_segment_button.clicked.connect(self.add_wing_segment)
+        
         sections_buttons_layout = QHBoxLayout()
         self.content_layout.addLayout(sections_buttons_layout)
-        sections_buttons_layout.addWidget(add_wing_section_button)
-        sections_buttons_layout.addWidget(append_all_section_button)
-
+        sections_buttons_layout.addWidget(add_wing_segment_button)
+        
         # Control Surface Buttons
         self.cs_additional_layout = QVBoxLayout()
-        self.content_layout.addLayout(self.cs_additional_layout)
-
-        add_cs_button = QPushButton("Add Control Surface", self)
-        append_all_cs_button = QPushButton("Append All C.S. Data", self)
+        self.content_layout.addLayout(self.cs_additional_layout)           
+        
+        add_cs_button = QPushButton("Add Control Surface", self)     
         add_cs_button.clicked.connect(self.add_control_surface)
-        append_all_cs_button.clicked.connect(self.append_all_data)
-
-        surface_buttons_layout = QHBoxLayout()
+        append_button = QPushButton("Save Wing Data", self)
+        append_button.clicked.connect(self.append_data)
+        
+        surface_buttons_layout = QVBoxLayout()
         self.content_layout.addLayout(surface_buttons_layout)
-        surface_buttons_layout.addWidget(add_cs_button)
-        surface_buttons_layout.addWidget(append_all_cs_button)
-
-    def add_wing_section(self):
+        surface_buttons_layout.addWidget(add_cs_button)  
+        surface_buttons_layout.addWidget(append_button)
+        
+        
+    def add_wing_segment(self):
         # Create new QVBoxLayout for the entire section, including the header and data fields
-        section_layout = QVBoxLayout()
-
+        segment_layout = QVBoxLayout()
+        
         horizontal_line = QFrame()
-        horizontal_line.setFrameShape(QFrame.Shape.HLine)
-        section_layout.addWidget(horizontal_line)
-        horizontal_line.setStyleSheet("color: gray;")
-
+        horizontal_line.setFrameShape(QFrame.Shape.HLine)        
+        segment_layout.addWidget(horizontal_line)
+        horizontal_line.setStyleSheet("color: gray")        
+        
         # Section header layout with segment name, append, and delete buttons
         section_header_layout = QHBoxLayout()
-
+    
         bold_font = QFont()
         bold_font.setBold(True)
-
+    
         # Segment Name Label and Entry
         segment_name_label = QLabel("Segment Name:")
         segment_name_label.setFont(bold_font)
         segment_name = QLineEdit(self)
         segment_name.setFixedWidth(233)
-
+    
         # Add segment name label and entry to the header
         section_header_layout.addWidget(segment_name_label)
         section_header_layout.addWidget(segment_name)
-
-        # Append and Delete buttons for this wing section
-        append_data_button = QPushButton("Save Wing Segment Data", self)
+        section_header_layout.addStretch(1)
+        
         delete_section_button = QPushButton("Delete Wing Segment", self)
-        append_data_button.setFixedWidth(346)
-        delete_section_button.setFixedWidth(346)
-
+        delete_section_button.setFixedWidth(329)
+    
         # Connections for append and delete buttons
-        '''Change'''
-        append_data_button.clicked.connect(lambda: print("Append Section Data"))
-        delete_section_button.clicked.connect(lambda: print("Delete Section"))
-
+        delete_section_button.clicked.connect(lambda: print("Delete Wing Section"))
+    
         # Add buttons to the header layout
-        section_header_layout.addWidget(append_data_button)
-        section_header_layout.addWidget(delete_section_button)
-
+        section_header_layout.addWidget(delete_section_button)        
+    
         # Add the header layout to the section layout
-        section_layout.addLayout(section_header_layout)
-
+        segment_layout.addLayout(section_header_layout)
+    
         # Data fields for the wing section
-        additional_section_layout = QGridLayout()
-
-        # Adding data fields
+        additional_segment_layout = QGridLayout()     
+        
         labels_and_fields = [
             ("Percent Span Location:", QLineEdit(self)),
             ("Twist:", QLineEdit(self)),
@@ -174,22 +193,31 @@ class WingsFrame(QWidget, GeometryFrame):
             ("Quarter Chord Sweep:", QLineEdit(self)),
             ("Airfoil:", QLineEdit(self)),
         ]
-
+    
         for i, (label_text, field) in enumerate(labels_and_fields):
             label = QLabel(label_text)
-            field.setFixedWidth(100)
+            field.setFixedWidth(150)
             row, col = divmod(i, 2)
-            additional_section_layout.addWidget(label, row, col * 2)
-            additional_section_layout.addWidget(field, row, col * 2 + 1)
+            additional_segment_layout.addWidget(label, row, col * 3)
+            additional_segment_layout.addWidget(field, row, col * 3 + 1) 
+            
+            segment_combobox = QComboBox()
+            segment_combobox.setFixedWidth(80)
 
+            if label_text in ["Twist:", "Dihedral Outboard:", "Quarter Chord Sweep:"]:
+                segment_combobox.addItems(["degrees", "rad"])
+            else:
+                segment_combobox.addItems(["NA"])            
+                
+            additional_segment_layout.addWidget(segment_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)             
+    
         # Add the grid layout for data fields to the section layout
-        section_layout.addLayout(additional_section_layout)
-
+        segment_layout.addLayout(additional_segment_layout)
+        
         # Add the entire section layout to the additional layout
-        self.additional_layout.addLayout(section_layout)
-
+        self.additional_layout.addLayout(segment_layout)
+        
     def add_control_surface(self):
-
         surface_layout = QVBoxLayout()
 
         horizontal_line = QFrame()
@@ -197,68 +225,98 @@ class WingsFrame(QWidget, GeometryFrame):
         surface_layout.addWidget(horizontal_line)
         horizontal_line.setStyleSheet("color: gray")
 
-        # Section header layout with segment name, append, and delete buttons
+        # Section header layout
         surface_header_layout = QHBoxLayout()
 
         bold_font = QFont()
         bold_font.setBold(True)
 
-        # Segment Name Label and Entry
+        # Control Surface Name Label and Entry
         surface_name_label = QLabel("Control Surface Name:")
         surface_name_label.setFont(bold_font)
         surface_name = QLineEdit(self)
-        surface_name.setFixedWidth(197)
-
-        # Add segment name label and entry to the header
+        surface_name.setFixedWidth(196)
         surface_header_layout.addWidget(surface_name_label)
         surface_header_layout.addWidget(surface_name)
 
-        # Append and Delete buttons for this wing section
-        append_data_button = QPushButton("Save Control Surface Data", self)
+        # Control Surface ComboBox
+        self.control_surface_combobox = QComboBox()
+        self.control_surface_combobox.setFixedWidth(80)
+        self.control_surface_combobox.addItems(["Slat", "Flap", "Aileron"])
+        surface_header_layout.addWidget(self.control_surface_combobox)
+        surface_header_layout.addStretch(1)
+
+        # Delete Button
         delete_section_button = QPushButton("Delete Control Surface", self)
-        append_data_button.setFixedWidth(346)
-        delete_section_button.setFixedWidth(346)
-
-        # Connections for append and delete buttons
-        append_data_button.clicked.connect(lambda: print("Append Section Data"))
-        delete_section_button.clicked.connect(lambda: print("Delete Section"))
-
-        # Add buttons to the header layout
-        surface_header_layout.addWidget(append_data_button)
+        delete_section_button.setFixedWidth(329)
+        delete_section_button.clicked.connect(lambda: print("Delete Control Surface"))
         surface_header_layout.addWidget(delete_section_button)
-
-        # Add the header layout to the section layout
         surface_layout.addLayout(surface_header_layout)
 
-        # Data fields for the wing section
-        additional_surface_layout = QGridLayout()
+        # Data fields layout
+        self.additional_surface_layout = QGridLayout()
+        surface_layout.addLayout(self.additional_surface_layout)
 
-        labels_and_fields = [("Flap: Span Fraction Start:", QLineEdit(self)),
-                             ("Slat: Span Fraction Start:", QLineEdit(self)),
-                             ("Aileron: Span Fraction Start:", QLineEdit(self)),
-                             ("Flap: Span Fraction End:", QLineEdit(self)),
-                             ("Slat: Span Fraction End:", QLineEdit(self)),
-                             ("Aileron: Span Fraction End:", QLineEdit(self)),
-                             ("Flap: Deflection:", QLineEdit(self)),
-                             ("Slat: Deflection:", QLineEdit(self)),
-                             ("Aileron: Deflection:", QLineEdit(self)),
-                             ("Flap: Chord Fraction:", QLineEdit(self)),
-                             ("Slat: Chord Fraction:", QLineEdit(self)),
-                             ("Aileron: Chord Fraction:", QLineEdit(self)),
-                             ("Flap: Configuration:", QLineEdit(self)), ]
+        self.populateDataFields()
 
-        for i, (label_text, field) in enumerate(labels_and_fields):
-            label = QLabel(label_text)
-            field.setFixedWidth(100)
-            row, col = divmod(i, 2)
-            additional_surface_layout.addWidget(label, row, col * 2)
-            additional_surface_layout.addWidget(field, row, col * 2 + 1)
+        # Connect the combobox signal
+        self.control_surface_combobox.currentTextChanged.connect(self.update_visibility)
 
-        # Add the grid layout for data fields to the section layout
-        surface_layout.addLayout(additional_surface_layout)
-
-        # Add the entire section layout to the additional layout
         self.cs_additional_layout.addLayout(surface_layout)
+
+        # Set initial visibility for Slat fields
+        self.update_visibility("Slat")
+
+    def populateDataFields(self):
+    # Example data fields for "Slat", "Flap", and "Aileron"
+        data_fields = [
+            ("Slat: Span Fraction Start:", "Slat"),
+            ("Slat: Span Fraction End:", "Slat"),
+            ("Slat: Deflection:", "Slat"),
+            ("Slat: Chord Fraction:", "Slat"),
+            ("Aileron: Span Fraction Start:", "Aileron"),
+            ("Aileron: Span Fraction End:", "Aileron"),
+            ("Aileron: Deflection:", "Aileron"),
+            ("Aileron: Chord Fraction:", "Aileron"),            
+            ("Flap: Span Fraction Start:", "Flap"),
+            ("Flap: Span Fraction End:", "Flap"),
+            ("Flap: Deflection:", "Flap"),
+            ("Flap: Chord Fraction:", "Flap"),
+            ("Flap: Configuration:", "Flap"),
+        ]
+    
+        for index, (label_text, control_surface) in enumerate(data_fields):
+            row, col = divmod(index, 2)  # Calculate row, column for two-column layout
+            label = QLabel(label_text)
+            field = QLineEdit(self)
+            field.setFixedWidth(150)
+            unit_combobox = QComboBox()
+            unit_combobox.addItems(["degrees", "rad"] if "Deflection" in label_text else ["NA"])
+            unit_combobox.setFixedWidth(80)
+    
+            # Add label, field, and combobox to the grid; adjust col * 3 to fit two-column layout
+            self.additional_surface_layout.addWidget(label, row, col * 6)  # Adjust multiplier for label placement
+            self.additional_surface_layout.addWidget(field, row, col * 6 + 1)  # Next to label
+            self.additional_surface_layout.addWidget(unit_combobox, row, col * 6 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
+    
+            # Initially set all widgets to invisible; visibility is controlled by combobox selection
+            label.setVisible(False)
+            field.setVisible(False)
+            unit_combobox.setVisible(False)
+    
+            # Tag widgets with their control surface for easier identification during updates
+            label.setProperty("control_surface", control_surface)
+            field.setProperty("control_surface", control_surface)
+            unit_combobox.setProperty("control_surface", control_surface)
+
+    def update_visibility(self, selected_surface):
+        # Iterate through all widgets in the layout and update visibility based on the control surface
+        for i in range(self.additional_surface_layout.count()):
+            widget = self.additional_surface_layout.itemAt(i).widget()
+            if widget and widget.property("control_surface") == selected_surface:
+                widget.setVisible(True)
+            elif widget:
+                widget.setVisible(False)
 
     def append_data(self):
         """Append data action."""
@@ -275,14 +333,4 @@ class WingsFrame(QWidget, GeometryFrame):
     def get_data_values(self):
         """ Retrieve data values from line edits."""
         return {label: float(line_edit.text()) if line_edit.text() else 0.0 for label, line_edit in
-                self.data_values.items()}
-
-    def delete_and_display_data(self):
-        """Combining display_data and delete_section function so button can call both."""
-        self.delete_section()
-        self.display_data()
-
-    def append_all_data(self):
-        """Append the entered data for the additional wing section."""
-        all_entered_data = self.get_all_data_values()
-        print("Appending All Data:", all_entered_data)
+                self.data_values.items()} 
