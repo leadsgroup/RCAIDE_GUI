@@ -291,6 +291,37 @@ class WingsFrame(QWidget, GeometryFrame):
 
         # Set initial visibility for Slat fields
         self.update_visibility("Slat")
+        
+        
+        
+        
+        
+        
+        # Slat units
+        slat_units = [
+        ("Slat: Span Fraction Start", Units.Unitless),
+        ("Slat: Span Fraction End", Units.Unitless),
+        ("Slat: Deflection", Units.Angle),
+        ("Slat: Chord Fraction", Units.Unitless)]
+        
+        # Aileron units
+        aileron_units = [
+        ("Aileron: Span Fraction Start", Units.Unitless),
+        ("Aileron: Span Fraction End", Units.Unitless),
+        ("Aileron: Deflection", Units.Angle),
+        ("Aileron: Chord Fraction", Units.Unitless)]
+        
+        # Flap units
+        flap_units = [
+        ("Flap: Span Fraction Start", Units.Unitless),
+        ("Flap: Span Fraction End", Units.Unitless),
+        ("Flap: Deflection", Units.Angle),
+        ("Flap: Chord Fraction", Units.Unitless),
+        ("Flap: Configuration", Units.Unitless)]
+        
+        
+        
+        
 
     def populateDataFields(self):
     # Example data fields for "Slat", "Flap", and "Aileron"
