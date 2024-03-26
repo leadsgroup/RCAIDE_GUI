@@ -22,6 +22,12 @@ class Units:
         FOOT = ("ft", lambda x: x * 0.3048)
 
         unit_list = [METER, CENTIMETER, MILLIMETER, INCH, FOOT]
+        
+    class Angle:
+        RADIANS = ("radians", lambda x: x)
+        DEGREES = ("degrees", lambda x: (x * 180) / np.pi)
+        
+        unit_list = [RADIANS, DEGREES]
 
     class Area:
         SQUARE_METER = ("m²", lambda x: x)

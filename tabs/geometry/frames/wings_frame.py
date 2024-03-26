@@ -13,6 +13,8 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButt
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.color import Color
+from utilities import show_popup, Units
+from widgets.unit_picker_widget import UnitPickerWidget
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------
@@ -21,32 +23,34 @@ from widgets.color import Color
 
 class WingsFrame(QWidget, GeometryFrame):
     def __init__(self):
-        super(WingsFrame, self).__init__()
-              
-        self.unit_options = {
-            "Taper Ratio": ["NA"],
-            "Dihedral": ["degrees", "rad"],
-            "Aspect Ratio": ["NA"],
-            "Thickness to Chord": ["NA"],
-            "Aerodynamic Center": ["cm", "m", "in", "ft"],
-            "Exposed Root Chord Offset": ["cm", "m", "in", "ft"],
-            "Total Length": ["cm", "m", "in", "ft"],
-            "Spans Projected": ["cm", "m", "in", "ft"],
-            "Spans Total": ["cm", "m", "in", "ft"],
-            "Areas Reference": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
-            "Areas Exposed": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
-            "Areas Affected": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
-            "Areas Wetted": ["cm\u00B2", "m\u00B2", "in\u00B2", "ft\u00B2"],
-            "Root Chord": ["cm", "m", "in", "ft"],
-            "Tip Chord": ["cm", "m", "in", "ft"],
-            "Mean Aerodynamic Chord": ["cm", "m", "in", "ft"],
-            "Mean Geometric Chord": ["cm", "m", "in", "ft"],
-            "Quarter Chord Sweep Angle": ["degrees", "rad"],
-            "Half Chord Sweep Angle": ["degrees", "rad"],
-            "Leading Edge Sweep Angle": ["degrees", "rad"],
-            "Root Chord Twist Angle": ["degrees", "rad"],
-            "Tip Chord Twist Angle": ["degrees", "rad"],
-        }        
+        super(WingsFrame, self).__init__()      
+        
+        self.data_fields = {}
+        
+        self.unit_options = [
+        ("Taper Ratio", Units.Unitless),
+        ("Dihedral", Units.Angle),
+        ("Aspect Ratio", Units.Unitless),
+        ("Thickness to Chord", Units.Unitless),
+        ("Aerodynamic Center", Units.Length),
+        ("Exposed Root Chord Offset", Units.Length),
+        ("Total Length", Units.Length), 
+        ("Spans Projected", Units.Length),
+        ("Spans Total", Units.Length),
+        ("Areas Reference", Units.Area),
+        ("Areas Exposed", Units.Area),
+        ("Areas Affected", Units.Area), 
+        ("Areas Wetted", Units.Area),
+        ("Root Chord", Units.Length),
+        ("Tip Chord", Units.Length), 
+        ("Mean Aerodynamic Chord", Units.Length),
+        ("Mean Geometric Chord", Units.Length),
+        ("Quarter Chord Sweep Angle", Units.Angle),
+        ("Half Chord Sweep Angle", Units.Angle), 
+        ("Leading Edge Sweep Angle", Units.Angle), 
+        ("Root Chord Twist Angle", Units.Angle),
+        ("Tip Chord Twist Angle", Units.Angle)
+        ]
         
         # (Temporary) dictionary to store the entered values
         self.data_values = {}
@@ -85,17 +89,25 @@ class WingsFrame(QWidget, GeometryFrame):
                             "Mean Geometric Chord", "Quarter Chord Sweep Angle", "Half Chord Sweep Angle", "Leading Edge Sweep Angle",
                             "Root Chord Twist Angle", "Tip Chord Twist Angle"]
 
-        for index, label in enumerate(wing_data_labels):           
-            row, col = divmod(index, 2)           
+
+        for index, label in enumerate(wing_data_labels):
+            row, col = divmod(index, 2)
             line_edit = QLineEdit(self)
             line_edit.setFixedWidth(150)
+        
+            # Find the corresponding unit for this label
+            unit_for_label = next((unit for label_option, unit in self.unit_options if label_option == label), None)
+        
+            if unit_for_label is not None:
+                unit_picker = UnitPickerWidget(unit_for_label)  # Pass the unit object to UnitPickerWidget
+            else:
+                continue  # Or handle the case where no unit is found
+        
             grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1)      
-
-            unit_combobox = QComboBox()
-            unit_combobox.addItems(self.unit_options.get(label, []))
-            unit_combobox.setFixedWidth(80)
-            grid_layout.addWidget(unit_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)            
+            grid_layout.addWidget(line_edit, row, col * 3 + 1)
+            grid_layout.addWidget(unit_picker, row, col * 3 + 2)
+        
+            self.data_fields[label] = (line_edit, unit_picker)  # Use the full label as the key
             self.data_values['wing_' + label] = line_edit
 
         self.content_layout.addLayout(grid_layout)
