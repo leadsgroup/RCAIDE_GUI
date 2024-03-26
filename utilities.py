@@ -27,7 +27,7 @@ class Units:
         RADIANS = ("radians", lambda x: x)
         DEGREES = ("degrees", lambda x: (x * 180) / np.pi)
         
-        unit_list = [RADIANS, DEGREES]
+        unit_list = [DEGREES, RADIANS]
 
     class Area:
         SQUARE_METER = ("m²", lambda x: x)

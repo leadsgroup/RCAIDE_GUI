@@ -13,9 +13,8 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButt
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.color import Color
-from utilities import show_popup, Units
+from utilities import Units
 from widgets.unit_picker_widget import UnitPickerWidget
-
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 #   Wings
@@ -23,34 +22,34 @@ from widgets.unit_picker_widget import UnitPickerWidget
 
 class WingsFrame(QWidget, GeometryFrame):
     def __init__(self):
-        super(WingsFrame, self).__init__()      
-        
-        self.data_fields = {}
+        super(WingsFrame, self).__init__()
+              
+        self.data_fields = {}      
         
         self.unit_options = [
-        ("Taper Ratio", Units.Unitless),
-        ("Dihedral", Units.Angle),
-        ("Aspect Ratio", Units.Unitless),
-        ("Thickness to Chord", Units.Unitless),
-        ("Aerodynamic Center", Units.Length),
-        ("Exposed Root Chord Offset", Units.Length),
-        ("Total Length", Units.Length), 
-        ("Spans Projected", Units.Length),
-        ("Spans Total", Units.Length),
-        ("Areas Reference", Units.Area),
-        ("Areas Exposed", Units.Area),
-        ("Areas Affected", Units.Area), 
-        ("Areas Wetted", Units.Area),
-        ("Root Chord", Units.Length),
-        ("Tip Chord", Units.Length), 
-        ("Mean Aerodynamic Chord", Units.Length),
-        ("Mean Geometric Chord", Units.Length),
-        ("Quarter Chord Sweep Angle", Units.Angle),
-        ("Half Chord Sweep Angle", Units.Angle), 
-        ("Leading Edge Sweep Angle", Units.Angle), 
-        ("Root Chord Twist Angle", Units.Angle),
-        ("Tip Chord Twist Angle", Units.Angle)
-        ]
+            ("Taper Ratio", Units.Unitless),
+            ("Dihedral", Units.Angle),
+            ("Aspect Ratio", Units.Unitless),
+            ("Thickness to Chord", Units.Unitless),
+            ("Aerodynamic Center", Units.Length),
+            ("Exposed Root Chord Offset", Units.Length),
+            ("Total Length", Units.Length), 
+            ("Spans Projected", Units.Length),
+            ("Spans Total", Units.Length),
+            ("Areas Reference", Units.Area),
+            ("Areas Exposed", Units.Area),
+            ("Areas Affected", Units.Area), 
+            ("Areas Wetted", Units.Area),
+            ("Root Chord", Units.Length),
+            ("Tip Chord", Units.Length), 
+            ("Mean Aerodynamic Chord", Units.Length),
+            ("Mean Geometric Chord", Units.Length),
+            ("Quarter Chord Sweep Angle", Units.Angle),
+            ("Half Chord Sweep Angle", Units.Angle), 
+            ("Leading Edge Sweep Angle", Units.Angle), 
+            ("Root Chord Twist Angle", Units.Angle),
+            ("Tip Chord Twist Angle", Units.Angle)
+        ]        
         
         # (Temporary) dictionary to store the entered values
         self.data_values = {}
@@ -67,7 +66,7 @@ class WingsFrame(QWidget, GeometryFrame):
         header_layout = QHBoxLayout()
         wing_name_label = QLabel("Wing Name:")
         wing_name_entry = QLineEdit(self)
-        wing_name_entry.setFixedWidth(255)
+        wing_name_entry.setFixedWidth(247)
         bold_font = QFont()
         bold_font.setBold(True)
         wing_name_label.setFont(bold_font)        
@@ -76,22 +75,23 @@ class WingsFrame(QWidget, GeometryFrame):
         header_layout.addStretch(1)
 
         delete_button = QPushButton("Create New Wing Structure", self)
-        delete_button.setFixedWidth(329)        
+        delete_button.setFixedWidth(336)        
         delete_button.clicked.connect(self.delete_data)
         header_layout.addWidget(delete_button)
         self.content_layout.addLayout(header_layout)
 
         # Grid layout for wing components
-        grid_layout = QGridLayout()
+        grid_layout = QGridLayout() 
+        
         wing_data_labels = ["Taper Ratio", "Dihedral", "Aspect Ratio", "Thickness to Chord", "Aerodynamic Center",
                             "Exposed Root Chord Offset", "Total Length", "Spans Projected", "Spans Total", "Areas Reference",
                             "Areas Exposed", "Areas Affected", "Areas Wetted", "Root Chord", "Tip Chord", "Mean Aerodynamic Chord",
                             "Mean Geometric Chord", "Quarter Chord Sweep Angle", "Half Chord Sweep Angle", "Leading Edge Sweep Angle",
                             "Root Chord Twist Angle", "Tip Chord Twist Angle"]
 
-
-        for index, label in enumerate(wing_data_labels):
-            row, col = divmod(index, 2)
+        for index, label in enumerate(wing_data_labels): 
+            
+            row, col = divmod(index, 2)           
             line_edit = QLineEdit(self)
             line_edit.setFixedWidth(150)
         
@@ -99,16 +99,18 @@ class WingsFrame(QWidget, GeometryFrame):
             unit_for_label = next((unit for label_option, unit in self.unit_options if label_option == label), None)
         
             if unit_for_label is not None:
-                unit_picker = UnitPickerWidget(unit_for_label)  # Pass the unit object to UnitPickerWidget
+                unit_picker = UnitPickerWidget(unit_for_label)
+                unit_picker.setFixedWidth(90)           
+                
             else:
-                continue  # Or handle the case where no unit is found
+                continue
         
             grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2)
+            grid_layout.addWidget(line_edit, row, col * 3 + 1, alignment=Qt.AlignmentFlag.AlignLeft)
+            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
         
-            self.data_fields[label] = (line_edit, unit_picker)  # Use the full label as the key
-            self.data_values['wing_' + label] = line_edit
+            self.data_fields[label] = (line_edit, unit_picker)
+            self.data_values['wing_' + label] = line_edit         
 
         self.content_layout.addLayout(grid_layout)
         
@@ -124,7 +126,7 @@ class WingsFrame(QWidget, GeometryFrame):
         self.setLayout(main_layout) 
 
         # -------------------------------------------------------------------------------------------------------------------------------
-        #   Wings Sections / Control Surfaces
+        #   Wings Segments / Control Surfaces
         # -------------------------------------------------------------------------------------------------------------------------------
         
         # Wing Section Buttons
@@ -174,7 +176,7 @@ class WingsFrame(QWidget, GeometryFrame):
         segment_name_label = QLabel("Segment Name:")
         segment_name_label.setFont(bold_font)
         segment_name = QLineEdit(self)
-        segment_name.setFixedWidth(233)
+        segment_name.setFixedWidth(225)
     
         # Add segment name label and entry to the header
         section_header_layout.addWidget(segment_name_label)
@@ -182,7 +184,7 @@ class WingsFrame(QWidget, GeometryFrame):
         section_header_layout.addStretch(1)
         
         delete_section_button = QPushButton("Delete Wing Segment", self)
-        delete_section_button.setFixedWidth(329)
+        delete_section_button.setFixedWidth(337)
     
         # Connections for append and delete buttons
         delete_section_button.clicked.connect(lambda: print("Delete Wing Section"))
@@ -196,36 +198,47 @@ class WingsFrame(QWidget, GeometryFrame):
         # Data fields for the wing section
         additional_segment_layout = QGridLayout()     
         
-        labels_and_fields = [
-            ("Percent Span Location:", QLineEdit(self)),
-            ("Twist:", QLineEdit(self)),
-            ("Root Chord Percent:", QLineEdit(self)),
-            ("Thickness to Chord:", QLineEdit(self)),
-            ("Dihedral Outboard:", QLineEdit(self)),
-            ("Quarter Chord Sweep:", QLineEdit(self)),
-            ("Airfoil:", QLineEdit(self)),
+        segment_labels = [
+            "Percent Span Location", "Twist", "Root Chord Percent", "Thickness to Chord", "Dihedral Outboard", "Quarter Chord Sweep",
+            "Airfoil"
         ]
     
-        for i, (label_text, field) in enumerate(labels_and_fields):
-            label = QLabel(label_text)
-            field.setFixedWidth(150)
-            row, col = divmod(i, 2)
-            additional_segment_layout.addWidget(label, row, col * 3)
-            additional_segment_layout.addWidget(field, row, col * 3 + 1) 
-            
-            segment_combobox = QComboBox()
-            segment_combobox.setFixedWidth(80)
-
-            if label_text in ["Twist:", "Dihedral Outboard:", "Quarter Chord Sweep:"]:
-                segment_combobox.addItems(["degrees", "rad"])
+        segment_units = [
+            ("Percent Span Location", Units.Unitless),
+            ("Twist", Units.Angle),
+            ("Root Chord Percent", Units.Unitless),
+            ("Thickness to Chord", Units.Unitless),
+            ("Dihedral Outboard", Units.Angle),
+            ("Quarter Chord Sweep", Units.Angle),
+            ("Airfoil", Units.Unitless)
+        ]
+              
+        
+        for index, label in enumerate(segment_labels):
+            row, col = divmod(index, 2)           
+            line_edit = QLineEdit(self)
+            line_edit.setFixedWidth(150)
+        
+            # Find the corresponding unit for this label
+            unit_for_label = next((unit for label_option, unit in segment_units if label_option == label), None)
+        
+            if unit_for_label is not None:
+                unit_picker = UnitPickerWidget(unit_for_label)
+                unit_picker.setFixedWidth(90)           
+        
             else:
-                segment_combobox.addItems(["NA"])            
-                
-            additional_segment_layout.addWidget(segment_combobox, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)             
-    
+                continue
+        
+            additional_segment_layout.addWidget(QLabel(label + ":"), row, col * 3)
+            additional_segment_layout.addWidget(line_edit, row, col * 3 + 1, alignment=Qt.AlignmentFlag.AlignLeft)
+            additional_segment_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
+        
+            self.data_fields[label] = (line_edit, unit_picker)
+            self.data_values['wing_' + label] = line_edit
+
         # Add the grid layout for data fields to the section layout
         segment_layout.addLayout(additional_segment_layout)
-        
+
         # Add the entire section layout to the additional layout
         self.additional_layout.addLayout(segment_layout)
         
@@ -260,7 +273,7 @@ class WingsFrame(QWidget, GeometryFrame):
 
         # Delete Button
         delete_section_button = QPushButton("Delete Control Surface", self)
-        delete_section_button.setFixedWidth(329)
+        delete_section_button.setFixedWidth(337)
         delete_section_button.clicked.connect(lambda: print("Delete Control Surface"))
         surface_header_layout.addWidget(delete_section_button)
         surface_layout.addLayout(surface_header_layout)
