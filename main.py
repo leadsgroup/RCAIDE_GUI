@@ -9,7 +9,7 @@ from tabs.home import home
 from tabs.mission import mission
 from tabs.solve import solve
 
-from widgets.theme_slider import ThemeSwitch
+from widgets.theme import ThemeSwitch
 
 class App(QMainWindow):
     def __init__(self):
@@ -31,9 +31,9 @@ class App(QMainWindow):
     
         # Theme submenu
         theme_menu = file_menu.addMenu("Theme")
-        theme_switch = ThemeSwitch()
         theme_menu.addAction("Light Theme").triggered.connect(ThemeSwitch.light_theme)
         theme_menu.addAction("Dark Theme").triggered.connect(ThemeSwitch.dark_theme)
+
                 
         file_menu.addSeparator()
         file_menu.addAction("Quit")
@@ -43,7 +43,7 @@ class App(QMainWindow):
         menubar.addMenu("View")
         menubar.addMenu("Help")
         
-            # add textbox
+        # add textbox
         tbox = QPlainTextEdit()
         layout.addWidget(tbox, 1, 0)        
 
@@ -72,3 +72,4 @@ window = App()
 window.show()
 
 sys.exit(app.exec())
+

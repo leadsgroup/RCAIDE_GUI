@@ -7,13 +7,19 @@ class ThemeSwitch(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        
+        qdarktheme.setup_theme(custom_colors={"primary": "#4da76d"})
+        
 
-        qdarktheme.setup_theme("dark")
-    
     def light_theme(self):
-
-            qdarktheme.setup_theme("light")
+        qdarktheme.setup_theme("light")
 
     def dark_theme(self):
         
-            qdarktheme.setup_theme("dark")
+        
+        qdarktheme.setup_theme(custom_colors={"primary": "#4da76d"})
+    
+
+
+        
+        
