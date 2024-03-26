@@ -77,7 +77,7 @@ class NacelleSectionWidget(QWidget):
         for label, data_field in self.data_fields.items():
             line_edit, unit_picker = data_field
             value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
+            data[label] = value, unit_picker.current_index
 
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
         return data

@@ -213,7 +213,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         for label, data_field in self.data_fields.items():
             line_edit, unit_picker = data_field
             value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
+            data[label] = value, unit_picker.current_index
 
         # Get the values from the text fields
         data["Coordinate File"] = self.coordinate_filename
@@ -261,8 +261,8 @@ class NacelleFrame(QWidget, GeometryFrame):
             line_edit.setText(str(value))
             unit_picker.set_index(index)
 
-
         self.coordinate_filename = data["Coordinate File"]
+        self.name_line_edit.setText(data["name"])
 
         # Make sure sections don't already exist
         while self.nacelle_sections_layout.count():
