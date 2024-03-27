@@ -30,8 +30,10 @@ class App(QMainWindow):
         file_menu.addSeparator()
     
         # Theme submenu
+        
         theme_menu = file_menu.addMenu("Theme")
         theme_menu.addAction("Light Theme").triggered.connect(ThemeSwitch.light_theme)
+        
         theme_menu.addAction("Dark Theme").triggered.connect(ThemeSwitch.dark_theme)
 
                 
