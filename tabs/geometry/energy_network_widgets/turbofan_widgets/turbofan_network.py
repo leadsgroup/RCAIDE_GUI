@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import *
+from tabs.geometry.energy_network_widgets.turbofan_widgets.fuelline_widget import FuelLineWidget
 from tabs.geometry.energy_network_widgets.turbofan_widgets.propulsors_widget import PropulsorWidget
 from tabs.geometry.energy_network_widgets.turbofan_widgets.fuel_tanks_widget import FuelTankWidget
 
@@ -7,59 +8,56 @@ class TurboFanWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        layout = QVBoxLayout(self)
+        self.fuel_line_widgets = []
 
-        heading_label = QLabel("<b>TurboFan Network</b>")
-        layout.addWidget(heading_label)
+        self.init_ui()
 
-        # Create a tab widget
-        tab_widget = QTabWidget()
+    def init_ui(self):
+        main_layout = QVBoxLayout(self)
+
+        # Header
+        #header_layout = QHBoxLayout()
+        #header_label = QLabel("<u><b>TurboFan Network</b></u>")
+        #header_layout.addWidget(header_label)
+        #main_layout.addLayout(header_layout)
+
+        # Line bar
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        main_layout.addWidget(line_bar)
+
+        # Initial fuel line section
+        self.add_fuelline_section()
+
+        # Add line above buttons
+        line_above_buttons = QFrame()
+        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
+        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
+        line_above_buttons.setStyleSheet("background-color: light grey;")
+        main_layout.addWidget(line_above_buttons)
+
+        # Buttons layout
+        button_layout = QHBoxLayout()
+
+        add_section_button = QPushButton("Add Fuel Line Section", self)
+        add_section_button.clicked.connect(self.add_fuelline_section)
+        button_layout.addWidget(add_section_button)
+
+        main_layout.addLayout(button_layout)
+
+    def add_fuelline_section(self):
+        fuel_line_widget = FuelLineWidget(len(self.fuel_line_widgets), self.on_delete_button_pressed)
+        self.fuel_line_widgets.append(fuel_line_widget)
+        self.layout().insertWidget(self.layout().count() - 2, fuel_line_widget)
 
 
-        # Determine appropriate values for index and on_delete
-        fueltank_index = 0  # Adjust this according to your requirements
-        fueltank_on_delete = None  # You may need to define a deletion handler function here
-    
-        # Create an instance of PropulsorWidget with appropriate arguments
-        fueltank_widget = FuelTankWidget(fueltank_index, fueltank_on_delete)
-        tab_widget.addTab(fueltank_widget, "Propulsors")
-        layout.addWidget(tab_widget)
-        
+    def on_delete_button_pressed(self, index):
+        if 0 <= index < len(self.fuel_line_widgets):
+            fuel_line_widget = self.fuel_line_widgets.pop(index)
+            fuel_line_widget.setParent(None)
+            del fuel_line_widget
 
-        # Determine appropriate values for index and on_delete
-        propulsor_index = 0  # Adjust this according to your requirements
-        propulsor_on_delete = None  # You may need to define a deletion handler function here
-    
-        # Create an instance of PropulsorWidget with appropriate arguments
-        propulsors_widget = PropulsorWidget(propulsor_index, propulsor_on_delete)
-        tab_widget.addTab(propulsors_widget, "Propulsors")
-        layout.addWidget(tab_widget)
-
-        # Add tabs to the tab widget
-        tab_widget.addTab(fueltank_widget, "Fuel Tanks")
-        tab_widget.addTab(propulsors_widget, "Propulsors")
-
-        layout.addWidget(tab_widget)
-
-        # Add more widgets or functionality as needed
-
-        # Create a QHBoxLayout to contain the buttons
-        delete_button_layout = QHBoxLayout()
-        add_button_layout = QHBoxLayout()
-        
-    
-        save_data_button = QPushButton("Add Fuel Line", self)
-        #save_data_button.clicked.connect(self.save_data)
-        add_button_layout.addWidget(save_data_button)
-    
-    
-    
-        new_energy_network_structure_button = QPushButton("Delete Fuel Line", self)
-        #new_energy_network_structure_button.clicked.connect(self.create_new_structure)
-        delete_button_layout.addWidget(new_energy_network_structure_button)
-    
-    
-        # Add the button layout to the main layout
-        layout.addLayout(delete_button_layout)
-        layout.addLayout(add_button_layout)
-        self.setLayout(layout)
+            # Reset indexes for remaining fuel line widgets
+            for i, widget in enumerate(self.fuel_line_widgets):
+                widget.index = i

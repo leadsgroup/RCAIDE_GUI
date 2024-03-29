@@ -103,7 +103,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         # Set the layout to the main window/widget
         self.setLayout(layout_scroll)    
 
-
+        
 
     def make_fuselage_widget(self):
         """Create a widget for the fuselage section.
@@ -112,17 +112,19 @@ class FuselageFrame(QWidget, GeometryFrame):
             QWidget: The main fuselage widget."""
         main_fuselage_widget = QWidget()
         main_layout = QVBoxLayout()
+        
         grid_layout = QGridLayout()
+        grid_layout.setSpacing(1)
 
         name_layout = QHBoxLayout()
         # add spacing
-        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        name_layout.addItem(spacer_left)
+        #spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        #spacer_right = QSpacerItem(400, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        #name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         self.name_line_edit = QLineEdit(self)
         name_layout.addWidget(self.name_line_edit)
-        name_layout.addItem(spacer_right)
+        #name_layout.addItem(spacer_right)
         main_layout.addLayout(name_layout)        
         
         
@@ -150,20 +152,25 @@ class FuselageFrame(QWidget, GeometryFrame):
 
         for index, label in enumerate(data_units_labels):
             row, col = divmod(index, 2)
+            
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
-            # Set the width of the line edit
             line_edit.setFixedWidth(150)  # Adjust the width as needed
+            line_edit.setMaximumHeight(25)
 
             unit_picker = UnitPickerWidget(label[1])
-            unit_picker.setFixedWidth(80)
+            unit_picker.setFixedWidth(100)
+            #unit_picker.setMaximumHeight(25)
+            
             grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
+            grid_layout.addWidget(line_edit, row, col * 3 + 1)
+            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)  
+
 
 
             # Store a reference to the QLineEdit in the dictionary
             self.data_fields[label[0]] = (line_edit, unit_picker)
+
 
         main_layout.addLayout(grid_layout)
         
