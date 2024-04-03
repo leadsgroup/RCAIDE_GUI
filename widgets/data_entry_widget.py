@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QComboBox
+from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QComboBox, QSizePolicy, QSpacerItem
 
 from widgets.unit_picker_widget import UnitPickerWidget
 
@@ -20,7 +20,7 @@ class DataEntryWidget(QWidget):
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
             # Set the width of the line edit
-            line_edit.setFixedWidth(150)  # Adjust the width as needed
+            # line_edit.setFixedWidth(150)  # Adjust the width as needed
 
             unit_picker = UnitPickerWidget(label[1])
             unit_picker.setFixedWidth(80)
@@ -28,9 +28,12 @@ class DataEntryWidget(QWidget):
             unit_combobox = QComboBox()
             unit_combobox.addItems(["m", "cm", "mm", "in", "ft"])
 
-            grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
+            grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 4)
+            grid_layout.addWidget(line_edit, row, col * 4 + 1, 1, 2)
+            # Add a spacer
+            grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), row,
+                                col * 4 + 2)
+            grid_layout.addWidget(unit_picker, row, col * 4 + 3, alignment=Qt.AlignmentFlag.AlignLeft)
 
             # Store a reference to the QLineEdit in the dictionary
             self.data_fields[label[0]] = (line_edit, unit_picker)
