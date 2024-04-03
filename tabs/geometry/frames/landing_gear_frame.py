@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayo
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup, Units
+from widgets.data_entry_widget import DataEntryWidget
 from widgets.unit_picker_widget import UnitPickerWidget
 
 
@@ -14,10 +15,10 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
         # TODO: Add landing gear types in the future
 
-        self.data_fields = {}
         self.tab_index = -1
         self.index = -1
         self.save_function = None
+        self.data_entry_widget : DataEntryWidget | None = None
 
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -50,12 +51,8 @@ class LandingGearFrame(QWidget, GeometryFrame):
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
         layout.addLayout(name_layout)
-        # layout.addWidget(Color("lightblue"))
 
         # TODO: Split into different functions
-
-        # Create a grid layout with 3 columns
-        grid_layout = QGridLayout()
 
         # List of data labels
         data_units_labels = [
@@ -69,25 +66,9 @@ class LandingGearFrame(QWidget, GeometryFrame):
             ("Nose Wheels", Units.Count)
         ]
 
-        # Create QLineEdit frames with QDoubleValidator for numerical input
-        for index, label in enumerate(data_units_labels):
-            row, col = divmod(index, 2)
-            line_edit = QLineEdit(self)
-            line_edit.setValidator(QDoubleValidator())
-            # Set the width of the line edit
-            line_edit.setFixedWidth(100)  # Adjust the width as needed
-
-            unit_picker = UnitPickerWidget(label[1])
-
-            grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2, 1, 1)
-
-            # Store a reference to the QLineEdit in the dictionary
-            self.data_fields[label[0]] = (line_edit, unit_picker)
-
         # Add the grid layout to the home layout
-        layout.addLayout(grid_layout)
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        layout.addWidget(self.data_entry_widget)
 
         line_above_buttons = QFrame()
         line_above_buttons.setFrameShape(QFrame.Shape.HLine)
@@ -145,21 +126,13 @@ class LandingGearFrame(QWidget, GeometryFrame):
     def create_new_structure(self):
         """Create a new landing gear structure."""
         # Clear the main data values
-        for data_field in self.data_fields.values():
-            line_edit, unit_picker = data_field
-            line_edit.clear()
-            unit_picker.set_index(0)
+        self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
         self.index = -1
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
-        data = {}
-        for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = value, unit_picker.current_index
-
+        data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
         return data
 
@@ -170,11 +143,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
-        for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value, index = data[label]
-            line_edit.setText(str(value))
-            unit_picker.set_index(index)
+        self.data_entry_widget.load_data(data)
 
         self.name_line_edit.setText(data["name"])
         self.index = index
