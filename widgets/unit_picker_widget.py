@@ -22,6 +22,7 @@ class UnitPickerWidget(QWidget):
         self.unit_picker.currentIndexChanged.connect(self.on_unit_change)
 
         main_layout.addWidget(self.unit_picker)
+        main_layout.setContentsMargins(0, 0, 0, 0)
 
     def on_unit_change(self, index):
         self.current_index = index

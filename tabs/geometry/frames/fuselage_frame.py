@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QDoubleValidator
-
-from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QComboBox, QSizePolicy, QSpacerItem, QGridLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, \
+    QComboBox, QSizePolicy, QSpacerItem, QGridLayout
 from PyQt6.QtCore import Qt
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
