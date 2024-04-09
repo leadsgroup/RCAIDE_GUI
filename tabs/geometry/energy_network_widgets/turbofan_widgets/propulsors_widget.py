@@ -1,15 +1,13 @@
 import os
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import (QGridLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget)
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 from utilities import Units
 from widgets.unit_picker_widget import UnitPickerWidget
 
-class FuselageWidget(QWidget):
+class PropulsorWidget(QWidget):
     def __init__(self, index, on_delete, section_data = None):
-        super(FuselageWidget, self).__init__()
+        super(PropulsorWidget, self).__init__()
 
         self.data_fields = {}
         self.index = index
@@ -34,31 +32,35 @@ class FuselageWidget(QWidget):
 
         # List of data labels
         data_units_labels = [
-            ("Percent X Location", Units.Unitless),
-            ("Percent Z Location",Units.Unitless),
-            ("Height", Units.Length),
-            ("Width", Units.Length)
+            ("Fan", Units.Unitless),
+            ("Working Fluid",Units.Unitless),
+            ("Inlet Nozzle", Units.Length),
+            ("Low Pressure Compressor", Units.Length),
+            ("High Pressure Compressor", Units.Length),
+            ("Low Pressure Turbine", Units.Length),
+            ("High Pressure Turbine", Units.Length),
+            ("Combustor", Units.Length),
+            ("Core Nozzle", Units.Length),
+            ("Fan Nozzle", Units.Length),
         ]
 
         # Create QLineEdit frames with QDoubleValidator for numerical input
         for index, label in enumerate(data_units_labels):
-            row, col = divmod(index , 2)
+            row, col = divmod(index, 2)
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
-
             # Set the width of the line edit
             line_edit.setFixedWidth(150)  # Adjust the width as needed
 
             unit_picker = UnitPickerWidget(label[1])
             unit_picker.setFixedWidth(80)
             grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-            
+            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
+            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
+
 
             # Store a reference to the QLineEdit in the dictionary
             self.data_fields[label[0]] = (line_edit, unit_picker)
-
 
         # Add a delete button
         row, col = divmod(len(data_units_labels) + 2, 1)
