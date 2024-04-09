@@ -3,7 +3,9 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QGridLayo
     QSpacerItem, QSizePolicy, QScrollArea, QFrame
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
-from utilities import show_popup
+from utilities import show_popup, Units
+from widgets.data_entry_widget import DataEntryWidget
+from widgets.unit_picker_widget import UnitPickerWidget
 
 
 class LandingGearFrame(QWidget, GeometryFrame):
@@ -13,10 +15,10 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
         # TODO: Add landing gear types in the future
 
-        self.main_data_values = {}
         self.tab_index = -1
         self.index = -1
         self.save_function = None
+        self.data_entry_widget : DataEntryWidget | None = None
 
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -49,40 +51,24 @@ class LandingGearFrame(QWidget, GeometryFrame):
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
         layout.addLayout(name_layout)
-        # layout.addWidget(Color("lightblue"))
 
-        # Create a grid layout with 3 columns
-        grid_layout = QGridLayout()
+        # TODO: Split into different functions
 
         # List of data labels
-        data_labels = [
-            "Main Tire Diameter",
-            "Nose Tire Diameter",
-            "Main Strut Length",
-            "Nose Strut Length",
-            "Main Units",
-            "Nose Units",
-            "Main Wheels",
-            "Nose Wheels"
+        data_units_labels = [
+            ("Main Tire Diameter", Units.Length),
+            ("Nose Tire Diameter", Units.Length),
+            ("Main Strut Length", Units.Length),
+            ("Nose Strut Length", Units.Length),
+            ("Main Units", Units.Count),
+            ("Nose Units", Units.Count),
+            ("Main Wheels", Units.Count),
+            ("Nose Wheels", Units.Count)
         ]
 
-        # Create QLineEdit frames with QDoubleValidator for numerical input
-        for index, label in enumerate(data_labels):
-            row, col = divmod(index, 3)
-            line_edit = QLineEdit(self)
-            line_edit.setValidator(QDoubleValidator())
-
-            # Set the width of the line edit
-            line_edit.setFixedWidth(100)  # Adjust the width as needed
-
-            grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-
-            # Store a reference to the QLineEdit in the dictionary
-            self.main_data_values[label] = line_edit
-
         # Add the grid layout to the home layout
-        layout.addLayout(grid_layout)
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        layout.addWidget(self.data_entry_widget)
 
         line_above_buttons = QFrame()
         line_above_buttons.setFrameShape(QFrame.Shape.HLine)
@@ -118,7 +104,6 @@ class LandingGearFrame(QWidget, GeometryFrame):
         # Set the layout to the main window/widget
         self.setLayout(layout_scroll)
 
-    # def save_data(self, tab_index, index=0, data=None, new=False):
     # noinspection DuplicatedCode
     def save_data(self):
         """Call the save function and pass the entered data to it."""
@@ -134,28 +119,20 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
             show_popup("Data Saved!", self)
 
-    # @TODO: Implement proper deletion of data
+    # TODO: Implement proper deletion of data
     def delete_data(self):
-        """Delete the entered data or perform any other action."""
-        entered_data = self.get_data_values()
-        # Implement deletion logic here, e.g., clear the entries
-        print("Deleting Data:", entered_data)
-        for line_edit in self.main_data_values.values():
-            line_edit.clear()
-        show_popup("Data Erased!", self)
+        pass
 
     def create_new_structure(self):
         """Create a new landing gear structure."""
-        for line_edit in self.main_data_values.values():
-            line_edit.clear()
+        # Clear the main data values
+        self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
         self.index = -1
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
-        data = {label: float(line_edit.text()) if line_edit.text() else 0.0
-                for label, line_edit in self.main_data_values.items()}
-
+        data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
         return data
 
@@ -166,9 +143,9 @@ class LandingGearFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
-        for label, line_edit in self.main_data_values.items():
-            line_edit.setText(str(data[label]))
+        self.data_entry_widget.load_data(data)
 
+        self.name_line_edit.setText(data["name"])
         self.index = index
 
     def set_save_function(self, function):

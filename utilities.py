@@ -99,3 +99,7 @@ class Units:
         PERCENT = ("%", lambda x: x / 100)
         NONE = ("", lambda x: x)
         unit_list = [PERCENT, NONE]
+
+    class Count:
+        UNIT = ("Unit", lambda x: x)
+        unit_list = [UNIT]
