@@ -52,7 +52,6 @@ class DataEntryWidget(QWidget):
             line_edit, unit_picker = data_field
             value = float(line_edit.text()) if line_edit.text() else 0.0
             data[label] = value, unit_picker.current_index
-
         return data
 
     def load_data(self, data):
