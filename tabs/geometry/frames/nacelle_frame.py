@@ -1,25 +1,25 @@
 import os
 
-from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy, QLineEdit, QGridLayout, QFileDialog
+    QFrame, QSpacerItem, QSizePolicy, QLineEdit, QFileDialog
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
-from utilities import show_popup
+from utilities import show_popup, Units
+from widgets.data_entry_widget import DataEntryWidget
 
 
 class NacelleFrame(QWidget, GeometryFrame):
     def __init__(self):
         """Constructor for the NacelleFrame class."""
         super(NacelleFrame, self).__init__()
-        self.data_fields = {}
         self.nacelle_sections_layout = QVBoxLayout()
         self.coordinate_filename = ""
         self.save_function = None
         self.tab_index = -1
         self.index = -1
         self.name_line_edit: QLineEdit | None = None
+        self.data_entry_widget: DataEntryWidget | None = None
 
         # Create a scroll area
         scroll_area = QScrollArea()
@@ -103,7 +103,7 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     def get_file_name(self):
         """Open a file dialog to select a file and store the file name.
-        
+
         The file name is stored in the self.coordinate_filename attribute.
         """
         file_filter = "Data File (*.csv)"
@@ -118,12 +118,11 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     def make_nacelle_widget(self):
         """Create a widget for the nacelle section.
-        
+
         Returns:
             QWidget: The main nacelle widget."""
         main_nacelle_widget = QWidget()
         main_layout = QVBoxLayout()
-        grid_layout = QGridLayout()
 
         name_layout = QHBoxLayout()
         # add spacing
@@ -134,46 +133,23 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.name_line_edit = QLineEdit(self)
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
-
         main_layout.addLayout(name_layout)
 
         # List of data labels
-        data_labels = [
-            "Length",
-            "Inlet Diameter",
-            "Diameter",
-            "Origin X",
-            "Origin Y",
-            "Origin Z",
-            "Wetted Area",
-            "Flow Through",
-            "Airfoil Flag",
+        data_units_labels = [
+            ("Length", Units.Length),
+            ("Inlet Diameter", Units.Length),
+            ("Diameter", Units.Length),
+            ("Origin X", Units.Length),
+            ("Origin Y", Units.Length),
+            ("Origin Z", Units.Length),
+            ("Wetted Area", Units.Area),
+            ("Flow Through", Units.Unitless),
+            ("Airfoil Flag", Units.Unitless),
         ]
 
-        # Create QLineEdit frames with QDoubleValidator for numerical input
-        # Create a grid layout with 3 columns
-        for index, label in enumerate(data_labels):
-            row, col = divmod(index, 3)
-            line_edit = QLineEdit(self)
-            line_edit.setValidator(QDoubleValidator())
-
-            # Set the width of the line edit
-            line_edit.setFixedWidth(100)  # Adjust the width as needed
-
-            grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-
-            # Store a reference to the QLineEdit in the dictionary
-            self.data_fields[label] = line_edit
-
-        row, col = divmod(len(data_labels), 3)
-        grid_layout.addWidget(QLabel("Coordinate File:"), row, col * 3)
-        get_file_button = QPushButton("...", self)
-        get_file_button.clicked.connect(self.get_file_name)
-        get_file_button.setFixedWidth(100)
-        grid_layout.addWidget(get_file_button, row, col * 3 + 1, 1, 2)
-
-        main_layout.addLayout(grid_layout)
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        main_layout.addWidget(self.data_entry_widget)
 
         main_nacelle_widget.setLayout(main_layout)
         return main_nacelle_widget
@@ -183,17 +159,12 @@ class NacelleFrame(QWidget, GeometryFrame):
             self.nacelle_sections_layout.count(), self.on_delete_button_pressed))
 
     def set_save_function(self, function):
-        super().set_save_function(function)
-
         self.save_function = function
 
     def set_tab_index(self, index):
-        super().set_tab_index(index)
-
         self.tab_index = index
 
     def on_delete_button_pressed(self, index):
-        # TODO: Update indices of the nacelle widgets after the deleted index
         self.nacelle_sections_layout.itemAt(index).widget().deleteLater()
         self.nacelle_sections_layout.removeWidget(self.nacelle_sections_layout.itemAt(index).widget())
         self.nacelle_sections_layout.update()
@@ -211,20 +182,23 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     # # noinspection PyTypeChecker
     def get_data_values(self):
-        """Retrieve the entered data values from the dictionary."""
-        data = {}
-        for key, value in self.data_fields.items():
-            data[key] = value.text()
+        """Retrieve the entered data values from the text fields."""
+        data = self.data_entry_widget.get_values()
 
-        data["Coordinate File"] = self.coordinate_filename
+        # Get the values from the text fields
+        # data["Coordinate File"] = self.coordinate_filename
         data["name"] = self.name_line_edit.text()
         data["sections"] = []
+
+        # Loop through the sections and get the data from each widget
         for i in range(self.nacelle_sections_layout.count()):
             item = self.nacelle_sections_layout.itemAt(i)
             if item is None:
                 continue
 
             widget = item.widget()
+
+            # Each of the widgets has its own get_data_values method that is called to fetch their data
             if widget is not None and isinstance(widget, NacelleSectionWidget):
                 data["sections"].append(widget.get_data_values())
 
@@ -232,7 +206,7 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     # noinspection DuplicatedCode
     def save_data(self):
-        """Append the entered data to a list or perform any other action."""
+        """Call the save function and pass the entered data to it."""
         entered_data = self.get_data_values()
         print("Saving Data:", entered_data)
         if self.save_function:
@@ -242,7 +216,7 @@ class NacelleFrame(QWidget, GeometryFrame):
             else:
                 self.index = self.save_function(self.tab_index, data=entered_data, new=True)
 
-        show_popup("Data Saved!", self)
+            show_popup("Data Saved!", self)
 
     def load_data(self, data, index):
         """Load the data into the widgets.
@@ -251,10 +225,9 @@ class NacelleFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
-        for key, value in self.data_fields.items():
-            value.setText(str(data[key]))
-
-        self.coordinate_filename = data["Coordinate File"]
+        self.data_entry_widget.load_data(data)
+        # self.coordinate_filename = data["Coordinate File"]
+        self.name_line_edit.setText(data["name"])
 
         # Make sure sections don't already exist
         while self.nacelle_sections_layout.count():
@@ -274,8 +247,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         """Create a new nacelle structure."""
 
         # Clear the main data values
-        for line_edit in self.data_fields.values():
-            line_edit.clear()
+        self.data_entry_widget.clear_values()
 
         # Clear the name line edit
         while self.nacelle_sections_layout.count():

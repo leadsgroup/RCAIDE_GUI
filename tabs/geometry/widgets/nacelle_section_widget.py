@@ -1,22 +1,27 @@
-from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import (QGridLayout, QHBoxLayout, QLabel,
+from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget)
+                             QVBoxLayout, QWidget, QFrame)
+
+from utilities import Units
+from widgets.data_entry_widget import DataEntryWidget
 
 
 class NacelleSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
         super(NacelleSectionWidget, self).__init__()
 
-        self.data_values = {}
+        # self.data_fields = {}
         self.coordinate_filename = ""
         self.index = index
         self.on_delete = on_delete
-
-        main_layout = QVBoxLayout()
-        grid_layout = QGridLayout()
+        self.data_entry_widget: DataEntryWidget | None = None
 
         self.name_layout = QHBoxLayout()
+        self.init_ui(section_data)
+
+    # noinspection DuplicatedCode
+    def init_ui(self, section_data):
+        main_layout = QVBoxLayout()
         # add spacing
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -28,51 +33,46 @@ class NacelleSectionWidget(QWidget):
         main_layout.addLayout(self.name_layout)
 
         # List of data labels
-        data_labels = [
-            "Percent X Location",
-            "Percent Z Location",
-            "Height",
-            "Width"
+        data_units_labels = [
+            ("Percent X Location", Units.Unitless),
+            ("Percent Z Location", Units.Unitless),
+            ("Height", Units.Length),
+            ("Width", Units.Length),
         ]
 
-        # Create QLineEdit frames with QDoubleValidator for numerical input
-        # Create a grid layout with 3 columns
-        for index, label in enumerate(data_labels):
-            row, col = divmod(index, 3)
-            line_edit = QLineEdit(self)
-            line_edit.setValidator(QDoubleValidator())
-
-            # Set the width of the line edit
-            line_edit.setFixedWidth(100)  # Adjust the width as needed
-
-            grid_layout.addWidget(QLabel(label + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-
-            # Store a reference to the QLineEdit in the dictionary
-            self.data_values[label] = line_edit
-
-        # Add a delete button
-        row, col = divmod(len(data_labels) + 1, 3)
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
         delete_button = QPushButton("Delete Section", self)
+        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        delete_button.setFixedWidth(150)
         delete_button.clicked.connect(self.delete_button_pressed)
-        grid_layout.addWidget(delete_button, row, col * 3, 1, 2)
+        # center delete button
+        delete_button_layout = QHBoxLayout()
+        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        delete_button_layout.addWidget(delete_button)
+        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
-        main_layout.addLayout(grid_layout)
+        main_layout.addWidget(self.data_entry_widget)
+        main_layout.addLayout(delete_button_layout)
+
+        # Add horizontal bar
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        main_layout.addWidget(line_bar)
 
         if section_data:
-            for label, line_edit in self.data_values.items():
-                line_edit.setText(str(section_data[label]))
-            self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
+            self.load_data_values(section_data)
 
         self.setLayout(main_layout)
-    
+
     def get_data_values(self):
-        data = {}
-        for label, line_edit in self.data_values.items():
-            data[label] = float(line_edit.text()) if line_edit.text() else 0.0
-        
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()              
+        data = self.data_entry_widget.get_values()
+        data["segment name"] = self.name_layout.itemAt(2).widget().text()
         return data
+
+    def load_data_values(self, section_data):
+        self.data_entry_widget.load_data(section_data)
+        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")
