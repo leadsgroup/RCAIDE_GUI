@@ -21,15 +21,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.name_line_edit: QLineEdit | None = None
         self.data_entry_widget: DataEntryWidget | None = None
 
-        # Create a scroll area
-        scroll_area = QScrollArea()
-        # Allow the widget inside to resize with the scroll area
-        scroll_area.setWidgetResizable(True)
-
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-        # Set the main layout inside the scroll content
-        layout = QVBoxLayout(scroll_content)
+        layout = self.create_scroll_layout()
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
@@ -91,6 +83,15 @@ class NacelleFrame(QWidget, GeometryFrame):
         layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
+    def create_scroll_layout(self):
+        # Create a scroll area
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
+
+        # Create a widget to contain the layout
+        scroll_content = QWidget()
+        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
+
         # Set the scroll content as the widget for the scroll area
         scroll_area.setWidget(scroll_content)
 
@@ -100,6 +101,8 @@ class NacelleFrame(QWidget, GeometryFrame):
 
         # Set the layout to the main window/widget
         self.setLayout(layout_scroll)
+
+        return layout
 
     def get_file_name(self):
         """Open a file dialog to select a file and store the file name.
@@ -220,11 +223,11 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     def load_data(self, data, index):
         """Load the data into the widgets.
-
         Args:
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
+
         self.data_entry_widget.load_data(data)
         # self.coordinate_filename = data["Coordinate File"]
         self.name_line_edit.setText(data["name"])
