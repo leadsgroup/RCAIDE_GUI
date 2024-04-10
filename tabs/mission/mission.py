@@ -1,6 +1,7 @@
 import sys
 from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 from PyQt6.QtCore import Qt
+from utilities import show_popup
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QApplication
 
 
@@ -32,7 +33,7 @@ class MissionWidget(QWidget):
 
         # Define Save Data Button
         save_data_button = QPushButton("Save All Data", self)
-        save_data_button.clicked.connect(self.save_data)
+        save_data_button.clicked.connect(self.save_all_data)
 
         # Add the Mission Layout, Add Segment Button, and Save Data Button to the left layout
         left_layout.addLayout(mission_layout)
@@ -73,10 +74,24 @@ class MissionWidget(QWidget):
         segment_widget = MissionSegmentWidget()
         self.mission_segment_layout.addWidget(segment_widget)
     
-    def save_data(self):
-        # Implement your data-saving logic here
-        print("Data saved.")
+    def save_all_data(self):
+        """Append the entered data to a list or perform any other action."""
+        """
+        main_data = self.get_data_values()  # Get data from the main fuselage section
+    
+        # Collect data from additional fuselage_widget
+        mission_data = []
+        for index in range(self.additional_data_values.count()):
+            widget = self.additional_data_values.itemAt(index).widget()
+            mission_data.append(widget.get_data_values())
+    
+        print("Main Fuselage Data:", main_data)
+        print("Additional Fuselage Data:", mission_data)
+        show_popup("Data Saved!", self)
+        """
 
 #Function to get the widget
 def get_widget() -> QWidget:
     return MissionWidget()
+
+

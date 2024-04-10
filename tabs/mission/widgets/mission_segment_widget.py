@@ -1,6 +1,6 @@
 import os
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QMenu
 
 class MissionSegmentWidget(QWidget):
     def __init__(self):
@@ -51,21 +51,44 @@ class MissionSegmentWidget(QWidget):
         initial_subsegment_type = "Constant CAS/Constant Rate"  # You can set your initial subsegment type here
         self.create_subsegment_layout(initial_subsegment_type)
 
+    def show_popup_menu(self):
+        # Define the popup menu options
+        options = ["Option 1", "Option 2", "Option 3"]
+
+        # Create a QMenu object
+        menu = QMenu()
+
+        # Add actions for each option
+        for option in options:
+            action = menu.addAction(option)
+
+        # Get the global position of the button
+        #button_pos = self.sender().mapToGlobal(self.sender().pos())
+
+        # Show the popup menu at the calculated position
+        #selected_action = menu.exec(button_pos)
+
+        # If an action is selected, print its text
+        #if selected_action:
+            #print("Selected option:", selected_action.text())
+        
     # Trying to make sure labels more than 4 get a new row but having clearing problems    
-    """
     def create_subsegment_layout(self, subsegment_type):
         print("Creating subsegment layout for type:", subsegment_type)
         
         # Clear any existing layout for subsegment type
-        self.clear_subsegment_type_layout()
+        self.clear_subsegment_layout()
+    
+
+        print("Cleared existing subsegment layout.")
 
         # Get data fields for the selected subsegment type from the dictionary
         data_fields = self.subsegment_data_fields.get(subsegment_type, [])
 
         # Add QLineEdit boxes for each data field
         label_count = len(data_fields)
-        max_labels_per_row = 4
-        current_row_layout = None
+        max_labels_per_row = 1
+        current_row_layout = QHBoxLayout()
         self.subsegment_layout = QVBoxLayout()  # Initialize or reuse the existing layout
 
         for i, field in enumerate(data_fields):
@@ -75,72 +98,95 @@ class MissionSegmentWidget(QWidget):
 
             # Check if it's the first label or the current row is full
             if i % max_labels_per_row == 0:
-                current_row_layout = QHBoxLayout()
                 self.subsegment_layout.addLayout(current_row_layout)
+                current_row_layout = QHBoxLayout()
 
             # Add label and line edit to the current row layout
             current_row_layout.addWidget(label)
             current_row_layout.addWidget(line_edit)
+            
+        # Creating a Horizontal Layout for Degrees of Freedom:
+        self.degrees_of_freedom_forces= QHBoxLayout()
+        df_fx = QLabel("Forces in X:")
+        df_fy = QLabel("Forces in Y:")
+        df_fz = QLabel("Forces in Z:")
+        dof_list1 = [df_fx, df_fy, df_fz]
 
+        self.degrees_of_freedom_moments= QHBoxLayout()
+        df_mx = QLabel("Moments about X:")
+        df_my = QLabel("Moments about Y:")
+        df_mz = QLabel("Moments about Z:")
+        dof_list2 = [df_mx, df_my, df_mz]
+
+        # Loop through the degrees of freedom labels and add QLineEdit boxes in between
+        for label in dof_list1:
+            dof_edit = QLineEdit()
+            self.degrees_of_freedom_forces.addWidget(label)
+            self.degrees_of_freedom_forces.addWidget(dof_edit)
+        
+        for label in dof_list2:
+            dof_edit = QLineEdit()
+            self.degrees_of_freedom_moments.addWidget(label)
+            self.degrees_of_freedom_moments.addWidget(dof_edit)
+
+        # Add the degrees of freedom layout to the segment layout
+        self.subsegment_layout.addLayout(self.degrees_of_freedom_forces)
+        self.subsegment_layout.addLayout(self.degrees_of_freedom_moments)
+      
+        # Create a pop-up button
+        popup_button = QPushButton("...", self)
+        popup_button.setFixedSize(20, 20)
+        popup_button.clicked.connect(self.show_popup_menu)
+        self.subsegment_layout.addWidget(popup_button)
+        
         # Add the subsegment layout to the segments layout
         self.segment_layout.addLayout(self.subsegment_layout)
         print("Subsegment layout created and added.")
 
         # Align subsegment layout to top
         self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        """
+        # Create a pop-up button
+        popup_button = QPushButton("...", self)
+        popup_button.setFixedSize(20, 20)
+        popup_button.clicked.connect(self.show_popup_menu)
 
-    def clear_subsegment_type_layout(self):
-        # Clear any existing layout for subsegment type
+        # Add the pop-up button at the bottom of the subsegment layout
+        self.segment_layout.addWidget(popup_button)
+        """
+ 
+    def clear_subsegment_layout(self):
+        # Check if subsegment layout exists
         if hasattr(self, 'subsegment_layout'):
+            # Remove all layouts and widgets within subsegment_layout
             while self.subsegment_layout.count():
                 item = self.subsegment_layout.takeAt(0)
-                widget = item.widget()
-                if widget:
-                    widget.deleteLater()
-    """
+                layout = item.layout()
+                if layout:
+                    # Recursively clear layout
+                    self.clear_layout(layout)
+                else:
+                    widget = item.widget()
+                    if widget:
+                        # Remove widget
+                        widget.deleteLater()
+            # Set subsegment_layout to None
+            self.subsegment_layout = None
 
-    def create_subsegment_layout(self, subsegment_type):
-        print("Creating subsegment layout for type:", subsegment_type)
-        # Clear any existing layout for subsegment type
-        self.clear_subsegment_type_layout()
-
-        # Create a layout for the selected subsegment type
-        self.subsegment_layout = QHBoxLayout()
-
-        # Get data fields for the selected subsegment type from the dictionary
-        data_fields = self.subsegment_data_fields.get(subsegment_type, [])
-
-        # Add QLineEdit boxes for each data field
-        for field in data_fields:
-            print("Adding QLineEdit for field:", field)
-            label = QLabel(field)
-            line_edit = QLineEdit()
-            self.subsegment_layout.addWidget(label)
-            self.subsegment_layout.addWidget(line_edit)
-        
-        #Set the subsegment layout as an attribute
-        self.subsegment_layout = self.subsegment_layout
-
-        # Add the subsegment layout to the segments layout
-        self.segment_layout.addLayout(self.subsegment_layout)
-        print("Subsegment layout created and added.")
-
-        # Align subsegment layout to top
-        self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
- 
-    def clear_subsegment_type_layout(self):
-        # Clear any existing layout for subsegment type
-        if hasattr(self, 'subsegment_layout'):
-            layout = self.subsegment_layout
+    def clear_layout(self, layout):
+        if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
                 widget = item.widget()
                 if widget:
                     widget.deleteLater()
-            self.subsegment_layout = None
-            #self.segment_layout.removeItem(layout)
-    
-  
+                else:
+                    sublayout = item.layout()
+                    if sublayout:
+                        # Recursively clear layout
+                        self.clear_layout(sublayout)
+
+
     def populate_nested_dropdown(self, index, nested_dropdown):
         nested_dropdown.clear()
         options = ["Climb", "Cruise", "Descent", "Ground", "Single_Point", "Transition", "Vertical Flight"]
