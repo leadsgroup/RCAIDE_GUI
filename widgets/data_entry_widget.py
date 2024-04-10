@@ -25,9 +25,6 @@ class DataEntryWidget(QWidget):
             unit_picker = UnitPickerWidget(label[1])
             unit_picker.setFixedWidth(80)
 
-            unit_combobox = QComboBox()
-            unit_combobox.addItems(["m", "cm", "mm", "in", "ft"])
-
             grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 4)
             grid_layout.addWidget(line_edit, row, col * 4 + 1, 1, 2)
             # Add a spacer
