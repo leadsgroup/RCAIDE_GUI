@@ -12,6 +12,8 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButt
     QFrame
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
+from utilities import Units
+from widgets.data_entry_widget import DataEntryWidget
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------
@@ -44,35 +46,35 @@ class WingsFrame(QWidget, GeometryFrame):
         header_layout.addWidget(wing_name_label)
         header_layout.addWidget(wing_name_entry)
 
-        append_button = QPushButton("Save Wing Data", self)
-        delete_button = QPushButton("Delete Wing Data", self)
-        append_button.setFixedWidth(346)
-        delete_button.setFixedWidth(346)
-        append_button.clicked.connect(self.append_data)
-        delete_button.clicked.connect(self.delete_data)
-        header_layout.addWidget(append_button)
-        header_layout.addWidget(delete_button)
         self.content_layout.addLayout(header_layout)
 
-        # Grid layout for wing components
-        grid_layout = QGridLayout()
-        wing_data_labels = ["Taper Ratio", "Dihedral", "Aspect Ratio", "Thickness to Chord", "Aerodynamic Center",
-                            "Exposed Root Chord Offset", "Total Length", "Spans Projected", "Spans Total",
-                            "Areas Reference",
-                            "Areas Exposed", "Areas Affected", "Areas Wetted", "Root Chord", "Tip Chord",
-                            "Mean Aerodynamic Chord",
-                            "Mean Geometric Chord", "Quarter Chord Sweep Angle", "Half Chord Sweep Angle",
-                            "Leading Edge Sweep Angle",
-                            "Root Chord Twist Angle", "Tip Chord Twist Angle"]
+        data_units_labels = [
+            ("Taper Ratio", Units.Unitless),
+            ("Dihedral", Units.Angle),
+            ("Aspect Ratio", Units.Unitless),
+            ("Thickness to Chord", Units.Unitless),
+            ("Aerodynamic Center", Units.Unitless),
+            ("Exposed Root Chord Offset", Units.Unitless),
+            ("Total Length", Units.Length),
+            ("Spans Projected", Units.Length),
+            ("Spans Total", Units.Length),
+            ("Areas Reference", Units.Area),
+            ("Areas Exposed", Units.Area),
+            ("Areas Affected", Units.Area),
+            ("Areas Wetted", Units.Area),
+            ("Root Chord", Units.Length),
+            ("Tip Chord", Units.Length),
+            ("Mean Aerodynamic Chord", Units.Length),
+            ("Mean Geometric Chord", Units.Length),
+            ("Quarter Chord Sweep Angle", Units.Angle),
+            ("Half Chord Sweep Angle", Units.Angle),
+            ("Leading Edge Sweep Angle", Units.Angle),
+            ("Root Chord Twist Angle", Units.Angle),
+            ("Tip Chord Twist Angle", Units.Angle)
+        ]
 
-        for index, label in enumerate(wing_data_labels):
-            row, col = divmod(index, 2)
-            line_edit = QLineEdit(self)
-            line_edit.setFixedWidth(100)
-            grid_layout.addWidget(QLabel(label + ":"), row, col * 2)
-            grid_layout.addWidget(line_edit, row, col * 2 + 1)
-            self.data_values['wing_' + label] = line_edit
-        self.content_layout.addLayout(grid_layout)
+        self.data_entry_widget : DataEntryWidget = DataEntryWidget(data_units_labels)
+        self.content_layout.addWidget(self.data_entry_widget)
 
         # Scroll area setup
         content_widget = QWidget()
@@ -95,28 +97,25 @@ class WingsFrame(QWidget, GeometryFrame):
         self.content_layout.addLayout(self.additional_layout)
 
         add_wing_section_button = QPushButton("Add Wing Segment", self)
-        append_all_section_button = QPushButton("Append All Wing Segment Data", self)
+        save_button = QPushButton("Save Wing Data", self)
         add_wing_section_button.clicked.connect(self.add_wing_section)
-        append_all_section_button.clicked.connect(self.append_all_data)
-
-        sections_buttons_layout = QHBoxLayout()
-        self.content_layout.addLayout(sections_buttons_layout)
-        sections_buttons_layout.addWidget(add_wing_section_button)
-        sections_buttons_layout.addWidget(append_all_section_button)
+        save_button.clicked.connect(self.append_all_data)
 
         # Control Surface Buttons
         self.cs_additional_layout = QVBoxLayout()
         self.content_layout.addLayout(self.cs_additional_layout)
 
         add_cs_button = QPushButton("Add Control Surface", self)
-        append_all_cs_button = QPushButton("Append All C.S. Data", self)
+        append_all_cs_button = QPushButton("Save Control Surface Data", self)
         add_cs_button.clicked.connect(self.add_control_surface)
         append_all_cs_button.clicked.connect(self.append_all_data)
 
-        surface_buttons_layout = QHBoxLayout()
-        self.content_layout.addLayout(surface_buttons_layout)
-        surface_buttons_layout.addWidget(add_cs_button)
-        surface_buttons_layout.addWidget(append_all_cs_button)
+        sections_buttons_layout = QHBoxLayout()
+        sections_buttons_layout.addWidget(add_wing_section_button)
+        sections_buttons_layout.addWidget(save_button)
+        sections_buttons_layout.addWidget(add_cs_button)
+        sections_buttons_layout.addWidget(append_all_cs_button)
+        self.content_layout.addLayout(sections_buttons_layout)
 
     def add_wing_section(self):
         # Create new QVBoxLayout for the entire section, including the header and data fields
@@ -164,23 +163,15 @@ class WingsFrame(QWidget, GeometryFrame):
         # Data fields for the wing section
         additional_section_layout = QGridLayout()
 
-        # Adding data fields
-        labels_and_fields = [
-            ("Percent Span Location:", QLineEdit(self)),
-            ("Twist:", QLineEdit(self)),
-            ("Root Chord Percent:", QLineEdit(self)),
-            ("Thickness to Chord:", QLineEdit(self)),
-            ("Dihedral Outboard:", QLineEdit(self)),
-            ("Quarter Chord Sweep:", QLineEdit(self)),
-            ("Airfoil:", QLineEdit(self)),
+        data_units_labels = [
+            ("Percent Span Location", Units.Unitless),
+            ("Twist", Units.Angle),
+            ("Root Chord Percent", Units.Unitless),
+            ("Thickness to Chord", Units.Unitless),
+            ("Dihedral Outboard", Units.Angle),
+            ("Quarter Chord Sweep", Units.Angle),
+            ("Airfoil", Units.Unitless),
         ]
-
-        for i, (label_text, field) in enumerate(labels_and_fields):
-            label = QLabel(label_text)
-            field.setFixedWidth(100)
-            row, col = divmod(i, 2)
-            additional_section_layout.addWidget(label, row, col * 2)
-            additional_section_layout.addWidget(field, row, col * 2 + 1)
 
         # Add the grid layout for data fields to the section layout
         section_layout.addLayout(additional_section_layout)
@@ -230,40 +221,33 @@ class WingsFrame(QWidget, GeometryFrame):
         # Add the header layout to the section layout
         surface_layout.addLayout(surface_header_layout)
 
-        # Data fields for the wing section
-        additional_surface_layout = QGridLayout()
+        data_units_labels = [
+            ("Flap: Span Fraction Start", Units.Unitless),
+            ("Slat: Span Fraction Start", Units.Unitless),
+            ("Aileron: Span Fraction Start", Units.Unitless),
+            ("Flap: Span Fraction End", Units.Unitless),
+            ("Slat: Span Fraction End", Units.Unitless),
+            ("Aileron: Span Fraction End", Units.Unitless),
+            ("Flap: Deflection", Units.Angle),
+            ("Slat: Deflection", Units.Angle),
+            ("Aileron: Deflection", Units.Angle),
+            ("Flap: Chord Fraction", Units.Unitless),
+            ("Slat: Chord Fraction", Units.Unitless),
+            ("Aileron: Chord Fraction", Units.Unitless),
+            ("Flap: Configuration", Units.Unitless),
+        ]
 
-        labels_and_fields = [("Flap: Span Fraction Start:", QLineEdit(self)),
-                             ("Slat: Span Fraction Start:", QLineEdit(self)),
-                             ("Aileron: Span Fraction Start:", QLineEdit(self)),
-                             ("Flap: Span Fraction End:", QLineEdit(self)),
-                             ("Slat: Span Fraction End:", QLineEdit(self)),
-                             ("Aileron: Span Fraction End:", QLineEdit(self)),
-                             ("Flap: Deflection:", QLineEdit(self)),
-                             ("Slat: Deflection:", QLineEdit(self)),
-                             ("Aileron: Deflection:", QLineEdit(self)),
-                             ("Flap: Chord Fraction:", QLineEdit(self)),
-                             ("Slat: Chord Fraction:", QLineEdit(self)),
-                             ("Aileron: Chord Fraction:", QLineEdit(self)),
-                             ("Flap: Configuration:", QLineEdit(self)), ]
-
-        for i, (label_text, field) in enumerate(labels_and_fields):
-            label = QLabel(label_text)
-            field.setFixedWidth(100)
-            row, col = divmod(i, 2)
-            additional_surface_layout.addWidget(label, row, col * 2)
-            additional_surface_layout.addWidget(field, row, col * 2 + 1)
-
+        cs_data_entry_widget = DataEntryWidget(data_units_labels)
         # Add the grid layout for data fields to the section layout
-        surface_layout.addLayout(additional_surface_layout)
+        surface_layout.addWidget(cs_data_entry_widget)
 
         # Add the entire section layout to the additional layout
         self.cs_additional_layout.addLayout(surface_layout)
 
-    def append_data(self):
+    def save_data(self):
         """Append data action."""
         entered_data = self.get_data_values()
-        print("Appending Data:", entered_data)
+        print("Save Data:", entered_data)
 
     def delete_data(self):
         """Delete data action."""
