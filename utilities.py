@@ -75,6 +75,14 @@ class Units:
 
         unit_list = [METER_PER_SECOND, KILOMETER_PER_HOUR, MILE_PER_HOUR, KNOT]
 
+    class Acceleration:
+        METER_PER_SECOND_SQUARED = ("m/s²", lambda x: x)
+        # KILOMETER_PER_HOUR_SQUARED = ("km/h²", lambda x: x / 3.6)
+        # MILE_PER_HOUR_SQUARED = ("mph²", lambda x: x * 0.44704)
+        KNOTS_PER_SECOND = ("kn/s", lambda x: x * 0.514444)
+
+        unit_list = [METER_PER_SECOND_SQUARED, KNOTS_PER_SECOND]
+
     class Energy:
         JOULE = ("J", lambda x: x)
         KILOJOULE = ("kJ", lambda x: x * 1000)
@@ -96,10 +104,15 @@ class Units:
         unit_list = [PASCAL, KILOPASCAL, MEGAPASCAL, BAR, ATMOSPHERE, POUND_PER_SQUARE_INCH]
 
     class Unitless:
-        PERCENT = ("%", lambda x: x / 100)
         NONE = ("", lambda x: x)
-        unit_list = [PERCENT, NONE]
+        PERCENT = ("%", lambda x: x / 100)
+        unit_list = [NONE, PERCENT]
 
     class Count:
         UNIT = ("Unit", lambda x: x)
         unit_list = [UNIT]
+
+    class Angle:
+        RADIAN = ("rad", lambda x: x)
+        DEGREE = ("°", lambda x: np.deg2rad(x))
+        unit_list = [RADIAN, DEGREE]
