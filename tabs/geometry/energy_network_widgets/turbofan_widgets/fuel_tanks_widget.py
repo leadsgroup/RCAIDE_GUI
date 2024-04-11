@@ -3,15 +3,17 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from utilities import Units
+from widgets.data_entry_widget import DataEntryWidget
 from widgets.unit_picker_widget import UnitPickerWidget
 
 class FuelTankWidget(QWidget):
-    def __init__(self, index, on_delete, section_data = None):
+    def __init__(self, index, on_delete, section_data=None):
         super(FuelTankWidget, self).__init__()
 
         self.data_fields = {}
         self.index = index
         self.on_delete = on_delete
+        self.data_entry_widget: DataEntryWidget | None = None
 
         self.name_layout = QHBoxLayout()
         self.init_ui(section_data)
@@ -23,12 +25,12 @@ class FuelTankWidget(QWidget):
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
+        self.name_line_edit = QLineEdit()  # Define the QLineEdit widget
         self.name_layout.addWidget(QLabel("Segment Name: "))
-        self.name_layout.addWidget(QLineEdit(self))
+        self.name_layout.addWidget(self.name_line_edit)
         self.name_layout.addItem(spacer_right)
 
         main_layout.addLayout(self.name_layout) 
-
 
         # List of data labels
         data_units_labels = [
@@ -37,25 +39,10 @@ class FuelTankWidget(QWidget):
             ("Origin", Units.Length),
             ("Center of Gravity", Units.Length),
             ("Internal Volume", Units.Length),
-
         ]
 
-        for index, label in enumerate(data_units_labels):
-            row, col = divmod(index, 2)
-            line_edit = QLineEdit(self)
-            line_edit.setValidator(QDoubleValidator())
-            # Set the width of the line edit
-            line_edit.setFixedWidth(150)  # Adjust the width as needed
-
-            unit_picker = UnitPickerWidget(label[1])
-            unit_picker.setFixedWidth(80)
-            grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1, 1, 2)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)
-
-
-            # Store a reference to the QLineEdit in the dictionary
-            self.data_fields[label[0]] = (line_edit, unit_picker)
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        main_layout.addWidget(self.data_entry_widget)
 
         # Add a delete button
         row, col = divmod(len(data_units_labels) + 2, 1)
@@ -70,29 +57,25 @@ class FuelTankWidget(QWidget):
 
         self.setLayout(main_layout)
 
-
     def get_data_values(self):
-        data = {}
-        for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
-
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()
+        """Retrieve the entered data values from the text fields."""
+        data = self.data_entry_widget.get_values()
+        # Retrieve the text from the QLineEdit widget
+        data["name"] = self.name_line_edit.text()
         return data
 
+    def load_data_values(self, data, index):
+        """Load the data into the widgets.
 
+        Args:
+            data: The data to be loaded into the widgets.
+            index: The index of the data in the list.
+        """
+        self.data_entry_widget.load_data(data)
 
-    def load_data_values(self, section_data):
-        for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value, index = section_data[label]
-            line_edit.setText(str(value))
-            unit_picker.set_index(index)
-
-        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
-
-
+        self.name_line_edit.setText(data["name"])  # Set text to the QLineEdit widget
+        self.index = index
+        
     def delete_button_pressed(self):
         print("Delete button pressed")
 
@@ -101,3 +84,4 @@ class FuelTankWidget(QWidget):
             return
 
         self.on_delete(self.index)
+

@@ -9,17 +9,18 @@ class TurboFanWidget(QWidget):
         super().__init__()
 
         self.fuel_line_widgets = []
-
+        self.propulsor_widget = PropulsorWidget(0, None)  # Instantiate PropulsorWidget
+        self.fuel_tank_widget = FuelTankWidget(0, None)
         self.init_ui()
 
     def init_ui(self):
         main_layout = QVBoxLayout(self)
 
         # Header
-        #header_layout = QHBoxLayout()
-        #header_label = QLabel("<u><b>TurboFan Network</b></u>")
-        #header_layout.addWidget(header_label)
-        #main_layout.addLayout(header_layout)
+        # header_layout = QHBoxLayout()
+        # header_label = QLabel("<u><b>TurboFan Network</b></u>")
+        # header_layout.addWidget(header_label)
+        # main_layout.addLayout(header_layout)
 
         # Line bar
         line_bar = QFrame()
@@ -51,6 +52,18 @@ class TurboFanWidget(QWidget):
         self.fuel_line_widgets.append(fuel_line_widget)
         self.layout().insertWidget(self.layout().count() - 2, fuel_line_widget)
 
+    def get_data_values(self):
+        """Retrieve the entered data values from the widgets."""
+        data = {
+            "propulsor_data": self.propulsor_widget.get_data_values(),  # Access PropulsorWidget instance
+            "fuel_tank_data": self.fuel_tank_widget.get_data_values(),  # Access FuelTankWidget instance
+            "fuel_line_data": []
+        }
+
+        for fuel_line_widget in self.fuel_line_widgets:
+            data["fuel_line_data"].append(fuel_line_widget.get_data_values())
+
+        return data
 
     def on_delete_button_pressed(self, index):
         if 0 <= index < len(self.fuel_line_widgets):
