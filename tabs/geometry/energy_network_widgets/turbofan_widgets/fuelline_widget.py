@@ -4,8 +4,8 @@ from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from utilities import Units
 from widgets.unit_picker_widget import UnitPickerWidget
-from tabs.geometry.energy_network_widgets.turbofan_widgets.propulsors_widget import PropulsorWidget
-from tabs.geometry.energy_network_widgets.turbofan_widgets.fuel_tanks_widget import FuelTankWidget
+from tabs.geometry.energy_network_widgets.turbofan_widgets.propulsors.propulsors_main import PropulsorFrame
+from tabs.geometry.energy_network_widgets.turbofan_widgets.fueltanks.fuel_tanks_main import FuelTankFrame
 
 class FuelLineWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
@@ -18,25 +18,47 @@ class FuelLineWidget(QWidget):
 
     def init_ui(self, section_data):
         main_layout = QVBoxLayout(self)
+    
+
+        
+        
+
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        main_layout.addWidget(line_bar)
 
         # Segment Name layout
         self.name_layout = QHBoxLayout()
-        self.name_layout.addWidget(QLabel("Segment Name: "))
+        self.name_layout.addWidget(QLabel("Fuel Line Segment Name: "))
         self.name_edit = QLineEdit()
         self.name_layout.addWidget(self.name_edit)
         main_layout.addLayout(self.name_layout)
+        self.setFixedHeight(450)
+        
+
 
         # Tab widget
         self.tab_widget = QTabWidget()
         main_layout.addWidget(self.tab_widget)
 
         # Create Fuel Tanks tab
-        fuel_tank_widget = FuelTankWidget(self.index, self.on_delete, section_data)
+        fuel_tank_widget = FuelTankFrame()
         self.tab_widget.addTab(fuel_tank_widget, "Fuel Tanks")
 
         # Create Propulsors tab
-        propulsor_widget = PropulsorWidget(self.index, self.on_delete, section_data)
+        propulsor_widget = PropulsorFrame()
         self.tab_widget.addTab(propulsor_widget, "Propulsors")
+
+        delete_button = QPushButton("Delete Fuel Line Segment", self)
+        delete_button.clicked.connect(self.delete_button_pressed)
+
+        main_layout.addWidget(delete_button)
+
+
+
+
+
 
 
         if section_data:

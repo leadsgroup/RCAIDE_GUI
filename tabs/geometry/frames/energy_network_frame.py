@@ -9,7 +9,6 @@ from widgets.unit_picker_widget import UnitPickerWidget
 from tabs.geometry.energy_network_widgets.turbofan_widgets.turbofan_network import TurboFanWidget
 
 
-
 class EnergyNetworkFrame(QWidget, GeometryFrame):
    def __init__(self):
       super(EnergyNetworkFrame, self).__init__()
@@ -109,7 +108,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
          spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
          spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
          name_layout.addItem(spacer_left)
-         name_layout.addWidget(QLabel("Name: "))
+         name_layout.addWidget(QLabel("Energy Network Name: "))
          self.name_line_edit = QLineEdit(self)
          name_layout.addWidget(self.name_line_edit)
          name_layout.addItem(spacer_right)
@@ -186,6 +185,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       selected_network = self.energy_network_combo.currentText()
       data = {"network": selected_network, "name": self.name_line_edit.text()}
    
+   
+      
       if selected_network == "Turbofan":
          data["main_energy_network_data"] = self.main_energy_network_widget.get_data_values()
          data["energy_network_sections"] = []
@@ -255,9 +256,22 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       
    def display_selected_network(self, index):
       selected_network = self.energy_network_combo.currentText()
+      # Clear the layout first
+      self.clear_layout(self.energy_network_sections_layout)
+   
       if selected_network == "Turbofan":
          self.main_energy_network_widget = TurboFanWidget()
          self.energy_network_sections_layout.addWidget(self.main_energy_network_widget)
+      elif selected_network == "None Selected":
+         # Do nothing or add blank widget
+         pass
       else:
          # Handle other energy network options here
          pass
+   
+   def clear_layout(self, layout):
+      """Clear all widgets from the layout."""
+      while layout.count():
+         child = layout.takeAt(0)
+         if child.widget():
+            child.widget().deleteLater()
