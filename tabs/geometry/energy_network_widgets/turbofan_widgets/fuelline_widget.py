@@ -18,14 +18,11 @@ class FuelLineWidget(QWidget):
 
     def init_ui(self, section_data):
         main_layout = QVBoxLayout(self)
-    
-
         
-        
-
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        line_bar.setStyleSheet("background-color: light grey; border: 2px solid grey;")
         main_layout.addWidget(line_bar)
 
         # Segment Name layout
@@ -35,9 +32,6 @@ class FuelLineWidget(QWidget):
         self.name_layout.addWidget(self.name_edit)
         main_layout.addLayout(self.name_layout)
         
-        
-
-
         # Tab widget
         self.tab_widget = QTabWidget()
         main_layout.addWidget(self.tab_widget)

@@ -33,7 +33,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
    
       # Create a horizontal layout for the label and buttons
       header_layout = QHBoxLayout()
-      header_layout.addWidget(QLabel("<u><b>Main Energy Frame</b></u>"))
+      header_layout.addWidget(QLabel("<b>Energy Network Frame</b>"))
    
       layout.addLayout(header_layout)
       # Create a horizontal line
