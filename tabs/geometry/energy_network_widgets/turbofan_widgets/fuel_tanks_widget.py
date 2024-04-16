@@ -57,6 +57,9 @@ class FuelTankWidget(QWidget):
             # Store a reference to the QLineEdit in the dictionary
             self.data_fields[label[0]] = (line_edit, unit_picker)
 
+        # Add an add fuel tank button (on same fuel line segment)
+        
+        
         # Add a delete button
         row, col = divmod(len(data_units_labels) + 2, 1)
         delete_button = QPushButton("Delete Fuel Tank", self)
