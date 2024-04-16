@@ -21,7 +21,7 @@ class FuelLineWidget(QWidget):
 
         # Segment Name layout
         self.name_layout = QHBoxLayout()
-        self.name_layout.addWidget(QLabel("Segment Name: "))
+        self.name_layout.addWidget(QLabel("Fuel Line Segment Name: "))
         self.name_edit = QLineEdit()
         self.name_layout.addWidget(self.name_edit)
         main_layout.addLayout(self.name_layout)

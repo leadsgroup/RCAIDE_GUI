@@ -40,7 +40,7 @@ class TurboFanWidget(QWidget):
         # Buttons layout
         button_layout = QHBoxLayout()
 
-        add_section_button = QPushButton("Add Fuel Line Section", self)
+        add_section_button = QPushButton("Add Fuel Line Segment", self)
         add_section_button.clicked.connect(self.add_fuelline_section)
         button_layout.addWidget(add_section_button)
 

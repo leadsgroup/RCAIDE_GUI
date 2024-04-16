@@ -23,7 +23,7 @@ class FuelTankWidget(QWidget):
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
-        self.name_layout.addWidget(QLabel("Segment Name: "))
+        self.name_layout.addWidget(QLabel("Fuel Tank Name: "))
         self.name_layout.addWidget(QLineEdit(self))
         self.name_layout.addItem(spacer_right)
 
@@ -59,7 +59,7 @@ class FuelTankWidget(QWidget):
 
         # Add a delete button
         row, col = divmod(len(data_units_labels) + 2, 1)
-        delete_button = QPushButton("Delete Section", self)
+        delete_button = QPushButton("Delete Fuel Tank", self)
         delete_button.clicked.connect(self.delete_button_pressed)
         grid_layout.addWidget(delete_button, row, col * 3, 1, 5)
 
