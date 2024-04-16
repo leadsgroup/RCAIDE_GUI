@@ -21,17 +21,29 @@ class PropulsorFrame(QWidget, GeometryFrame):
         self.propulsor_sections_layout = QVBoxLayout()
 
         # Create a horizontal layout for the label and buttons
-        header_layout = QHBoxLayout()
-        label = QLabel("<u><b>Propulsor Frame</b></u>")
+        header_layout = QVBoxLayout()
+        #label = QLabel("<u><b>Propulsor Frame</b></u>")
 
         layout = self.create_scroll_layout()
 
-        header_layout.addWidget(label)
+        #header_layout.addWidget(label)
+        
+        
+        # Add propulsor_ Section Button
+        add_section_button = QPushButton("Add Propulsor Section", self)
+        add_section_button.setMaximumWidth(200) 
+        add_section_button.clicked.connect(self.add_propulsor_section)
+        header_layout.addWidget(add_section_button)
+        
+    
+        
+        
         layout.addLayout(header_layout)
 
         name_layout = QHBoxLayout()
 
         layout.addLayout(name_layout)
+
 
 
         # Create a horizontal line
@@ -57,15 +69,12 @@ class PropulsorFrame(QWidget, GeometryFrame):
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
 
-        # Add propulsor_ Section Button
-        add_section_button = QPushButton("Add Propulsor Section", self)
-        add_section_button.clicked.connect(self.add_propulsor_section)
-        button_layout.addWidget(add_section_button)
 
-        # Append All propulsor_ Section Data Button
-        append_all_data_button = QPushButton("Save Propulsor Data", self)
-        append_all_data_button.clicked.connect(self.save_data)
-        button_layout.addWidget(append_all_data_button)
+
+        ## Append All propulsor_ Section Data Button
+        #append_all_data_button = QPushButton("Save Propulsor Data", self)
+        #append_all_data_button.clicked.connect(self.save_data)
+        #button_layout.addWidget(append_all_data_button)
 
 
         # Add the button layout to the main layout
@@ -75,24 +84,22 @@ class PropulsorFrame(QWidget, GeometryFrame):
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def get_data_values(self):
-        """Retrieve the entered data values from the dictionary for the main propulsor_ section."""
-        data = self.data_entry_widget.get_values()
-        data["name"] = self.name_line_edit.text()
+        """Retrieve the entered data values from the dictionary for the propulsor sections."""
 
-        # Collect data from additional propulsor_widget
+        # Collect data from additional fuselage_widget
         additional_data = []
         for index in range(self.propulsor_sections_layout.count()):
             widget = self.propulsor_sections_layout.itemAt(index).widget()
             additional_data.append(widget.get_data_values())
 
-        data["sections"] = additional_data
-        return data
+        #data["sections"] = additional_data
+        return additional_data
 
     def save_data(self):
         """Append the entered data to a list or perform any other action."""
         entered_data = self.get_data_values()
 
-        print("Main Propulsor Data:", entered_data)
+        print("Propulsor Data:", entered_data)
 
         if self.save_function:
             if self.index >= 0:
@@ -145,40 +152,14 @@ class PropulsorFrame(QWidget, GeometryFrame):
     def set_tab_index(self, index):
         self.tab_index = index
 
-    def create_new_structure(self):
-        """Create a new propulsor_ structure."""
 
-        # Clear the main data values
-        self.data_entry_widget.clear_values()
-
-        # Clear the name line edit
-        while self.propulsor_sections_layout.count():
-            item = self.propulsor_sections_layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-
-        self.name_line_edit.clear()
-        self.index = -1
 
     def create_scroll_layout(self):
-        # Create a scroll area
-
-        scroll_area = QScrollArea(self)
-        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
-
         # Create a widget to contain the layout
         scroll_content = QWidget()
         layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
-
-        # Set the scroll content as the widget for the scroll area
-        scroll_area.setWidget(scroll_content)
-
-        # Set the main layout of the scroll area
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
-
-        # Set the layout to the main window/widget
-        self.setLayout(layout_scroll)
-
+    
+        # Set the main layout of the widget
+        self.setLayout(layout)
+    
         return layout

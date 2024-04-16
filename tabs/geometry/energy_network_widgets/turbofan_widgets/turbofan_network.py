@@ -54,17 +54,17 @@ class TurboFanWidget(QWidget):
         self.layout().insertWidget(self.layout().count() - 2, fuel_line_widget)
 
     def get_data_values(self):
-        """Retrieve the entered data values from the widgets."""
-        data = {
-            "propulsor_data": self.propulsor_widget.get_data_values(),  # Access PropulsorWidget instance
-            "fuel_tank_data": self.fuel_tank_widget.get_data_values(),  # Access FuelTankWidget instance
-            "fuel_line_data": []
-        }
+        #"""Retrieve the entered data values from the dictionary for the main propulsor_ section."""
 
-        for fuel_line_widget in self.fuel_line_widgets:
-            data["fuel_line_data"].append(fuel_line_widget.get_data_values())
+        ## Collect data from additional fuselage_widget
+        #additional_data = []
+        #for index in range(self.propulsor_sections_layout.count()):
+            #widget = self.propulsor_sections_layout.itemAt(index).widget()
+            #additional_data.append(widget.get_data_values())
 
-        return data
+        ##data["sections"] = additional_data
+        #return additional_data
+        pass
 
     def on_delete_button_pressed(self, index):
         if 0 <= index < len(self.fuel_line_widgets):

@@ -34,7 +34,7 @@ class FuelLineWidget(QWidget):
         self.name_edit = QLineEdit()
         self.name_layout.addWidget(self.name_edit)
         main_layout.addLayout(self.name_layout)
-        self.setFixedHeight(450)
+        
         
 
 

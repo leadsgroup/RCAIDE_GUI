@@ -21,12 +21,22 @@ class FuelTankFrame(QWidget, GeometryFrame):
         self.fuel_tank_sections_layout = QVBoxLayout()
 
         # Create a horizontal layout for the label and buttons
-        header_layout = QHBoxLayout()
-        label = QLabel("<u><b>Fuel Line Frame</b></u>")
+        header_layout = QVBoxLayout()
+        #label = QLabel("<u><b>Fuel Tank Frame</b></u>")
 
         layout = self.create_scroll_layout()
 
-        header_layout.addWidget(label)
+        #header_layout.addWidget(label)
+        
+        
+        # Add fuel_tank_ Section Button at the top
+        add_section_button = QPushButton("Add Fuel Line Section", self)
+        add_section_button.setMaximumWidth(150) 
+        add_section_button.clicked.connect(self.add_fuel_tank_section)
+        header_layout.addWidget(add_section_button)
+        
+        
+        
         layout.addLayout(header_layout)
 
         name_layout = QHBoxLayout()
@@ -57,15 +67,11 @@ class FuelTankFrame(QWidget, GeometryFrame):
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
 
-        # Add fuel_tank_ Section Button
-        add_section_button = QPushButton("Add Fuel Line Section", self)
-        add_section_button.clicked.connect(self.add_fuel_tank_section)
-        button_layout.addWidget(add_section_button)
 
-        # Append All fuel_tank_ Section Data Button
-        append_all_data_button = QPushButton("Save Fuel Line Data", self)
-        append_all_data_button.clicked.connect(self.save_data)
-        button_layout.addWidget(append_all_data_button)
+        ## Append All fuel_tank_ Section Data Button
+        #append_all_data_button = QPushButton("Save Fuel Line Data", self)
+        #append_all_data_button.clicked.connect(self.save_data)
+        #button_layout.addWidget(append_all_data_button)
 
 
         # Add the button layout to the main layout
@@ -75,9 +81,7 @@ class FuelTankFrame(QWidget, GeometryFrame):
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def get_data_values(self):
-        """Retrieve the entered data values from the dictionary for the main fuel_tank_ section."""
-        data = self.data_entry_widget.get_values()
-        data["name"] = self.name_line_edit.text()
+
 
         # Collect data from additional fuel_tank__widget
         additional_data = []
@@ -85,8 +89,8 @@ class FuelTankFrame(QWidget, GeometryFrame):
             widget = self.fuel_tank_sections_layout.itemAt(index).widget()
             additional_data.append(widget.get_data_values())
 
-        data["sections"] = additional_data
-        return data
+        #data["sections"] = additional_data
+        return additional_data
 
     def save_data(self):
         """Append the entered data to a list or perform any other action."""
@@ -162,23 +166,12 @@ class FuelTankFrame(QWidget, GeometryFrame):
         self.index = -1
 
     def create_scroll_layout(self):
-        # Create a scroll area
-
-        scroll_area = QScrollArea(self)
-        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
-
         # Create a widget to contain the layout
         scroll_content = QWidget()
         layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
-
-        # Set the scroll content as the widget for the scroll area
-        scroll_area.setWidget(scroll_content)
-
-        # Set the main layout of the scroll area
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
-
-        # Set the layout to the main window/widget
-        self.setLayout(layout_scroll)
-
+    
+        # Set the main layout of the widget
+        self.setLayout(layout)
+    
         return layout
+

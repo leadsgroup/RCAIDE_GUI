@@ -183,7 +183,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       """Retrieve the entered data values from the widgets."""
    
       selected_network = self.energy_network_combo.currentText()
-      data = {"network": selected_network, "name": self.name_line_edit.text()}
+      data = {"energy network selected": selected_network, "energy network name": self.name_line_edit.text(), 
+              }
    
    
       
