@@ -116,3 +116,6 @@ class Units:
         RADIAN = ("rad", lambda x: x)
         DEGREE = ("°", lambda x: np.deg2rad(x))
         unit_list = [RADIAN, DEGREE]
+
+    class Boolean:
+        pass
