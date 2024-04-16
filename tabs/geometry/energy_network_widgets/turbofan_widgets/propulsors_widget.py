@@ -62,11 +62,16 @@ class PropulsorWidget(QWidget):
             # Store a reference to the QLineEdit in the dictionary
             self.data_fields[label[0]] = (line_edit, unit_picker)
 
+        # Add an add propulsor button
+        row = len(data_units_labels) + 2
+        add_button = QPushButton("Add Propulsor", self)
+        add_button.clicked.connect(self.add_button_pressed)
+        grid_layout.addWidget(add_button, row, 0, 1, 3)
+        
         # Add a delete button
-        row, col = divmod(len(data_units_labels) + 2, 1)
         delete_button = QPushButton("Delete Propulsor", self)
         delete_button.clicked.connect(self.delete_button_pressed)
-        grid_layout.addWidget(delete_button, row, col * 3, 1, 5)
+        grid_layout.addWidget(delete_button, row, 3, 1, 3)
 
         main_layout.addLayout(grid_layout)
 
@@ -106,3 +111,7 @@ class PropulsorWidget(QWidget):
             return
 
         self.on_delete(self.index)
+        
+    # TO DO: DUPE PROPS
+    def add_button_pressed(self):
+        print("Add button pressed")    

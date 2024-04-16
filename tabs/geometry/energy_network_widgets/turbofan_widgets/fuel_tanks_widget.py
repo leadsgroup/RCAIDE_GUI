@@ -57,14 +57,18 @@ class FuelTankWidget(QWidget):
             # Store a reference to the QLineEdit in the dictionary
             self.data_fields[label[0]] = (line_edit, unit_picker)
 
-        # Add an add fuel tank button (on same fuel line segment)
         
+        # Add an add fuel tank button (on same fuel line)
+        row = len(data_units_labels) + 2
+        add_button = QPushButton("Add Fuel Tank", self)
+        add_button.clicked.connect(self.add_button_pressed)
+        grid_layout.addWidget(add_button, row, 0, 1, 3)  # Add button at column 0, spanning 3 columns
         
         # Add a delete button
-        row, col = divmod(len(data_units_labels) + 2, 1)
         delete_button = QPushButton("Delete Fuel Tank", self)
         delete_button.clicked.connect(self.delete_button_pressed)
-        grid_layout.addWidget(delete_button, row, col * 3, 1, 5)
+        grid_layout.addWidget(delete_button, row, 3, 1, 3)  # Delete button at column 3, spanning 3 columns
+
 
         main_layout.addLayout(grid_layout)
 
@@ -104,3 +108,7 @@ class FuelTankWidget(QWidget):
             return
 
         self.on_delete(self.index)
+    
+    # TO DO: DUPE FUEL TANKS
+    def add_button_pressed(self):
+        print("Add button pressed")
