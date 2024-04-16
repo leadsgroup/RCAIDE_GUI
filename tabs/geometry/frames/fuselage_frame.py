@@ -1,240 +1,142 @@
-from PyQt6.QtGui import QDoubleValidator
-
-from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QScrollArea, QFrame, QComboBox, QSizePolicy, QSpacerItem, QGridLayout
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QFrame, \
+    QSizePolicy, QSpacerItem, QLineEdit
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame
-from tabs.geometry.widgets.fuselage_widget import FuselageWidget
+from tabs.geometry.widgets.fuselage_section_widget import FuselageSectionWidget
 from utilities import show_popup, Units
-from widgets.unit_picker_widget import UnitPickerWidget
+from widgets.data_entry_widget import DataEntryWidget
 
 
+# ================================================================================================================================================
+
+# Main Fuselage Frame
+
+# ================================================================================================================================================
 
 class FuselageFrame(QWidget, GeometryFrame):
     def __init__(self):
         super(FuselageFrame, self).__init__()
-        
-        self.data_fields = {}
-        self.fuselage_sections_layout = QVBoxLayout()
-        
-        self.save_function = None
-        self.tab_index = -1
-        self.index = -1
-        self.name_line_edit: QLineEdit | None = None
-        
-        # Create a scroll area
-        scroll_area = QScrollArea()
-        # Allow the widget inside to resize with the scroll area
-        scroll_area.setWidgetResizable(True)  
 
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-        # Set the main layout inside the scroll content
-        layout = QVBoxLayout(scroll_content) 
+        self.index = -1
+        self.tab_index = -1
+        self.save_function = None
+
+        data_units_labels = [
+            ("Fineness Nose", Units.Unitless),
+            ("Fineness Tail", Units.Unitless),
+            ("Lengths Nose", Units.Length),
+            ("Lengths Tail", Units.Length),
+            ("Lengths Cabin", Units.Length),
+            ("Lengths Total", Units.Length),
+            ("Lengths Forespace", Units.Length),
+            ("Lengths Aftspace", Units.Length),
+            ("Width", Units.Length),
+            ("Heights Maximum", Units.Length),
+            ("Height at Quarter", Units.Length),
+            ("Height at Three Quarters", Units.Length),
+            ("Height at Wing Root Quarter Chord", Units.Length),
+            ("Areas Side Projected", Units.Area),
+            ("Area Wetted", Units.Area),
+            ("Area Front Projected", Units.Area),
+            ("Effective Diameter", Units.Length),
+        ]
+
+        # List to store data values fuselage sections
+        self.fuselage_sections_layout = QVBoxLayout()
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("<u><b>Main Fuselage Frame</b></u>"))
-       
+        label = QLabel("<u><b>Main Fuselage Frame</b></u>")
+
+        layout = self.create_scroll_layout()
+
+        header_layout.addWidget(label)
         layout.addLayout(header_layout)
+
+        name_layout = QHBoxLayout()
+        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.name_line_edit = QLineEdit()
+        name_layout.addItem(spacer_left)
+        name_layout.addWidget(QLabel("Name:"))
+        name_layout.addWidget(self.name_line_edit)
+        name_layout.addItem(spacer_right)
+
+        layout.addLayout(name_layout)
+
+        # Add the grid layout for the main fuselage section to the main layout
+        self.data_entry_widget: DataEntryWidget = DataEntryWidget(data_units_labels)
+        layout.addWidget(self.data_entry_widget)
+
         # Create a horizontal line
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-    
+        line_bar.setStyleSheet("background-color: light grey;")
+
         # Add the line bar to the main layout
         layout.addWidget(line_bar)
-    
-        self.main_fuselage_widget = self.make_fuselage_widget()
-        # Add the grid layout to the home layout
-        layout.addWidget(self.main_fuselage_widget)
-    
-        layout.addWidget(line_bar)
-        layout.addLayout(self.fuselage_sections_layout)        
-        
+
         # Add the layout for additional fuselage sections to the main layout
+        layout.addLayout(self.fuselage_sections_layout)
 
         # Add line above the buttons
         line_above_buttons = QFrame()
         line_above_buttons.setFrameShape(QFrame.Shape.HLine)
         line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
         line_above_buttons.setStyleSheet("background-color: light grey;")
-        
+
         layout.addWidget(line_above_buttons)
-        
+
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
-    
 
+        # Add Fuselage Section Button
         add_section_button = QPushButton("Add Fuselage Section", self)
         add_section_button.clicked.connect(self.add_fuselage_section)
         button_layout.addWidget(add_section_button)
 
+        # Append All Fuselage Section Data Button
+        append_all_data_button = QPushButton("Save Fuselage Data", self)
+        append_all_data_button.clicked.connect(self.save_data)
+        button_layout.addWidget(append_all_data_button)
 
-        save_data_button = QPushButton("Save All Fuselage Data", self)
-        save_data_button.clicked.connect(self.save_data)
-        button_layout.addWidget(save_data_button)
-
-
-        delete_data_button = QPushButton("Delete Main Fuselage Frame Data", self)
+        # Delete Nacelle Data Button
+        delete_data_button = QPushButton("Delete Fuselage Data", self)
         delete_data_button.clicked.connect(self.delete_data)
         button_layout.addWidget(delete_data_button)
-        
-        
-        new_fuselage_structure_button = QPushButton("New fuselage Structure", self)
+
+        # Create new nacelle structure button
+        new_fuselage_structure_button = QPushButton("New Fuselage Structure", self)
         new_fuselage_structure_button.clicked.connect(self.create_new_structure)
         button_layout.addWidget(new_fuselage_structure_button)
-
 
         # Add the button layout to the main layout
         layout.addLayout(button_layout)
 
         # Adds scroll function
-        layout.addItem(QSpacerItem(
-            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-        # Set the scroll content as the widget for the scroll area
-        scroll_area.setWidget(scroll_content)
-
-        # Set the main layout of the scroll area
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
-
-        # Set the layout to the main window/widget
-        self.setLayout(layout_scroll)    
-
-        
-
-    def make_fuselage_widget(self):
-        """Create a widget for the fuselage section.
-
-        Returns:
-            QWidget: The main fuselage widget."""
-        main_fuselage_widget = QWidget()
-        main_layout = QVBoxLayout()
-        
-        grid_layout = QGridLayout()
-        grid_layout.setSpacing(1)
-
-        name_layout = QHBoxLayout()
-        # add spacing
-        #spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        #spacer_right = QSpacerItem(400, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        #name_layout.addItem(spacer_left)
-        name_layout.addWidget(QLabel("Name: "))
-        self.name_line_edit = QLineEdit(self)
-        name_layout.addWidget(self.name_line_edit)
-        #name_layout.addItem(spacer_right)
-        main_layout.addLayout(name_layout)        
-        
-        
-        
-        # List of data labels for the main fuselage section
-        data_units_labels = [
-            ("Fineness Nose",Units.Length),
-            ("Fineness Tail", Units.Length),
-            ("Lengths Nose", Units.Length),
-            ("Lengths Tail",Units.Length),
-            ("Lengths Cabin",Units.Length),
-            ("Lengths Total", Units.Length),
-            ("Lengths Forespace", Units.Length),
-            ("Lengths Aftspace", Units.Length),
-            ("Width", Units.Length),
-            ("Heights Maximum",Units.Length),
-            ("Height at Quarter", Units.Length),
-            ("Height at Three Quarters",Units.Length),
-            ("Height at Wing Root Quarter Chord",Units.Length),
-            ("Areas Side Projected", Units.Length),
-            ("Area Wetted", Units.Length),
-            ("Area Front Projected",Units.Length),
-            ("Effective Diameter",Units.Length)
-        ]
-
-        for index, label in enumerate(data_units_labels):
-            row, col = divmod(index, 2)
-            
-            line_edit = QLineEdit(self)
-            line_edit.setValidator(QDoubleValidator())
-            line_edit.setFixedWidth(150)  # Adjust the width as needed
-            line_edit.setMaximumHeight(25)
-
-            unit_picker = UnitPickerWidget(label[1])
-            unit_picker.setFixedWidth(100)
-            #unit_picker.setMaximumHeight(25)
-            
-            grid_layout.addWidget(QLabel(label[0] + ":"), row, col * 3)
-            grid_layout.addWidget(line_edit, row, col * 3 + 1)
-            grid_layout.addWidget(unit_picker, row, col * 3 + 2, alignment=Qt.AlignmentFlag.AlignLeft)  
-
-
-
-            # Store a reference to the QLineEdit in the dictionary
-            self.data_fields[label[0]] = (line_edit, unit_picker)
-
-
-        main_layout.addLayout(grid_layout)
-        
-        main_fuselage_widget.setLayout(main_layout)
-        return main_fuselage_widget
-        
-
-    def add_fuselage_section(self):
-        self.fuselage_sections_layout.addWidget(FuselageWidget(
-            self.fuselage_sections_layout.count(), self.on_delete_button_pressed))
-
-
-    def set_save_function(self, function):
-        self.save_function = function
-
-    def set_tab_index(self, index):
-        self.tab_index = index
-        
-    def on_delete_button_pressed(self, index):
-        self.fuselage_sections_layout.itemAt(index).widget().deleteLater()
-        self.fuselage_sections_layout.removeWidget(self.fuselage_sections_layout.itemAt(index).widget())
-        self.fuselage_sections_layout.update()
-        print("Deleted Fuselage at Index:", index)
-
-        for i in range(index, self.fuselage_sections_layout.count()):
-            item = self.fuselage_sections_layout.itemAt(i)
-            if item is None:
-                continue
-
-            widget = item.widget()
-            if widget is not None and isinstance(widget, FuselageWidget):
-                widget.index = i
-                print("Updated Index:", i)
-                
     def get_data_values(self):
-        """Retrieve the entered data values from the text fields."""
-        data = {}
-        for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
-
-        # Get the values from the text fields
+        """Retrieve the entered data values from the dictionary for the main fuselage section."""
+        data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
-        data["sections"] = []
 
-        # Loop through the sections and get the data from each widget
-        for i in range(self.fuselage_sections_layout.count()):
-            item = self.fuselage_sections_layout.itemAt(i)
-            if item is None:
-                continue
+        # Collect data from additional fuselage_widget
+        additional_data = []
+        for index in range(self.fuselage_sections_layout.count()):
+            widget = self.fuselage_sections_layout.itemAt(index).widget()
+            additional_data.append(widget.get_data_values())
 
-            widget = item.widget()
-
-            # Each of the widgets has its own get_data_values method that is called to fetch their data
-            if widget is not None and isinstance(widget, FuselageWidget):
-                data["sections"].append(widget.get_data_values())
-
+        data["sections"] = additional_data
         return data
 
     def save_data(self):
-        """Call the save function and pass the entered data to it."""
+        """Append the entered data to a list or perform any other action."""
         entered_data = self.get_data_values()
-        print("Saving Data:", entered_data)
+
+        print("Main Fuselage Data:", entered_data)
+
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(self.tab_index, self.index, entered_data)
@@ -245,21 +147,8 @@ class FuselageFrame(QWidget, GeometryFrame):
             show_popup("Data Saved!", self)
 
     def load_data(self, data, index):
-        """Load the data into the widgets.
-
-        Args:
-            data: The data to be loaded into the widgets.
-            index: The index of the data in the list.
-        """
-        for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value, index = data[label]
-            line_edit.setText(str(value))
-            unit_picker.set_index(index)
-            
-        if "name" in data:
-            self.name_line_edit.setText(data["name"])
-
+        self.data_entry_widget.load_data(data)
+        self.name_line_edit.setText(data["name"])
 
         # Make sure sections don't already exist
         while self.fuselage_sections_layout.count():
@@ -268,22 +157,42 @@ class FuselageFrame(QWidget, GeometryFrame):
             if widget is not None:
                 widget.deleteLater()
 
-        # Add all the sections
         for section_data in data["sections"]:
-            self.fuselage_sections_layout.addWidget(FuselageWidget(
+            self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
-        self.index = index
+    def delete_data(self):
+        """Delete the entered data or perform any other action."""
+        self.data_entry_widget.clear_values()
 
+    def add_fuselage_section(self):
+        self.fuselage_sections_layout.addWidget(
+            FuselageSectionWidget(self.fuselage_sections_layout.count(), self.on_delete_button_pressed))
+
+    def on_delete_button_pressed(self, index):
+        self.fuselage_sections_layout.itemAt(index).widget().deleteLater()
+        self.fuselage_sections_layout.removeWidget(self.fuselage_sections_layout.itemAt(index).widget())
+        self.fuselage_sections_layout.update()
+        print("Deleted Fuselage at Index:", index)
+
+        for i in range(index, self.fuselage_sections_layout.count()):
+            self.fuselage_sections_layout.itemAt(i).widget().index = i
+            print("Updated Index:", i)
+
+    def update_units(self, line_edit, unit_combobox):
+        pass
+
+    def set_save_function(self, function):
+        self.save_function = function
+
+    def set_tab_index(self, index):
+        self.tab_index = index
 
     def create_new_structure(self):
         """Create a new fuselage structure."""
 
         # Clear the main data values
-        for data_field in self.data_fields.values():
-            line_edit, unit_picker = data_field
-            line_edit.clear()
-            unit_picker.set_index(0)
+        self.data_entry_widget.clear_values()
 
         # Clear the name line edit
         while self.fuselage_sections_layout.count():
@@ -294,6 +203,25 @@ class FuselageFrame(QWidget, GeometryFrame):
 
         self.name_line_edit.clear()
         self.index = -1
-        
-    def delete_data(self):
-        pass
+
+    def create_scroll_layout(self):
+        # Create a scroll area
+
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
+
+        # Create a widget to contain the layout
+        scroll_content = QWidget()
+        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
+
+        # Set the scroll content as the widget for the scroll area
+        scroll_area.setWidget(scroll_content)
+
+        # Set the main layout of the scroll area
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+
+        # Set the layout to the main window/widget
+        self.setLayout(layout_scroll)
+
+        return layout

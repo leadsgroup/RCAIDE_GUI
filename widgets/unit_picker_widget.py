@@ -10,7 +10,7 @@ class UnitPickerWidget(QWidget):
         self.current_index = 0
 
         self.unit_picker = QComboBox()
-        
+
         self.init_ui()
 
     def init_ui(self):
@@ -24,7 +24,6 @@ class UnitPickerWidget(QWidget):
 
         main_layout.addWidget(self.unit_picker)
         main_layout.setContentsMargins(0, 0, 0, 0)
-
 
     def on_unit_change(self, index):
         self.current_index = index

@@ -1,31 +1,31 @@
 from PyQt6.QtWidgets import *
 from tabs.geometry.energy_network_widgets.turbofan_widgets.fuelline_widget import FuelLineWidget
-from tabs.geometry.energy_network_widgets.turbofan_widgets.propulsors_widget import PropulsorWidget
-from tabs.geometry.energy_network_widgets.turbofan_widgets.fuel_tanks_widget import FuelTankWidget
-
+from tabs.geometry.energy_network_widgets.turbofan_widgets.propulsors.propulsors_main import PropulsorFrame
+from tabs.geometry.energy_network_widgets.turbofan_widgets.fueltanks.fuel_tanks_main import FuelTankFrame
 
 class TurboFanWidget(QWidget):
     def __init__(self):
         super().__init__()
 
         self.fuel_line_widgets = []
-
+        self.propulsor_widget = PropulsorFrame()  
+        self.fuel_tank_widget = FuelTankFrame()
         self.init_ui()
 
     def init_ui(self):
         main_layout = QVBoxLayout(self)
 
-        # Header
-        #header_layout = QHBoxLayout()
+        #Header
+        header_layout = QHBoxLayout()
         #header_label = QLabel("<u><b>TurboFan Network</b></u>")
         #header_layout.addWidget(header_label)
-        #main_layout.addLayout(header_layout)
+        main_layout.addLayout(header_layout)
 
         # Line bar
-        line_bar = QFrame()
-        line_bar.setFrameShape(QFrame.Shape.HLine)
-        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        main_layout.addWidget(line_bar)
+        #line_bar = QFrame()
+        #line_bar.setFrameShape(QFrame.Shape.HLine)
+        #line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        #main_layout.addWidget(line_bar)
 
         # Initial fuel line section
         self.add_fuelline_section()
@@ -45,12 +45,26 @@ class TurboFanWidget(QWidget):
         button_layout.addWidget(add_section_button)
 
         main_layout.addLayout(button_layout)
+        
+        
 
     def add_fuelline_section(self):
         fuel_line_widget = FuelLineWidget(len(self.fuel_line_widgets), self.on_delete_button_pressed)
         self.fuel_line_widgets.append(fuel_line_widget)
         self.layout().insertWidget(self.layout().count() - 2, fuel_line_widget)
 
+    def get_data_values(self):
+        #"""Retrieve the entered data values from the dictionary for the main propulsor_ section."""
+
+        ## Collect data from additional fuselage_widget
+        #additional_data = []
+        #for index in range(self.propulsor_sections_layout.count()):
+            #widget = self.propulsor_sections_layout.itemAt(index).widget()
+            #additional_data.append(widget.get_data_values())
+
+        ##data["sections"] = additional_data
+        #return additional_data
+        pass
 
     def on_delete_button_pressed(self, index):
         if 0 <= index < len(self.fuel_line_widgets):
