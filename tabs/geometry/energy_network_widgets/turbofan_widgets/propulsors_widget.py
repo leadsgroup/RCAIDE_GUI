@@ -49,8 +49,9 @@ class PropulsorWidget(QWidget):
             row, col = divmod(index, 2)
             line_edit = QLineEdit(self)
             line_edit.setValidator(QDoubleValidator())
+            
             # Set the width of the line edit
-            line_edit.setFixedWidth(150)  # Adjust the width as needed
+            line_edit.setFixedWidth(150)
 
             unit_picker = UnitPickerWidget(label[1])
             unit_picker.setFixedWidth(80)
@@ -92,7 +93,6 @@ class PropulsorWidget(QWidget):
         return data
 
 
-
     def load_data_values(self, section_data):
         for label, data_field in self.data_fields.items():
             line_edit, unit_picker = data_field
@@ -111,6 +111,7 @@ class PropulsorWidget(QWidget):
             return
 
         self.on_delete(self.index)
+        
         
     # TO DO: DUPE PROPS
     def add_button_pressed(self):

@@ -72,7 +72,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
    
    
    
-      new_energy_network_structure_button = QPushButton("Clear Energy Network Data", self)
+      new_energy_network_structure_button = QPushButton("Clear All Energy Network Data", self)
       new_energy_network_structure_button.clicked.connect(self.create_new_structure)
       button_layout.addWidget(new_energy_network_structure_button)
    
