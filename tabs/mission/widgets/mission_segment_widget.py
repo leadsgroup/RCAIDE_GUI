@@ -75,7 +75,7 @@ class MissionSegmentWidget(QWidget):
         subsegment_entry_widget = DataEntryWidget(data_fields)
         self.subsegment_layout.addWidget(subsegment_entry_widget)
 
-        dof_fields = [("Forces in X", Units.Boolean), ("Moments in X", Units.Boolean), ("Forces in Y", Units.Boolean), ("Moments about Y", Units.Boolean), ("Forces in Z", Units.Boolean), ("Moments about Z", Units.Boolean)]
+        dof_fields = [("Forces in X axis", Units.Boolean), ("Moments about X axis", Units.Boolean), ("Forces in Y axis", Units.Boolean), ("Moments about Y axis", Units.Boolean), ("Forces in Z axis", Units.Boolean), ("Moments about Z axis", Units.Boolean)]
         dof_entry_widget = DataEntryWidget(dof_fields)
         self.dof_layout.addWidget(dof_entry_widget)
         self.subsegment_layout.addLayout(self.dof_layout)
@@ -185,7 +185,7 @@ class MissionSegmentWidget(QWidget):
         "Constant Dynamics Pressure/Constant Altitude": [("Altitude", Units.Length), ("Acceleration", Units.Acceleration), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Constant Mach/Constant Altitude Loiter": [("Altitude", Units.Length), ("Mach Number", Units.Unitless), ("Time", Units.Time), ("True Course Angle", Units.Angle)],
         "Constant Mach/Constant Altitude": [("Altitude", Units.Length), ("Mach Number", Units.Unitless), ("Distance", Units.Length), ("True Course Angle", Units.Angle)],
-        "Constant Pitch Rate/Constant Altitude": [("Altitude", Units.Length), ("Pitch Rate", Units.AngularVelocity), ("Pitch Initial", Units.Angle), ("Pitch Final", Units.Angle), ("True Course Angle", Units.Angle)],
+        "Constant Pitch Rate/Constant Altitude": [("Altitude", Units.Length), ("Pitch Rate", Units.Velocity), ("Pitch Initial", Units.Angle), ("Pitch Final", Units.Angle), ("True Course Angle", Units.Angle)],
         "Constant Speed/Constant Altitude Loiter": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Time", Units.Time), ("True Course Angle", Units.Angle)],
         "Constant Speed/Constant Altitude": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Distance", Units.Length), ("True Course Angle", Units.Angle)],
         "Constant Throttle/Constant Altitude": [("Throttle", Units.Unitless), ("Altitude", Units.Length), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
