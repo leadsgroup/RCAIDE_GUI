@@ -93,6 +93,13 @@ class Units:
 
         unit_list = [JOULE, KILOJOULE, WATT_HOUR, KILOWATT_HOUR, CALORIE, KILOCALORIE]
 
+    class Current:
+        AMPERE = ("A", lambda x: x)
+        MILLIAMPERE = ("mA", lambda x: x * 0.001)
+        MICROAMPERE = ("µA", lambda x: x * 0.000001)
+
+        unit_list = [AMPERE, MILLIAMPERE, MICROAMPERE]
+        
     class Pressure:
         PASCAL = ("Pa", lambda x: x)
         KILOPASCAL = ("kPa", lambda x: x * 1000)
@@ -116,3 +123,10 @@ class Units:
         RADIAN = ("rad", lambda x: x)
         DEGREE = ("°", lambda x: np.deg2rad(x))
         unit_list = [RADIAN, DEGREE]
+    
+    class AngularVelocity:
+        RADIAN_PER_SECOND = ("rad/s", lambda x: x)
+        DEGREE_PER_SECOND = ("°/s", lambda x: np.deg2rad(x))
+        unit_list = [RADIAN_PER_SECOND, DEGREE_PER_SECOND]
+
+    
