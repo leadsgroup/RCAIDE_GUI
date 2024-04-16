@@ -123,10 +123,6 @@ class Units:
         RADIAN = ("rad", lambda x: x)
         DEGREE = ("°", lambda x: np.deg2rad(x))
         unit_list = [RADIAN, DEGREE]
-    
-    class AngularVelocity:
-        RADIAN_PER_SECOND = ("rad/s", lambda x: x)
-        DEGREE_PER_SECOND = ("°/s", lambda x: np.deg2rad(x))
-        unit_list = [RADIAN_PER_SECOND, DEGREE_PER_SECOND]
 
-    
+    class Boolean:
+        pass
