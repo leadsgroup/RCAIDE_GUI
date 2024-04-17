@@ -6,9 +6,9 @@ from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
 
-class FuselageSectionWidget(QWidget):
+class WingSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
-        super(FuselageSectionWidget, self).__init__()
+        super(WingSectionWidget, self).__init__()
 
         # self.data_fields = {}
         self.coordinate_filename = ""
@@ -34,10 +34,13 @@ class FuselageSectionWidget(QWidget):
 
         # List of data labels
         data_units_labels = [
-            ("Percent X Location", Units.Unitless),
-            ("Percent Z Location", Units.Unitless),
-            ("Height", Units.Length),
-            ("Width", Units.Length),
+            ("Percent Span Location", Units.Unitless),
+            ("Twist", Units.Angle),
+            ("Root Chord Percent", Units.Unitless),
+            ("Thickness to Chord", Units.Unitless),
+            ("Dihedral Outboard", Units.Angle),
+            ("Quarter Chord Sweep", Units.Angle),
+            ("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)

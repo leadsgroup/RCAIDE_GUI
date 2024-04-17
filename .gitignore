@@ -263,3 +263,6 @@ cython_debug/
 *.vsix
 
 /.fleet/
+
+# Data files
+data/*.json

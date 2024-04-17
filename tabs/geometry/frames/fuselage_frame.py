@@ -1,26 +1,26 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QFrame, \
-    QSizePolicy, QSpacerItem, QLineEdit
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea
 
-from tabs.geometry.frames.geometry_frame import GeometryFrame
+from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
 from tabs.geometry.widgets.fuselage_section_widget import FuselageSectionWidget
+from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
 from utilities import show_popup, Units
 from widgets.data_entry_widget import DataEntryWidget
 
 
-# ================================================================================================================================================
-
-# Main Fuselage Frame
-
-# ================================================================================================================================================
-
 class FuselageFrame(QWidget, GeometryFrame):
     def __init__(self):
+        """Create a frame for entering nacelle data."""
         super(FuselageFrame, self).__init__()
+        self.data_entry_widget: DataEntryWidget | None = None
 
-        self.index = -1
-        self.tab_index = -1
-        self.save_function = None
+        self.create_scroll_area()
+        self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
+        self.main_layout.addWidget(create_line_bar())
 
+        self.add_name_layout()
+
+        # List of data labels
         data_units_labels = [
             ("Fineness Nose", Units.Unitless),
             ("Fineness Tail", Units.Unitless),
@@ -41,102 +41,66 @@ class FuselageFrame(QWidget, GeometryFrame):
             ("Effective Diameter", Units.Length),
         ]
 
-        # List to store data values fuselage sections
+        # Add the data entry widget to the main layout
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.main_layout.addWidget(self.data_entry_widget)
+        self.main_layout.addWidget(create_line_bar())
+
+        # Add the secctions layout to the main layout
         self.fuselage_sections_layout = QVBoxLayout()
+        self.main_layout.addLayout(self.fuselage_sections_layout)
 
-        # Create a horizontal layout for the label and buttons
-        header_layout = QHBoxLayout()
-        label = QLabel("<u><b>Main Fuselage Frame</b></u>")
+        self.add_buttons_layout()
 
-        layout = self.create_scroll_layout()
+        # Adds scroll function
+        self.main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-        header_layout.addWidget(label)
-        layout.addLayout(header_layout)
+    def create_scroll_area(self):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        self.main_layout = QVBoxLayout(scroll_content)
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+        layout_scroll.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout_scroll)
 
+    def add_name_layout(self):
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        self.name_line_edit = QLineEdit()
+        self.name_line_edit = QLineEdit(self)
         name_layout.addItem(spacer_left)
-        name_layout.addWidget(QLabel("Name:"))
+        name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
+        self.main_layout.addLayout(name_layout)
 
-        layout.addLayout(name_layout)
+    # noinspection PyUnresolvedReferences
+    def add_buttons_layout(self):
+        """Add the save, delete, and new buttons to the layout."""
+        new_section_button = QPushButton("New Fuselage Section", self)
+        save_button = QPushButton("Save Data", self)
+        delete_button = QPushButton("Delete Data", self)
+        new_button = QPushButton("New Fuselage Structure", self)
 
-        # Add the grid layout for the main fuselage section to the main layout
-        self.data_entry_widget: DataEntryWidget = DataEntryWidget(data_units_labels)
-        layout.addWidget(self.data_entry_widget)
+        new_section_button.clicked.connect(self.add_fuselage_section)
+        save_button.clicked.connect(self.save_data)
+        delete_button.clicked.connect(self.delete_data)
+        new_button.clicked.connect(self.create_new_structure)
 
-        # Create a horizontal line
-        line_bar = QFrame()
-        line_bar.setFrameShape(QFrame.Shape.HLine)
-        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        line_bar.setStyleSheet("background-color: light grey;")
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addWidget(new_section_button)
+        buttons_layout.addWidget(save_button)
+        buttons_layout.addWidget(delete_button)
+        buttons_layout.addWidget(new_button)
+        self.main_layout.addLayout(buttons_layout)
 
-        # Add the line bar to the main layout
-        layout.addWidget(line_bar)
-
-        # Add the layout for additional fuselage sections to the main layout
-        layout.addLayout(self.fuselage_sections_layout)
-
-        # Add line above the buttons
-        line_above_buttons = QFrame()
-        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
-        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
-        line_above_buttons.setStyleSheet("background-color: light grey;")
-
-        layout.addWidget(line_above_buttons)
-
-        # Create a QHBoxLayout to contain the buttons
-        button_layout = QHBoxLayout()
-
-        # Add Fuselage Section Button
-        add_section_button = QPushButton("Add Fuselage Section", self)
-        add_section_button.clicked.connect(self.add_fuselage_section)
-        button_layout.addWidget(add_section_button)
-
-        # Append All Fuselage Section Data Button
-        append_all_data_button = QPushButton("Save Fuselage Data", self)
-        append_all_data_button.clicked.connect(self.save_data)
-        button_layout.addWidget(append_all_data_button)
-
-        # Delete Nacelle Data Button
-        delete_data_button = QPushButton("Delete Fuselage Data", self)
-        delete_data_button.clicked.connect(self.delete_data)
-        button_layout.addWidget(delete_data_button)
-
-        # Create new nacelle structure button
-        new_fuselage_structure_button = QPushButton("New Fuselage Structure", self)
-        new_fuselage_structure_button.clicked.connect(self.create_new_structure)
-        button_layout.addWidget(new_fuselage_structure_button)
-
-        # Add the button layout to the main layout
-        layout.addLayout(button_layout)
-
-        # Adds scroll function
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
-
-    def get_data_values(self):
-        """Retrieve the entered data values from the dictionary for the main fuselage section."""
-        data = self.data_entry_widget.get_values()
-        data["name"] = self.name_line_edit.text()
-
-        # Collect data from additional fuselage_widget
-        additional_data = []
-        for index in range(self.fuselage_sections_layout.count()):
-            widget = self.fuselage_sections_layout.itemAt(index).widget()
-            additional_data.append(widget.get_data_values())
-
-        data["sections"] = additional_data
-        return data
-
+    # noinspection DuplicatedCode
     def save_data(self):
-        """Append the entered data to a list or perform any other action."""
+        """Call the save function and pass the entered data to it."""
         entered_data = self.get_data_values()
-
-        print("Main Fuselage Data:", entered_data)
-
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(self.tab_index, self.index, entered_data)
@@ -146,82 +110,69 @@ class FuselageFrame(QWidget, GeometryFrame):
 
             show_popup("Data Saved!", self)
 
-    def load_data(self, data, index):
-        self.data_entry_widget.load_data(data)
-        self.name_line_edit.setText(data["name"])
-
-        # Make sure sections don't already exist
-        while self.fuselage_sections_layout.count():
-            item = self.fuselage_sections_layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-
-        for section_data in data["sections"]:
-            self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
-                self.fuselage_sections_layout.count(), self.on_delete_button_pressed, section_data))
-
-    def delete_data(self):
-        """Delete the entered data or perform any other action."""
-        self.data_entry_widget.clear_values()
-
     def add_fuselage_section(self):
-        self.fuselage_sections_layout.addWidget(
-            FuselageSectionWidget(self.fuselage_sections_layout.count(), self.on_delete_button_pressed))
+        self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
+            self.fuselage_sections_layout.count(), self.delete_fuselage_section))
 
-    def on_delete_button_pressed(self, index):
+    def delete_fuselage_section(self, index):
         self.fuselage_sections_layout.itemAt(index).widget().deleteLater()
         self.fuselage_sections_layout.removeWidget(self.fuselage_sections_layout.itemAt(index).widget())
         self.fuselage_sections_layout.update()
-        print("Deleted Fuselage at Index:", index)
 
         for i in range(index, self.fuselage_sections_layout.count()):
-            self.fuselage_sections_layout.itemAt(i).widget().index = i
-            print("Updated Index:", i)
+            item = self.fuselage_sections_layout.itemAt(i)
+            if item is None:
+                continue
 
-    def update_units(self, line_edit, unit_combobox):
+            widget = item.widget()
+            if widget is not None and isinstance(widget, FuselageSectionWidget):
+                widget.index = i
+
+    # TODO: Implement proper deletion of data
+    def delete_data(self):
         pass
 
-    def set_save_function(self, function):
-        self.save_function = function
-
-    def set_tab_index(self, index):
-        self.tab_index = index
-
     def create_new_structure(self):
-        """Create a new fuselage structure."""
-
+        """Create a new nacelle structure."""
         # Clear the main data values
         self.data_entry_widget.clear_values()
-
-        # Clear the name line edit
-        while self.fuselage_sections_layout.count():
-            item = self.fuselage_sections_layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-
         self.name_line_edit.clear()
+
+        # Clear the nacelle sections
+        for i in range(self.fuselage_sections_layout.count()):
+            self.fuselage_sections_layout.itemAt(i).widget().deleteLater()
+        self.fuselage_sections_layout.update()
         self.index = -1
 
-    def create_scroll_layout(self):
-        # Create a scroll area
+    def get_data_values(self):
+        """Retrieve the entered data values from the text fields."""
+        data = self.data_entry_widget.get_values()
 
-        scroll_area = QScrollArea(self)
-        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize with the scroll area
+        data["sections"] = []
+        for i in range(self.fuselage_sections_layout.count()):
+            item = self.fuselage_sections_layout.itemAt(i)
+            if item is None:
+                continue
 
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
+            widget = item.widget()
+            if widget is not None and isinstance(widget, FuselageSectionWidget):
+                data["sections"].append(widget.get_data_values())
 
-        # Set the scroll content as the widget for the scroll area
-        scroll_area.setWidget(scroll_content)
+        data["name"] = self.name_line_edit.text()
+        return data
 
-        # Set the main layout of the scroll area
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
+    def load_data(self, data, index):
+        """Load the data into the widgets.
 
-        # Set the layout to the main window/widget
-        self.setLayout(layout_scroll)
+        Args:
+            data: The data to be loaded into the widgets.
+            index: The index of the data in the list.
+        """
+        self.data_entry_widget.load_data(data)
 
-        return layout
+        for section in data["sections"]:
+            self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
+                self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
+
+        self.name_line_edit.setText(data["name"])
+        self.index = index
