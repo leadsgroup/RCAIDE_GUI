@@ -1,19 +1,38 @@
-from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
+from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
+                             QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+                             QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
 
 class FuselageSectionWidget(QWidget):
-    def __init__(self, index, on_delete, data_values=None):
+    def __init__(self, index, on_delete, section_data=None):
         super(FuselageSectionWidget, self).__init__()
 
-        self.data_values = {}
+        # self.data_fields = {}
+        self.coordinate_filename = ""
         self.index = index
         self.on_delete = on_delete
+        self.data_entry_widget: DataEntryWidget | None = None
 
-        main_section_layout = QVBoxLayout()
+        self.name_layout = QHBoxLayout()
+        self.init_ui(section_data)
 
+    # noinspection DuplicatedCode
+    def init_ui(self, section_data):
+        main_layout = QVBoxLayout()
+        # add spacing
+        spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.name_layout.addItem(spacer_left)
+        self.name_layout.addWidget(QLabel("Segment Name: "))
+        self.name_layout.addWidget(QLineEdit(self))
+        self.name_layout.addItem(spacer_right)
+
+        main_layout.addLayout(self.name_layout)
+
+        # List of data labels
         data_units_labels = [
             ("Percent X Location", Units.Unitless),
             ("Percent Z Location", Units.Unitless),
@@ -21,28 +40,39 @@ class FuselageSectionWidget(QWidget):
             ("Width", Units.Length),
         ]
 
-        self.name_layout = QHBoxLayout()
-        self.section_name_edit = QLineEdit(self)
-        self.name_layout.addWidget(QLabel("Section Name: "))
-        self.name_layout.addWidget(self.section_name_edit)
-        main_section_layout.addLayout(self.name_layout)
-
         self.data_entry_widget = DataEntryWidget(data_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
-
-        delete_button = QPushButton("Delete Fuselage Segment", self)
+        delete_button = QPushButton("Delete Section", self)
+        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        delete_button.setFixedWidth(150)
         delete_button.clicked.connect(self.delete_button_pressed)
+        # center delete button
+        delete_button_layout = QHBoxLayout()
+        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        delete_button_layout.addWidget(delete_button)
+        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
-        main_section_layout.addWidget(delete_button)
+        main_layout.addWidget(self.data_entry_widget)
+        main_layout.addLayout(delete_button_layout)
 
-        self.setLayout(main_section_layout)
+        # Add horizontal bar
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        main_layout.addWidget(line_bar)
 
-        if data_values:
-            self.load_data_values(data_values)
+        if section_data:
+            self.load_data_values(section_data)
+
+        self.setLayout(main_layout)
+
+    def get_data_values(self):
+        data = self.data_entry_widget.get_values()
+        data["segment name"] = self.name_layout.itemAt(2).widget().text()
+        return data
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.section_name_edit.setText(section_data["segment name"])
+        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")
@@ -52,11 +82,3 @@ class FuselageSectionWidget(QWidget):
             return
 
         self.on_delete(self.index)
-
-    def get_data_values(self):
-        title = self.section_name_edit.text()
-        data_values = self.data_entry_widget.get_values()
-        data_values["segment name"] = title
-
-        return data_values
-
