@@ -1,0 +1,93 @@
+from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
+                             QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+                             QVBoxLayout, QWidget, QFrame)
+
+from utilities import Units
+from widgets.data_entry_widget import DataEntryWidget
+
+
+class WingCSWidget(QWidget):
+    def __init__(self, index, on_delete, section_data=None):
+        super(WingCSWidget, self).__init__()
+
+        # self.data_fields = {}
+        self.coordinate_filename = ""
+        self.index = index
+        self.on_delete = on_delete
+        self.data_entry_widget: DataEntryWidget | None = None
+
+        self.name_layout = QHBoxLayout()
+        self.init_ui(section_data)
+
+    # noinspection DuplicatedCode
+    def init_ui(self, section_data):
+        main_layout = QVBoxLayout()
+        # add spacing
+        spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.name_layout.addItem(spacer_left)
+        self.name_layout.addWidget(QLabel("Control Surface Name: "))
+        self.name_layout.addWidget(QLineEdit(self))
+        self.name_layout.addItem(spacer_right)
+
+        main_layout.addLayout(self.name_layout)
+
+        # List of data labels
+        data_units_labels = [
+            ("Flap: Span Fraction Start", Units.Unitless),
+            ("Slat: Span Fraction Start", Units.Unitless),
+            ("Aileron: Span Fraction Start", Units.Unitless),
+            ("Flap: Span Fraction End", Units.Unitless),
+            ("Slat: Span Fraction End", Units.Unitless),
+            ("Aileron: Span Fraction End", Units.Unitless),
+            ("Flap: Deflection", Units.Angle),
+            ("Slat: Deflection", Units.Angle),
+            ("Aileron: Deflection", Units.Angle),
+            ("Flap: Chord Fraction", Units.Unitless),
+            ("Slat: Chord Fraction", Units.Unitless),
+            ("Aileron: Chord Fraction", Units.Unitless),
+            ("Flap: Configuration", Units.Unitless),
+        ]
+
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        delete_button = QPushButton("Delete Section", self)
+        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        delete_button.setFixedWidth(150)
+        delete_button.clicked.connect(self.delete_button_pressed)
+        # center delete button
+        delete_button_layout = QHBoxLayout()
+        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        delete_button_layout.addWidget(delete_button)
+        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+
+        main_layout.addWidget(self.data_entry_widget)
+        main_layout.addLayout(delete_button_layout)
+
+        # Add horizontal bar
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        main_layout.addWidget(line_bar)
+
+        if section_data:
+            self.load_data_values(section_data)
+
+        self.setLayout(main_layout)
+
+    def get_data_values(self):
+        data = self.data_entry_widget.get_values()
+        data["CS name"] = self.name_layout.itemAt(2).widget().text()
+        return data
+
+    def load_data_values(self, section_data):
+        self.data_entry_widget.load_data(section_data)
+        self.name_layout.itemAt(2).widget().setText(section_data["CS name"])
+
+    def delete_button_pressed(self):
+        print("Delete button pressed")
+
+        if self.on_delete is None:
+            print("on_delete is None")
+            return
+
+        self.on_delete(self.index)
