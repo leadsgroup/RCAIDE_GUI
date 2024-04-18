@@ -158,41 +158,48 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                widget.index = i
                print("Updated Index:", i)
    
-   def save_data(self):
-      """Call the save function and pass the entered data to it."""
-      entered_data = self.get_data_values()
-      print("Saving Data:", entered_data)
-      if self.save_function:
-         main_energy_network_data = entered_data.get("main_energy_network_data", {})  # Get main_energy_network_data or empty dict
-         if "name" not in main_energy_network_data:
-            # Provide a default name or handle the absence of the key appropriately
-            main_energy_network_data["name"] = "DefaultName"
-         entered_data["main_energy_network_data"] = main_energy_network_data  # Update entered_data with modified main_energy_network_data
    
-      if self.index >= 0:
-         self.index = self.save_function(self.tab_index, self.index, entered_data)
-         return
-      else:
-         self.index = self.save_function(self.tab_index, data=entered_data, new=True)
    
-      show_popup("Data Saved!", self)
-
-
+   
+   
    
    def get_data_values(self):
       """Retrieve the entered data values from the widgets."""
-   
       selected_network = self.energy_network_combo.currentText()
-      data = {"energy network selected": selected_network, "energy network name": self.name_line_edit.text(), 
-              }
+      data = {"energy network selected": selected_network, "energy network name": self.name_line_edit.text()}
    
-   
-      
       if selected_network == "Turbofan":
-         data["main_energy_network_data"] = self.main_energy_network_widget.get_data_values()
-         data["energy_network_sections"] = []
+         fuelline_data = []
+         for index in range(self.energy_network_sections_layout.count()):
+            widget = self.energy_network_sections_layout.itemAt(index).widget()
+            fuelline_data.append(widget.get_data_values())      
+
+         
+         data["energy_network_sections"] = fuelline_data
    
       return data
+
+   
+   
+   
+
+   
+   def save_data(self):
+      """Call the save function and pass the entered data to it."""
+      entered_data = self.get_data_values()
+      
+   
+      print("Energy Network Data:", entered_data)
+   
+      if self.save_function:
+         if self.index >= 0:
+            self.index = self.save_function(self.tab_index, self.index, entered_data)
+            return
+         else:
+            self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+   
+         show_popup("Data Saved!", self)
+
 
 
    
@@ -226,6 +233,32 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                   self.energy_network_sections_layout.count(), self.on_delete_button_pressed, section_data))
    
          self.index = index
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
    
    def create_new_structure(self):

@@ -118,7 +118,7 @@ class GeometryWidget(QWidget):
 
     def save_data(self, tab_index, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.
-
+    
         Args:
             tab_index: The index of the tab.
             index: The index of the vehicle element in the list. (Within its type, eg fuselage #0, #1, etc.)
@@ -127,16 +127,25 @@ class GeometryWidget(QWidget):
         """
         print("Saving data:", data)
         if new:
+            if "name" in data:
+                name = data["name"]
+            else:
+                name = f"Element {index + 1}"
             self.data[tab_index].append(data)
-            child = QTreeWidgetItem([data["name"]])
+            child = QTreeWidgetItem([name])
             item = self.tree.topLevelItem(tab_index)
             item.addChild(child)
             index = item.indexOfChild(child)
             return index
-
-        self.data[tab_index][index] = data
-        self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
+    
+        if "name" in data:
+            self.data[tab_index][index] = data
+            self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
+        else:
+            self.data[tab_index][index] = data
+            self.tree.topLevelItem(tab_index).child(index).setText(0, f"Element {index + 1}")
         return index
+
 
 
 def get_widget() -> QWidget:
