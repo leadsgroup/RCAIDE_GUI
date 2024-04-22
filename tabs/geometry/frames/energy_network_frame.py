@@ -19,7 +19,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       self.save_function = None
       self.tab_index = -1
       self.index = -1
-      self.name_line_edit: QLineEdit | None = None
+
    
       # Create a scroll area
       scroll_area = QScrollArea()
@@ -108,7 +108,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
          spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
          spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
          name_layout.addItem(spacer_left)
-         name_layout.addWidget(QLabel("Energy Network Name: "))
+         name_layout.addWidget(QLabel("Name: "))
          self.name_line_edit = QLineEdit(self)
          name_layout.addWidget(self.name_line_edit)
          name_layout.addItem(spacer_right)
@@ -161,7 +161,21 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
    
    
    
+   def save_data(self):
+      """Call the save function and pass the entered data to it."""
+      entered_data = self.get_data_values()
    
+      print("Entered data in EnergyNetworkFrame:", entered_data)  # Add this line for debugging
+   
+      if self.save_function:
+         if self.index >= 0:
+            self.index = self.save_function(self.tab_index, self.index, entered_data)
+            return
+         else:
+            self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+   
+      show_popup("Data Saved!", self)
+
    
    def get_data_values(self):
       """Retrieve the entered data values from the widgets."""
@@ -173,66 +187,44 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
          for index in range(self.energy_network_sections_layout.count()):
             widget = self.energy_network_sections_layout.itemAt(index).widget()
             fuelline_data.append(widget.get_data_values())      
-
-         
+   
          data["energy_network_sections"] = fuelline_data
    
       return data
 
-   
-   
-   
 
-   
-   def save_data(self):
-      """Call the save function and pass the entered data to it."""
-      entered_data = self.get_data_values()
-      
-   
-      print("Energy Network Data:", entered_data)
-   
-      if self.save_function:
-         if self.index >= 0:
-            self.index = self.save_function(self.tab_index, self.index, entered_data)
-            return
-         else:
-            self.index = self.save_function(self.tab_index, data=entered_data, new=True)
-   
-         show_popup("Data Saved!", self)
 
 
 
    
    def load_data(self, data, index):
-         """Load the data into the widgets.
+      """Load the data into the widgets.
    
-         Args:
-             data: The data to be loaded into the widgets.
-             index: The index of the data in the list.
-         """
-         for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value, index = data[label]
-            line_edit.setText(str(value))
-            unit_picker.set_index(index)
+      Args:
+          data: The data to be loaded into the widgets.
+          index: The index of the data in the list.
+      """
+      self.name_line_edit.setText(data.get("energy network name", ""))
    
-         if "name" in data:
-            self.name_line_edit.setText(data["name"])
+      # Set selected energy network
+      selected_network = data.get("energy network selected", "")
+      if selected_network:
+         index = self.energy_network_combo.findText(selected_network)
+         if index != -1:
+            self.energy_network_combo.setCurrentIndex(index)
+            self.display_selected_network(index)
    
+      # Load data for specific energy network sections
+      if selected_network == "Turbofan":
+         sections_data = data.get("energy_network_sections", [])
+         for section_data in sections_data:
+            self.energy_network_sections_layout.addWidget(
+                  TurboFanWidget(self.energy_network_sections_layout.count(), self.on_delete_button_pressed))
+            widget = self.energy_network_sections_layout.itemAt(self.energy_network_sections_layout.count() - 1).widget()
+            widget.load_data(section_data, None)  # Assuming index is None for new section
    
-         # Make sure sections don't already exist
-         while self.energy_network_sections_layout.count():
-            item = self.energy_network_sections_layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-               widget.deleteLater()
-   
-         # Add all the sections
-         for section_data in data["sections"]:
-            self.energy_network_sections_layout.addWidget(TurboFanWidget(
-                  self.energy_network_sections_layout.count(), self.on_delete_button_pressed, section_data))
-   
-         self.index = index
+      self.index = index
+
    
    
    
