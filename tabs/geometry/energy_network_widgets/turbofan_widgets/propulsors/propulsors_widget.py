@@ -12,6 +12,7 @@ class PropulsorWidget(QWidget):
         super(PropulsorWidget, self).__init__()
 
         # TODO: Add landing gear types in the future
+        # TODO: Add copying turbofan function (setting to new origin with same attributes)
 
         self.data_values = {}
         self.index = index
@@ -34,7 +35,7 @@ class PropulsorWidget(QWidget):
 
         self.name_layout = QHBoxLayout()
         self.section_name_edit = QLineEdit(self)
-        self.name_layout.addWidget(QLabel("Section Name: "))
+        self.name_layout.addWidget(QLabel("Propulsor Name: "))
         self.name_layout.addWidget(self.section_name_edit)
         main_section_layout.addLayout(self.name_layout)
 

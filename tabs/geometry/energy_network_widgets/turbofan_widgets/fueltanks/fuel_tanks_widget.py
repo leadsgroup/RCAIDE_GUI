@@ -19,16 +19,17 @@ class FuelTankWidget(QWidget, GeometryFrame):
         main_section_layout = QVBoxLayout()
 
         data_units_labels = [
+            ("Fuel Tank Origin", Units.Length),
             ("Fuel", Units.Unitless),
-            ("Mass",Units.Unitless),
-            ("Origin", Units.Length),
+            ("Mass", Units.Mass),
+            ("Fuel Origin", Units.Length),
             ("Center of Gravity", Units.Length),
-            ("Internal Volume", Units.Length),
+            ("Internal Volume", Units.Volume),
         ]
 
         self.name_layout = QHBoxLayout()
         self.section_name_edit = QLineEdit(self)
-        self.name_layout.addWidget(QLabel("Section Name: "))
+        self.name_layout.addWidget(QLabel("Fuel Tank Name: "))
         self.name_layout.addWidget(self.section_name_edit)
         main_section_layout.addLayout(self.name_layout)
 
