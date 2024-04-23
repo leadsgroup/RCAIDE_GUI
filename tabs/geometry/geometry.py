@@ -10,6 +10,8 @@ from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
 from tabs.geometry.frames.nacelle_frame import NacelleFrame
 from tabs.geometry.frames.wings_frame import WingsFrame
 
+import json
+
 
 class GeometryWidget(QWidget):
     def __init__(self):
@@ -89,7 +91,7 @@ class GeometryWidget(QWidget):
         is_top_level = not item.parent()
         if is_top_level:
             tab_index = self.tree.indexFromItem(item).row()
-            print(tab_index, "top level")
+            # print(tab_index, "top level")
             return
 
         tab_index = self.tree.indexFromItem(item.parent()).row()
@@ -98,7 +100,7 @@ class GeometryWidget(QWidget):
         frame.load_data(self.data[tab_index][index], index)
 
         self.main_layout.setCurrentIndex(tab_index + 1)
-        print(tab_index, index)
+        # print(tab_index, index)
 
     def on_tree_item_double_clicked(self, item, _col):
         """Create a new structure for the selected item in the tree.
@@ -132,10 +134,13 @@ class GeometryWidget(QWidget):
             item = self.tree.topLevelItem(tab_index)
             item.addChild(child)
             index = item.indexOfChild(child)
-            return index
+        else:
+            self.data[tab_index][index] = data
+            self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
 
-        self.data[tab_index][index] = data
-        self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
+        with open("geometry.json", "w") as f:
+            f.write(json.dumps(self.data, indent=4))
+
         return index
 
 

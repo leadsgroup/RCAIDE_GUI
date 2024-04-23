@@ -6,9 +6,9 @@ from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
 
-class FuselageSectionWidget(QWidget):
+class WingCSWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
-        super(FuselageSectionWidget, self).__init__()
+        super(WingCSWidget, self).__init__()
 
         # self.data_fields = {}
         self.coordinate_filename = ""
@@ -26,7 +26,7 @@ class FuselageSectionWidget(QWidget):
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
-        self.name_layout.addWidget(QLabel("Segment Name: "))
+        self.name_layout.addWidget(QLabel("Control Surface Name: "))
         self.name_layout.addWidget(QLineEdit(self))
         self.name_layout.addItem(spacer_right)
 
@@ -34,10 +34,19 @@ class FuselageSectionWidget(QWidget):
 
         # List of data labels
         data_units_labels = [
-            ("Percent X Location", Units.Unitless),
-            ("Percent Z Location", Units.Unitless),
-            ("Height", Units.Length),
-            ("Width", Units.Length),
+            ("Flap: Span Fraction Start", Units.Unitless),
+            ("Slat: Span Fraction Start", Units.Unitless),
+            ("Aileron: Span Fraction Start", Units.Unitless),
+            ("Flap: Span Fraction End", Units.Unitless),
+            ("Slat: Span Fraction End", Units.Unitless),
+            ("Aileron: Span Fraction End", Units.Unitless),
+            ("Flap: Deflection", Units.Angle),
+            ("Slat: Deflection", Units.Angle),
+            ("Aileron: Deflection", Units.Angle),
+            ("Flap: Chord Fraction", Units.Unitless),
+            ("Slat: Chord Fraction", Units.Unitless),
+            ("Aileron: Chord Fraction", Units.Unitless),
+            ("Flap: Configuration", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
@@ -67,12 +76,12 @@ class FuselageSectionWidget(QWidget):
 
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()
+        data["CS name"] = self.name_layout.itemAt(2).widget().text()
         return data
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
+        self.name_layout.itemAt(2).widget().setText(section_data["CS name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")
