@@ -122,28 +122,7 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(hpc_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)        
-
-        #Adding combustor label
-        main_section_layout.addSpacing(8)
-        combustor_layout = QVBoxLayout()
-        combustor_label = QLabel("Combustor")
-        font = combustor_label.font()
-        font.setBold(True)
-        font.setUnderline(True)
-        combustor_label.setFont(font)
-        combustor_layout.addWidget(combustor_label)
-        main_section_layout.addLayout(combustor_layout)
-
-        combustor_units_labels = [
-            ("Efficiency", Units.Unitless),
-            ("Pressure Loss Coeff", Units.Unitless),
-            ("Turbine Inlet Temp", Units.Temperature),
-            ("Pressure Ratio", Units.Unitless),
-        ]
-
-        self.data_entry_widget = DataEntryWidget(combustor_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)        
+        main_section_layout.addWidget(self.data_entry_widget)                
 
         # Adding core nozzle label
         main_section_layout.addSpacing(8)
@@ -182,6 +161,27 @@ class PropulsorWidget(QWidget):
 
         self.data_entry_widget = DataEntryWidget(fan_nozzle_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)          
+
+        #Adding combustor label
+        main_section_layout.addSpacing(8)
+        combustor_layout = QVBoxLayout()
+        combustor_label = QLabel("Combustor")
+        font = combustor_label.font()
+        font.setBold(True)
+        font.setUnderline(True)
+        combustor_label.setFont(font)
+        combustor_layout.addWidget(combustor_label)
+        main_section_layout.addLayout(combustor_layout)
+
+        combustor_units_labels = [
+            ("Efficiency", Units.Unitless),
+            ("Pressure Loss Coeff", Units.Unitless),
+            ("Turbine Inlet Temp", Units.Temperature),
+            ("Pressure Ratio", Units.Unitless),
+        ]
+
+        self.data_entry_widget = DataEntryWidget(combustor_units_labels)
+        main_section_layout.addWidget(self.data_entry_widget)        
 
 
         # Adding option to deepcopy turbofan
