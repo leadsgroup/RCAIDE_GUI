@@ -5,9 +5,9 @@ from PyQt6.QtCore import *
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup, Units
 from widgets.unit_picker_widget import UnitPickerWidget
-
+from widgets.data_entry_widget import DataEntryWidget
 from tabs.geometry.energy_network_widgets.turbofan_widgets.turbofan_network import TurboFanWidget
-
+from tabs.geometry.energy_network_widgets.turbofan_widgets.fuelline_widget import FuelLineWidget
 
 class EnergyNetworkFrame(QWidget, GeometryFrame):
    def __init__(self):
@@ -159,7 +159,21 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                print("Updated Index:", i)
    
    
+   def get_data_values(self):
+      """Retrieve the entered data values from the widgets."""
+      selected_network = self.energy_network_combo.currentText()
+      data = {"energy network selected": selected_network, "name": self.name_line_edit.text()}
    
+      if selected_network == "Turbofan":
+         fuelline_data = []
+         for index in range(self.energy_network_sections_layout.count()):
+            widget = self.energy_network_sections_layout.itemAt(index).widget()
+            fuelline_data.append(widget.get_data_values())      
+   
+         data["energy_network_sections"] = fuelline_data
+   
+      return data
+
    
    def save_data(self):
       """Call the save function and pass the entered data to it."""
@@ -176,25 +190,6 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
    
       show_popup("Data Saved!", self)
 
-   
-   def get_data_values(self):
-      """Retrieve the entered data values from the widgets."""
-      selected_network = self.energy_network_combo.currentText()
-      data = {"energy network selected": selected_network, "energy network name": self.name_line_edit.text()}
-   
-      if selected_network == "Turbofan":
-         fuelline_data = []
-         for index in range(self.energy_network_sections_layout.count()):
-            widget = self.energy_network_sections_layout.itemAt(index).widget()
-            fuelline_data.append(widget.get_data_values())      
-   
-         data["energy_network_sections"] = fuelline_data
-   
-      return data
-
-
-
-
 
    
    def load_data(self, data, index):
@@ -204,28 +199,28 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
           data: The data to be loaded into the widgets.
           index: The index of the data in the list.
       """
-      self.name_line_edit.setText(data.get("energy network name", ""))
    
-      # Set selected energy network
-      selected_network = data.get("energy network selected", "")
-      if selected_network:
-         index = self.energy_network_combo.findText(selected_network)
-         if index != -1:
-            self.energy_network_combo.setCurrentIndex(index)
-            self.display_selected_network(index)
-   
-      # Load data for specific energy network sections
-      if selected_network == "Turbofan":
-         sections_data = data.get("energy_network_sections", [])
-         for section_data in sections_data:
-            self.energy_network_sections_layout.addWidget(
-                  TurboFanWidget(self.energy_network_sections_layout.count(), self.on_delete_button_pressed))
-            widget = self.energy_network_sections_layout.itemAt(self.energy_network_sections_layout.count() - 1).widget()
-            widget.load_data(section_data, None)  # Assuming index is None for new section
-   
-      self.index = index
+      # Load the name into the name line edit
 
-   
+      self.name_line_edit.setText(data["name"])
+      
+      # Load the selected network into the combo box
+      selected_network = data.get("energy network selected", "")
+      network_index = self.energy_network_combo.findText(selected_network)
+      if network_index != -1:
+         self.energy_network_combo.setCurrentIndex(network_index)
+  
+      # Clear existing sections before loading new ones
+      self.clear_layout(self.energy_network_sections_layout)
+  
+      # Load sections based on the selected network
+      if selected_network == "Turbofan":
+         for section_data in data["energy_network_sections"]:
+            self.energy_network_sections_layout.addWidget(FuelLineWidget(
+                        self.energy_network_sections_layout.count(), self.on_delete_button_pressed, section_data))
+            
+            
+         
    
    
    

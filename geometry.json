@@ -1,0 +1,45 @@
+[
+    [],
+    [],
+    [],
+    [],
+    [
+        {
+            "energy network selected": "Turbofan",
+            "name": "k",
+            "energy_network_sections": [
+                [
+                    {
+                        "name": "k",
+                        "Fuel Tank Data": [
+                            {
+                                "Fuel": [
+                                    9.0,
+                                    0
+                                ],
+                                "Mass": [
+                                    0.0,
+                                    0
+                                ],
+                                "Origin": [
+                                    0.0,
+                                    0
+                                ],
+                                "Center of Gravity": [
+                                    0.0,
+                                    0
+                                ],
+                                "Internal Volume": [
+                                    0.0,
+                                    0
+                                ],
+                                "segment name": "k"
+                            }
+                        ],
+                        "Propulsor Data": []
+                    }
+                ]
+            ]
+        }
+    ]
+]

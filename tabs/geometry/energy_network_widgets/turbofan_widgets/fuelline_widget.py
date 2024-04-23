@@ -62,6 +62,8 @@ class FuelLineWidget(QWidget):
         if data_values:
             self.load_data_values(data_values)
 
+
+
     def get_data_values(self):
         """Retrieve the entered data values from both FuelTankFrame and PropulsorFrame."""
         data_values = {}
@@ -115,7 +117,7 @@ class FuelLineWidget(QWidget):
             
         for section_data in data["Propulsor Data"]:
             self.main_layout.addWidget(PropulsorFrame(
-                self.main_layout.count(), self.on_delete_button_pressed, section_data))
+                self.main_layout.count(), self.elementon_delete_button_pressed, section_data))
 
     def on_delete_button_pressed(self, index):
         self.main_layout.itemAt(index).widget().deleteLater()
