@@ -67,6 +67,18 @@ class DataEntryWidget(QWidget):
                 data[label] = value, unit_picker.current_index
         return data
 
+    def get_values_standard_units(self):
+        data = {}
+        for label, data_field in self.data_fields.items():
+            # Find corresponding unit
+            if isinstance(data_field, QCheckBox):
+                data[label] = data_field.isChecked()
+            else:
+                line_edit, unit_picker = data_field
+                value = float(line_edit.text()) if line_edit.text() else 0.0
+                data[label] = unit_picker.apply_unit(value), unit_picker.current_index
+        return data
+
     def load_data(self, data):
         for label, data_field in self.data_fields.items():
             if isinstance(data_field, QCheckBox):
