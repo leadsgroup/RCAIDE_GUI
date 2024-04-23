@@ -21,21 +21,17 @@ class PropulsorWidget(QWidget):
         main_section_layout = QVBoxLayout()
 
         data_units_labels = [
-            ("Fan", Units.Unitless),
-            ("Working Fluid",Units.Unitless),
-            ("Inlet Nozzle", Units.Length),
-            ("Low Pressure Compressor", Units.Length),
-            ("High Pressure Compressor", Units.Length),
-            ("Low Pressure Turbine", Units.Length),
-            ("High Pressure Turbine", Units.Length),
-            ("Combustor", Units.Length),
-            ("Core Nozzle", Units.Length),
-            ("Fan Nozzle", Units.Length),
+            ("Origin", Units.Unitless),
+            ("Engine Length",Units.Length),
+            ("Bypass Ratio", Units.Unitless),
+            ("Design Altitude", Units.Length),
+            ("Design Mach Number", Units.Unitless),
+            ("Design Thrust", Units.Force),
         ]
 
         self.name_layout = QHBoxLayout()
         self.section_name_edit = QLineEdit(self)
-        self.name_layout.addWidget(QLabel("Propulsor Name: "))
+        self.name_layout.addWidget(QLabel("Turbofan Name: "))
         self.name_layout.addWidget(self.section_name_edit)
         main_section_layout.addLayout(self.name_layout)
 
