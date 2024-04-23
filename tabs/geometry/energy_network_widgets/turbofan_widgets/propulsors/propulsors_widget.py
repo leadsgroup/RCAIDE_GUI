@@ -184,6 +184,22 @@ class PropulsorWidget(QWidget):
         main_section_layout.addWidget(self.data_entry_widget)          
 
 
+        # Adding option to deepcopy turbofan
+        main_section_layout.addSpacing(8)
+        copy_layout = QVBoxLayout()
+        copy_label = QLabel("Copy Turbofan?")
+        font = copy_label.font()
+        font.setBold(True)
+        font.setUnderline(True)
+        copy_label.setFont(font)
+        copy_layout.addWidget(copy_label)
+        main_section_layout.addLayout(copy_layout)
+        
+        self.copy_turbofan_checkbox = QCheckBox("Yes, copy turbofan properties to new origin")
+        self.copy_turbofan_checkbox.setChecked(False)
+        main_section_layout.addWidget(self.copy_turbofan_checkbox)
+
+
         # Adding delete button
         delete_button = QPushButton("Delete Propulsor Segment", self)
         delete_button.clicked.connect(self.delete_button_pressed)
