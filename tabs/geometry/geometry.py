@@ -10,6 +10,8 @@ from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
 from tabs.geometry.frames.nacelle_frame import NacelleFrame
 from tabs.geometry.frames.wings_frame import WingsFrame
 
+import RCAIDE
+
 import json
 
 
@@ -25,6 +27,7 @@ class GeometryWidget(QWidget):
         options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
                    "Add Energy Network"]
         self.data = []
+        self.vehicle = RCAIDE.Vehicle()
 
         for i in range(len(self.tabs)):
             self.data.append([])
@@ -66,7 +69,7 @@ class GeometryWidget(QWidget):
 
         # Initially display the DefaultFrame
         self.main_layout.setCurrentIndex(0)
-
+        
         self.setLayout(base_layout)
 
     def on_dropdown_change(self, index):
@@ -118,7 +121,7 @@ class GeometryWidget(QWidget):
         frame.create_new_structure()
         self.main_layout.setCurrentIndex(tab_index + 1)
 
-    def save_data(self, tab_index, index=0, data=None, new=False):
+    def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.
 
         Args:
@@ -140,7 +143,10 @@ class GeometryWidget(QWidget):
 
         with open("geometry.json", "w") as f:
             f.write(json.dumps(self.data, indent=4))
-
+        
+        if vehicle_component:
+            self.vehicle.append_component(vehicle_component)
+        
         return index
 
 
