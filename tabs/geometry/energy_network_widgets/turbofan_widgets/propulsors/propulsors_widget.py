@@ -199,6 +199,16 @@ class PropulsorWidget(QWidget):
         self.copy_turbofan_checkbox = QCheckBox("Yes, copy turbofan properties to new origin")
         self.copy_turbofan_checkbox.setChecked(False)
         main_section_layout.addWidget(self.copy_turbofan_checkbox)
+        
+        # Deepcopy turbofan labels and units
+        deepcopy_units_labels = [
+            ("New Origin", Units.Length),
+        ]
+
+        self.data_entry_widget = DataEntryWidget(deepcopy_units_labels)
+        self.data_entry_widget.setVisible(False)
+        main_section_layout.addWidget(self.data_entry_widget)        
+        self.copy_turbofan_checkbox.stateChanged.connect(self.toggle_deepcopy_visibility)
 
 
         # Adding delete button
@@ -231,3 +241,7 @@ class PropulsorWidget(QWidget):
         data_values["segment name"] = title
 
         return data_values
+    
+    def toggle_deepcopy_visibility(self):
+        # toggles visibility based on the checkbox state
+        self.data_entry_widget.setVisible(self.copy_turbofan_checkbox.isChecked())    

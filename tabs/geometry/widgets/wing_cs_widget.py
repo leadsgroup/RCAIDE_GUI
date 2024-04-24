@@ -97,14 +97,15 @@ class WingCSWidget(QWidget):
         delete_button.clicked.connect(self.delete_button_pressed)
         delete_button_layout = QHBoxLayout()
         delete_button_layout.addWidget(delete_button)
-        delete_button_layout.setSpacing(0)  # No spacing inside delete button layout
+        delete_button_layout.setSpacing(0) 
         main_layout.addLayout(delete_button_layout)
     
-        # Add horizontal bar immediately below the delete button
+        # Add horizontal bar
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         main_layout.addWidget(line_bar)
+
 
         if section_data:
             self.load_data_values(section_data)
