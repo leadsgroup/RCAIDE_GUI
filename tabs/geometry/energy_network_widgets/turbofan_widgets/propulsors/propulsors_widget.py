@@ -20,6 +20,7 @@ class PropulsorWidget(QWidget):
 
         main_section_layout = QVBoxLayout()
 
+        # Adding turbofan attributes
         turbofan_units_labels = [
             ("Origin", Units.Length),
             ("Engine Length",Units.Length),

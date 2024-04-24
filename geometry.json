@@ -1,0 +1,125 @@
+[
+    [],
+    [
+        {
+            "Taper Ratio": [
+                0.0,
+                0
+            ],
+            "Dihedral": [
+                0.0,
+                0
+            ],
+            "Aspect Ratio": [
+                0.0,
+                0
+            ],
+            "Thickness to Chord": [
+                0.0,
+                0
+            ],
+            "Aerodynamic Center": [
+                0.0,
+                0
+            ],
+            "Exposed Root Chord Offset": [
+                0.0,
+                0
+            ],
+            "Total Length": [
+                0.0,
+                0
+            ],
+            "Spans Projected": [
+                0.0,
+                0
+            ],
+            "Spans Total": [
+                0.0,
+                0
+            ],
+            "Areas Reference": [
+                0.0,
+                0
+            ],
+            "Areas Exposed": [
+                0.0,
+                0
+            ],
+            "Areas Affected": [
+                0.0,
+                0
+            ],
+            "Areas Wetted": [
+                0.0,
+                0
+            ],
+            "Root Chord": [
+                0.0,
+                0
+            ],
+            "Tip Chord": [
+                0.0,
+                0
+            ],
+            "Mean Aerodynamic Chord": [
+                0.0,
+                0
+            ],
+            "Mean Geometric Chord": [
+                0.0,
+                0
+            ],
+            "Quarter Chord Sweep Angle": [
+                0.0,
+                0
+            ],
+            "Half Chord Sweep Angle": [
+                0.0,
+                0
+            ],
+            "Leading Edge Sweep Angle": [
+                0.0,
+                0
+            ],
+            "Root Chord Twist Angle": [
+                0.0,
+                0
+            ],
+            "Tip Chord Twist Angle": [
+                0.0,
+                0
+            ],
+            "sections": [],
+            "control_surfaces": [
+                {
+                    "Span Fraction Start": [
+                        0.1,
+                        0
+                    ],
+                    "Span Fraction End": [
+                        0.0,
+                        0
+                    ],
+                    "Deflection": [
+                        0.0,
+                        0
+                    ],
+                    "Chord Fraction": [
+                        0.0,
+                        0
+                    ],
+                    "Configuration": [
+                        0.0,
+                        0
+                    ],
+                    "CS name": ""
+                }
+            ],
+            "name": ""
+        }
+    ],
+    [],
+    [],
+    []
+]
