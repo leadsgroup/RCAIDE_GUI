@@ -9,7 +9,6 @@ from widgets.unit_picker_widget import UnitPickerWidget
 from tabs.geometry.energy_network_widgets.turbofan_widgets.turbofan_network import TurboFanWidget
 
 
-
 class EnergyNetworkFrame(QWidget, GeometryFrame):
    def __init__(self):
       super(EnergyNetworkFrame, self).__init__()
@@ -34,7 +33,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
    
       # Create a horizontal layout for the label and buttons
       header_layout = QHBoxLayout()
-      header_layout.addWidget(QLabel("<u><b>Main Energy Frame</b></u>"))
+      header_layout.addWidget(QLabel("<b>Energy Network Frame</b>"))
    
       layout.addLayout(header_layout)
       # Create a horizontal line
@@ -105,15 +104,16 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
          main_layout = QVBoxLayout()
       
          name_layout = QHBoxLayout()
-      
-         # Name
-         name_label = QLabel("Name:")
-         name_label.setFixedWidth(50)  # Adjust width of label
-         name_layout.addWidget(name_label)
-      
+         # add spacing
+         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+         spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+         name_layout.addItem(spacer_left)
+         name_layout.addWidget(QLabel("Energy Network Name: "))
          self.name_line_edit = QLineEdit(self)
-         self.name_line_edit.setFixedWidth(400)  # Fix width of line edit
-         name_layout.addWidget(self.name_line_edit, alignment=Qt.AlignmentFlag.AlignLeft)
+         name_layout.addWidget(self.name_line_edit)
+         name_layout.addItem(spacer_right)
+         main_layout.addLayout(name_layout)
+
       
          # Energy Network
          energy_label = QLabel("Energy Network:")
@@ -158,44 +158,43 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                widget.index = i
                print("Updated Index:", i)
    
-   def get_data_values(self):
-         """Retrieve the entered data values from the text fields."""
-         data = {}
-         for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value = float(line_edit.text()) if line_edit.text() else 0.0
-            data[label] = unit_picker.apply_unit(value), unit_picker.current_index
-   
-         # Get the values from the text fields
-         data["name"] = self.name_line_edit.text()
-         data["sections"] = []
-   
-         # Loop through the sections and get the data from each widget
-         for i in range(self.energy_network_sections_layout.count()):
-            item = self.energy_network_sections_layout.itemAt(i)
-            if item is None:
-               continue
-   
-            widget = item.widget()
-   
-            # Each of the widgets has its own get_data_values method that is called to fetch their data
-            if widget is not None and isinstance(widget, TurboFanWidget):
-               data["sections"].append(widget.get_data_values())
-   
-         return data
-   
    def save_data(self):
-         """Call the save function and pass the entered data to it."""
-         entered_data = self.get_data_values()
-         print("Saving Data:", entered_data)
-         if self.save_function:
-            if self.index >= 0:
-               self.index = self.save_function(self.tab_index, self.index, entered_data)
-               return
-            else:
-               self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+      """Call the save function and pass the entered data to it."""
+      entered_data = self.get_data_values()
+      print("Saving Data:", entered_data)
+      if self.save_function:
+         main_energy_network_data = entered_data.get("main_energy_network_data", {})  # Get main_energy_network_data or empty dict
+         if "name" not in main_energy_network_data:
+            # Provide a default name or handle the absence of the key appropriately
+            main_energy_network_data["name"] = "DefaultName"
+         entered_data["main_energy_network_data"] = main_energy_network_data  # Update entered_data with modified main_energy_network_data
    
-            show_popup("Data Saved!", self)
+      if self.index >= 0:
+         self.index = self.save_function(self.tab_index, self.index, entered_data)
+         return
+      else:
+         self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+   
+      show_popup("Data Saved!", self)
+
+
+   
+   def get_data_values(self):
+      """Retrieve the entered data values from the widgets."""
+   
+      selected_network = self.energy_network_combo.currentText()
+      data = {"energy network selected": selected_network, "energy network name": self.name_line_edit.text(), 
+              }
+   
+   
+      
+      if selected_network == "Turbofan":
+         data["main_energy_network_data"] = self.main_energy_network_widget.get_data_values()
+         data["energy_network_sections"] = []
+   
+      return data
+
+
    
    def load_data(self, data, index):
          """Load the data into the widgets.
@@ -237,7 +236,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             line_edit, unit_picker = data_field
             line_edit.clear()
             unit_picker.set_index(0)
-   
+
          # Clear the name line edit
          while self.energy_network_sections_layout.count():
             item = self.energy_network_sections_layout.takeAt(0)
@@ -257,12 +256,23 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       
       
    def display_selected_network(self, index):
-         for i in reversed(range(self.energy_network_sections_layout.count())):
-            widget = self.energy_network_sections_layout.itemAt(i).widget()
-            if widget is not None:
-               widget.deleteLater()
+      selected_network = self.energy_network_combo.currentText()
+      # Clear the layout first
+      self.clear_layout(self.energy_network_sections_layout)
    
-         selected_network = self.energy_network_combo.currentText()
+      if selected_network == "Turbofan":
+         self.main_energy_network_widget = TurboFanWidget()
+         self.energy_network_sections_layout.addWidget(self.main_energy_network_widget)
+      elif selected_network == "None Selected":
+         # Do nothing or add blank widget
+         pass
+      else:
+         # Handle other energy network options here
+         pass
    
-         if selected_network == "Turbofan":
-            self.energy_network_sections_layout.addWidget(TurboFanWidget())
+   def clear_layout(self, layout):
+      """Clear all widgets from the layout."""
+      while layout.count():
+         child = layout.takeAt(0)
+         if child.widget():
+            child.widget().deleteLater()
