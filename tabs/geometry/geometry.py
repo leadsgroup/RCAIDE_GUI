@@ -127,6 +127,7 @@ class GeometryWidget(QWidget):
         Args:
             tab_index: The index of the tab.
             index: The index of the vehicle element in the list. (Within its type, eg fuselage #0, #1, etc.)
+            vehicle_component: The vehicle component to be appended to the vehicle.
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
         """

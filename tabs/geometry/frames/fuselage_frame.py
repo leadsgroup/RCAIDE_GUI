@@ -185,7 +185,7 @@ class FuselageFrame(QWidget, GeometryFrame):
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         data = self.data_entry_widget.get_values()
-        fuselage = self.create_rcaide_structure(self.data_entry_widget.get_values_standard_units())
+        fuselage = self.create_rcaide_structure(self.data_entry_widget.get_values_si())
 
         data["sections"] = []
         for i in range(self.fuselage_sections_layout.count()):

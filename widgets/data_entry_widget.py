@@ -67,7 +67,7 @@ class DataEntryWidget(QWidget):
                 data[label] = value, unit_picker.current_index
         return data
 
-    def get_values_standard_units(self):
+    def get_values_si(self):
         data = {}
         for label, data_field in self.data_fields.items():
             # Find corresponding unit
