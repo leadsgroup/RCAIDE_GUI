@@ -6,6 +6,8 @@ from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
 from utilities import show_popup, Units
 from widgets.data_entry_widget import DataEntryWidget
 
+import RCAIDE
+
 
 class NacelleFrame(QWidget, GeometryFrame):
     def __init__(self):
@@ -29,7 +31,8 @@ class NacelleFrame(QWidget, GeometryFrame):
             ("Origin Z", Units.Length),
             ("Wetted Area", Units.Area),
             ("Flow Through", Units.Unitless),
-            ("Airfoil Flag", Units.Unitless),
+            ("Airfoil Flag", Units.Boolean),
+            ("Airfoil Coordinate File", Units.Unitless)
         ]
 
         # Add the data entry widget to the main layout
@@ -135,9 +138,34 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.nacelle_sections_layout.update()
         self.index = -1
 
+    def create_rcaide_structure(self, data):
+        """Create a nacelle structure from the given data.
+
+        Args:
+            data: The data to create the nacelle structure from.
+        """
+        nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
+        nacelle.diameter = data["Diameter"]
+        nacelle.inlet_diameter = data["Inlet Diameter"]
+        nacelle.length = data["Length"]
+        nacelle.tags = data["name"]
+        origin = [data["Origin X"], data["Origin Y"], data["Origin Z"]]
+        nacelle.origin = origin
+        nacelle.areas.wetted = data["Wetted Area"]
+        nacelle.flow_through = data["Flow Through"]
+        nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"]
+        nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"]
+        
+        return nacelle
+        
+    
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
+        data_si["name"] = self.name_line_edit.text()
+        
+        nacelle = self.create_rcaide_structure(data_si)
 
         data["sections"] = []
         for i in range(self.nacelle_sections_layout.count()):
@@ -147,10 +175,12 @@ class NacelleFrame(QWidget, GeometryFrame):
 
             widget = item.widget()
             if widget is not None and isinstance(widget, NacelleSectionWidget):
-                data["sections"].append(widget.get_data_values())
+                segment_data, segment = widget.get_data_values()
+                data["sections"].append(segment_data)
+                nacelle.append_segment(segment)
 
         data["name"] = self.name_line_edit.text()
-        return data
+        return data, nacelle
 
     def load_data(self, data, index):
         """Load the data into the widgets.
