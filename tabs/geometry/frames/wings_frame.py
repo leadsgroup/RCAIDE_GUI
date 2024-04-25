@@ -51,7 +51,7 @@ class WingsFrame(QWidget, GeometryFrame):
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
-        # Add the secctions layout to the main layout
+        # Add the sections layout to the main layout
         self.wing_sections_layout = QVBoxLayout()
         self.main_layout.addLayout(self.wing_sections_layout)
 
@@ -90,7 +90,7 @@ class WingsFrame(QWidget, GeometryFrame):
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
-        new_section_button = QPushButton("New Wing Section", self)
+        new_section_button = QPushButton("New Wing Segment", self)
         new_cs_button = QPushButton("New Control Surface", self)
         save_button = QPushButton("Save Data", self)
         delete_button = QPushButton("Delete Data", self)

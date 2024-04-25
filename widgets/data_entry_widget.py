@@ -30,7 +30,7 @@ class DataEntryWidget(QWidget):
                 line_edit = QLineEdit(self)
                 line_edit.setValidator(QDoubleValidator())
                 # Set the width of the line edit
-                # line_edit.setFixedWidth(150)  # Adjust the width as needed
+                # line_edit.setFixedWidth(150)
 
                 unit_picker = UnitPickerWidget(label[1])
                 unit_picker.setFixedWidth(80)

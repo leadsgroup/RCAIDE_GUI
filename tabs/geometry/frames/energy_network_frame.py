@@ -71,7 +71,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
    
    
    
-      new_energy_network_structure_button = QPushButton("New Energy Network Structure", self)
+      new_energy_network_structure_button = QPushButton("Clear All Energy Network Data", self)
       new_energy_network_structure_button.clicked.connect(self.create_new_structure)
       button_layout.addWidget(new_energy_network_structure_button)
    
@@ -80,8 +80,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       layout.addLayout(button_layout)
    
       # Adds scroll function
-      layout.addItem(QSpacerItem(
-              20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+      layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
    
       # Set the scroll content as the widget for the scroll area
       scroll_area.setWidget(scroll_content)
@@ -108,7 +107,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
          spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
          spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
          name_layout.addItem(spacer_left)
-         name_layout.addWidget(QLabel("Energy Network Name: "))
+         name_layout.addWidget(QLabel("Name: "))
          self.name_line_edit = QLineEdit(self)
          name_layout.addWidget(self.name_line_edit)
          name_layout.addItem(spacer_right)

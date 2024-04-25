@@ -45,8 +45,9 @@ class Units:
         KELVIN = ("K", lambda x: x)
         CELSIUS = ("°C", lambda x: x - 273.15)
         FAHRENHEIT = ("°F", lambda x: (x - 32) * 9 / 5 + 273.15)
+        RANKINE = ("°R", lambda x: x * 1.8)
 
-        unit_list = [KELVIN, CELSIUS, FAHRENHEIT]
+        unit_list = [KELVIN, CELSIUS, FAHRENHEIT, RANKINE]
 
     class Mass:
         KILOGRAM = ("kg", lambda x: x)
@@ -82,6 +83,13 @@ class Units:
         KNOTS_PER_SECOND = ("kn/s", lambda x: x * 0.514444)
 
         unit_list = [METER_PER_SECOND_SQUARED, KNOTS_PER_SECOND]
+    
+    class Force:
+        NEWTON = ("N", lambda x: x)
+        KILONEWTON = ("kN", lambda x: x * 1000)
+        MEGANEWTON = ("MN", lambda x: x * 1000000)
+        
+        unit_list = [NEWTON, KILONEWTON, MEGANEWTON]
 
     class Energy:
         JOULE = ("J", lambda x: x)
