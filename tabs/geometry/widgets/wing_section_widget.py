@@ -1,3 +1,4 @@
+import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
@@ -68,10 +69,29 @@ class WingSectionWidget(QWidget):
 
         self.setLayout(main_layout)
 
+    def create_rcaide_structure(self, data):
+        segment = RCAIDE.Library.Components.Wings.Segment()
+
+        segment.tag = data["segment name"]
+        segment.percent_span_location = data["Percent Span Location"]
+        segment.twist = data["Twist"]
+
+        segment.root_chord_percent = data["Root Chord Percent"]
+        segment.thickness_to_chord = data["Thickness to Chord"]
+        segment.dihedral_outboard = data["Dihedral Outboard"]
+        segment.sweeps.quarter_chord = data["Quarter Chord Sweep"]
+        # segment.airfoil = data["Airfoil"]
+
+        return segment
+
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
+        data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
+
+        wing_section = self.create_rcaide_structure(data_si)
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
-        return data
+        return data, wing_section
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)

@@ -5,6 +5,8 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
+import RCAIDE
+
 
 class WingCSWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
@@ -74,10 +76,20 @@ class WingCSWidget(QWidget):
 
         self.setLayout(main_layout)
 
+    def create_rcaide_structure(self, data):
+        cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Control_Surface()
+        cs.tag = data["CS name"]
+
+        return cs
+
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
         data["CS name"] = self.name_layout.itemAt(2).widget().text()
-        return data
+        data_si["CS name"] = self.name_layout.itemAt(2).widget().text()
+
+        cs = self.create_rcaide_structure(data_si)
+        return data, cs
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
