@@ -34,47 +34,86 @@ class WingCSWidget(QWidget):
 
         main_layout.addLayout(self.name_layout)
 
-        # List of data labels
-        data_units_labels = [
-            ("Flap: Span Fraction Start", Units.Unitless),
-            ("Slat: Span Fraction Start", Units.Unitless),
-            ("Aileron: Span Fraction Start", Units.Unitless),
-            ("Flap: Span Fraction End", Units.Unitless),
-            ("Slat: Span Fraction End", Units.Unitless),
-            ("Aileron: Span Fraction End", Units.Unitless),
-            ("Flap: Deflection", Units.Angle),
-            ("Slat: Deflection", Units.Angle),
-            ("Aileron: Deflection", Units.Angle),
-            ("Flap: Chord Fraction", Units.Unitless),
-            ("Slat: Chord Fraction", Units.Unitless),
-            ("Aileron: Chord Fraction", Units.Unitless),
-            ("Flap: Configuration", Units.Unitless),
-        ]
 
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
-        delete_button = QPushButton("Delete Section", self)
-        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        delete_button.setFixedWidth(150)
+        # Aileron labels and units
+        aileron_units_labels = [
+            ("Span Fraction Start", Units.Unitless),
+            ("Span Fraction End", Units.Unitless),
+            ("Deflection", Units.Angle),
+            ("Chord Fraction", Units.Unitless),
+        ]        
+        
+        main_layout.addSpacing(8)
+        aileron_label = QLabel("Aileron")
+        font = aileron_label.font()
+        font.setBold(True)
+        font.setUnderline(True)
+        aileron_label.setFont(font)
+        main_layout.addWidget(aileron_label)        
+
+        self.data_entry_widget = DataEntryWidget(aileron_units_labels)
+        main_layout.addWidget(self.data_entry_widget)   
+        
+        # Slat labels and units
+        slat_units_labels = [
+            ("Span Fraction Start", Units.Unitless),
+            ("Span Fraction End", Units.Unitless),
+            ("Deflection", Units.Angle),
+            ("Chord Fraction", Units.Unitless),
+        ]        
+        
+        main_layout.addSpacing(8)
+        slat_label = QLabel("Slat")
+        font = slat_label.font()
+        font.setBold(True)
+        font.setUnderline(True)
+        slat_label.setFont(font)
+        main_layout.addWidget(slat_label)        
+
+        self.data_entry_widget = DataEntryWidget(slat_units_labels)
+        main_layout.addWidget(self.data_entry_widget)        
+        
+        # Flap labels and units
+        flap_units_labels = [
+            ("Span Fraction Start", Units.Unitless),
+            ("Span Fraction End", Units.Unitless),
+            ("Deflection", Units.Angle),
+            ("Chord Fraction", Units.Unitless),
+            ("Configuration", Units.Unitless),
+        ]        
+        
+        main_layout.addSpacing(8)
+        flap_label = QLabel("Flap")
+        font = slat_label.font()
+        font.setBold(True)
+        font.setUnderline(True)
+        flap_label.setFont(font)
+        main_layout.addWidget(flap_label)        
+
+        self.data_entry_widget = DataEntryWidget(flap_units_labels)
+        main_layout.addWidget(self.data_entry_widget)        
+        
+
+        # Delete button layout
+        delete_button = QPushButton("Delete Control Surface")
         delete_button.clicked.connect(self.delete_button_pressed)
-        # center delete button
         delete_button_layout = QHBoxLayout()
-        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         delete_button_layout.addWidget(delete_button)
-        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
-
-        main_layout.addWidget(self.data_entry_widget)
+        delete_button_layout.setSpacing(0) 
         main_layout.addLayout(delete_button_layout)
-
+    
         # Add horizontal bar
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         main_layout.addWidget(line_bar)
 
+
         if section_data:
             self.load_data_values(section_data)
 
         self.setLayout(main_layout)
+   
 
     def create_rcaide_structure(self, data):
         cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Control_Surface()
