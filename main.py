@@ -71,6 +71,7 @@ class App(QMainWindow):
 app = QApplication(sys.argv)
 
 window = App()
+
 window.show()
 
 sys.exit(app.exec())

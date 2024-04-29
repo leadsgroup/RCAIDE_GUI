@@ -5,9 +5,9 @@ from PyQt6.QtCore import *
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup, Units
 from widgets.unit_picker_widget import UnitPickerWidget
-
+from widgets.data_entry_widget import DataEntryWidget
 from tabs.geometry.energy_network_widgets.turbofan_widgets.turbofan_network import TurboFanWidget
-
+from tabs.geometry.energy_network_widgets.turbofan_widgets.fuelline_widget import FuelLineWidget
 
 class EnergyNetworkFrame(QWidget, GeometryFrame):
    def __init__(self):
@@ -19,7 +19,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
       self.save_function = None
       self.tab_index = -1
       self.index = -1
-      self.name_line_edit: QLineEdit | None = None
+
    
       # Create a scroll area
       scroll_area = QScrollArea()
@@ -157,74 +157,94 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                widget.index = i
                print("Updated Index:", i)
    
+   
+   def get_data_values(self):
+      """Retrieve the entered data values from the widgets."""
+      selected_network = self.energy_network_combo.currentText()
+      data = {"energy network selected": selected_network, "name": self.name_line_edit.text()}
+   
+      if selected_network == "Turbofan":
+         fuelline_data = []
+         for index in range(self.energy_network_sections_layout.count()):
+            widget = self.energy_network_sections_layout.itemAt(index).widget()
+            fuelline_data.append(widget.get_data_values())      
+   
+         data["energy_network_sections"] = fuelline_data
+   
+      return data
+
+   
    def save_data(self):
       """Call the save function and pass the entered data to it."""
       entered_data = self.get_data_values()
-      print("Saving Data:", entered_data)
-      if self.save_function:
-         main_energy_network_data = entered_data.get("main_energy_network_data", {})  # Get main_energy_network_data or empty dict
-         if "name" not in main_energy_network_data:
-            # Provide a default name or handle the absence of the key appropriately
-            main_energy_network_data["name"] = "DefaultName"
-         entered_data["main_energy_network_data"] = main_energy_network_data  # Update entered_data with modified main_energy_network_data
    
-      if self.index >= 0:
-         self.index = self.save_function(self.tab_index, self.index, entered_data)
-         return
-      else:
-         self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+      print("Entered data in EnergyNetworkFrame:", entered_data)  # Add this line for debugging
+   
+      if self.save_function:
+         if self.index >= 0:
+            self.index = self.save_function(self.tab_index, self.index, entered_data)
+            return
+         else:
+            self.index = self.save_function(self.tab_index, data=entered_data, new=True)
    
       show_popup("Data Saved!", self)
 
 
    
-   def get_data_values(self):
-      """Retrieve the entered data values from the widgets."""
-   
-      selected_network = self.energy_network_combo.currentText()
-      data = {"energy network selected": selected_network, "energy network name": self.name_line_edit.text(), 
-              }
-   
-   
-      
-      if selected_network == "Turbofan":
-         data["main_energy_network_data"] = self.main_energy_network_widget.get_data_values()
-         data["energy_network_sections"] = []
-   
-      return data
-
-
-   
    def load_data(self, data, index):
-         """Load the data into the widgets.
+      """Load the data into the widgets.
    
-         Args:
-             data: The data to be loaded into the widgets.
-             index: The index of the data in the list.
-         """
-         for label, data_field in self.data_fields.items():
-            line_edit, unit_picker = data_field
-            value, index = data[label]
-            line_edit.setText(str(value))
-            unit_picker.set_index(index)
+      Args:
+          data: The data to be loaded into the widgets.
+          index: The index of the data in the list.
+      """
    
-         if "name" in data:
-            self.name_line_edit.setText(data["name"])
+      # Load the name into the name line edit
+
+      self.name_line_edit.setText(data["name"])
+      
+      # Load the selected network into the combo box
+      selected_network = data.get("energy network selected", "")
+      network_index = self.energy_network_combo.findText(selected_network)
+      if network_index != -1:
+         self.energy_network_combo.setCurrentIndex(network_index)
+  
+      # Clear existing sections before loading new ones
+      self.clear_layout(self.energy_network_sections_layout)
+  
+      # Load sections based on the selected network
+      if selected_network == "Turbofan":
+         for section_data in data["energy_network_sections"]:
+            self.energy_network_sections_layout.addWidget(FuelLineWidget(
+                        self.energy_network_sections_layout.count(), self.on_delete_button_pressed, section_data))
+            
+            
+         
    
    
-         # Make sure sections don't already exist
-         while self.energy_network_sections_layout.count():
-            item = self.energy_network_sections_layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-               widget.deleteLater()
    
-         # Add all the sections
-         for section_data in data["sections"]:
-            self.energy_network_sections_layout.addWidget(TurboFanWidget(
-                  self.energy_network_sections_layout.count(), self.on_delete_button_pressed, section_data))
    
-         self.index = index
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
    
    def create_new_structure(self):
