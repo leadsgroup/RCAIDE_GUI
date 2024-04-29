@@ -27,6 +27,7 @@ class TurboFanWidget(QWidget, GeometryFrame):
         
         add_section_button = QPushButton("Add Fuel Line Section", self)
         add_section_button.setMaximumWidth(200) 
+
         add_section_button.clicked.connect(self.add_fuelline_section)
         header_layout.addWidget(add_section_button)
         

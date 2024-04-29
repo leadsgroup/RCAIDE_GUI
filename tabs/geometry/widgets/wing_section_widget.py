@@ -6,9 +6,9 @@ from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
 
-class FuselageSectionWidget(QWidget):
+class WingSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
-        super(FuselageSectionWidget, self).__init__()
+        super(WingSectionWidget, self).__init__()
 
         # self.data_fields = {}
         self.coordinate_filename = ""
@@ -26,7 +26,7 @@ class FuselageSectionWidget(QWidget):
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
-        self.name_layout.addWidget(QLabel("Segment Name: "))
+        self.name_layout.addWidget(QLabel("Wing Segment Name: "))
         self.name_layout.addWidget(QLineEdit(self))
         self.name_layout.addItem(spacer_right)
 
@@ -34,22 +34,28 @@ class FuselageSectionWidget(QWidget):
 
         # List of data labels
         data_units_labels = [
-            ("Percent X Location", Units.Unitless),
-            ("Percent Z Location", Units.Unitless),
-            ("Height", Units.Length),
-            ("Width", Units.Length),
+            ("Percent Span Location", Units.Unitless),
+            ("Twist", Units.Angle),
+            ("Root Chord Percent", Units.Unitless),
+            ("Thickness to Chord", Units.Unitless),
+            ("Dihedral Outboard", Units.Angle),
+            ("Quarter Chord Sweep", Units.Angle),
+            ("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
-        delete_button = QPushButton("Delete Section", self)
-        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        delete_button.setFixedWidth(150)
-        delete_button.clicked.connect(self.delete_button_pressed)
-        # center delete button
+        
+        # Delete button
+        delete_button = QPushButton("Delete Wing Segment", self)
+        #delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        #delete_button.setFixedWidth(150)
+        #delete_button.clicked.connect(self.delete_button_pressed)
+        
+        # Center delete button
         delete_button_layout = QHBoxLayout()
-        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        #delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         delete_button_layout.addWidget(delete_button)
-        delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        #delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
         main_layout.addWidget(self.data_entry_widget)
         main_layout.addLayout(delete_button_layout)

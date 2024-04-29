@@ -1,8 +1,8 @@
 import sys
-import os
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+
 from tabs.analysis import analysis
 from tabs.geometry import geometry
 from tabs.home import home

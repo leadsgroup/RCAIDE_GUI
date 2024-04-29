@@ -28,10 +28,12 @@ class FuelTankFrame(QWidget, GeometryFrame):
         #header_layout.addWidget(label)
         
         
+
         # Add fueltank_ Section Button
         add_section_button = QPushButton("Add fueltank Section", self)
         add_section_button.setMaximumWidth(200) 
         add_section_button.clicked.connect(self.add_fueltank_section)
+
         header_layout.addWidget(add_section_button)
         
     

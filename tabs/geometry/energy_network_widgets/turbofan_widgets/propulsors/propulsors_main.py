@@ -30,7 +30,7 @@ class PropulsorFrame(QWidget, GeometryFrame):
         
         
         # Add propulsor_ Section Button
-        add_section_button = QPushButton("Add Propulsor Section", self)
+        add_section_button = QPushButton("Add Propulsor Segment", self)
         add_section_button.setMaximumWidth(200) 
         add_section_button.clicked.connect(self.add_propulsor_section)
         header_layout.addWidget(add_section_button)
