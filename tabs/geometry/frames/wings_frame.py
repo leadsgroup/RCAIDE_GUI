@@ -255,7 +255,7 @@ class WingsFrame(QWidget, GeometryFrame):
         """Load the data into the widgets.
 
         Args:
-            data: The data to be loaded into the widgets.
+            data: The data to be loaded into the widgets.py
             index: The index of the data in the list.
         """
         self.data_entry_widget.load_data(data)

@@ -25,7 +25,7 @@ class DataEntryWidget(QWidget):
                 check_box.setChecked(False)
                 grid_layout.addWidget(check_box, row, col * 4 + 1, 1, 2)
                 self.data_fields[label[0]] = check_box
-                print("Adding Boolean!!")
+
             else:
                 line_edit = QLineEdit(self)
                 line_edit.setValidator(QDoubleValidator())
