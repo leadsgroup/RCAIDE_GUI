@@ -1,12 +1,11 @@
 import os
 from PyQt6.QtCore import Qt
-from tabs.mission.widgets.controls_widget import ControlsWidget
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QMenu, QMessageBox, QCheckBox
 
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
-class MissionSegmentWidget(QWidget):
+class ControlsWidget(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -21,12 +20,6 @@ class MissionSegmentWidget(QWidget):
         # Create each horizontal layout for the segment name and type
         segment_name = QHBoxLayout()
         segment_type = QHBoxLayout()
-
-        # Add segment name label and input box
-        segment_name_label = QLabel("Segment Name:")
-        segment_name_input = QLineEdit()
-        segment_name.addWidget(segment_name_label)
-        segment_name.addWidget(segment_name_input)
 
         # Add segment type label and nested dropdown
         segment_type_label = QLabel("Segment Type:")
@@ -50,47 +43,8 @@ class MissionSegmentWidget(QWidget):
         initial_subsegment_type = "Constant CAS/Constant Rate"
         self.create_subsegment_layout(initial_subsegment_type)
 
-        self.edit_controls_button = QPushButton("Edit Control Systems")
-        self.edit_controls_button.clicked.connect(self.toggle_additional_section)
-        self.subsegment_layout.addWidget(self.edit_controls_button)
 
-        # Counter to track the number of clicks
-        self.click_counter = 0
-
-        self.create_controls_section()
-
-    def create_controls_section(self):
-
-        # Create layout for additional section content
-        additional_section_layout = QVBoxLayout()
-
-        control_widget = ControlsWidget()
-        additional_section_layout.addWidget(control_widget)
-
-        # Create widget to contain the additional section layout
-        self.additional_section_widget = QWidget()
-        self.additional_section_widget.setLayout(additional_section_layout)
-
-        # Initially hide the additional section
-        self.additional_section_widget.setVisible(False)
-
-        # Add the additional section widget to the main segment layout
-        self.subsegment_layout.addWidget(self.additional_section_widget)
-
-        # Return the additional section widget
-        return self.additional_section_widget
-
-    # Method to toggle the additional section widget
-    def toggle_additional_section(self):
-        # Increment the click counter
-        self.click_counter += 1
-
-        # Show or hide the additional section widget based on the counter value
-        if self.click_counter % 2 == 1:  # odd clicks
-            self.additional_section_widget.setVisible(True)
-        else:  # even clicks
-            self.additional_section_widget.setVisible(False)
-
+    
     # Trying to make sure labels more than 4 get a new row but having clearing problems
     def create_subsegment_layout(self, subsegment_type):
         print("Creating subsegment layout for type:", subsegment_type)
