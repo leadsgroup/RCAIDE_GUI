@@ -1,6 +1,6 @@
 import os
 from PyQt6.QtCore import Qt
-from tabs.mission.widgets.controls_popup import ControlsPopup
+from RCAIDE_GUI.tabs.mission.widgets.controls_dropdown import ControlsPopup
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QMenu, QMessageBox
 
 from utilities import Units
@@ -94,7 +94,7 @@ class MissionSegmentWidget(QWidget):
 
     def add_controls(self):
         # Instantiate MissionSectionWidget and add it to mission_segment_layout
-        controls_widget = ControlsPopup()
+        controls_widget = ControlsDropdown()
         controls_widget.exec()
 
     def clear_layout(self, layout):
