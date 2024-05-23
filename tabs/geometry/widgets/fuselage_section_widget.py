@@ -44,8 +44,8 @@ class FuselageSectionWidget(QWidget):
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         delete_button = QPushButton("Delete Section", self)
-        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        delete_button.setFixedWidth(150)
+        # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # delete_button.setFixedWidth(150)
         delete_button.clicked.connect(self.delete_button_pressed)
         # center delete button
         delete_button_layout = QHBoxLayout()
