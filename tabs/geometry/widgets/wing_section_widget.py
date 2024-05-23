@@ -48,15 +48,15 @@ class WingSectionWidget(QWidget):
         
         # Delete button
         delete_button = QPushButton("Delete Wing Segment", self)
-        #delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        #delete_button.setFixedWidth(150)
-        #delete_button.clicked.connect(self.delete_button_pressed)
+        # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # delete_button.setFixedWidth(150)
+        delete_button.clicked.connect(self.delete_button_pressed)
         
         # Center delete button
         delete_button_layout = QHBoxLayout()
-        #delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         delete_button_layout.addWidget(delete_button)
-        #delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
         main_layout.addWidget(self.data_entry_widget)
         main_layout.addLayout(delete_button_layout)

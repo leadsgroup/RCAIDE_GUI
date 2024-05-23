@@ -58,7 +58,7 @@ class WingsFrame(QWidget, GeometryFrame):
 
         self.wing_cs_layout = QVBoxLayout()
         self.main_layout.addWidget(create_line_bar())
-        self.main_layout.addWidget(QLabel("Control Surfaces"))
+        # self.main_layout.addWidget(QLabel("Control Surfaces"))
         self.main_layout.addLayout(self.wing_cs_layout)
 
         self.add_buttons_layout()

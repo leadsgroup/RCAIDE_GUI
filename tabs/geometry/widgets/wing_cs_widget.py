@@ -1,10 +1,33 @@
 import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget, QFrame)
+                             QVBoxLayout, QWidget, QFrame, QComboBox)
 
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
+
+data_units_labels = [
+    [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+    ],
+    [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+    ],
+    [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+        ("Configuration", Units.Unitless),
+    ],
+]
+cs_types = ["Aileron", "Slat", "Flap"]
 
 
 class WingCSWidget(QWidget):
@@ -16,22 +39,32 @@ class WingCSWidget(QWidget):
         self.index = index
         self.on_delete = on_delete
         self.data_entry_widget: DataEntryWidget | None = None
+        self.main_layout: QVBoxLayout | None = None
 
         self.name_layout = QHBoxLayout()
         self.init_ui(section_data)
 
     # noinspection DuplicatedCode
     def init_ui(self, section_data):
-        main_layout = QVBoxLayout()
+        self.main_layout = QVBoxLayout()
         # add spacing
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
         self.name_layout.addWidget(QLabel("Control Surface Name: "))
         self.name_layout.addWidget(QLineEdit(self))
+
+        cs_type_dropdown = QComboBox()
+        cs_type_dropdown.addItems(cs_types)
+        cs_type_dropdown.setFixedWidth(100)
+        cs_type_dropdown.currentIndexChanged.connect(self.on_dropdown_change)
+        self.name_layout.addWidget(cs_type_dropdown)
         self.name_layout.addItem(spacer_right)
 
-        main_layout.addLayout(self.name_layout)
+        self.main_layout.addLayout(self.name_layout)
+
+        self.data_entry_widget = DataEntryWidget(data_units_labels[0])
+        self.main_layout.addWidget(self.data_entry_widget)
 
         # Delete button layout
         delete_button = QPushButton("Delete Control Surface")
@@ -39,18 +72,28 @@ class WingCSWidget(QWidget):
         delete_button_layout = QHBoxLayout()
         delete_button_layout.addWidget(delete_button)
         delete_button_layout.setSpacing(0)
-        main_layout.addLayout(delete_button_layout)
+        self.main_layout.addLayout(delete_button_layout)
 
         # Add horizontal bar
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        main_layout.addWidget(line_bar)
+        self.main_layout.addWidget(line_bar)
 
         if section_data:
             self.load_data_values(section_data)
 
-        self.setLayout(main_layout)
+        self.setLayout(self.main_layout)
+
+    def on_dropdown_change(self, index):
+        """Change the index of the main layout based on the selected index of the dropdown.
+
+        Args:
+            index: The index of the selected item in the dropdown.
+        """
+        self.main_layout.removeWidget(self.data_entry_widget)
+        self.data_entry_widget = DataEntryWidget(data_units_labels[index])
+        self.main_layout.insertWidget(1, self.data_entry_widget)
 
     def create_rcaide_structure(self, data):
         cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Control_Surface()
@@ -79,26 +122,3 @@ class WingCSWidget(QWidget):
             return
 
         self.on_delete(self.index)
-
-
-data_units_labels = [
-    [
-        ("Span Fraction Start", Units.Unitless),
-        ("Span Fraction End", Units.Unitless),
-        ("Deflection", Units.Angle),
-        ("Chord Fraction", Units.Unitless),
-    ],
-    [
-        ("Span Fraction Start", Units.Unitless),
-        ("Span Fraction End", Units.Unitless),
-        ("Deflection", Units.Angle),
-        ("Chord Fraction", Units.Unitless),
-    ],
-    [
-        ("Span Fraction Start", Units.Unitless),
-        ("Span Fraction End", Units.Unitless),
-        ("Deflection", Units.Angle),
-        ("Chord Fraction", Units.Unitless),
-        ("Configuration", Units.Unitless),
-    ],
-]
