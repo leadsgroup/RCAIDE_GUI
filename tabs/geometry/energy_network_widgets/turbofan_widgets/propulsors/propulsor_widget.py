@@ -1,17 +1,14 @@
-import os
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QCheckBox
+
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
-from widgets.unit_picker_widget import UnitPickerWidget
+
 
 class PropulsorWidget(QWidget):
     def __init__(self, index, on_delete, data_values=None):
         """Create a frame for entering landing gear data."""
         super(PropulsorWidget, self).__init__()
 
-        # TODO: Add landing gear types in the future
         # TODO: Add copying turbofan function (setting to new origin with same attributes)
 
         self.data_values = {}
@@ -23,7 +20,7 @@ class PropulsorWidget(QWidget):
         # Adding turbofan attributes
         turbofan_units_labels = [
             ("Origin", Units.Length),
-            ("Engine Length",Units.Length),
+            ("Engine Length", Units.Length),
             ("Bypass Ratio", Units.Unitless),
             ("Design Altitude", Units.Length),
             ("Design Mach Number", Units.Unitless),
@@ -36,7 +33,6 @@ class PropulsorWidget(QWidget):
         self.name_layout.addWidget(self.section_name_edit)
         main_section_layout.addLayout(self.name_layout)
 
-
         # Adding turbofan label
         main_section_layout.addSpacing(8)
         turbofan_label = QLabel("Turbofan")
@@ -44,7 +40,7 @@ class PropulsorWidget(QWidget):
         font.setBold(True)
         font.setUnderline(True)
         turbofan_label.setFont(font)
-        main_section_layout.addWidget(turbofan_label)        
+        main_section_layout.addWidget(turbofan_label)
 
         self.data_entry_widget = DataEntryWidget(turbofan_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
@@ -85,7 +81,7 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(inlet_nozzle_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)        
+        main_section_layout.addWidget(self.data_entry_widget)
 
         # Adding low pressure compressor (lpc) label
         main_section_layout.addSpacing(8)
@@ -104,7 +100,7 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(lpc_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)        
+        main_section_layout.addWidget(self.data_entry_widget)
 
         # Adding high pressure compressor (hpc) label
         main_section_layout.addSpacing(8)
@@ -123,7 +119,7 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(hpc_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)                
+        main_section_layout.addWidget(self.data_entry_widget)
 
         # Adding core nozzle label
         main_section_layout.addSpacing(8)
@@ -142,7 +138,7 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(core_nozzle_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)        
+        main_section_layout.addWidget(self.data_entry_widget)
 
         # Adding fan nozzle label
         main_section_layout.addSpacing(8)
@@ -161,9 +157,9 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(fan_nozzle_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)          
+        main_section_layout.addWidget(self.data_entry_widget)
 
-        #Adding combustor label
+        # Adding combustor label
         main_section_layout.addSpacing(8)
         combustor_layout = QVBoxLayout()
         combustor_label = QLabel("Combustor")
@@ -182,8 +178,7 @@ class PropulsorWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(combustor_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)        
-
+        main_section_layout.addWidget(self.data_entry_widget)
 
         # Adding option to deepcopy turbofan
         main_section_layout.addSpacing(8)
@@ -195,11 +190,11 @@ class PropulsorWidget(QWidget):
         copy_label.setFont(font)
         copy_layout.addWidget(copy_label)
         main_section_layout.addLayout(copy_layout)
-        
+
         self.copy_turbofan_checkbox = QCheckBox("Yes, copy turbofan properties to new origin")
         self.copy_turbofan_checkbox.setChecked(False)
         main_section_layout.addWidget(self.copy_turbofan_checkbox)
-        
+
         # Deepcopy turbofan labels and units
         deepcopy_units_labels = [
             ("New Origin", Units.Length),
@@ -207,9 +202,8 @@ class PropulsorWidget(QWidget):
 
         self.data_entry_widget = DataEntryWidget(deepcopy_units_labels)
         self.data_entry_widget.setVisible(False)
-        main_section_layout.addWidget(self.data_entry_widget)        
+        main_section_layout.addWidget(self.data_entry_widget)
         self.copy_turbofan_checkbox.stateChanged.connect(self.toggle_deepcopy_visibility)
-
 
         # Adding delete button
         delete_button = QPushButton("Delete Propulsor Segment", self)
@@ -241,7 +235,7 @@ class PropulsorWidget(QWidget):
         data_values["segment name"] = title
 
         return data_values
-    
+
     def toggle_deepcopy_visibility(self):
         # toggles visibility based on the checkbox state
-        self.data_entry_widget.setVisible(self.copy_turbofan_checkbox.isChecked())    
+        self.data_entry_widget.setVisible(self.copy_turbofan_checkbox.isChecked())

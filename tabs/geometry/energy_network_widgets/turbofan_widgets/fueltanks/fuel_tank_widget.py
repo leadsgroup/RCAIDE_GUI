@@ -1,12 +1,10 @@
-import os
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
-from utilities import show_popup, Units
+from utilities import Units
 from tabs.geometry.frames.geometry_frame import GeometryFrame
-from widgets.unit_picker_widget import UnitPickerWidget
+
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit
+
 
 class FuelTankWidget(QWidget, GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):

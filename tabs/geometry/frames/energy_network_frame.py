@@ -49,7 +49,6 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         layout.addLayout(self.energy_network_sections_layout)
 
         # Add the layout for additional energy_network sections to the main layout
-
         # Add line above the buttons
         line_above_buttons = QFrame()
         line_above_buttons.setFrameShape(QFrame.Shape.HLine)
@@ -127,8 +126,9 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
     def set_tab_index(self, index):
         self.tab_index = index
 
+    # TODO: Fix fuel line deletion
     def on_delete_button_pressed(self, index):
-        self.energy_network_sections_layout.itemAt(index).widget().deleteLater()
+        # self.energy_network_sections_layout.itemAt(index).widget().deleteLater()
         self.energy_network_sections_layout.removeWidget(self.energy_network_sections_layout.itemAt(index).widget())
         self.energy_network_sections_layout.update()
         print("Deleted energy_network at Index:", index)
@@ -152,10 +152,10 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             fuelline_data = []
             for index in range(self.energy_network_sections_layout.count()):
                 widget = self.energy_network_sections_layout.itemAt(index).widget()
-                fuelline_data.append(widget.get_data_values())
+                if widget is not None and isinstance(widget, FuelLineWidget):
+                    fuelline_data.append(widget.get_data_values())
 
             data["energy_network_sections"] = fuelline_data
-
         return data
 
     def save_data(self):

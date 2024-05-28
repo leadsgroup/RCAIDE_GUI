@@ -1,13 +1,13 @@
 import sys
 
-from PyQt6.QtWidgets import *
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from tabs.analysis import analysis
 from tabs.geometry import geometry
 from tabs.home import home
 from tabs.mission import mission
 from tabs.solve import solve
-from widgets.theme import ThemeSwitch
+# from widgets.theme import ThemeSwitch
 
 
 class App(QMainWindow):
@@ -54,7 +54,7 @@ class App(QMainWindow):
         self.resize(1280, 720)
 
         # Create the theme switch widget
-        self.theme_switch = ThemeSwitch()
+        # self.theme_switch = ThemeSwitch()
 
 
 app = QApplication(sys.argv)

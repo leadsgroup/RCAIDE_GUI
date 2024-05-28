@@ -1,3 +1,4 @@
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
@@ -5,8 +6,6 @@ from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
 from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
 from utilities import show_popup, Units
 from widgets.data_entry_widget import DataEntryWidget
-
-import RCAIDE
 
 
 class NacelleFrame(QWidget, GeometryFrame):
@@ -155,16 +154,15 @@ class NacelleFrame(QWidget, GeometryFrame):
         nacelle.flow_through = data["Flow Through"]
         nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"]
         nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"]
-        
+
         return nacelle
-        
-    
+
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data_si["name"] = self.name_line_edit.text()
-        
+
         nacelle = self.create_rcaide_structure(data_si)
 
         data["sections"] = []

@@ -24,7 +24,7 @@ data_units_labels = [
         ("Span Fraction End", Units.Unitless),
         ("Deflection", Units.Angle),
         ("Chord Fraction", Units.Unitless),
-        ("Configuration", Units.Unitless),
+        ("Number of Slots", Units.Count),
     ],
 ]
 cs_types = ["Aileron", "Slat", "Flap"]
@@ -40,6 +40,7 @@ class WingCSWidget(QWidget):
         self.on_delete = on_delete
         self.data_entry_widget: DataEntryWidget | None = None
         self.main_layout: QVBoxLayout | None = None
+        self.cs_type = 0
 
         self.name_layout = QHBoxLayout()
         self.init_ui(section_data)
@@ -92,12 +93,37 @@ class WingCSWidget(QWidget):
             index: The index of the selected item in the dropdown.
         """
         self.main_layout.removeWidget(self.data_entry_widget)
+        self.data_entry_widget.deleteLater()
         self.data_entry_widget = DataEntryWidget(data_units_labels[index])
         self.main_layout.insertWidget(1, self.data_entry_widget)
+        self.cs_type = index
 
     def create_rcaide_structure(self, data):
-        cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Control_Surface()
+        cs = None
+        if self.cs_type == 0:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
+        elif self.cs_type == 1:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+        elif self.cs_type == 2:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+        
         cs.tag = data["CS name"]
+        cs.span_fraction_start = data["Span Fraction Start"]
+        cs.span_fraction_end = data["Span Fraction End"]
+        cs.deflection = data["Deflection"]
+        cs.chord_fraction = data["Chord Fraction"]
+        
+        if self.cs_type == 2:
+            num_slots = data["Number of Slots"]
+            config_type = "single_slotted"
+            if num_slots == 2:
+                config_type = "double_slotted"
+            elif num_slots == 3:
+                config_type = "triple_slotted"
+            elif num_slots != 1:
+                print("Illegal number of slots. Defaulting to single slotted.")
+            
+            cs.configuration_type = config_type
 
         return cs
 
