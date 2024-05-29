@@ -5,9 +5,9 @@ from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.data_entry_widget import DataEntryWidget
 
 
-class TurboFanWidget(QWidget):
+class TurbofanWidget(QWidget):
     def __init__(self):
-        super(TurboFanWidget, self).__init__()
+        super(TurbofanWidget, self).__init__()
 
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None
@@ -46,6 +46,10 @@ class TurboFanWidget(QWidget):
 
     def create_rcaide_structure(self, data):
         # TODO: Implement create_rcaide structure
+        pass
+    
+    def load_data(self):
+        # TODO: Implement load data
         pass
 
     def get_data_values(self):

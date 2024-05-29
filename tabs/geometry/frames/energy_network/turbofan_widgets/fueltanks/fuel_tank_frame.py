@@ -2,11 +2,10 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFra
     QSizePolicy, QSpacerItem
 
 from tabs.geometry.frames.energy_network.turbofan_widgets.fueltanks.fuel_tank_widget import FuelTankWidget
-from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.data_entry_widget import DataEntryWidget
 
 
-class FuelTankFrame(QWidget, GeometryFrame):
+class FuelTankFrame(QWidget):
     def __init__(self):
         super(FuelTankFrame, self).__init__()
 
@@ -25,17 +24,13 @@ class FuelTankFrame(QWidget, GeometryFrame):
         # header_layout.addWidget(label)
 
         # Add fueltank_ Section Button
-        add_section_button = QPushButton("Add fueltank Section", self)
+        add_section_button = QPushButton("Add Fuel Tank", self)
         add_section_button.setMaximumWidth(200)
         add_section_button.clicked.connect(self.add_fueltank_section)
 
         header_layout.addWidget(add_section_button)
 
         layout.addLayout(header_layout)
-
-        name_layout = QHBoxLayout()
-
-        layout.addLayout(name_layout)
 
         # Create a horizontal line
         line_bar = QFrame()
@@ -67,15 +62,26 @@ class FuelTankFrame(QWidget, GeometryFrame):
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def get_data_values(self):
-        # TODO Implement get_data_values
-        pass
+        data = []
+        for index in range(self.fueltank_sections_layout.count()):
+            item = self.fueltank_sections_layout.itemAt(index)
+            if item is None:
+                continue
+            
+            widget = item.widget()
+            if widget is None or not isinstance(widget, FuelTankWidget):
+                continue
+            
+            data.append(widget.get_data_values())
+        
+        return data
 
-    def load_data(self, data, index):
+    def load_data(self, data):
         # TODO Implement load_data
         pass
 
     def delete_data(self):
-        # TODO Implement deletion of data
+        # TODO Implement proper deletion of data
         pass
 
     def add_fueltank_section(self):
@@ -83,17 +89,30 @@ class FuelTankFrame(QWidget, GeometryFrame):
             FuelTankWidget(self.fueltank_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
-        self.fueltank_sections_layout.itemAt(index).widget().deleteLater()
-        self.fueltank_sections_layout.removeWidget(self.fueltank_sections_layout.itemAt(index).widget())
+        tank = self.fueltank_sections_layout.itemAt(index)
+        if tank is None:
+            return
+        
+        widget = tank.widget()
+        if widget is None:
+            return
+        
+        widget.deleteLater()
+        self.fueltank_sections_layout.removeWidget(widget)
         self.fueltank_sections_layout.update()
         print("Deleted fueltank_ at Index:", index)
 
         for i in range(index, self.fueltank_sections_layout.count()):
-            self.fueltank_sections_layout.itemAt(i).widget().index = i
+            tank = self.fueltank_sections_layout.itemAt(i)
+            if tank is None:
+                continue
+            
+            widget = tank.widget()
+            if widget is None or not isinstance(widget, FuelTankWidget):
+                continue
+            
+            widget.index = i
             print("Updated Index:", i)
-
-    def update_units(self, line_edit, unit_combobox):
-        pass
 
     def set_save_function(self, function):
         self.save_function = function

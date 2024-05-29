@@ -2,7 +2,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 
 from tabs.geometry.frames.energy_network.turbofan_widgets.fuelline_widget import FuelLineWidget
-from tabs.geometry.frames.energy_network.turbofan_widgets.turbofan_network import TurboFanWidget
+from tabs.geometry.frames.energy_network.turbofan_widgets.turbofan_network import TurbofanWidget
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup
 
@@ -64,15 +64,18 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         save_data_button.clicked.connect(self.save_data)
         button_layout.addWidget(save_data_button)
 
-        new_energy_network_structure_button = QPushButton("Clear All Energy Network Data", self)
-        new_energy_network_structure_button.clicked.connect(self.create_new_structure)
+        new_energy_network_structure_button = QPushButton(
+            "Clear All Energy Network Data", self)
+        new_energy_network_structure_button.clicked.connect(
+            self.create_new_structure)
         button_layout.addWidget(new_energy_network_structure_button)
 
         # Add the button layout to the main layout
         layout.addLayout(button_layout)
 
         # Adds scroll function
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
         # Set the scroll content as the widget for the scroll area
         scroll_area.setWidget(scroll_content)
@@ -94,8 +97,10 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
 
         name_layout = QHBoxLayout()
         # add spacing
-        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         self.name_line_edit = QLineEdit(self)
@@ -110,10 +115,12 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         self.energy_network_combo = QComboBox()
         self.energy_network_combo.addItems(["None Selected", "Turbofan"])
         self.energy_network_combo.setFixedWidth(400)  # Fix width of combo box
-        name_layout.addWidget(self.energy_network_combo, alignment=Qt.AlignmentFlag.AlignLeft)
+        name_layout.addWidget(self.energy_network_combo,
+                              alignment=Qt.AlignmentFlag.AlignLeft)
 
         # Connect signal
-        self.energy_network_combo.currentIndexChanged.connect(self.display_selected_network)
+        self.energy_network_combo.currentIndexChanged.connect(
+            self.display_selected_network)
 
         main_layout.addLayout(name_layout)
 
@@ -129,7 +136,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
     # TODO: Fix fuel line deletion
     def on_delete_button_pressed(self, index):
         # self.energy_network_sections_layout.itemAt(index).widget().deleteLater()
-        self.energy_network_sections_layout.removeWidget(self.energy_network_sections_layout.itemAt(index).widget())
+        self.energy_network_sections_layout.removeWidget(
+            self.energy_network_sections_layout.itemAt(index).widget())
         self.energy_network_sections_layout.update()
         print("Deleted energy_network at Index:", index)
 
@@ -139,37 +147,44 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                 continue
 
             widget = item.widget()
-            if widget is not None and isinstance(widget, TurboFanWidget):
+            if widget is not None and isinstance(widget, TurbofanWidget):
                 widget.index = i
                 print("Updated Index:", i)
 
     def get_data_values(self):
         """Retrieve the entered data values from the widgets."""
         selected_network = self.energy_network_combo.currentText()
-        data = {"energy network selected": selected_network, "name": self.name_line_edit.text()}
+        data = {}
+        data["energy network selected"] = selected_network
+        data["name"] = self.name_line_edit.text()
 
         if selected_network == "Turbofan":
             fuelline_data = []
             for index in range(self.energy_network_sections_layout.count()):
-                widget = self.energy_network_sections_layout.itemAt(index).widget()
+                widget = self.energy_network_sections_layout.itemAt(
+                    index).widget()
                 if widget is not None and isinstance(widget, FuelLineWidget):
                     fuelline_data.append(widget.get_data_values())
 
             data["energy_network_sections"] = fuelline_data
+
         return data
 
     def save_data(self):
         """Call the save function and pass the entered data to it."""
         entered_data = self.get_data_values()
 
-        print("Entered data in EnergyNetworkFrame:", entered_data)  # Add this line for debugging
+        print("Entered data in EnergyNetworkFrame:",
+              entered_data)  # Add this line for debugging
 
         if self.save_function:
             if self.index >= 0:
-                self.index = self.save_function(self.tab_index, self.index, entered_data)
+                self.index = self.save_function(
+                    self.tab_index, self.index, entered_data)
                 return
             else:
-                self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+                self.index = self.save_function(
+                    self.tab_index, data=entered_data, new=True)
 
         show_popup("Data Saved!", self)
 
@@ -228,8 +243,9 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         self.clear_layout(self.energy_network_sections_layout)
 
         if selected_network == "Turbofan":
-            self.main_energy_network_widget = TurboFanWidget()
-            self.energy_network_sections_layout.addWidget(self.main_energy_network_widget)
+            self.main_energy_network_widget = TurbofanWidget()
+            self.energy_network_sections_layout.addWidget(
+                self.main_energy_network_widget)
         elif selected_network == "None Selected":
             # Do nothing or add blank widget
             pass

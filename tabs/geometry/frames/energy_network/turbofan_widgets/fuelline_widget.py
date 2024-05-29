@@ -17,13 +17,6 @@ class FuelLineWidget(QWidget):
 
         layout = self.create_scroll_layout()
 
-        line_bar = QFrame()
-        line_bar.setFrameShape(QFrame.Shape.HLine)
-        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        line_bar.setStyleSheet("background-color: light grey; border: 2px solid grey;")
-
-        layout.addWidget(line_bar)
-
         # Segment Name layout
         self.name_layout = QHBoxLayout()
         self.section_name_edit = QLineEdit(self)
@@ -36,12 +29,12 @@ class FuelLineWidget(QWidget):
         layout.addWidget(self.tab_widget)
 
         # Create Fuel Tanks tab
-        fuel_tank_widget = FuelTankFrame()
-        self.tab_widget.addTab(fuel_tank_widget, "Fuel Tanks")
+        self.fuel_tank_frame = FuelTankFrame()
+        self.tab_widget.addTab(self.fuel_tank_frame, "Fuel Tanks")
 
         # Create Propulsors tab
-        propulsor_widget = PropulsorFrame()
-        self.tab_widget.addTab(propulsor_widget, "Propulsors")
+        self.propulsor_frame = PropulsorFrame()
+        self.tab_widget.addTab(self.propulsor_frame, "Propulsors")
 
         delete_button = QPushButton("Delete Fuel Line Segment", self)
         delete_button.clicked.connect(self.delete_button_pressed)
@@ -62,19 +55,27 @@ class FuelLineWidget(QWidget):
         data_values["name"] = fuel_line_name
 
         # Get data values from Fuel Tanks tab
-        fuel_tank_widget = self.tab_widget.widget(0)
-        fuel_tank_data = fuel_tank_widget.get_data_values()
-        data_values["Fuel Tank Data"] = fuel_tank_data
+        fuel_tank_data = self.fuel_tank_frame.get_data_values()
+        data_values["fuel tank data"] = fuel_tank_data
 
         # Get data values from Propulsors tab
-        propulsor_widget = self.tab_widget.widget(1)
-        propulsor_data = propulsor_widget.get_data_values()
-        data_values["Propulsor Data"] = propulsor_data
+        propulsor_data = self.propulsor_frame.get_data_values()
+        data_values["propulsor data"] = propulsor_data
 
         return data_values
 
     def load_data(self, data, index):
-        pass
+        self.index = index
+        
+        fuel_line_name = data["name"]
+        self.section_name_edit.setText(fuel_line_name)
+        
+        fuel_tank_data = data["fuel tank data"]
+        self.fuel_tank_frame.load_data(fuel_tank_data)
+        
+        propulsor_data = data["propulsor data"]
+        self.propulsor_frame.load_data(propulsor_data)        
+        
 
     def delete_button_pressed(self):
         print("Delete button pressed")

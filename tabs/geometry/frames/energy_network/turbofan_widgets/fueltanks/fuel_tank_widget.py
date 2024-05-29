@@ -17,12 +17,18 @@ class FuelTankWidget(QWidget, GeometryFrame):
         main_section_layout = QVBoxLayout()
 
         data_units_labels = [
-            ("Fuel Tank Origin", Units.Length),
+            ("Fuel Tank Origin X", Units.Length),
+            ("Fuel Tank Origin Y", Units.Length),
+            ("Fuel Tank Origin Z", Units.Length),
+            ("Fuel Origin X", Units.Length),
+            ("Fuel Origin Y", Units.Length),
+            ("Fuel Origin Z", Units.Length),
+            ("Center of Gravity X", Units.Length),
+            ("Center of Gravity Y", Units.Length),
+            ("Center of Gravity Z", Units.Length),
+            ("Internal Volume", Units.Volume),
             ("Fuel", Units.Unitless),
             ("Mass", Units.Mass),
-            ("Fuel Origin", Units.Length),
-            ("Center of Gravity", Units.Length),
-            ("Internal Volume", Units.Volume),
         ]
 
         self.name_layout = QHBoxLayout()
