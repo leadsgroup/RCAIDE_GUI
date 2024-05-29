@@ -62,7 +62,14 @@ class PropulsorFrame(QWidget):
         # Collect data from additional fuselage_widget
         data = []
         for index in range(self.propulsor_sections_layout.count()):
-            widget = self.propulsor_sections_layout.itemAt(index).widget()
+            item = self.propulsor_sections_layout.itemAt(index)
+            if item is None:
+                continue
+            
+            widget = item.widget()
+            if widget is None or not isinstance(widget, PropulsorWidget):
+                continue
+            
             data.append(widget.get_data_values())
 
         return data
@@ -71,6 +78,9 @@ class PropulsorFrame(QWidget):
         # Make sure sections don't already exist
         while self.propulsor_sections_layout.count():
             item = self.propulsor_sections_layout.takeAt(0)
+            if item is None:
+                continue
+            
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
@@ -88,13 +98,29 @@ class PropulsorFrame(QWidget):
             PropulsorWidget(self.propulsor_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
-        self.propulsor_sections_layout.itemAt(index).widget().deleteLater()
-        self.propulsor_sections_layout.removeWidget(self.propulsor_sections_layout.itemAt(index).widget())
+        propulsor = self.propulsor_sections_layout.itemAt(index)
+        if propulsor is None:
+            return
+        
+        widget = propulsor.widget()
+        if widget is None:
+            return
+        
+        widget.deleteLater()
+        self.propulsor_sections_layout.removeWidget(widget)
         self.propulsor_sections_layout.update()
         print("Deleted propulsor_ at Index:", index)
 
         for i in range(index, self.propulsor_sections_layout.count()):
-            self.propulsor_sections_layout.itemAt(i).widget().index = i
+            propulsor = self.propulsor_sections_layout.itemAt(i)
+            if propulsor is None:
+                continue
+            
+            widget = propulsor.widget()
+            if widget is None or not isinstance(widget, PropulsorWidget):
+                continue
+            
+            widget.index = i
             print("Updated Index:", i)
 
     def update_units(self, line_edit, unit_combobox):
