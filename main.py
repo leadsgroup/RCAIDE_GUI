@@ -17,20 +17,18 @@ class App(QMainWindow):
         self.setWindowTitle("RCAIDE")
 
         menubar = self.menuBar()
-
+        if menubar is None:
+            return
+        
         # File menu
         file_menu = menubar.addMenu("File")
+        if file_menu is None:
+            return
+        
         file_menu.addAction("New")
         file_menu.addAction("Open")
         file_menu.addAction("Save")
         file_menu.addSeparator()
-
-        # Theme submenu
-
-        theme_menu = file_menu.addMenu("Theme")
-        theme_menu.addAction("Light Theme").triggered.connect(ThemeSwitch.light_theme)
-
-        theme_menu.addAction("Dark Theme").triggered.connect(ThemeSwitch.dark_theme)
 
         file_menu.addSeparator()
         file_menu.addAction("Quit")

@@ -1,8 +1,8 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 
-from tabs.geometry.energy_network_widgets.turbofan_widgets.fuelline_widget import FuelLineWidget
-from tabs.geometry.energy_network_widgets.turbofan_widgets.turbofan_network import TurboFanWidget
+from tabs.geometry.frames.energy_network.turbofan_widgets.fuelline_widget import FuelLineWidget
+from tabs.geometry.frames.energy_network.turbofan_widgets.turbofan_network import TurboFanWidget
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup
 

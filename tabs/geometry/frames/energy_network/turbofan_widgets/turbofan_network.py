@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame
 
-from tabs.geometry.energy_network_widgets.turbofan_widgets.fuelline_widget import FuelLineWidget
+from tabs.geometry.frames.energy_network.turbofan_widgets.fuelline_widget import FuelLineWidget
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.data_entry_widget import DataEntryWidget
 
@@ -58,13 +58,19 @@ class TurboFanWidget(QWidget):
         return data
 
     def on_delete_button_pressed(self, index):
-        self.fuelline_sections_layout.removeWidget(self.fuelline_sections_layout.itemAt(index).widget())
-        self.fuelline_sections_layout.update()
-        print("Deleted Fuel Line at Index:", index)
+        widget_item = self.fuelline_sections_layout.itemAt(index)
+        if widget_item is not None:
+            widget = widget_item.widget()
+            self.fuelline_sections_layout.removeWidget(widget)
+            self.fuelline_sections_layout.update()
+            print("Deleted Fuel Line at Index:", index)
 
-        for i in range(index, self.fuelline_sections_layout.count()):
-            self.fuelline_sections_layout.itemAt(i).widget().index = i
-            print("Updated Index:", i)
+            for i in range(index, self.fuelline_sections_layout.count()):
+                widget_item = self.fuelline_sections_layout.itemAt(i)
+                if widget_item is not None:
+                    widget = widget_item.widget()
+                    widget.index = i
+                    print("Updated Index:", i)
 
     def create_scroll_layout(self):
         # Create a widget to contain the layout
