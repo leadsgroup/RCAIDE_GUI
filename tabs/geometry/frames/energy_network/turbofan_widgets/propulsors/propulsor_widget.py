@@ -19,7 +19,7 @@ class PropulsorWidget(QWidget):
 
         # Adding turbofan attributes
         turbofan_units_labels = [
-            ("Origin", Units.Length),
+            ("Origin", Units.Position),
             ("Engine Length", Units.Length),
             ("Bypass Ratio", Units.Unitless),
             ("Design Altitude", Units.Length),

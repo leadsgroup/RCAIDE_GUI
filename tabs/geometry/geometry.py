@@ -40,7 +40,7 @@ class GeometryWidget(QWidget):
             frame_widget = frame()
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index - 1)
-            self.main_layout.addWidget(frame_widget)
+            self.main_layout.addWidget(frame_widget) # type: ignore
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
@@ -117,7 +117,7 @@ class GeometryWidget(QWidget):
             return
 
         tab_index = self.tree.indexFromItem(item).row()
-        frame: GeometryFrame = self.main_layout.widget(tab_index + 1)
+        frame: GeometryFrame = self.main_layout.widget(tab_index + 1) # type: ignore
         frame.create_new_structure()
         self.main_layout.setCurrentIndex(tab_index + 1)
 
@@ -132,6 +132,9 @@ class GeometryWidget(QWidget):
             new: A flag to indicate if the data is of a new element.
         """
         print("Saving data:", data)
+        if data is None:
+            return
+        
         if new:
             self.data[tab_index].append(data)
             child = QTreeWidgetItem([data["name"]])

@@ -26,6 +26,8 @@ class PropulsorFrame(QWidget):
         add_section_button.setMaximumWidth(200)
         add_section_button.clicked.connect(self.add_propulsor_section)
         header_layout.addWidget(add_section_button)
+        
+        layout.addLayout(header_layout)
 
         # Create a horizontal line
         line_bar = QFrame()

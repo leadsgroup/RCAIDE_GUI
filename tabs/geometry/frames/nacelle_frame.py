@@ -12,7 +12,6 @@ class NacelleFrame(QWidget, GeometryFrame):
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(NacelleFrame, self).__init__()
-        self.data_entry_widget: DataEntryWidget | None = None
 
         self.create_scroll_area()
         self.main_layout.addWidget(QLabel("<b>Nacelle</b>"))
@@ -25,9 +24,7 @@ class NacelleFrame(QWidget, GeometryFrame):
             ("Length", Units.Length),
             ("Inlet Diameter", Units.Length),
             ("Diameter", Units.Length),
-            ("Origin X", Units.Length),
-            ("Origin Y", Units.Length),
-            ("Origin Z", Units.Length),
+            ("Origin", Units.Position),
             ("Wetted Area", Units.Area),
             ("Flow Through", Units.Unitless),
             ("Airfoil Flag", Units.Boolean),
@@ -35,7 +32,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         ]
 
         # Add the data entry widget to the main layout
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget : DataEntryWidget = DataEntryWidget(data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -53,7 +50,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         scroll_area.setWidgetResizable(True)
         scroll_content = QWidget()
         scroll_area.setWidget(scroll_content)
-        self.main_layout = QVBoxLayout(scroll_content)
+        self.main_layout : QVBoxLayout = QVBoxLayout(scroll_content)
         layout_scroll = QVBoxLayout(self)
         layout_scroll.addWidget(scroll_area)
         layout_scroll.setContentsMargins(0, 0, 0, 0)
@@ -63,7 +60,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        self.name_line_edit = QLineEdit(self)
+        self.name_line_edit : QLineEdit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
@@ -93,13 +90,13 @@ class NacelleFrame(QWidget, GeometryFrame):
     # noinspection DuplicatedCode
     def save_data(self):
         """Call the save function and pass the entered data to it."""
-        entered_data = self.get_data_values()
+        entered_data, v_comp = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(self.tab_index, self.index, entered_data)
                 return
             else:
-                self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+                self.index = self.save_function(self.tab_index, vehicle_component=v_comp, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
 
@@ -108,8 +105,16 @@ class NacelleFrame(QWidget, GeometryFrame):
             self.nacelle_sections_layout.count(), self.delete_nacelle_section))
 
     def delete_nacelle_section(self, index):
-        self.nacelle_sections_layout.itemAt(index).widget().deleteLater()
-        self.nacelle_sections_layout.removeWidget(self.nacelle_sections_layout.itemAt(index).widget())
+        item = self.nacelle_sections_layout.itemAt(index)
+        if item is None:
+            return
+        
+        widget = item.widget()
+        if widget is None or not isinstance(widget, NacelleSectionWidget):
+            return
+        
+        widget.deleteLater()
+        self.nacelle_sections_layout.removeWidget(widget)
         self.nacelle_sections_layout.update()
 
         for i in range(index, self.nacelle_sections_layout.count()):
@@ -133,7 +138,14 @@ class NacelleFrame(QWidget, GeometryFrame):
 
         # Clear the nacelle sections
         for i in range(self.nacelle_sections_layout.count()):
-            self.nacelle_sections_layout.itemAt(i).widget().deleteLater()
+            item = self.nacelle_sections_layout.itemAt(i)
+            if item is None:
+                continue
+            
+            widget = item.widget()
+            if widget is not None and isinstance(widget, NacelleSectionWidget):
+                widget.deleteLater()
+                
         self.nacelle_sections_layout.update()
         self.index = -1
 
@@ -144,16 +156,16 @@ class NacelleFrame(QWidget, GeometryFrame):
             data: The data to create the nacelle structure from.
         """
         nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
-        nacelle.diameter = data["Diameter"]
-        nacelle.inlet_diameter = data["Inlet Diameter"]
-        nacelle.length = data["Length"]
+        nacelle.diameter = data["Diameter"][0]
+        nacelle.inlet_diameter = data["Inlet Diameter"][0]
+        nacelle.length = data["Length"][0]
         nacelle.tags = data["name"]
-        origin = [data["Origin X"], data["Origin Y"], data["Origin Z"]]
+        origin = data["Origin"][0]
         nacelle.origin = origin
-        nacelle.areas.wetted = data["Wetted Area"]
-        nacelle.flow_through = data["Flow Through"]
+        nacelle.areas.wetted = data["Wetted Area"][0]
+        nacelle.flow_through = data["Flow Through"][0]
         nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"]
-        nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"]
+        nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"][0]
 
         return nacelle
 
