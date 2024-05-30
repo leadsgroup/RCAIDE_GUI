@@ -30,7 +30,8 @@ class Units:
         SQUARE_INCH = ("in²", lambda x: x * 0.00064516)
         SQUARE_FOOT = ("ft²", lambda x: x * 0.092903)
 
-        unit_list = [SQUARE_METER, SQUARE_CENTIMETER, SQUARE_MILLIMETER, SQUARE_INCH, SQUARE_FOOT]
+        unit_list = [SQUARE_METER, SQUARE_CENTIMETER,
+                     SQUARE_MILLIMETER, SQUARE_INCH, SQUARE_FOOT]
 
     class Volume:
         CUBIC_METER = ("m³", lambda x: x)
@@ -39,7 +40,8 @@ class Units:
         CUBIC_INCH = ("in³", lambda x: x * 0.0000163871)
         CUBIC_FOOT = ("ft³", lambda x: x * 0.0283168)
 
-        unit_list = [CUBIC_METER, CUBIC_CENTIMETER, CUBIC_MILLIMETER, CUBIC_INCH, CUBIC_FOOT]
+        unit_list = [CUBIC_METER, CUBIC_CENTIMETER,
+                     CUBIC_MILLIMETER, CUBIC_INCH, CUBIC_FOOT]
 
     class Temperature:
         KELVIN = ("K", lambda x: x)
@@ -83,12 +85,12 @@ class Units:
         KNOTS_PER_SECOND = ("kn/s", lambda x: x * 0.514444)
 
         unit_list = [METER_PER_SECOND_SQUARED, KNOTS_PER_SECOND]
-    
+
     class Force:
         NEWTON = ("N", lambda x: x)
         KILONEWTON = ("kN", lambda x: x * 1000)
         MEGANEWTON = ("MN", lambda x: x * 1000000)
-        
+
         unit_list = [NEWTON, KILONEWTON, MEGANEWTON]
 
     class Energy:
@@ -99,7 +101,8 @@ class Units:
         CALORIE = ("cal", lambda x: x * 4184)
         KILOCALORIE = ("kcal", lambda x: x * 4184000)
 
-        unit_list = [JOULE, KILOJOULE, WATT_HOUR, KILOWATT_HOUR, CALORIE, KILOCALORIE]
+        unit_list = [JOULE, KILOJOULE, WATT_HOUR,
+                     KILOWATT_HOUR, CALORIE, KILOCALORIE]
 
     class Current:
         AMPERE = ("A", lambda x: x)
@@ -107,7 +110,7 @@ class Units:
         MICROAMPERE = ("µA", lambda x: x * 0.000001)
 
         unit_list = [AMPERE, MILLIAMPERE, MICROAMPERE]
-        
+
     class Pressure:
         PASCAL = ("Pa", lambda x: x)
         KILOPASCAL = ("kPa", lambda x: x * 1000)
@@ -116,7 +119,8 @@ class Units:
         ATMOSPHERE = ("atm", lambda x: x * 101325)
         POUND_PER_SQUARE_INCH = ("psi", lambda x: x * 6894.76)
 
-        unit_list = [PASCAL, KILOPASCAL, MEGAPASCAL, BAR, ATMOSPHERE, POUND_PER_SQUARE_INCH]
+        unit_list = [PASCAL, KILOPASCAL, MEGAPASCAL,
+                     BAR, ATMOSPHERE, POUND_PER_SQUARE_INCH]
 
     class Unitless:
         NONE = ("", lambda x: x)
@@ -131,6 +135,9 @@ class Units:
         RADIAN = ("rad", lambda x: x)
         DEGREE = ("°", lambda x: np.deg2rad(x))
         unit_list = [RADIAN, DEGREE]
+
+    class Position:
+        pass
 
     class Boolean:
         pass

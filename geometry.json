@@ -1,13 +1,45 @@
 [
     [],
     [],
-    [],
-    [],
     [
         {
-            "energy network selected": "Turbofan",
-            "name": "",
-            "energy_network_sections": []
+            "Length": [
+                0.0,
+                0
+            ],
+            "Inlet Diameter": [
+                0.0,
+                0
+            ],
+            "Diameter": [
+                0.0,
+                0
+            ],
+            "Origin": [
+                [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                0
+            ],
+            "Wetted Area": [
+                0.0,
+                0
+            ],
+            "Flow Through": [
+                0.0,
+                0
+            ],
+            "Airfoil Flag": false,
+            "Airfoil Coordinate File": [
+                0.0,
+                0
+            ],
+            "sections": [],
+            "name": ""
         }
-    ]
+    ],
+    [],
+    []
 ]
