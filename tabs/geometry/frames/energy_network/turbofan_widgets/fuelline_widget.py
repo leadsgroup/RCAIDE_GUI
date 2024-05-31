@@ -36,7 +36,7 @@ class FuelLineWidget(QWidget):
         self.propulsor_frame = PropulsorFrame()
         self.tab_widget.addTab(self.propulsor_frame, "Propulsors")
 
-        delete_button = QPushButton("Delete Fuel Line Segment", self)
+        delete_button = QPushButton("Delete Fuel Line", self)
         delete_button.clicked.connect(self.delete_button_pressed)
 
         layout.addWidget(delete_button)

@@ -3,7 +3,6 @@ from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout
 from matplotlib.pyplot import grid
 
-from shelf.RCAIDE_UIUC.Legacy.trunk.S.Plugins.pint import unit
 from utilities import Units
 from widgets.unit_picker_widget import UnitPickerWidget
 

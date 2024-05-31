@@ -190,7 +190,10 @@ class PropulsorWidget(QWidget):
         copy_label.setFont(font)
         copy_layout.addWidget(copy_label)
         main_section_layout.addLayout(copy_layout)
-
+        
+        # TODO: Change to duplicate turbofan
+        # TODO: Make sure 2 turbofans aren't at the same origin
+        
         self.copy_turbofan_checkbox = QCheckBox("Yes, copy turbofan properties to new origin")
         self.copy_turbofan_checkbox.setChecked(False)
         main_section_layout.addWidget(self.copy_turbofan_checkbox)
@@ -206,8 +209,10 @@ class PropulsorWidget(QWidget):
         self.copy_turbofan_checkbox.stateChanged.connect(self.toggle_deepcopy_visibility)
 
         # Adding delete button
-        delete_button = QPushButton("Delete Propulsor Segment", self)
+        delete_button = QPushButton("Delete Propulsor", self)
         delete_button.clicked.connect(self.delete_button_pressed)
+        
+        #TODO : Add separator
 
         main_section_layout.addWidget(delete_button)
 

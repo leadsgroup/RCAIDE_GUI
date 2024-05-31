@@ -133,9 +133,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
     def set_tab_index(self, index):
         self.tab_index = index
 
-    # TODO: Fix fuel line deletion
     def on_delete_button_pressed(self, index):
-        # self.energy_network_sections_layout.itemAt(index).widget().deleteLater()
+        self.energy_network_sections_layout.itemAt(index).widget().deleteLater()
         self.energy_network_sections_layout.removeWidget(
             self.energy_network_sections_layout.itemAt(index).widget())
         self.energy_network_sections_layout.update()
