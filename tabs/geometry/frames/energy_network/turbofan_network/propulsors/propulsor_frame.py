@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.frames.energy_network.turbofan_widgets.propulsors.propulsor_widget import PropulsorWidget
+from tabs.geometry.frames.energy_network.turbofan_network.propulsors.propulsor_widget import PropulsorWidget
 from widgets.data_entry_widget import DataEntryWidget
 
 
