@@ -26,13 +26,14 @@ class NacelleFrame(QWidget, GeometryFrame):
             ("Diameter", Units.Length),
             ("Origin", Units.Position),
             ("Wetted Area", Units.Area),
-            ("Flow Through", Units.Unitless),
+            ("Flow Through", Units.Boolean),
             ("Airfoil Flag", Units.Boolean),
             ("Airfoil Coordinate File", Units.Unitless)
         ]
 
         # Add the data entry widget to the main layout
-        self.data_entry_widget : DataEntryWidget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget: DataEntryWidget = DataEntryWidget(
+            data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -43,14 +44,15 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.add_buttons_layout()
 
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        self.main_layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def create_scroll_area(self):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_content = QWidget()
         scroll_area.setWidget(scroll_content)
-        self.main_layout : QVBoxLayout = QVBoxLayout(scroll_content)
+        self.main_layout: QVBoxLayout = QVBoxLayout(scroll_content)
         layout_scroll = QVBoxLayout(self)
         layout_scroll.addWidget(scroll_area)
         layout_scroll.setContentsMargins(0, 0, 0, 0)
@@ -58,9 +60,11 @@ class NacelleFrame(QWidget, GeometryFrame):
 
     def add_name_layout(self):
         name_layout = QHBoxLayout()
-        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        self.name_line_edit : QLineEdit = QLineEdit(self)
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.name_line_edit: QLineEdit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
@@ -93,10 +97,12 @@ class NacelleFrame(QWidget, GeometryFrame):
         entered_data, v_comp = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
-                self.index = self.save_function(self.tab_index, self.index, entered_data)
+                self.index = self.save_function(
+                    self.tab_index, self.index, entered_data)
                 return
             else:
-                self.index = self.save_function(self.tab_index, vehicle_component=v_comp, data=entered_data, new=True)
+                self.index = self.save_function(
+                    self.tab_index, vehicle_component=v_comp, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
 
@@ -108,11 +114,11 @@ class NacelleFrame(QWidget, GeometryFrame):
         item = self.nacelle_sections_layout.itemAt(index)
         if item is None:
             return
-        
+
         widget = item.widget()
         if widget is None or not isinstance(widget, NacelleSectionWidget):
             return
-        
+
         widget.deleteLater()
         self.nacelle_sections_layout.removeWidget(widget)
         self.nacelle_sections_layout.update()
@@ -141,11 +147,11 @@ class NacelleFrame(QWidget, GeometryFrame):
             item = self.nacelle_sections_layout.itemAt(i)
             if item is None:
                 continue
-            
+
             widget = item.widget()
             if widget is not None and isinstance(widget, NacelleSectionWidget):
                 widget.deleteLater()
-                
+
         self.nacelle_sections_layout.update()
         self.index = -1
 

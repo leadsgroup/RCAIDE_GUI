@@ -17,6 +17,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         self.data_entry_widget: DataEntryWidget | None = None
 
         self.create_scroll_area()
+        
+        assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -81,6 +83,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(name_layout)
 
     # noinspection PyUnresolvedReferences
@@ -101,6 +105,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
@@ -123,9 +129,13 @@ class FuselageFrame(QWidget, GeometryFrame):
             self.fuselage_sections_layout.count(), self.delete_fuselage_section))
 
     def delete_fuselage_section(self, index):
-        self.fuselage_sections_layout.itemAt(index).widget().deleteLater()
-        self.fuselage_sections_layout.removeWidget(
-            self.fuselage_sections_layout.itemAt(index).widget())
+        item = self.fuselage_sections_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None
+        
+        widget.deleteLater()
+        self.fuselage_sections_layout.removeWidget(widget)
         self.fuselage_sections_layout.update()
 
         for i in range(index, self.fuselage_sections_layout.count()):
@@ -144,12 +154,20 @@ class FuselageFrame(QWidget, GeometryFrame):
     def create_new_structure(self):
         """Create a new nacelle structure."""
         # Clear the main data values
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
 
         # Clear the nacelle sections
         for i in range(self.fuselage_sections_layout.count()):
-            self.fuselage_sections_layout.itemAt(i).widget().deleteLater()
+            item = self.fuselage_sections_layout.itemAt(i)
+            assert item is not None
+            
+            widget = item.widget()
+            assert widget is not None
+            
+            widget.deleteLater()
+            
         self.fuselage_sections_layout.update()
         self.index = -1                
     
@@ -184,6 +202,7 @@ class FuselageFrame(QWidget, GeometryFrame):
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
+        assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values()
         fuselage = self.create_rcaide_structure(self.data_entry_widget.get_values_si())
 
@@ -199,6 +218,7 @@ class FuselageFrame(QWidget, GeometryFrame):
                 data["sections"].append(segment_data)
                 fuselage.append_segment(segment)
 
+        assert self.name_line_edit is not None
         data["name"] = self.name_line_edit.text()
         return data, fuselage
 
@@ -209,11 +229,13 @@ class FuselageFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
+        assert self.data_entry_widget is not None
         self.data_entry_widget.load_data(data)
 
         for section in data["sections"]:
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
 
+        assert self.name_line_edit is not None
         self.name_line_edit.setText(data["name"])
         self.index = index

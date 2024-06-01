@@ -23,7 +23,8 @@ class GeometryWidget(QWidget):
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
                                                   LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["Fuselage", "Wings", "Nacelles", "Landing Gear", "Energy Network"]
+        self.tabs = ["Fuselage", "Wings", "Nacelles",
+                     "Landing Gear", "Energy Network"]
         options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
                    "Add Energy Network"]
         self.data = []
@@ -40,7 +41,7 @@ class GeometryWidget(QWidget):
             frame_widget = frame()
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index - 1)
-            self.main_layout.addWidget(frame_widget) # type: ignore
+            self.main_layout.addWidget(frame_widget)  # type: ignore
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
@@ -69,7 +70,7 @@ class GeometryWidget(QWidget):
 
         # Initially display the DefaultFrame
         self.main_layout.setCurrentIndex(0)
-        
+
         self.setLayout(base_layout)
 
     def on_dropdown_change(self, index):
@@ -98,8 +99,13 @@ class GeometryWidget(QWidget):
             return
 
         tab_index = self.tree.indexFromItem(item.parent()).row()
-        index = self.tree.topLevelItem(tab_index).indexOfChild(item)
-        frame: GeometryFrame = self.main_layout.widget(tab_index + 1)
+
+        top_item = self.tree.topLevelItem(tab_index)
+        assert top_item is not None
+        index = top_item.indexOfChild(item)
+        widget = self.main_layout.widget(tab_index + 1)
+        assert isinstance(widget, GeometryFrame)
+        frame: GeometryFrame = widget
         frame.load_data(self.data[tab_index][index], index)
 
         self.main_layout.setCurrentIndex(tab_index + 1)
@@ -117,7 +123,8 @@ class GeometryWidget(QWidget):
             return
 
         tab_index = self.tree.indexFromItem(item).row()
-        frame: GeometryFrame = self.main_layout.widget(tab_index + 1) # type: ignore
+        frame: GeometryFrame = self.main_layout.widget(
+            tab_index + 1)  # type: ignore
         frame.create_new_structure()
         self.main_layout.setCurrentIndex(tab_index + 1)
 
@@ -134,23 +141,29 @@ class GeometryWidget(QWidget):
         print("Saving data:", data)
         if data is None:
             return
-        
+
         if new:
             self.data[tab_index].append(data)
             child = QTreeWidgetItem([data["name"]])
             item = self.tree.topLevelItem(tab_index)
+            assert item is not None
             item.addChild(child)
             index = item.indexOfChild(child)
         else:
             self.data[tab_index][index] = data
-            self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
+            top_item = self.tree.topLevelItem(tab_index)
+            assert top_item is not None
+
+            child = top_item.child(index)
+            assert child is not None
+            child.setText(0, data["name"])
 
         with open("geometry.json", "w") as f:
             f.write(json.dumps(self.data, indent=4))
-        
+
         if vehicle_component:
             self.vehicle.append_component(vehicle_component)
-        
+
         return index
 
 

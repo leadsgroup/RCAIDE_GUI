@@ -137,21 +137,18 @@ class DataEntryWidget(QWidget):
         return data
 
     def load_data(self, data):
-        for i, key in enumerate(self.data_fields.keys()):
+        for i, label in enumerate(self.data_fields.keys()):
             if self.data_units_labels[i][1] == Units.Boolean:
-                label, data_field = self.data_fields[key]
-                data_field.setChecked(data[label])
+                self.data_fields[label].setChecked(data[label])
             elif self.data_units_labels[i][1] == Units.Position:
-                label, data_field = self.data_fields[key]
-                x_line_edit, y_line_edit, z_line_edit, unit_picker = data_field
+                x_line_edit, y_line_edit, z_line_edit, unit_picker = self.data_fields[label]
                 value, index = data[label]
                 x_line_edit.setText(str(value[0]))
                 y_line_edit.setText(str(value[1]))
                 z_line_edit.setText(str(value[2]))
                 unit_picker.set_index(index)
             else:
-                label, data_field = self.data_fields[key]
-                line_edit, unit_picker = data_field
+                line_edit, unit_picker = self.data_fields[label]
                 value, index = data[label]
                 line_edit.setText(str(value))
                 unit_picker.set_index(index)
