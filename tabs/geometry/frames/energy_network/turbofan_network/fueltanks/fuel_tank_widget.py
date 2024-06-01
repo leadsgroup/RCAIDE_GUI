@@ -34,7 +34,7 @@ class FuelTankWidget(QWidget, GeometryFrame):
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
 
-        delete_button = QPushButton("Delete Fuel Tank Segment", self)
+        delete_button = QPushButton("Delete Fuel Tank", self)
         delete_button.clicked.connect(self.delete_button_pressed)
 
         main_section_layout.addWidget(delete_button)

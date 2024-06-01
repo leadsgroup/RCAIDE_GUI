@@ -14,6 +14,7 @@ class PropulsorWidget(QWidget):
         self.data_values = {}
         self.index = index
         self.on_delete = on_delete
+        self.data_entry_widgets = []
 
         main_section_layout = QVBoxLayout()
 
@@ -42,8 +43,8 @@ class PropulsorWidget(QWidget):
         turbofan_label.setFont(font)
         main_section_layout.addWidget(turbofan_label)
 
-        self.data_entry_widget = DataEntryWidget(turbofan_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(turbofan_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding fan label
         main_section_layout.addSpacing(8)
@@ -61,8 +62,8 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(fan_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(fan_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding inlet nozzle label
         main_section_layout.addSpacing(8)
@@ -80,8 +81,8 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(inlet_nozzle_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(inlet_nozzle_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding low pressure compressor (lpc) label
         main_section_layout.addSpacing(8)
@@ -99,8 +100,8 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(lpc_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(lpc_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding high pressure compressor (hpc) label
         main_section_layout.addSpacing(8)
@@ -118,8 +119,8 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(hpc_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(hpc_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding core nozzle label
         main_section_layout.addSpacing(8)
@@ -137,8 +138,8 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(core_nozzle_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(core_nozzle_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding fan nozzle label
         main_section_layout.addSpacing(8)
@@ -156,8 +157,8 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(fan_nozzle_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(fan_nozzle_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
         # Adding combustor label
         main_section_layout.addSpacing(8)
@@ -177,36 +178,36 @@ class PropulsorWidget(QWidget):
             ("Pressure Ratio", Units.Unitless),
         ]
 
-        self.data_entry_widget = DataEntryWidget(combustor_units_labels)
-        main_section_layout.addWidget(self.data_entry_widget)
+        self.data_entry_widgets.append(DataEntryWidget(combustor_units_labels))
+        main_section_layout.addWidget(self.data_entry_widgets[-1])
 
-        # Adding option to deepcopy turbofan
-        main_section_layout.addSpacing(8)
-        copy_layout = QVBoxLayout()
-        copy_label = QLabel("Copy Turbofan?")
-        font = copy_label.font()
-        font.setBold(True)
-        font.setUnderline(True)
-        copy_label.setFont(font)
-        copy_layout.addWidget(copy_label)
-        main_section_layout.addLayout(copy_layout)
+        # # Adding option to deepcopy turbofan
+        # main_section_layout.addSpacing(8)
+        # copy_layout = QVBoxLayout()
+        # copy_label = QLabel("Copy Turbofan?")
+        # font = copy_label.font()
+        # font.setBold(True)
+        # font.setUnderline(True)
+        # copy_label.setFont(font)
+        # copy_layout.addWidget(copy_label)
+        # main_section_layout.addLayout(copy_layout)
         
-        # TODO: Change to duplicate turbofan
-        # TODO: Make sure 2 turbofans aren't at the same origin
+        # # TODO: Change to duplicate turbofan
+        # # TODO: Make sure 2 turbofans aren't at the same origin
         
-        self.copy_turbofan_checkbox = QCheckBox("Yes, copy turbofan properties to new origin")
-        self.copy_turbofan_checkbox.setChecked(False)
-        main_section_layout.addWidget(self.copy_turbofan_checkbox)
+        # self.copy_turbofan_checkbox = QCheckBox("Yes, copy turbofan properties to new origin")
+        # self.copy_turbofan_checkbox.setChecked(False)
+        # main_section_layout.addWidget(self.copy_turbofan_checkbox)
 
-        # Deepcopy turbofan labels and units
-        deepcopy_units_labels = [
-            ("New Origin", Units.Length),
-        ]
+        # # Deepcopy turbofan labels and units
+        # deepcopy_units_labels = [
+        #     ("New Origin", Units.Length),
+        # ]
 
-        self.data_entry_widget = DataEntryWidget(deepcopy_units_labels)
-        self.data_entry_widget.setVisible(False)
-        main_section_layout.addWidget(self.data_entry_widget)
-        self.copy_turbofan_checkbox.stateChanged.connect(self.toggle_deepcopy_visibility)
+        # self.data_entry_widget = DataEntryWidget(deepcopy_units_labels)
+        # self.data_entry_widget.setVisible(False)
+        # main_section_layout.addWidget(self.data_entry_widget)
+        # self.copy_turbofan_checkbox.stateChanged.connect(self.toggle_deepcopy_visibility)
 
         # Adding delete button
         delete_button = QPushButton("Delete Propulsor", self)
@@ -222,8 +223,10 @@ class PropulsorWidget(QWidget):
             self.load_data_values(data_values)
 
     def load_data_values(self, section_data):
-        self.data_entry_widget.load_data(section_data)
-        self.section_name_edit.setText(section_data["segment name"])
+        for i, data in enumerate(section_data["data values"]):
+            self.data_entry_widgets[i].load_data(data)
+        
+        self.section_name_edit.setText(section_data["propulsor name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")
@@ -236,11 +239,12 @@ class PropulsorWidget(QWidget):
 
     def get_data_values(self):
         title = self.section_name_edit.text()
-        data_values = self.data_entry_widget.get_values()
-        data_values["segment name"] = title
-
-        return data_values
-
-    def toggle_deepcopy_visibility(self):
-        # toggles visibility based on the checkbox state
-        self.data_entry_widget.setVisible(self.copy_turbofan_checkbox.isChecked())
+        data = {}
+        data_values = []
+        for widget in self.data_entry_widgets:
+            assert isinstance(widget, DataEntryWidget)
+            data_values.append(widget.get_values())
+            
+        data["propulsor name"] = title
+        data["data values"] = data_values
+        return data
