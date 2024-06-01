@@ -141,6 +141,14 @@ class DataEntryWidget(QWidget):
             if self.data_units_labels[i][1] == Units.Boolean:
                 label, data_field = self.data_fields[key]
                 data_field.setChecked(data[label])
+            elif self.data_units_labels[i][1] == Units.Position:
+                label, data_field = self.data_fields[key]
+                x_line_edit, y_line_edit, z_line_edit, unit_picker = data_field
+                value, index = data[label]
+                x_line_edit.setText(str(value[0]))
+                y_line_edit.setText(str(value[1]))
+                z_line_edit.setText(str(value[2]))
+                unit_picker.set_index(index)
             else:
                 label, data_field = self.data_fields[key]
                 line_edit, unit_picker = data_field
