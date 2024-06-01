@@ -59,7 +59,8 @@ class FuelTankFrame(QWidget):
         layout.addLayout(button_layout)
 
         # Adds scroll function
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def get_data_values(self):
         data = []
@@ -67,18 +68,29 @@ class FuelTankFrame(QWidget):
             item = self.fueltank_sections_layout.itemAt(index)
             if item is None:
                 continue
-            
+
             widget = item.widget()
             if widget is None or not isinstance(widget, FuelTankWidget):
                 continue
-            
+
             data.append(widget.get_data_values())
-        
+
         return data
 
     def load_data(self, data):
-        # TODO Implement load_data
-        pass
+        while self.fueltank_sections_layout.count():
+            widget_item = self.fueltank_sections_layout.itemAt(0)
+            assert widget_item is not None
+            widget = widget_item.widget()
+            assert widget is not None
+
+            self.fueltank_sections_layout.removeWidget(widget)
+            widget.deleteLater()
+
+        for section_data in data:
+            self.fueltank_sections_layout.addWidget(FuelTankWidget(
+                self.fueltank_sections_layout.count(), self.on_delete_button_pressed, section_data))
+        
 
     def delete_data(self):
         # TODO Implement proper deletion of data
@@ -92,11 +104,11 @@ class FuelTankFrame(QWidget):
         tank = self.fueltank_sections_layout.itemAt(index)
         if tank is None:
             return
-        
+
         widget = tank.widget()
         if widget is None:
             return
-        
+
         widget.deleteLater()
         self.fueltank_sections_layout.removeWidget(widget)
         self.fueltank_sections_layout.update()
@@ -106,11 +118,11 @@ class FuelTankFrame(QWidget):
             tank = self.fueltank_sections_layout.itemAt(i)
             if tank is None:
                 continue
-            
+
             widget = tank.widget()
             if widget is None or not isinstance(widget, FuelTankWidget):
                 continue
-            
+
             widget.index = i
             print("Updated Index:", i)
 
@@ -120,7 +132,8 @@ class FuelTankFrame(QWidget):
     def create_scroll_layout(self):
         # Create a widget to contain the layout
         scroll_content = QWidget()
-        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
+        # Set the main layout inside the scroll content
+        layout = QVBoxLayout(scroll_content)
 
         # Set the main layout of the widget
         self.setLayout(layout)
