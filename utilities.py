@@ -141,3 +141,6 @@ class Units:
 
     class Boolean:
         pass
+    
+    class Heading:
+        pass
