@@ -44,14 +44,6 @@ class FuelTankFrame(QWidget):
         # Add the layout for additional fueltank_ sections to the main layout
         layout.addLayout(self.fueltank_sections_layout)
 
-        # Add line above the buttons
-        line_above_buttons = QFrame()
-        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
-        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
-        line_above_buttons.setStyleSheet("background-color: light grey;")
-
-        layout.addWidget(line_above_buttons)
-
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
 

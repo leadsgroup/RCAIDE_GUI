@@ -3,7 +3,7 @@ from widgets.data_entry_widget import DataEntryWidget
 from utilities import Units
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 
 
 class FuelTankWidget(QWidget, GeometryFrame):
@@ -18,9 +18,10 @@ class FuelTankWidget(QWidget, GeometryFrame):
 
         data_units_labels = [
             ("Fuel Tank Origin", Units.Position),
+            ("Internal Volume", Units.Volume),
+            ("Fuel", Units.Heading),
             ("Fuel Origin", Units.Position),
             ("Center of Gravity", Units.Position),
-            ("Internal Volume", Units.Volume),
             ("Fuel", Units.Unitless),
             ("Mass", Units.Mass),
         ]
@@ -38,6 +39,13 @@ class FuelTankWidget(QWidget, GeometryFrame):
         delete_button.clicked.connect(self.delete_button_pressed)
 
         main_section_layout.addWidget(delete_button)
+        
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        line_bar.setStyleSheet("background-color: light grey;")
+        
+        main_section_layout.addWidget(line_bar)
 
         self.setLayout(main_section_layout)
 
