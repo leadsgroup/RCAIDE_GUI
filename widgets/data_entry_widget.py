@@ -17,13 +17,7 @@ class DataEntryWidget(QWidget):
     def init_ui(self, num_cols):
         grid_layout = QGridLayout()
         row, col = 0, 0
-        for index, label in enumerate(self.data_units_labels):
-            if index % num_cols == 0 and index != 0:
-                row += 1
-                col = 0
-            else:
-                col = index % num_cols
-                
+        for label in self.data_units_labels:                
             grid_layout.setColumnStretch(col * 4 + 1, 1)
 
             if label[1] != Units.Heading:
@@ -63,9 +57,7 @@ class DataEntryWidget(QWidget):
             elif label[1] == Units.Heading:
                 # Go to the next row if col != 0
                 row += 1 if col != 0 else 0
-                col = 0
                 layout = QHBoxLayout()
-                # layout.addSpacing(8)
                 heading_layout = QVBoxLayout()
                 heading_label = QLabel(label[0])
                 font = heading_label.font()
@@ -74,9 +66,8 @@ class DataEntryWidget(QWidget):
                 heading_label.setFont(font)
                 heading_layout.addWidget(heading_label)
                 layout.addLayout(heading_layout)
-                grid_layout.addLayout(layout, row, col * 4, 1, 4)
-                # Go to the next row
-                row += 1
+                grid_layout.addLayout(layout, row, 0, 1, 4)
+                col = num_cols - 1
             else:
                 line_edit = QLineEdit(self)
                 line_edit.setValidator(QDoubleValidator())
@@ -96,6 +87,11 @@ class DataEntryWidget(QWidget):
 
                 # Store a reference to the QLineEdit in the dictionary
                 self.data_fields[label[0]] = (line_edit, unit_picker)
+            
+            col = col + 1 if col < num_cols - 1 else 0
+            if col == 0:
+                row += 1
+                grid_layout.setRowStretch(row, 1)
 
         grid_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(grid_layout)
