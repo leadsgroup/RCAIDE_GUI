@@ -27,29 +27,35 @@ class PropulsorWidget(QWidget):
             ("Design Mach Number", Units.Unitless),
             ("Design Thrust", Units.Force),            
             ("Fan", Units.Heading),
-            ("Polytropic Efficiency", Units.Unitless),
-            ("Pressure Ratio", Units.Unitless),
+            ("Fan Polytropic Efficiency", Units.Unitless),
+            ("Fan Pressure Ratio", Units.Unitless),
             ("Inlet Nozzle", Units.Heading),
-            ("Polytropic Efficiency", Units.Unitless),
-            ("Pressure Ratio", Units.Unitless),
+            ("IN Polytropic Efficiency", Units.Unitless),
+            ("IN Pressure Ratio", Units.Unitless),
             ("Low Pressure Compressor", Units.Heading),
-            ("Polytropic Efficiency", Units.Unitless),
-            ("Pressure Ratio", Units.Unitless),
+            ("LPC Polytropic Efficiency", Units.Unitless),
+            ("LPC Pressure Ratio", Units.Unitless),
             ("High Pressure Compressor", Units.Heading),
-            ("Polytropic Efficiency", Units.Unitless),
-            ("Pressure Ratio", Units.Unitless),
+            ("HPC Polytropic Efficiency", Units.Unitless),
+            ("HPC Pressure Ratio", Units.Unitless),
             ("Core Nozzle", Units.Heading),
-            ("Polytropic Efficiency", Units.Unitless),
-            ("Pressure Ratio", Units.Unitless),
+            ("CN Polytropic Efficiency", Units.Unitless),
+            ("CN Pressure Ratio", Units.Unitless),
             ("Fan Nozzle", Units.Heading),
-            ("Polytropic Efficiency", Units.Unitless),
-            ("Pressure Ratio", Units.Unitless),
+            ("FN Polytropic Efficiency", Units.Unitless),
+            ("FN Pressure Ratio", Units.Unitless),
             ("Combustor", Units.Heading),
-            ("Efficiency", Units.Unitless),
-            ("Pressure Loss Coeff", Units.Unitless),
-            ("Turbine Inlet Temp", Units.Temperature),
-            ("Pressure Ratio", Units.Unitless),
+            ("Combustor Efficiency", Units.Unitless),
+            ("Combustor Pressure Loss Coeff", Units.Unitless),
+            ("Combustor Turbine Inlet Temp", Units.Temperature),
+            ("Combustor Pressure Ratio", Units.Unitless),
         ]
+
+        self.name_layout = QHBoxLayout()
+        self.section_name_edit = QLineEdit(self)
+        self.name_layout.addWidget(QLabel("Turbofan Name: "))
+        self.name_layout.addWidget(self.section_name_edit)
+        main_section_layout.addLayout(self.name_layout)
         
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
@@ -72,10 +78,9 @@ class PropulsorWidget(QWidget):
         if data_values:
             self.load_data_values(data_values)
 
-    def load_data_values(self, section_data):
-        data_values = section_data["data values"]
-        self.data_entry_widget.load_data_values(data_values)        
-        self.section_name_edit.setText(section_data["propulsor name"])
+    def load_data_values(self, data):
+        self.data_entry_widget.load_data(data)        
+        self.section_name_edit.setText(data["propulsor name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")

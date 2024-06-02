@@ -158,7 +158,7 @@ class GeometryWidget(QWidget):
             assert child is not None
             child.setText(0, data["name"])
 
-        with open("geometry.json", "w") as f:
+        with open("data/geometry.json", "w") as f:
             f.write(json.dumps(self.data, indent=4))
 
         if vehicle_component:

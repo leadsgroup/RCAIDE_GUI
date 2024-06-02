@@ -55,7 +55,6 @@ class DataEntryWidget(QWidget):
                 self.data_fields[label[0]] = (
                     x_line_edit, y_line_edit, z_line_edit, unit_picker)
             elif label[1] == Units.Heading:
-                # Go to the next row if col != 0
                 row += 1 if col != 0 else 0
                 layout = QHBoxLayout()
                 heading_layout = QVBoxLayout()
@@ -68,6 +67,7 @@ class DataEntryWidget(QWidget):
                 layout.addLayout(heading_layout)
                 grid_layout.addLayout(layout, row, 0, 1, 4)
                 col = num_cols - 1
+                self.data_fields[label[0]] = ()
             else:
                 line_edit = QLineEdit(self)
                 line_edit.setValidator(QDoubleValidator())
@@ -106,7 +106,7 @@ class DataEntryWidget(QWidget):
                 self.data_fields[key][2].setText("")
                 self.data_fields[key][3].set_index(0)
             elif self.data_units_labels[i][1] == Units.Heading:
-                pass            
+                continue            
             else:
                 self.data_fields[key][0].setText("")
                 self.data_fields[key][1].set_index(0)
@@ -132,7 +132,7 @@ class DataEntryWidget(QWidget):
                 data[label] = [x_value, y_value,
                                z_value], unit_picker.current_index
             elif self.data_units_labels[i][1] == Units.Heading:
-                pass
+                continue
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
@@ -163,7 +163,7 @@ class DataEntryWidget(QWidget):
                 data[label] = [x_value, y_value,
                                z_value], unit_picker.current_index
             elif self.data_units_labels[i][1] == Units.Heading:
-                pass
+                continue
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
