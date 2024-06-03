@@ -5,6 +5,8 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
 
+import RCAIDE
+
 
 class FuselageSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
@@ -42,8 +44,8 @@ class FuselageSectionWidget(QWidget):
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         delete_button = QPushButton("Delete Section", self)
-        delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        delete_button.setFixedWidth(150)
+        # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # delete_button.setFixedWidth(150)
         delete_button.clicked.connect(self.delete_button_pressed)
         # center delete button
         delete_button_layout = QHBoxLayout()
@@ -65,10 +67,25 @@ class FuselageSectionWidget(QWidget):
 
         self.setLayout(main_layout)
 
+    def create_rcaide_structure(self, data):
+        segment = RCAIDE.Library.Components.Fuselages.Segment()
+        
+        segment.percent_x_location = data["Percent X Location"]
+        segment.percent_z_location = data["Percent Z Location"]
+        segment.height = data["Height"]
+        segment.width = data["Width"]
+        segment.tag = data["segment name"]
+        
+        return segment
+    
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
-        return data
+        data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
+        
+        segment = self.create_rcaide_structure(data_si)
+        return data, segment
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)

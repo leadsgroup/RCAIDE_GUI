@@ -1,11 +1,13 @@
+from venv import create
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
 from tabs.geometry.widgets.fuselage_section_widget import FuselageSectionWidget
-from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
 from utilities import show_popup, Units
 from widgets.data_entry_widget import DataEntryWidget
+
+import RCAIDE
 
 
 class FuselageFrame(QWidget, GeometryFrame):
@@ -15,6 +17,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         self.data_entry_widget: DataEntryWidget | None = None
 
         self.create_scroll_area()
+        
+        assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -38,6 +42,7 @@ class FuselageFrame(QWidget, GeometryFrame):
             ("Areas Side Projected", Units.Area),
             ("Area Wetted", Units.Area),
             ("Area Front Projected", Units.Area),
+            ("Differential Pressure", Units.Pressure),
             ("Effective Diameter", Units.Length),
         ]
 
@@ -53,7 +58,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         self.add_buttons_layout()
 
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        self.main_layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def create_scroll_area(self):
         scroll_area = QScrollArea()
@@ -68,13 +74,17 @@ class FuselageFrame(QWidget, GeometryFrame):
 
     def add_name_layout(self):
         name_layout = QHBoxLayout()
-        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_line_edit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(name_layout)
 
     # noinspection PyUnresolvedReferences
@@ -95,18 +105,22 @@ class FuselageFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
     def save_data(self):
         """Call the save function and pass the entered data to it."""
-        entered_data = self.get_data_values()
+        entered_data, fuselage = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
-                self.index = self.save_function(self.tab_index, self.index, entered_data)
+                self.index = self.save_function(
+                    self.tab_index, self.index, entered_data)
                 return
             else:
-                self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+                self.index = self.save_function(
+                    self.tab_index, fuselage, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
 
@@ -115,8 +129,13 @@ class FuselageFrame(QWidget, GeometryFrame):
             self.fuselage_sections_layout.count(), self.delete_fuselage_section))
 
     def delete_fuselage_section(self, index):
-        self.fuselage_sections_layout.itemAt(index).widget().deleteLater()
-        self.fuselage_sections_layout.removeWidget(self.fuselage_sections_layout.itemAt(index).widget())
+        item = self.fuselage_sections_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None
+        
+        widget.deleteLater()
+        self.fuselage_sections_layout.removeWidget(widget)
         self.fuselage_sections_layout.update()
 
         for i in range(index, self.fuselage_sections_layout.count()):
@@ -135,18 +154,57 @@ class FuselageFrame(QWidget, GeometryFrame):
     def create_new_structure(self):
         """Create a new nacelle structure."""
         # Clear the main data values
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
 
         # Clear the nacelle sections
         for i in range(self.fuselage_sections_layout.count()):
-            self.fuselage_sections_layout.itemAt(i).widget().deleteLater()
+            item = self.fuselage_sections_layout.itemAt(i)
+            assert item is not None
+            
+            widget = item.widget()
+            assert widget is not None
+            
+            widget.deleteLater()
+            
         self.fuselage_sections_layout.update()
-        self.index = -1
+        self.index = -1                
+    
+    def create_rcaide_structure(self, data):
+        fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+        fuselage.fineness.nose = data["Fineness Nose"]
+        fuselage.fineness.tail = data["Fineness Tail"]
+        
+        fuselage.lengths.nose = data["Lengths Nose"]
+        fuselage.lengths.tail = data["Lengths Tail"]
+        fuselage.lengths.total = data["Lengths Total"]
+        fuselage.lengths.cabin = data["Lengths Cabin"]
+        fuselage.lengths.fore_space = data["Lengths Forespace"]
+        fuselage.lengths.aft_space = data["Lengths Aftspace"]
+        
+        fuselage.width = data["Width"]
+        
+        fuselage.heights.maximum = data["Heights Maximum"]
+        fuselage.heights.at_quarter_length = data["Height at Quarter"]
+        fuselage.heights.at_three_quarters_length = data["Height at Three Quarters"]
+        fuselage.heights.at_wing_root_quarter_chord = data["Height at Wing Root Quarter Chord"]
+        
+        fuselage.areas.side_projected = data["Areas Side Projected"]
+        fuselage.areas.wetted = data["Area Wetted"]
+        fuselage.areas.front_projected = data["Area Front Projected"]
+        
+        fuselage.differential_pressure = data["Differential Pressure"]
+        
+        fuselage.effective_diameter = data["Effective Diameter"]
+        return fuselage
+
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
+        assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values()
+        fuselage = self.create_rcaide_structure(self.data_entry_widget.get_values_si())
 
         data["sections"] = []
         for i in range(self.fuselage_sections_layout.count()):
@@ -154,12 +212,15 @@ class FuselageFrame(QWidget, GeometryFrame):
             if item is None:
                 continue
 
-            widget = item.widget()
-            if widget is not None and isinstance(widget, FuselageSectionWidget):
-                data["sections"].append(widget.get_data_values())
+            fuselage_section = item.widget()
+            if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
+                segment_data, segment = fuselage_section.get_data_values()
+                data["sections"].append(segment_data)
+                fuselage.append_segment(segment)
 
+        assert self.name_line_edit is not None
         data["name"] = self.name_line_edit.text()
-        return data
+        return data, fuselage
 
     def load_data(self, data, index):
         """Load the data into the widgets.
@@ -168,11 +229,13 @@ class FuselageFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
+        assert self.data_entry_widget is not None
         self.data_entry_widget.load_data(data)
 
         for section in data["sections"]:
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
 
+        assert self.name_line_edit is not None
         self.name_line_edit.setText(data["name"])
         self.index = index

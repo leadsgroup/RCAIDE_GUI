@@ -1,3 +1,4 @@
+import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
@@ -47,15 +48,15 @@ class WingSectionWidget(QWidget):
         
         # Delete button
         delete_button = QPushButton("Delete Wing Segment", self)
-        #delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        #delete_button.setFixedWidth(150)
-        #delete_button.clicked.connect(self.delete_button_pressed)
+        # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # delete_button.setFixedWidth(150)
+        delete_button.clicked.connect(self.delete_button_pressed)
         
         # Center delete button
         delete_button_layout = QHBoxLayout()
-        #delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         delete_button_layout.addWidget(delete_button)
-        #delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
         main_layout.addWidget(self.data_entry_widget)
         main_layout.addLayout(delete_button_layout)
@@ -71,10 +72,29 @@ class WingSectionWidget(QWidget):
 
         self.setLayout(main_layout)
 
+    def create_rcaide_structure(self, data):
+        segment = RCAIDE.Library.Components.Wings.Segment()
+
+        segment.tag = data["segment name"]
+        segment.percent_span_location = data["Percent Span Location"]
+        segment.twist = data["Twist"]
+
+        segment.root_chord_percent = data["Root Chord Percent"]
+        segment.thickness_to_chord = data["Thickness to Chord"]
+        segment.dihedral_outboard = data["Dihedral Outboard"]
+        segment.sweeps.quarter_chord = data["Quarter Chord Sweep"]
+        # segment.airfoil = data["Airfoil"]
+
+        return segment
+
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
+        data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
+
+        wing_section = self.create_rcaide_structure(data_si)
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
-        return data
+        return data, wing_section
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)

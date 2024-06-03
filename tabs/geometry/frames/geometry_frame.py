@@ -38,3 +38,6 @@ class GeometryFrame:
 
     def create_new_structure(self):
         pass
+
+    def create_rcaide_structure(self, data):
+        pass

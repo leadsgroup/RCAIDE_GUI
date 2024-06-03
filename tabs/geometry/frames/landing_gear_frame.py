@@ -1,5 +1,6 @@
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea, QFrame
+    QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
 from utilities import show_popup, Units
@@ -38,7 +39,8 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.add_buttons_layout()
 
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        self.main_layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def create_scroll_area(self):
         scroll_area = QScrollArea()
@@ -53,8 +55,10 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
     def add_name_layout(self):
         name_layout = QHBoxLayout()
-        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_line_edit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
@@ -82,13 +86,14 @@ class LandingGearFrame(QWidget, GeometryFrame):
     # noinspection DuplicatedCode
     def save_data(self):
         """Call the save function and pass the entered data to it."""
-        entered_data = self.get_data_values()
+        entered_data, landing_gear = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
-                self.index = self.save_function(self.tab_index, self.index, entered_data)
-                return
+                self.index = self.save_function(
+                    self.tab_index, self.index, vehicle_component=landing_gear, data=entered_data)
             else:
-                self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+                self.index = self.save_function(
+                    self.tab_index, vehicle_component=landing_gear, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
 
@@ -103,11 +108,30 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.name_line_edit.clear()
         self.index = -1
 
+    def create_rcaide_structure(self, data):
+        landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
+        landing_gear.tag = data["name"]
+        landing_gear.main_tire_diameter = data["Main Tire Diameter"]
+        landing_gear.nose_tire_diameter = data["Nose Tire Diameter"]
+        landing_gear.main_strut_length = data["Main Strut Length"]
+        landing_gear.nose_strut_length = data["Nose Strut Length"]
+        landing_gear.main_units = data["Main Units"]
+        landing_gear.nose_units = data["Nose Units"]
+        landing_gear.main_wheels = data["Main Wheels"]
+        landing_gear.nose_wheels = data["Nose Wheels"]
+
+        return landing_gear
+
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
-        return data
+
+        si_data = self.data_entry_widget.get_values_si()
+        si_data["name"] = data["name"]
+
+        landing_gear = self.create_rcaide_structure(si_data)
+        return data, landing_gear
 
     def load_data(self, data, index):
         """Load the data into the widgets.

@@ -1,3 +1,4 @@
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
@@ -22,11 +23,11 @@ class WingsFrame(QWidget, GeometryFrame):
 
         # List of data labels
         data_units_labels = [
-            ("Taper Ratio", Units.Unitless),
+            ("Taper", Units.Unitless),
             ("Dihedral", Units.Angle),
             ("Aspect Ratio", Units.Unitless),
             ("Thickness to Chord", Units.Unitless),
-            ("Aerodynamic Center", Units.Unitless),
+            # ("Aerodynamic Center", Units.Unitless),
             ("Exposed Root Chord Offset", Units.Unitless),
             ("Total Length", Units.Length),
             ("Spans Projected", Units.Length),
@@ -57,7 +58,7 @@ class WingsFrame(QWidget, GeometryFrame):
 
         self.wing_cs_layout = QVBoxLayout()
         self.main_layout.addWidget(create_line_bar())
-        self.main_layout.addWidget(QLabel("Control Surfaces"))
+        # self.main_layout.addWidget(QLabel("Control Surfaces"))
         self.main_layout.addLayout(self.wing_cs_layout)
 
         self.add_buttons_layout()
@@ -113,13 +114,14 @@ class WingsFrame(QWidget, GeometryFrame):
     # noinspection DuplicatedCode
     def save_data(self):
         """Call the save function and pass the entered data to it."""
-        entered_data = self.get_data_values()
+        entered_data, wing = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
-                self.index = self.save_function(self.tab_index, self.index, entered_data)
+                self.index = self.save_function(self.tab_index, vehicle_component=wing, index=self.index,
+                                                data=entered_data)
                 return
             else:
-                self.index = self.save_function(self.tab_index, data=entered_data, new=True)
+                self.index = self.save_function(self.tab_index, vehicle_component=wing, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
 
@@ -181,9 +183,47 @@ class WingsFrame(QWidget, GeometryFrame):
 
         self.index = -1
 
+    def create_rcaide_structure(self, data):
+        wing = RCAIDE.Library.Components.Wings.Main_Wing()
+
+        wing.tag = data["name"]
+        wing.taper_ratio = data["Taper"]
+        wing.dihedral = data["Dihedral"]
+        wing.aspect_ratio = data["Aspect Ratio"]
+        wing.thickness_to_chord = data["Thickness to Chord"]
+        wing.aerodynamic_center = [0, 0, 0]
+        wing.exposed_root_chord_offset = data["Exposed Root Chord Offset"]
+        wing.total_length = data["Total Length"]
+
+        wing.spans.projected = data["Spans Projected"]
+        wing.spans.total = data["Spans Total"]
+        wing.areas.reference = data["Areas Reference"]
+        wing.areas.exposed = data["Areas Exposed"]
+        wing.areas.affected = data["Areas Affected"]
+        wing.areas.wetted = data["Areas Wetted"]
+
+        wing.chords.root = data["Root Chord"]
+        wing.chords.tip = data["Tip Chord"]
+        wing.chords.mean_aerodynamic = data["Mean Aerodynamic Chord"]
+        wing.chords.mean_geometric = data["Mean Geometric Chord"]
+
+        wing.sweeps.quarter_chord = data["Quarter Chord Sweep Angle"]
+        wing.sweeps.half_chord = data["Half Chord Sweep Angle"]
+        wing.sweeps.leading_edge = data["Leading Edge Sweep Angle"]
+
+        wing.twists.root = data["Root Chord Twist Angle"]
+        wing.twists.tip = data["Tip Chord Twist Angle"]
+
+        return wing
+
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
+        data["name"] = self.name_line_edit.text()
+        data_si["name"] = self.name_line_edit.text()
+
+        wing = self.create_rcaide_structure(data_si)
 
         data["sections"] = []
         for i in range(self.wing_sections_layout.count()):
@@ -193,7 +233,9 @@ class WingsFrame(QWidget, GeometryFrame):
 
             widget = item.widget()
             if widget is not None and isinstance(widget, WingSectionWidget):
-                data["sections"].append(widget.get_data_values())
+                section_data, wing_section = widget.get_data_values()
+                wing.append_segment(wing_section)
+                data["sections"].append(section_data)
 
         data["control_surfaces"] = []
         for i in range(self.wing_cs_layout.count()):
@@ -203,16 +245,17 @@ class WingsFrame(QWidget, GeometryFrame):
 
             widget = item.widget()
             if widget is not None and isinstance(widget, WingCSWidget):
-                data["control_surfaces"].append(widget.get_data_values())
+                cs_data, cs = widget.get_data_values()
+                wing.append_control_surface(cs)
+                data["control_surfaces"].append(cs_data)
 
-        data["name"] = self.name_line_edit.text()
-        return data
+        return data, wing
 
     def load_data(self, data, index):
         """Load the data into the widgets.
 
         Args:
-            data: The data to be loaded into the widgets.
+            data: The data to be loaded into the widgets.py
             index: The index of the data in the list.
         """
         self.data_entry_widget.load_data(data)

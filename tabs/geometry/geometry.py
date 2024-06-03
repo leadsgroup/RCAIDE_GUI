@@ -10,6 +10,8 @@ from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
 from tabs.geometry.frames.nacelle_frame import NacelleFrame
 from tabs.geometry.frames.wings_frame import WingsFrame
 
+import RCAIDE
+
 import json
 
 
@@ -21,10 +23,12 @@ class GeometryWidget(QWidget):
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
                                                   LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["Fuselage", "Wings", "Nacelles", "Landing Gear", "Energy Network"]
+        self.tabs = ["Fuselage", "Wings", "Nacelles",
+                     "Landing Gear", "Energy Network"]
         options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
                    "Add Energy Network"]
         self.data = []
+        self.vehicle = RCAIDE.Vehicle()
 
         for i in range(len(self.tabs)):
             self.data.append([])
@@ -37,7 +41,7 @@ class GeometryWidget(QWidget):
             frame_widget = frame()
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index - 1)
-            self.main_layout.addWidget(frame_widget)
+            self.main_layout.addWidget(frame_widget)  # type: ignore
 
         # Create a QComboBox and add options
         self.dropdown = QComboBox()
@@ -95,8 +99,13 @@ class GeometryWidget(QWidget):
             return
 
         tab_index = self.tree.indexFromItem(item.parent()).row()
-        index = self.tree.topLevelItem(tab_index).indexOfChild(item)
-        frame: GeometryFrame = self.main_layout.widget(tab_index + 1)
+
+        top_item = self.tree.topLevelItem(tab_index)
+        assert top_item is not None
+        index = top_item.indexOfChild(item)
+        widget = self.main_layout.widget(tab_index + 1)
+        assert isinstance(widget, GeometryFrame)
+        frame: GeometryFrame = widget
         frame.load_data(self.data[tab_index][index], index)
 
         self.main_layout.setCurrentIndex(tab_index + 1)
@@ -114,32 +123,46 @@ class GeometryWidget(QWidget):
             return
 
         tab_index = self.tree.indexFromItem(item).row()
-        frame: GeometryFrame = self.main_layout.widget(tab_index + 1)
+        frame: GeometryFrame = self.main_layout.widget(
+            tab_index + 1)  # type: ignore
         frame.create_new_structure()
         self.main_layout.setCurrentIndex(tab_index + 1)
 
-    def save_data(self, tab_index, index=0, data=None, new=False):
+    def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.
 
         Args:
             tab_index: The index of the tab.
             index: The index of the vehicle element in the list. (Within its type, eg fuselage #0, #1, etc.)
+            vehicle_component: The vehicle component to be appended to the vehicle.
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
         """
         print("Saving data:", data)
+        if data is None:
+            return
+
         if new:
             self.data[tab_index].append(data)
             child = QTreeWidgetItem([data["name"]])
             item = self.tree.topLevelItem(tab_index)
+            assert item is not None
             item.addChild(child)
             index = item.indexOfChild(child)
         else:
             self.data[tab_index][index] = data
-            self.tree.topLevelItem(tab_index).child(index).setText(0, data["name"])
+            top_item = self.tree.topLevelItem(tab_index)
+            assert top_item is not None
 
-        with open("geometry.json", "w") as f:
+            child = top_item.child(index)
+            assert child is not None
+            child.setText(0, data["name"])
+
+        with open("data/geometry.json", "w") as f:
             f.write(json.dumps(self.data, indent=4))
+
+        if vehicle_component:
+            self.vehicle.append_component(vehicle_component)
 
         return index
 

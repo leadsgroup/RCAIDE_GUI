@@ -1,12 +1,10 @@
-import os
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
-from utilities import show_popup, Units
+from utilities import Units
 from tabs.geometry.frames.geometry_frame import GeometryFrame
-from widgets.unit_picker_widget import UnitPickerWidget
+
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
+
 
 class FuelTankWidget(QWidget, GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):
@@ -19,12 +17,13 @@ class FuelTankWidget(QWidget, GeometryFrame):
         main_section_layout = QVBoxLayout()
 
         data_units_labels = [
-            ("Fuel Tank Origin", Units.Length),
+            ("Fuel Tank Origin", Units.Position),
+            ("Internal Volume", Units.Volume),
+            ("Fuel", Units.Heading),
+            ("Fuel Origin", Units.Position),
+            ("Center of Gravity", Units.Position),
             ("Fuel", Units.Unitless),
             ("Mass", Units.Mass),
-            ("Fuel Origin", Units.Length),
-            ("Center of Gravity", Units.Length),
-            ("Internal Volume", Units.Volume),
         ]
 
         self.name_layout = QHBoxLayout()
@@ -36,10 +35,17 @@ class FuelTankWidget(QWidget, GeometryFrame):
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
 
-        delete_button = QPushButton("Delete Fuel Tank Segment", self)
+        delete_button = QPushButton("Delete Fuel Tank", self)
         delete_button.clicked.connect(self.delete_button_pressed)
 
         main_section_layout.addWidget(delete_button)
+        
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+        line_bar.setStyleSheet("background-color: light grey;")
+        
+        main_section_layout.addWidget(line_bar)
 
         self.setLayout(main_section_layout)
 

@@ -1,9 +1,33 @@
+import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget, QFrame)
+                             QVBoxLayout, QWidget, QFrame, QComboBox)
 
 from utilities import Units
 from widgets.data_entry_widget import DataEntryWidget
+
+data_units_labels = [
+    [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+    ],
+    [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+    ],
+    [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+        ("Number of Slots", Units.Count),
+    ],
+]
+cs_types = ["Aileron", "Slat", "Flap"]
 
 
 class WingCSWidget(QWidget):
@@ -15,108 +39,102 @@ class WingCSWidget(QWidget):
         self.index = index
         self.on_delete = on_delete
         self.data_entry_widget: DataEntryWidget | None = None
+        self.main_layout: QVBoxLayout | None = None
+        self.cs_type = 0
 
         self.name_layout = QHBoxLayout()
         self.init_ui(section_data)
 
     # noinspection DuplicatedCode
     def init_ui(self, section_data):
-        main_layout = QVBoxLayout()
+        self.main_layout = QVBoxLayout()
         # add spacing
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
         self.name_layout.addWidget(QLabel("Control Surface Name: "))
         self.name_layout.addWidget(QLineEdit(self))
+
+        cs_type_dropdown = QComboBox()
+        cs_type_dropdown.addItems(cs_types)
+        cs_type_dropdown.setFixedWidth(100)
+        cs_type_dropdown.currentIndexChanged.connect(self.on_dropdown_change)
+        self.name_layout.addWidget(cs_type_dropdown)
         self.name_layout.addItem(spacer_right)
 
-        main_layout.addLayout(self.name_layout)
+        self.main_layout.addLayout(self.name_layout)
 
-
-        # Aileron labels and units
-        aileron_units_labels = [
-            ("Span Fraction Start", Units.Unitless),
-            ("Span Fraction End", Units.Unitless),
-            ("Deflection", Units.Angle),
-            ("Chord Fraction", Units.Unitless),
-        ]        
-        
-        main_layout.addSpacing(8)
-        aileron_label = QLabel("Aileron")
-        font = aileron_label.font()
-        font.setBold(True)
-        font.setUnderline(True)
-        aileron_label.setFont(font)
-        main_layout.addWidget(aileron_label)        
-
-        self.data_entry_widget = DataEntryWidget(aileron_units_labels)
-        main_layout.addWidget(self.data_entry_widget)   
-        
-        # Slat labels and units
-        slat_units_labels = [
-            ("Span Fraction Start", Units.Unitless),
-            ("Span Fraction End", Units.Unitless),
-            ("Deflection", Units.Angle),
-            ("Chord Fraction", Units.Unitless),
-        ]        
-        
-        main_layout.addSpacing(8)
-        slat_label = QLabel("Slat")
-        font = slat_label.font()
-        font.setBold(True)
-        font.setUnderline(True)
-        slat_label.setFont(font)
-        main_layout.addWidget(slat_label)        
-
-        self.data_entry_widget = DataEntryWidget(slat_units_labels)
-        main_layout.addWidget(self.data_entry_widget)        
-        
-        # Flap labels and units
-        flap_units_labels = [
-            ("Span Fraction Start", Units.Unitless),
-            ("Span Fraction End", Units.Unitless),
-            ("Deflection", Units.Angle),
-            ("Chord Fraction", Units.Unitless),
-            ("Configuration", Units.Unitless),
-        ]        
-        
-        main_layout.addSpacing(8)
-        flap_label = QLabel("Flap")
-        font = slat_label.font()
-        font.setBold(True)
-        font.setUnderline(True)
-        flap_label.setFont(font)
-        main_layout.addWidget(flap_label)        
-
-        self.data_entry_widget = DataEntryWidget(flap_units_labels)
-        main_layout.addWidget(self.data_entry_widget)        
-        
+        self.data_entry_widget = DataEntryWidget(data_units_labels[0])
+        self.main_layout.addWidget(self.data_entry_widget)
 
         # Delete button layout
         delete_button = QPushButton("Delete Control Surface")
         delete_button.clicked.connect(self.delete_button_pressed)
         delete_button_layout = QHBoxLayout()
         delete_button_layout.addWidget(delete_button)
-        delete_button_layout.setSpacing(0) 
-        main_layout.addLayout(delete_button_layout)
-    
+        delete_button_layout.setSpacing(0)
+        self.main_layout.addLayout(delete_button_layout)
+
         # Add horizontal bar
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        main_layout.addWidget(line_bar)
-
+        self.main_layout.addWidget(line_bar)
 
         if section_data:
             self.load_data_values(section_data)
 
-        self.setLayout(main_layout)
-   
+        self.setLayout(self.main_layout)
+
+    def on_dropdown_change(self, index):
+        """Change the index of the main layout based on the selected index of the dropdown.
+
+        Args:
+            index: The index of the selected item in the dropdown.
+        """
+        self.main_layout.removeWidget(self.data_entry_widget)
+        self.data_entry_widget.deleteLater()
+        self.data_entry_widget = DataEntryWidget(data_units_labels[index])
+        self.main_layout.insertWidget(1, self.data_entry_widget)
+        self.cs_type = index
+
+    def create_rcaide_structure(self, data):
+        cs = None
+        if self.cs_type == 0:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
+        elif self.cs_type == 1:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+        elif self.cs_type == 2:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+        
+        cs.tag = data["CS name"]
+        cs.span_fraction_start = data["Span Fraction Start"]
+        cs.span_fraction_end = data["Span Fraction End"]
+        cs.deflection = data["Deflection"]
+        cs.chord_fraction = data["Chord Fraction"]
+        
+        if self.cs_type == 2:
+            num_slots = data["Number of Slots"]
+            config_type = "single_slotted"
+            if num_slots == 2:
+                config_type = "double_slotted"
+            elif num_slots == 3:
+                config_type = "triple_slotted"
+            elif num_slots != 1:
+                print("Illegal number of slots. Defaulting to single slotted.")
+            
+            cs.configuration_type = config_type
+
+        return cs
 
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
+        data_si = self.data_entry_widget.get_values_si()
         data["CS name"] = self.name_layout.itemAt(2).widget().text()
-        return data
+        data_si["CS name"] = self.name_layout.itemAt(2).widget().text()
+
+        cs = self.create_rcaide_structure(data_si)
+        return data, cs
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
