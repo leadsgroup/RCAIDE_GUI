@@ -220,7 +220,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         # Load sections based on the selected network
         if selected_network == "Turbofan":
             turbofan_widget = TurbofanWidget()
-            turbofan_widget.load_data(data["energy_network"])
+            turbofan_widget.load_data_values(data["energy_network"])
             self.energy_network_layout.addWidget(turbofan_widget)
 
     def create_new_structure(self):

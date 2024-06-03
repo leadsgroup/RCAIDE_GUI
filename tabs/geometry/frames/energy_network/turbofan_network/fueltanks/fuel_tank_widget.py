@@ -5,6 +5,8 @@ from tabs.geometry.frames.geometry_frame import GeometryFrame
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 
+import RCAIDE
+
 
 class FuelTankWidget(QWidget, GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):
@@ -18,12 +20,12 @@ class FuelTankWidget(QWidget, GeometryFrame):
 
         data_units_labels = [
             ("Fuel Tank Origin", Units.Position),
-            ("Internal Volume", Units.Volume),
             ("Fuel", Units.Heading),
             ("Fuel Origin", Units.Position),
             ("Center of Gravity", Units.Position),
             ("Fuel", Units.Unitless),
             ("Mass", Units.Mass),
+            ("Internal Volume", Units.Volume),
         ]
 
         self.name_layout = QHBoxLayout()
@@ -39,22 +41,18 @@ class FuelTankWidget(QWidget, GeometryFrame):
         delete_button.clicked.connect(self.delete_button_pressed)
 
         main_section_layout.addWidget(delete_button)
-        
+
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         line_bar.setStyleSheet("background-color: light grey;")
-        
+
         main_section_layout.addWidget(line_bar)
 
         self.setLayout(main_section_layout)
 
         if data_values:
             self.load_data_values(data_values)
-
-    def load_data_values(self, section_data):
-        self.data_entry_widget.load_data(section_data)
-        self.section_name_edit.setText(section_data["segment name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")
@@ -65,9 +63,27 @@ class FuelTankWidget(QWidget, GeometryFrame):
 
         self.on_delete(self.index)
 
+    def load_data_values(self, section_data):
+        self.data_entry_widget.load_data(section_data)
+        self.section_name_edit.setText(section_data["segment name"])
+
     def get_data_values(self):
         title = self.section_name_edit.text()
-        data_values = self.data_entry_widget.get_values()
-        data_values["segment name"] = title
+        data = self.data_entry_widget.get_values()
+        data["segment name"] = title
 
-        return data_values
+        return data, self.create_rcaide_structure(data)
+
+    def create_rcaide_structure(self, data):
+        fuel_tank = RCAIDE.Library.Components.Energy.Fuel_Tanks.Fuel_Tank()
+        fuel_tank.tag = data["segment name"]
+        fuel_tank.origin = data["Fuel Tank Origin"]
+        
+        fuel = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
+        fuel.mass_properties.mass = data["Mass"]
+        fuel.origin = data["Fuel Origin"]
+        fuel.mass_properties.center_of_gravity = data["Center of Gravity"]
+        fuel.internal_volume = data["Internal Volume"]
+        fuel_tank.fuel = fuel
+        
+        return fuel_tank

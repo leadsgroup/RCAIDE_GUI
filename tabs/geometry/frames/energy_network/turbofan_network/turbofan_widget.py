@@ -1,12 +1,13 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame
 
+from tabs.geometry.frames.energy_network.energy_network_widget import EnergyNetworkWidget
 from tabs.geometry.frames.energy_network.turbofan_network.fuelline_widget import FuelLineWidget
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.data_entry_widget import DataEntryWidget
 
 # TODO: Implement an EnergyNetworkWidget class to standardize the structure of the widgets
 
-class TurbofanWidget(QWidget):
+class TurbofanWidget(QWidget, EnergyNetworkWidget):
     def __init__(self):
         super(TurbofanWidget, self).__init__()
 
@@ -49,7 +50,7 @@ class TurbofanWidget(QWidget):
         # TODO: Implement create_rcaide structure
         pass
     
-    def load_data(self, data):
+    def load_data_values(self, data):
         # Clear the layout
         for i in reversed(range(self.fuellines_layout.count())):
             widget_item = self.fuellines_layout.itemAt(i)
