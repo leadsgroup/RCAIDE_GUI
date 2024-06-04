@@ -187,32 +187,32 @@ class WingsFrame(QWidget, GeometryFrame):
         wing = RCAIDE.Library.Components.Wings.Main_Wing()
 
         wing.tag = data["name"]
-        wing.taper_ratio = data["Taper"]
-        wing.dihedral = data["Dihedral"]
-        wing.aspect_ratio = data["Aspect Ratio"]
-        wing.thickness_to_chord = data["Thickness to Chord"]
+        wing.taper_ratio = data["Taper"][0]
+        wing.dihedral = data["Dihedral"][0]
+        wing.aspect_ratio = data["Aspect Ratio"][0]
+        wing.thickness_to_chord = data["Thickness to Chord"][0]
         wing.aerodynamic_center = [0, 0, 0]
-        wing.exposed_root_chord_offset = data["Exposed Root Chord Offset"]
-        wing.total_length = data["Total Length"]
+        wing.exposed_root_chord_offset = data["Exposed Root Chord Offset"][0]
+        wing.total_length = data["Total Length"][0]
 
-        wing.spans.projected = data["Spans Projected"]
-        wing.spans.total = data["Spans Total"]
-        wing.areas.reference = data["Areas Reference"]
-        wing.areas.exposed = data["Areas Exposed"]
-        wing.areas.affected = data["Areas Affected"]
-        wing.areas.wetted = data["Areas Wetted"]
+        wing.spans.projected = data["Spans Projected"][0]
+        wing.spans.total = data["Spans Total"][0]
+        wing.areas.reference = data["Areas Reference"][0]
+        wing.areas.exposed = data["Areas Exposed"][0]
+        wing.areas.affected = data["Areas Affected"][0]
+        wing.areas.wetted = data["Areas Wetted"][0]
 
-        wing.chords.root = data["Root Chord"]
-        wing.chords.tip = data["Tip Chord"]
-        wing.chords.mean_aerodynamic = data["Mean Aerodynamic Chord"]
-        wing.chords.mean_geometric = data["Mean Geometric Chord"]
+        wing.chords.root = data["Root Chord"][0]
+        wing.chords.tip = data["Tip Chord"][0]
+        wing.chords.mean_aerodynamic = data["Mean Aerodynamic Chord"][0]
+        wing.chords.mean_geometric = data["Mean Geometric Chord"][0]
 
-        wing.sweeps.quarter_chord = data["Quarter Chord Sweep Angle"]
-        wing.sweeps.half_chord = data["Half Chord Sweep Angle"]
-        wing.sweeps.leading_edge = data["Leading Edge Sweep Angle"]
+        wing.sweeps.quarter_chord = data["Quarter Chord Sweep Angle"][0]
+        wing.sweeps.half_chord = data["Half Chord Sweep Angle"][0]
+        wing.sweeps.leading_edge = data["Leading Edge Sweep Angle"][0]
 
-        wing.twists.root = data["Root Chord Twist Angle"]
-        wing.twists.tip = data["Tip Chord Twist Angle"]
+        wing.twists.root = data["Root Chord Twist Angle"][0]
+        wing.twists.tip = data["Tip Chord Twist Angle"][0]
 
         return wing
 

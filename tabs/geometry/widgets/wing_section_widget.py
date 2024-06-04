@@ -76,14 +76,14 @@ class WingSectionWidget(QWidget):
         segment = RCAIDE.Library.Components.Wings.Segment()
 
         segment.tag = data["segment name"]
-        segment.percent_span_location = data["Percent Span Location"]
-        segment.twist = data["Twist"]
+        segment.percent_span_location = data["Percent Span Location"][0]
+        segment.twist = data["Twist"][0]
 
-        segment.root_chord_percent = data["Root Chord Percent"]
-        segment.thickness_to_chord = data["Thickness to Chord"]
-        segment.dihedral_outboard = data["Dihedral Outboard"]
-        segment.sweeps.quarter_chord = data["Quarter Chord Sweep"]
-        # segment.airfoil = data["Airfoil"]
+        segment.root_chord_percent = data["Root Chord Percent"][0]
+        segment.thickness_to_chord = data["Thickness to Chord"][0]
+        segment.dihedral_outboard = data["Dihedral Outboard"][0]
+        segment.sweeps.quarter_chord = data["Quarter Chord Sweep"][0]
+        # segment.airfoil = data["Airfoil"][0]
 
         return segment
 

@@ -173,30 +173,30 @@ class FuselageFrame(QWidget, GeometryFrame):
     
     def create_rcaide_structure(self, data):
         fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
-        fuselage.fineness.nose = data["Fineness Nose"]
-        fuselage.fineness.tail = data["Fineness Tail"]
+        fuselage.fineness.nose = data["Fineness Nose"][0]
+        fuselage.fineness.tail = data["Fineness Tail"][0]
         
-        fuselage.lengths.nose = data["Lengths Nose"]
-        fuselage.lengths.tail = data["Lengths Tail"]
-        fuselage.lengths.total = data["Lengths Total"]
-        fuselage.lengths.cabin = data["Lengths Cabin"]
-        fuselage.lengths.fore_space = data["Lengths Forespace"]
-        fuselage.lengths.aft_space = data["Lengths Aftspace"]
+        fuselage.lengths.nose = data["Lengths Nose"][0]
+        fuselage.lengths.tail = data["Lengths Tail"][0]
+        fuselage.lengths.total = data["Lengths Total"][0]
+        fuselage.lengths.cabin = data["Lengths Cabin"][0]
+        fuselage.lengths.fore_space = data["Lengths Forespace"][0]
+        fuselage.lengths.aft_space = data["Lengths Aftspace"][0]
         
-        fuselage.width = data["Width"]
+        fuselage.width = data["Width"][0]
         
-        fuselage.heights.maximum = data["Heights Maximum"]
-        fuselage.heights.at_quarter_length = data["Height at Quarter"]
-        fuselage.heights.at_three_quarters_length = data["Height at Three Quarters"]
-        fuselage.heights.at_wing_root_quarter_chord = data["Height at Wing Root Quarter Chord"]
+        fuselage.heights.maximum = data["Heights Maximum"][0]
+        fuselage.heights.at_quarter_length = data["Height at Quarter"][0]
+        fuselage.heights.at_three_quarters_length = data["Height at Three Quarters"][0]
+        fuselage.heights.at_wing_root_quarter_chord = data["Height at Wing Root Quarter Chord"][0]
         
-        fuselage.areas.side_projected = data["Areas Side Projected"]
-        fuselage.areas.wetted = data["Area Wetted"]
-        fuselage.areas.front_projected = data["Area Front Projected"]
+        fuselage.areas.side_projected = data["Areas Side Projected"][0]
+        fuselage.areas.wetted = data["Area Wetted"][0]
+        fuselage.areas.front_projected = data["Area Front Projected"][0]
         
-        fuselage.differential_pressure = data["Differential Pressure"]
+        fuselage.differential_pressure = data["Differential Pressure"][0]
         
-        fuselage.effective_diameter = data["Effective Diameter"]
+        fuselage.effective_diameter = data["Effective Diameter"][0]
         return fuselage
 
 

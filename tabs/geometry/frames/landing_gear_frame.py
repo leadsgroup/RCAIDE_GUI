@@ -111,14 +111,14 @@ class LandingGearFrame(QWidget, GeometryFrame):
     def create_rcaide_structure(self, data):
         landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
         landing_gear.tag = data["name"]
-        landing_gear.main_tire_diameter = data["Main Tire Diameter"]
-        landing_gear.nose_tire_diameter = data["Nose Tire Diameter"]
-        landing_gear.main_strut_length = data["Main Strut Length"]
-        landing_gear.nose_strut_length = data["Nose Strut Length"]
-        landing_gear.main_units = data["Main Units"]
-        landing_gear.nose_units = data["Nose Units"]
-        landing_gear.main_wheels = data["Main Wheels"]
-        landing_gear.nose_wheels = data["Nose Wheels"]
+        landing_gear.main_tire_diameter = data["Main Tire Diameter"][0]
+        landing_gear.nose_tire_diameter = data["Nose Tire Diameter"][0]
+        landing_gear.main_strut_length = data["Main Strut Length"][0]
+        landing_gear.nose_strut_length = data["Nose Strut Length"][0]
+        landing_gear.main_units = data["Main Units"][0]
+        landing_gear.nose_units = data["Nose Units"][0]
+        landing_gear.main_wheels = data["Main Wheels"][0]
+        landing_gear.nose_wheels = data["Nose Wheels"][0]
 
         return landing_gear
 
