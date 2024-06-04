@@ -191,7 +191,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
 
     def save_data(self):
         """Call the save function and pass the entered data to it."""
-        entered_data = self.get_data_values()
+        entered_data, component = self.get_data_values()
 
         print("Entered data in EnergyNetworkFrame:",
               entered_data)  # Add this line for debugging
@@ -203,7 +203,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
                 return
             else:
                 self.index = self.save_function(
-                    self.tab_index, data=entered_data, new=True)
+                    self.tab_index, vehicle_component=component, data=entered_data, new=True)
 
         show_popup("Data Saved!", self)
 

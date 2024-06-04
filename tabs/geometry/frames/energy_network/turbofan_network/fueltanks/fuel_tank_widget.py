@@ -77,13 +77,13 @@ class FuelTankWidget(QWidget, GeometryFrame):
     def create_rcaide_structure(self, data):
         fuel_tank = RCAIDE.Library.Components.Energy.Fuel_Tanks.Fuel_Tank()
         fuel_tank.tag = data["segment name"]
-        fuel_tank.origin = data["Fuel Tank Origin"]
+        fuel_tank.origin = data["Fuel Tank Origin"][0]
         
         fuel = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
-        fuel.mass_properties.mass = data["Mass"]
-        fuel.origin = data["Fuel Origin"]
-        fuel.mass_properties.center_of_gravity = data["Center of Gravity"]
-        fuel.internal_volume = data["Internal Volume"]
+        fuel.mass_properties.mass = data["Mass"][0]
+        fuel.origin = data["Fuel Origin"][0]
+        fuel.mass_properties.center_of_gravity = data["Center of Gravity"][0]
+        fuel.internal_volume = data["Internal Volume"][0]
         fuel_tank.fuel = fuel
         
         return fuel_tank
