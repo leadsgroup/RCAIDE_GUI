@@ -68,14 +68,17 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
     def get_data_values(self):
         # Collect data from fuel line widgets
         data = []
+        lines = []
         for index in range(self.fuellines_layout.count()):
             item = self.fuellines_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, FuelLineWidget)
-            data.append(widget.get_data_values())
+            fuelline_data, line = widget.get_data_values()
+            data.append(fuelline_data)
+            lines.append(line)
 
-        return data
+        return data, lines
 
     def on_delete_button_pressed(self, index):
         widget_item = self.fuellines_layout.itemAt(index)

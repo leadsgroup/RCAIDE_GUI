@@ -1,7 +1,4 @@
-from PyQt6.QtWidgets import QWidget
-
-
-class EnergyNetworkWidget(QWidget):
+class EnergyNetworkWidget():
     def __init__(self):
         pass
 

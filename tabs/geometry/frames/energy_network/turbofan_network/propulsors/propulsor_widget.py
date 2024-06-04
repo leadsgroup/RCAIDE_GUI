@@ -98,16 +98,6 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
 
         self.on_delete(self.index)
 
-    def load_data_values(self, data):
-        self.data_entry_widget.load_data(data)
-        self.section_name_edit.setText(data["propulsor name"])
-
-    def get_data_values(self):
-        title = self.section_name_edit.text()
-        data = self.data_entry_widget.get_values()
-        data["propulsor name"] = title
-        return data, self.create_rcaide_structure(data)
-
     def create_rcaide_structure(self, data):
         turbofan = RCAIDE.Library.Components.Propulsors.Turbofan()
         turbofan.tag = data["propulsor name"]
@@ -181,5 +171,15 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         turbofan.fan_nozzle = fan_nozzle
 
         design_turbofan(turbofan)
-        
+
         return turbofan
+
+    def load_data_values(self, data):
+        self.data_entry_widget.load_data(data)
+        self.section_name_edit.setText(data["propulsor name"])
+
+    def get_data_values(self):
+        title = self.section_name_edit.text()
+        data = self.data_entry_widget.get_values()
+        data["propulsor name"] = title
+        return data, self.create_rcaide_structure(data)

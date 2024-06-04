@@ -1,9 +1,11 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QLabel, QTabWidget, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QPushButton, QLineEdit
+
 
 from tabs.geometry.frames.energy_network.turbofan_network.fueltanks.fuel_tank_frame import FuelTankFrame
 from tabs.geometry.frames.energy_network.turbofan_network.propulsors.propulsor_frame import PropulsorFrame
 from widgets.data_entry_widget import DataEntryWidget
 
+import RCAIDE
 
 class FuelLineWidget(QWidget):
     def __init__(self, index, on_delete, data_values=None):
@@ -44,27 +46,38 @@ class FuelLineWidget(QWidget):
         self.setLayout(layout)
 
         if data_values:
-            self.load_data(data_values, index)
+            self.load_data_values(data_values, index)
+    
+    def create_rcaide_structure(self, propulsors, fuel_tanks):
+        fuel_line = RCAIDE.Library.Components.EnergyNetwork.FuelLine()
+        for propulsor in propulsors:
+            fuel_line.propulsors.append(propulsor)
+        
+        for fuel_tank in fuel_tanks:
+            fuel_line.fuel_tanks.append(fuel_tank)
+        
+        return fuel_line
 
     def get_data_values(self):
         """Retrieve the entered data values from both FuelTankFrame and PropulsorFrame."""
-        data_values = {}
+        data = {}
 
         # Get the name of the fuel line
         fuel_line_name = self.section_name_edit.text()
-        data_values["name"] = fuel_line_name
+        data["name"] = fuel_line_name
 
         # Get data values from Fuel Tanks tab
         fuel_tank_data = self.fuel_tank_frame.get_data_values()
-        data_values["fuel tank data"] = fuel_tank_data
+        data["fuel tank data"], fuel_tanks = fuel_tank_data
 
         # Get data values from Propulsors tab
         propulsor_data = self.propulsor_frame.get_data_values()
-        data_values["propulsor data"] = propulsor_data
+        data["propulsor data"], propulsors = propulsor_data
+        
+        fuel_line = self.create_rcaide_structure(propulsors, fuel_tanks)
+        return data, fuel_line
 
-        return data_values
-
-    def load_data(self, data, index):
+    def load_data_values(self, data, index):
         self.index = index
         
         fuel_line_name = data["name"]

@@ -7,6 +7,8 @@ from tabs.geometry.frames.energy_network.turbofan_network.turbofan_widget import
 from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup
 
+import RCAIDE
+
 
 class EnergyNetworkFrame(QWidget, GeometryFrame):
     def __init__(self):
@@ -167,15 +169,25 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             # Add the data values from each fuel line widget to an array
             item = self.energy_network_layout.itemAt(0)
             assert item is not None
-
             widget = item.widget()
             assert widget is not None and isinstance(widget, TurbofanWidget)
-            data_values = widget.get_data_values()
+            data_values, lines = widget.get_data_values()
 
             # add the fuel line data to the main data
             data["energy_network"] = data_values
 
-        return data
+        return data, self.create_rcaide_structure((data, lines))
+    
+    def create_rcaide_structure(self, data_in):
+        data, lines = data_in
+        if data["energy network selected"] == "Turbofan":
+            net = RCAIDE.Framework.Networks.Turbofan_Engine_Network()
+            for line in lines:
+                net.fuel_lines.append(line)
+            return net
+        
+        return None
+        
 
     def save_data(self):
         """Call the save function and pass the entered data to it."""
