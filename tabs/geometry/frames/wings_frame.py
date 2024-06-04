@@ -15,9 +15,9 @@ class WingsFrame(QWidget, GeometryFrame):
         super(WingsFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
         
-        assert self.main_layout is not None
-
         self.create_scroll_area()
+        
+        assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -29,7 +29,7 @@ class WingsFrame(QWidget, GeometryFrame):
             ("Dihedral", Units.Angle),
             ("Aspect Ratio", Units.Unitless),
             ("Thickness to Chord", Units.Unitless),
-            # ("Aerodynamic Center", Units.Unitless),
+            ("Aerodynamic Center", Units.Position),
             ("Exposed Root Chord Offset", Units.Unitless),
             ("Total Length", Units.Length),
             ("Spans Projected", Units.Length),

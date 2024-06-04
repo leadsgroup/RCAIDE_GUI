@@ -71,8 +71,11 @@ class FuelTankWidget(QWidget, GeometryFrame):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()
         data["segment name"] = title
+        
+        data_si = self.data_entry_widget.get_values_si()
+        data_si["segment name"] = title
 
-        return data, self.create_rcaide_structure(data)
+        return data, self.create_rcaide_structure(data_si)
 
     def create_rcaide_structure(self, data):
         fuel_tank = RCAIDE.Library.Components.Energy.Fuel_Tanks.Fuel_Tank()

@@ -48,8 +48,8 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
         
         fuel_tank_selector = QTabWidget()
         fuel_tank_selector.setTabPosition(QTabWidget.TabPosition.North)
-        fuel_tank_selector.addTab(QLabel("Tab 1"), "Fuel Tank 1")
-        fuel_tank_selector.addTab(QLabel("Tab 2"), "Fuel Tank 2")
+        # fuel_tank_selector.addTab(QLabel("Tab 1"), "Fuel Tank 1")
+        # fuel_tank_selector.addTab(QLabel("Tab 2"), "Fuel Tank 2")
 
         layout.addWidget(fuel_tank_selector)
 
@@ -59,12 +59,7 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
     
     def update_fuel_selector(self):
         data, lines = self.get_data_values()
-        print("Data:", data)
-        print("Lines:", lines)
-
-    def create_rcaide_structure(self, data):
-        # TODO: Implement create_rcaide structure
-        pass
+        
     
     def load_data_values(self, data):
         # Clear the layout

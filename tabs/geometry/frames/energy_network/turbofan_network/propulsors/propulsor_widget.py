@@ -100,7 +100,7 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
 
     def create_rcaide_structure(self, data):
         turbofan = RCAIDE.Library.Components.Propulsors.Turbofan()
-        turbofan.tag = data["propulsor name"][0]
+        turbofan.tag = data["propulsor name"]
         turbofan.origin = data["Origin"][0]
         turbofan.engine_length = data["Engine Length"][0]
         turbofan.bypass_ratio = data["Bypass Ratio"][0]
@@ -182,4 +182,8 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()
         data["propulsor name"] = title
-        return data, self.create_rcaide_structure(self.data_entry_widget.get_values_si())
+
+        data_si = self.data_entry_widget.get_values_si()
+        data_si["propulsor name"] = title
+
+        return data, self.create_rcaide_structure(data_si)
