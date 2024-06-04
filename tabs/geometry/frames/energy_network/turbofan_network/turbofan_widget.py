@@ -1,8 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QLabel, QTabWidget
 
 from tabs.geometry.frames.energy_network.energy_network_widget import EnergyNetworkWidget
 from tabs.geometry.frames.energy_network.turbofan_network.fuelline_widget import FuelLineWidget
-from tabs.geometry.frames.geometry_frame import GeometryFrame
 from widgets.data_entry_widget import DataEntryWidget
 
 # TODO: Implement an EnergyNetworkWidget class to standardize the structure of the widgets
@@ -15,6 +14,7 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
         self.data_entry_widget: DataEntryWidget | None = None
 
         self.fuellines_layout = QVBoxLayout()  # Define main_layout here
+        self.fuellines_layout.setContentsMargins(0, 0, 0, 0)
 
         # Header
         header_layout = QHBoxLayout()
@@ -41,10 +41,26 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
 
         layout.addWidget(line_bar)
         layout.addLayout(self.fuellines_layout)
+        
+        update_selector_button = QPushButton("Update Fuel Tank Selector")
+        update_selector_button.clicked.connect(self.update_fuel_selector)
+        layout.addWidget(update_selector_button)
+        
+        fuel_tank_selector = QTabWidget()
+        fuel_tank_selector.setTabPosition(QTabWidget.TabPosition.North)
+        fuel_tank_selector.addTab(QLabel("Tab 1"), "Fuel Tank 1")
+        fuel_tank_selector.addTab(QLabel("Tab 2"), "Fuel Tank 2")
+
+        layout.addWidget(fuel_tank_selector)
 
     def add_fuelline_section(self):
         self.fuellines_layout.addWidget(
             FuelLineWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
+    
+    def update_fuel_selector(self):
+        data, lines = self.get_data_values()
+        print("Data:", data)
+        print("Lines:", lines)
 
     def create_rcaide_structure(self, data):
         # TODO: Implement create_rcaide structure

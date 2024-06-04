@@ -182,4 +182,4 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()
         data["propulsor name"] = title
-        return data, self.create_rcaide_structure(data)
+        return data, self.create_rcaide_structure(self.data_entry_widget.get_values_si())
