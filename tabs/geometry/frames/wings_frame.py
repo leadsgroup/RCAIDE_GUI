@@ -14,6 +14,8 @@ class WingsFrame(QWidget, GeometryFrame):
         """Create a frame for entering wing data."""
         super(WingsFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
+        
+        assert self.main_layout is not None
 
         self.create_scroll_area()
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
@@ -78,6 +80,8 @@ class WingsFrame(QWidget, GeometryFrame):
         self.setLayout(layout_scroll)
 
     def add_name_layout(self):
+        assert self.main_layout is not None
+        
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -109,6 +113,8 @@ class WingsFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
@@ -130,8 +136,13 @@ class WingsFrame(QWidget, GeometryFrame):
             self.wing_sections_layout.count(), self.delete_wing_section))
 
     def delete_wing_section(self, index):
-        self.wing_sections_layout.itemAt(index).widget().deleteLater()
-        self.wing_sections_layout.removeWidget(self.wing_sections_layout.itemAt(index).widget())
+        item = self.wing_sections_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None and isinstance(widget, WingSectionWidget)
+        
+        widget.deleteLater()
+        self.wing_sections_layout.removeWidget(widget)
         self.wing_sections_layout.update()
 
         for i in range(index, self.wing_sections_layout.count()):
@@ -148,8 +159,13 @@ class WingsFrame(QWidget, GeometryFrame):
             self.wing_cs_layout.count(), self.delete_control_surface))
 
     def delete_control_surface(self, index):
-        self.wing_cs_layout.itemAt(index).widget().deleteLater()
-        self.wing_cs_layout.removeWidget(self.wing_cs_layout.itemAt(index).widget())
+        item = self.wing_cs_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None and isinstance(widget, WingCSWidget)
+        
+        widget.deleteLater()
+        self.wing_cs_layout.removeWidget(widget)
         self.wing_cs_layout.update()
 
         for i in range(index, self.wing_cs_layout.count()):
@@ -168,17 +184,28 @@ class WingsFrame(QWidget, GeometryFrame):
     def create_new_structure(self):
         """Create a new wing structure."""
         # Clear the main data values
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
 
         # Clear the wing sections
         for i in range(self.wing_sections_layout.count()):
-            self.wing_sections_layout.itemAt(i).widget().deleteLater()
+            item = self.wing_sections_layout.itemAt(i)
+            assert item is not None
+            widget = item.widget()
+            assert widget is not None and isinstance(widget, WingSectionWidget)
+            widget.deleteLater()
+        
         self.wing_sections_layout.update()
 
         # Clear the control surfaces
         for i in range(self.wing_cs_layout.count()):
-            self.wing_cs_layout.itemAt(i).widget().deleteLater()
+            item = self.wing_cs_layout.itemAt(i)
+            assert item is not None
+            widget = item.widget()
+            assert widget is not None and isinstance(widget, WingCSWidget)
+            
+            widget.deleteLater()
         self.wing_cs_layout.update()
 
         self.index = -1
@@ -218,6 +245,7 @@ class WingsFrame(QWidget, GeometryFrame):
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
@@ -258,6 +286,7 @@ class WingsFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.py
             index: The index of the data in the list.
         """
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
 
         for section in data["sections"]:
