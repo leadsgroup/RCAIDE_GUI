@@ -1,8 +1,11 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QLabel, QTabWidget, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QPushButton, QLineEdit
+
 
 from tabs.geometry.frames.energy_network.turbofan_network.fueltanks.fuel_tank_frame import FuelTankFrame
 from tabs.geometry.frames.energy_network.turbofan_network.propulsors.propulsor_frame import PropulsorFrame
 from widgets.data_entry_widget import DataEntryWidget
+
+import RCAIDE
 
 
 class FuelLineWidget(QWidget):
@@ -40,42 +43,52 @@ class FuelLineWidget(QWidget):
         delete_button.clicked.connect(self.delete_button_pressed)
 
         layout.addWidget(delete_button)
-
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         if data_values:
-            self.load_data(data_values, index)
+            self.load_data_values(data_values, index)
+
+    def create_rcaide_structure(self, propulsors, fuel_tanks):
+        fuel_line = RCAIDE.Library.Components.Energy.Distribution.Fuel_Line()
+        for propulsor in propulsors:
+            fuel_line.propulsors.append(propulsor)
+
+        for fuel_tank in fuel_tanks:
+            fuel_line.fuel_tanks.append(fuel_tank)
+
+        return fuel_line
 
     def get_data_values(self):
         """Retrieve the entered data values from both FuelTankFrame and PropulsorFrame."""
-        data_values = {}
+        data = {}
 
         # Get the name of the fuel line
         fuel_line_name = self.section_name_edit.text()
-        data_values["name"] = fuel_line_name
+        data["name"] = fuel_line_name
 
         # Get data values from Fuel Tanks tab
         fuel_tank_data = self.fuel_tank_frame.get_data_values()
-        data_values["fuel tank data"] = fuel_tank_data
+        data["fuel tank data"], fuel_tanks = fuel_tank_data
 
         # Get data values from Propulsors tab
         propulsor_data = self.propulsor_frame.get_data_values()
-        data_values["propulsor data"] = propulsor_data
+        data["propulsor data"], propulsors = propulsor_data
 
-        return data_values
+        fuel_line = self.create_rcaide_structure(propulsors, fuel_tanks)
+        return data, fuel_line
 
-    def load_data(self, data, index):
+    def load_data_values(self, data, index):
         self.index = index
-        
+
         fuel_line_name = data["name"]
         self.section_name_edit.setText(fuel_line_name)
-        
+
         fuel_tank_data = data["fuel tank data"]
         self.fuel_tank_frame.load_data(fuel_tank_data)
-        
+
         propulsor_data = data["propulsor data"]
-        self.propulsor_frame.load_data(propulsor_data)        
-        
+        self.propulsor_frame.load_data(propulsor_data)
 
     def delete_button_pressed(self):
         print("Delete button pressed")
@@ -89,7 +102,8 @@ class FuelLineWidget(QWidget):
     def create_scroll_layout(self):
         # Create a widget to contain the layoutd
         scroll_content = QWidget()
-        layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
+        # Set the main layout inside the scroll content
+        layout = QVBoxLayout(scroll_content)
 
         # Set the main layout of the widget
         self.setLayout(layout)

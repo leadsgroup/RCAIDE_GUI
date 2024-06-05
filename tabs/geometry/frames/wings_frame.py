@@ -14,8 +14,10 @@ class WingsFrame(QWidget, GeometryFrame):
         """Create a frame for entering wing data."""
         super(WingsFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
-
+        
         self.create_scroll_area()
+        
+        assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -27,7 +29,7 @@ class WingsFrame(QWidget, GeometryFrame):
             ("Dihedral", Units.Angle),
             ("Aspect Ratio", Units.Unitless),
             ("Thickness to Chord", Units.Unitless),
-            # ("Aerodynamic Center", Units.Unitless),
+            ("Aerodynamic Center", Units.Position),
             ("Exposed Root Chord Offset", Units.Unitless),
             ("Total Length", Units.Length),
             ("Spans Projected", Units.Length),
@@ -78,6 +80,8 @@ class WingsFrame(QWidget, GeometryFrame):
         self.setLayout(layout_scroll)
 
     def add_name_layout(self):
+        assert self.main_layout is not None
+        
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -109,6 +113,8 @@ class WingsFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
@@ -130,8 +136,13 @@ class WingsFrame(QWidget, GeometryFrame):
             self.wing_sections_layout.count(), self.delete_wing_section))
 
     def delete_wing_section(self, index):
-        self.wing_sections_layout.itemAt(index).widget().deleteLater()
-        self.wing_sections_layout.removeWidget(self.wing_sections_layout.itemAt(index).widget())
+        item = self.wing_sections_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None and isinstance(widget, WingSectionWidget)
+        
+        widget.deleteLater()
+        self.wing_sections_layout.removeWidget(widget)
         self.wing_sections_layout.update()
 
         for i in range(index, self.wing_sections_layout.count()):
@@ -148,8 +159,13 @@ class WingsFrame(QWidget, GeometryFrame):
             self.wing_cs_layout.count(), self.delete_control_surface))
 
     def delete_control_surface(self, index):
-        self.wing_cs_layout.itemAt(index).widget().deleteLater()
-        self.wing_cs_layout.removeWidget(self.wing_cs_layout.itemAt(index).widget())
+        item = self.wing_cs_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None and isinstance(widget, WingCSWidget)
+        
+        widget.deleteLater()
+        self.wing_cs_layout.removeWidget(widget)
         self.wing_cs_layout.update()
 
         for i in range(index, self.wing_cs_layout.count()):
@@ -168,17 +184,28 @@ class WingsFrame(QWidget, GeometryFrame):
     def create_new_structure(self):
         """Create a new wing structure."""
         # Clear the main data values
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
 
         # Clear the wing sections
         for i in range(self.wing_sections_layout.count()):
-            self.wing_sections_layout.itemAt(i).widget().deleteLater()
+            item = self.wing_sections_layout.itemAt(i)
+            assert item is not None
+            widget = item.widget()
+            assert widget is not None and isinstance(widget, WingSectionWidget)
+            widget.deleteLater()
+        
         self.wing_sections_layout.update()
 
         # Clear the control surfaces
         for i in range(self.wing_cs_layout.count()):
-            self.wing_cs_layout.itemAt(i).widget().deleteLater()
+            item = self.wing_cs_layout.itemAt(i)
+            assert item is not None
+            widget = item.widget()
+            assert widget is not None and isinstance(widget, WingCSWidget)
+            
+            widget.deleteLater()
         self.wing_cs_layout.update()
 
         self.index = -1
@@ -187,37 +214,38 @@ class WingsFrame(QWidget, GeometryFrame):
         wing = RCAIDE.Library.Components.Wings.Main_Wing()
 
         wing.tag = data["name"]
-        wing.taper_ratio = data["Taper"]
-        wing.dihedral = data["Dihedral"]
-        wing.aspect_ratio = data["Aspect Ratio"]
-        wing.thickness_to_chord = data["Thickness to Chord"]
+        wing.taper_ratio = data["Taper"][0]
+        wing.dihedral = data["Dihedral"][0]
+        wing.aspect_ratio = data["Aspect Ratio"][0]
+        wing.thickness_to_chord = data["Thickness to Chord"][0]
         wing.aerodynamic_center = [0, 0, 0]
-        wing.exposed_root_chord_offset = data["Exposed Root Chord Offset"]
-        wing.total_length = data["Total Length"]
+        wing.exposed_root_chord_offset = data["Exposed Root Chord Offset"][0]
+        wing.total_length = data["Total Length"][0]
 
-        wing.spans.projected = data["Spans Projected"]
-        wing.spans.total = data["Spans Total"]
-        wing.areas.reference = data["Areas Reference"]
-        wing.areas.exposed = data["Areas Exposed"]
-        wing.areas.affected = data["Areas Affected"]
-        wing.areas.wetted = data["Areas Wetted"]
+        wing.spans.projected = data["Spans Projected"][0]
+        wing.spans.total = data["Spans Total"][0]
+        wing.areas.reference = data["Areas Reference"][0]
+        wing.areas.exposed = data["Areas Exposed"][0]
+        wing.areas.affected = data["Areas Affected"][0]
+        wing.areas.wetted = data["Areas Wetted"][0]
 
-        wing.chords.root = data["Root Chord"]
-        wing.chords.tip = data["Tip Chord"]
-        wing.chords.mean_aerodynamic = data["Mean Aerodynamic Chord"]
-        wing.chords.mean_geometric = data["Mean Geometric Chord"]
+        wing.chords.root = data["Root Chord"][0]
+        wing.chords.tip = data["Tip Chord"][0]
+        wing.chords.mean_aerodynamic = data["Mean Aerodynamic Chord"][0]
+        wing.chords.mean_geometric = data["Mean Geometric Chord"][0]
 
-        wing.sweeps.quarter_chord = data["Quarter Chord Sweep Angle"]
-        wing.sweeps.half_chord = data["Half Chord Sweep Angle"]
-        wing.sweeps.leading_edge = data["Leading Edge Sweep Angle"]
+        wing.sweeps.quarter_chord = data["Quarter Chord Sweep Angle"][0]
+        wing.sweeps.half_chord = data["Half Chord Sweep Angle"][0]
+        wing.sweeps.leading_edge = data["Leading Edge Sweep Angle"][0]
 
-        wing.twists.root = data["Root Chord Twist Angle"]
-        wing.twists.tip = data["Tip Chord Twist Angle"]
+        wing.twists.root = data["Root Chord Twist Angle"][0]
+        wing.twists.tip = data["Tip Chord Twist Angle"][0]
 
         return wing
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
@@ -258,6 +286,7 @@ class WingsFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.py
             index: The index of the data in the list.
         """
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
 
         for section in data["sections"]:

@@ -56,18 +56,18 @@ class FuelTankFrame(QWidget):
 
     def get_data_values(self):
         data = []
+        fuel_tanks = []
         for index in range(self.fueltank_sections_layout.count()):
             item = self.fueltank_sections_layout.itemAt(index)
-            if item is None:
-                continue
-
+            assert item is not None
             widget = item.widget()
-            if widget is None or not isinstance(widget, FuelTankWidget):
-                continue
+            assert widget is not None and isinstance(widget, FuelTankWidget)
 
-            data.append(widget.get_data_values())
+            fuel_tank_data, fuel_tank = widget.get_data_values()
+            data.append(fuel_tank_data)
+            fuel_tanks.append(fuel_tank)
 
-        return data
+        return data, fuel_tanks
 
     def load_data(self, data):
         while self.fueltank_sections_layout.count():

@@ -14,6 +14,8 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.data_entry_widget: DataEntryWidget | None = None
 
         self.create_scroll_area()
+        
+        assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Landing Gear</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -64,6 +66,8 @@ class LandingGearFrame(QWidget, GeometryFrame):
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(name_layout)
 
     # noinspection PyUnresolvedReferences
@@ -81,6 +85,8 @@ class LandingGearFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
+        
+        assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
@@ -104,6 +110,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
     def create_new_structure(self):
         """Create a new Landing Gear structure."""
         # Clear the main data values
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
         self.index = -1
@@ -111,19 +118,20 @@ class LandingGearFrame(QWidget, GeometryFrame):
     def create_rcaide_structure(self, data):
         landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
         landing_gear.tag = data["name"]
-        landing_gear.main_tire_diameter = data["Main Tire Diameter"]
-        landing_gear.nose_tire_diameter = data["Nose Tire Diameter"]
-        landing_gear.main_strut_length = data["Main Strut Length"]
-        landing_gear.nose_strut_length = data["Nose Strut Length"]
-        landing_gear.main_units = data["Main Units"]
-        landing_gear.nose_units = data["Nose Units"]
-        landing_gear.main_wheels = data["Main Wheels"]
-        landing_gear.nose_wheels = data["Nose Wheels"]
+        landing_gear.main_tire_diameter = data["Main Tire Diameter"][0]
+        landing_gear.nose_tire_diameter = data["Nose Tire Diameter"][0]
+        landing_gear.main_strut_length = data["Main Strut Length"][0]
+        landing_gear.nose_strut_length = data["Nose Strut Length"][0]
+        landing_gear.main_units = data["Main Units"][0]
+        landing_gear.nose_units = data["Nose Units"][0]
+        landing_gear.main_wheels = data["Main Wheels"][0]
+        landing_gear.nose_wheels = data["Nose Wheels"][0]
 
         return landing_gear
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
 
@@ -140,6 +148,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
+        assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
 
         self.name_line_edit.setText(data["name"])

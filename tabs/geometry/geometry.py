@@ -162,7 +162,11 @@ class GeometryWidget(QWidget):
             f.write(json.dumps(self.data, indent=4))
 
         if vehicle_component:
-            self.vehicle.append_component(vehicle_component)
+            # Check if it is an energy network being added
+            if tab_index == 4:
+                self.vehicle.append_energy_network(vehicle_component)
+            else:
+                self.vehicle.append_component(vehicle_component)
 
         return index
 

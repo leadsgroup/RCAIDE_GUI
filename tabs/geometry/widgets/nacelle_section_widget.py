@@ -76,10 +76,10 @@ class NacelleSectionWidget(QWidget):
     def create_rcaide_structure(self, data):
         segment = RCAIDE.Library.Components.Fuselages.Segment()
 
-        segment.percent_x_location = data["Percent X Location"]
-        segment.percent_z_location = data["Percent Z Location"]
-        segment.height = data["Height"]
-        segment.width = data["Width"]
+        segment.percent_x_location = data["Percent X Location"][0]
+        segment.percent_z_location = data["Percent Z Location"][0]
+        segment.height = data["Height"][0]
+        segment.width = data["Width"][0]
         segment.tag = data["segment name"]
 
         return segment

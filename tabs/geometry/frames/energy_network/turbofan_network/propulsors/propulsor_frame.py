@@ -55,29 +55,28 @@ class PropulsorFrame(QWidget):
 
         # Collect data from additional fuselage_widget
         data = []
+        propulsors = []
         for index in range(self.propulsor_sections_layout.count()):
             item = self.propulsor_sections_layout.itemAt(index)
-            if item is None:
-                continue
-            
+            assert item is not None            
             widget = item.widget()
-            if widget is None or not isinstance(widget, PropulsorWidget):
-                continue
+            assert widget is not None and isinstance(widget, PropulsorWidget)
             
-            data.append(widget.get_data_values())
+            propulsor_data, propulsor = widget.get_data_values()
+            data.append(propulsor_data)
+            propulsors.append(propulsor)
 
-        return data
+        return data, propulsors
 
-    def load_data(self, data):
-        # Make sure sections don't already exist
+    def load_data(self, data): 
         while self.propulsor_sections_layout.count():
             item = self.propulsor_sections_layout.takeAt(0)
-            if item is None:
-                continue
-            
+            assert item is not None
             widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
+            assert widget is not None
+            
+            self.propulsor_sections_layout.removeWidget(widget)
+            widget.deleteLater()
 
         for section_data in data:
             self.propulsor_sections_layout.addWidget(PropulsorWidget(

@@ -108,13 +108,13 @@ class WingCSWidget(QWidget):
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
         
         cs.tag = data["CS name"]
-        cs.span_fraction_start = data["Span Fraction Start"]
-        cs.span_fraction_end = data["Span Fraction End"]
-        cs.deflection = data["Deflection"]
-        cs.chord_fraction = data["Chord Fraction"]
+        cs.span_fraction_start = data["Span Fraction Start"][0]
+        cs.span_fraction_end = data["Span Fraction End"][0]
+        cs.deflection = data["Deflection"][0]
+        cs.chord_fraction = data["Chord Fraction"][0]
         
         if self.cs_type == 2:
-            num_slots = data["Number of Slots"]
+            num_slots = data["Number of Slots"][0]
             config_type = "single_slotted"
             if num_slots == 2:
                 config_type = "double_slotted"
