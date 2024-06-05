@@ -5,7 +5,7 @@ from tabs.geometry.frames.energy_network.turbofan_network.fuelline_widget import
 from tabs.geometry.frames.energy_network.turbofan_network.tank_selector_widget import TankSelectorWidget
 from widgets.data_entry_widget import DataEntryWidget
 
-# TODO: Implement an EnergyNetworkWidget class to standardize the structure of the widgets
+import RCAIDE
 
 
 class TurbofanWidget(QWidget, EnergyNetworkWidget):
@@ -17,6 +17,8 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
 
         self.fuellines_layout = QVBoxLayout()  # Define main_layout here
         self.fuellines_layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.tank_selector_data = None
 
         # Header
         header_layout = QHBoxLayout()
@@ -56,17 +58,21 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
         self.fuellines_layout.addWidget(
             FuelLineWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
 
-    def update_fuel_selector(self):
+    def update_fuel_selector(self, data=None):
         self.fuel_tank_selector.clear()
-        data, _ = self.get_data_values()
+        if data is None or isinstance(data, bool):
+            data, _ = self.get_data_values(just_data=True)
+        
+        self.tank_selector_data = data
         for line_data in data:
             for propulsor_data in line_data["propulsor data"]:
-                tank_names = [tank["segment name"] for tank in line_data["fuel tank data"]]
-                self.fuel_tank_selector.addTab(TankSelectorWidget(tank_names), propulsor_data["propulsor name"])
-                
+                tank_names = [tank["segment name"]
+                              for tank in line_data["fuel tank data"]]
+                propulsor_name = propulsor_data["propulsor name"]
+                self.fuel_tank_selector.addTab(TankSelectorWidget(
+                    tank_names, propulsor_name), propulsor_name)
 
     def load_data_values(self, data):
-        # Clear the layout
         for i in reversed(range(self.fuellines_layout.count())):
             widget_item = self.fuellines_layout.itemAt(i)
             assert widget_item is not None
@@ -80,7 +86,7 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
             self.fuellines_layout.addWidget(
                 FuelLineWidget(index, self.on_delete_button_pressed, section))
 
-    def get_data_values(self):
+    def get_data_values(self, just_data=False):
         # Collect data from fuel line widgets
         data = []
         lines = []
@@ -90,8 +96,34 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
             widget = item.widget()
             assert widget is not None and isinstance(widget, FuelLineWidget)
             fuelline_data, line = widget.get_data_values()
+            assert isinstance(
+                line, RCAIDE.Library.Components.Energy.Distribution.Fuel_Line)
+
             data.append(fuelline_data)
             lines.append(line)
+        
+        if just_data:
+            return data, []
+        
+        if self.tank_selector_data != data:
+            print("Tank selector is not updated!")
+            return False, False
+        
+        for line in lines:
+            for propulsor in line.propulsors:
+                assert isinstance(
+                    propulsor, RCAIDE.Library.Components.Propulsors.Turbofan)
+
+                for index in range(self.fuel_tank_selector.count()):
+                    tank_selector = self.fuel_tank_selector.widget(index)
+                    assert isinstance(tank_selector, TankSelectorWidget)
+                    if tank_selector.name != propulsor.tag:
+                        continue
+
+                    propulsor.active_fuel_tanks = tank_selector.get_selected_tanks()
+                    print("Propulsor Name:", propulsor.tag,
+                            "Active Fuel Tanks:", propulsor.active_fuel_tanks)
+                    break
 
         return data, lines
 

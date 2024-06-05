@@ -172,6 +172,9 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             widget = item.widget()
             assert widget is not None and isinstance(widget, TurbofanWidget)
             data_values, lines = widget.get_data_values()
+            
+            if isinstance(data_values, bool):
+                return False, False
 
             # add the fuel line data to the main data
             data["energy_network"] = data_values
@@ -192,6 +195,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
     def save_data(self):
         """Call the save function and pass the entered data to it."""
         entered_data, component = self.get_data_values()
+        if isinstance(entered_data, bool):
+            return
 
         print("Entered data in EnergyNetworkFrame:",
               entered_data)  # Add this line for debugging
