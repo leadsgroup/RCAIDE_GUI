@@ -3,7 +3,7 @@ from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, QVBoxLayout
 
 from utilities import Units
-from widgets.unit_picker_widget import UnitPickerWidget
+from widgets import UnitPickerWidget
 
 
 class DataEntryWidget(QWidget):
@@ -17,7 +17,7 @@ class DataEntryWidget(QWidget):
     def init_ui(self, num_cols):
         grid_layout = QGridLayout()
         row, col = 0, 0
-        for label in self.data_units_labels:                
+        for label in self.data_units_labels:
             grid_layout.setColumnStretch(col * 4 + 1, 1)
 
             if label[1] != Units.Heading:
@@ -87,7 +87,7 @@ class DataEntryWidget(QWidget):
 
                 # Store a reference to the QLineEdit in the dictionary
                 self.data_fields[label[0]] = (line_edit, unit_picker)
-            
+
             col = col + 1 if col < num_cols - 1 else 0
             if col == 0:
                 row += 1
@@ -106,7 +106,7 @@ class DataEntryWidget(QWidget):
                 self.data_fields[key][2].setText("")
                 self.data_fields[key][3].set_index(0)
             elif self.data_units_labels[i][1] == Units.Heading:
-                continue            
+                continue
             else:
                 self.data_fields[key][0].setText("")
                 self.data_fields[key][1].set_index(0)

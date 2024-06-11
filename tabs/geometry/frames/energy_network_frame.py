@@ -2,9 +2,8 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, Q
     QPushButton, QLineEdit, QComboBox
 from PyQt6.QtCore import Qt
 
-from tabs.geometry.frames.energy_network.turbofan_network.fuelline_widget import FuelLineWidget
-from tabs.geometry.frames.energy_network.turbofan_network.turbofan_widget import TurbofanWidget
-from tabs.geometry.frames.geometry_frame import GeometryFrame
+from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanWidget, FuelLineWidget
+from tabs.geometry.frames import GeometryFrame
 from utilities import show_popup
 
 import RCAIDE

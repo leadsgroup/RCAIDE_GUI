@@ -1,13 +1,4 @@
-from PyQt6.QtWidgets import QFrame, QVBoxLayout, QLineEdit
-
-
-def create_line_bar():
-    """Create a line bar to separate the widgets."""
-    line_bar = QFrame()
-    line_bar.setFrameShape(QFrame.Shape.HLine)
-    line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-
-    return line_bar
+from PyQt6.QtWidgets import QVBoxLayout, QLineEdit
 
 
 class GeometryFrame:

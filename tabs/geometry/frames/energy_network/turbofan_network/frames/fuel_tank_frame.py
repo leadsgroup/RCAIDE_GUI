@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.frames.energy_network.turbofan_network.fueltanks.fuel_tank_widget import FuelTankWidget
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets import FuelTankWidget
+from widgets import DataEntryWidget
 
 
 class FuelTankFrame(QWidget):

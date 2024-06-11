@@ -4,7 +4,7 @@ from tabs.mission.widgets.controls_popup import ControlsPopup
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QMenu, QMessageBox
 
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
+from widgets import DataEntryWidget
 
 
 class MissionSegmentWidget(QWidget):
@@ -35,7 +35,9 @@ class MissionSegmentWidget(QWidget):
         nested_dropdown = self.create_nested_dropdown()
         segment_type.addWidget(segment_type_label)
         segment_type.addLayout(nested_dropdown)
-      
+
+        # TODO: Add aircraft configuration dropdown
+
         # Adding Horizontal Layouts to Vertical Layout
         self.segment_layout.addLayout(segment_name)
         self.segment_layout.addLayout(segment_type)
@@ -63,7 +65,8 @@ class MissionSegmentWidget(QWidget):
         self.clear_layout(self.dof_layout)
 
         # Get data fields for the selected subsegment type from the dictionary
-        data_fields = self.subsegment_data_fields[self.top_dropdown.currentIndex()].get(subsegment_type, [])
+        data_fields = self.subsegment_data_fields[self.top_dropdown.currentIndex()].get(
+            subsegment_type, [])
 
         # Add QLineEdit boxes for each data field
         label_count = len(data_fields)
@@ -75,19 +78,19 @@ class MissionSegmentWidget(QWidget):
         subsegment_entry_widget = DataEntryWidget(data_fields)
         self.subsegment_layout.addWidget(subsegment_entry_widget)
 
-        dof_fields = [("Forces in X axis", Units.Boolean), ("Moments about X axis", Units.Boolean), ("Forces in Y axis", Units.Boolean), ("Moments about Y axis", Units.Boolean), ("Forces in Z axis", Units.Boolean), ("Moments about Z axis", Units.Boolean)]
+        dof_fields = [("Forces in X axis", Units.Boolean), ("Moments about X axis", Units.Boolean), ("Forces in Y axis", Units.Boolean),
+                      ("Moments about Y axis", Units.Boolean), ("Forces in Z axis", Units.Boolean), ("Moments about Z axis", Units.Boolean)]
         dof_entry_widget = DataEntryWidget(dof_fields)
         self.dof_layout.addWidget(dof_entry_widget)
         self.subsegment_layout.addLayout(self.dof_layout)
 
-        
         # Add the subsegment layout to the segments layout
         self.segment_layout.addLayout(self.subsegment_layout)
         print("Subsegment layout created and added.")
 
         # Align subsegment layout to top
         self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        
+
         add_controls_button = QPushButton("Edit Control Systems")
         add_controls_button.clicked.connect(self.add_controls)
         self.subsegment_layout.addWidget(add_controls_button)
@@ -132,8 +135,8 @@ class MissionSegmentWidget(QWidget):
     def create_nested_dropdown(self):
         self.top_dropdown = QComboBox()
         self.top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground",
-                              "Single_Point", "Transition", "Vertical Flight"])
-        
+                                    "Single_Point", "Transition", "Vertical Flight"])
+
         nested_dropdown = QComboBox()
 
         # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
@@ -178,7 +181,7 @@ class MissionSegmentWidget(QWidget):
         "Constant Throttle/Constant Speed": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Throttle", Units.Unitless), ("Air Speed", Units.Velocity), ("True Course Angle", Units.Unitless)],
         "Linear Mach/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Climb Rate", Units.Velocity), ("Mach Number End", Units.Unitless), ("Mach Number Start", Units.Unitless), ("True Course Angle", Units.Unitless)],
         "Linear Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Climb Rate", Units.Velocity), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Unitless)],
-        }, {
+    }, {
         # Cruise Subsegments
         "Constant Acceleration/Constant Altitude": [("Altitude", Units.Length), ("Acceleration", Units.Acceleration), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Constant Dynamic Pressure/Constant Altitude Loiter": [("Altitude", Units.Length), ("Dynamic Pressure", Units.Pressure), ("Time", Units.Time), ("True Course Angle", Units.Angle)],
@@ -189,7 +192,7 @@ class MissionSegmentWidget(QWidget):
         "Constant Speed/Constant Altitude Loiter": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Time", Units.Time), ("True Course Angle", Units.Angle)],
         "Constant Speed/Constant Altitude": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Distance", Units.Length), ("True Course Angle", Units.Angle)],
         "Constant Throttle/Constant Altitude": [("Throttle", Units.Unitless), ("Altitude", Units.Length), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
-        }, {
+    }, {
         # Descent Subsegments
         "Constant CAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("CAS", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Constant EAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("EAS", Units.Velocity), ("True Course Angle", Units.Angle)],
@@ -205,25 +208,23 @@ class MissionSegmentWidget(QWidget):
         "Constant Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("Air Speed", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Linear Mach/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("Mach Number End", Units.Unitless), ("Mach Number Start", Units.Unitless), ("True Course Angle", Units.Angle)],
         "Linear Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
-        }, {
+    }, {
         # Ground Subsegments
         "Climb": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Climb Rate", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Descent": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Hover": [("Altitude", Units.Length), ("Time", Units.Time), ("True Course Angle", Units.Angle)]
-        }, {
+    }, {
         # Single Point Subsegments
         "Set Speed/Set Altitude/No Propulsion": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Distance", Units.Length), ("Acceleration Z", Units.Acceleration), ("True Course Angle", Units.Angle)],
         "Set Speed/Set Altitude": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Distance", Units.Length), ("Acceleration X", Units.Acceleration), ("Acceleration Z", Units.Acceleration), ("State Numerics Number of Control Points", Units.Unitless)],
         "Set Speed/Set Throttle": [("Altitude", Units.Length), ("Air Speed", Units.Velocity), ("Throttle", Units.Unitless), ("Acceleration Z", Units.Acceleration), ("True Course Angle", Units.Angle)],
-        }, {
+    }, {
         # Transition Subsegments
         "Constant Acceleration/Constant Angle/Linear Climb": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Air Speed Start", Units.Velocity), ("Climb Angle", Units.Unitless), ("Acceleration", Units.Acceleration), ("Pitch Initial", Units.Angle), ("Pitch Final", Units.Angle), ("True Course Angle", Units.Angle)],
         "Constant Acceleration/Constant Pitchrate/Constant Altitude": [("Altitude", Units.Length), ("Acceleration", Units.Acceleration), ("Air Speed Start", Units.Velocity), ("Air Speed End", Units.Velocity), ("Pitch Initial", Units.Angle), ("Pitch Final", Units.Angle), ("True Course Angle", Units.Angle)],
-        }, {
+    }, {
         # Vertical Flight Subsegments
         "Climb": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Climb Rate", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Descent": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Hover": [("Altitude", Units.Length), ("Time", Units.Time), ("True Course Angle", Units.Angle)]
-        }]
-        
-        
+    }]

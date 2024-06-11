@@ -1,5 +1,4 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QDialog, QComboBox, QHBoxLayout
+from PyQt6.QtWidgets import QVBoxLayout, QDialog, QComboBox, QHBoxLayout
 
 class ControlsPopup(QDialog):
     def __init__(self):

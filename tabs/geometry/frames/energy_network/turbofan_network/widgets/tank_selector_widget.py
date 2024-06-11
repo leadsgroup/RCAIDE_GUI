@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
-from widgets.data_entry_widget import DataEntryWidget
+from widgets import DataEntryWidget
 from utilities import Units
 
 

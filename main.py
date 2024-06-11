@@ -47,6 +47,8 @@ class App(QMainWindow):
         tabs.addTab(analysis.get_widget(), "Analysis")
         tabs.addTab(mission.get_widget(), "Mission")
         tabs.addTab(solve.get_widget(), "Solve")
+        
+        # TODO: Create Aircraft Configurations tab
 
         self.setCentralWidget(tabs)
         self.resize(1280, 720)

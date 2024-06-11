@@ -2,9 +2,9 @@ import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
-from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
-from utilities import show_popup, Units
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry import GeometryFrame
+from utilities import show_popup, create_line_bar, Units
+from widgets import DataEntryWidget
 
 
 class LandingGearFrame(QWidget, GeometryFrame):

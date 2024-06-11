@@ -1,9 +1,8 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QLabel, QTabWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QTabWidget
 
-from tabs.geometry.frames.energy_network.energy_network_widget import EnergyNetworkWidget
-from tabs.geometry.frames.energy_network.turbofan_network.fuelline_widget import FuelLineWidget
-from tabs.geometry.frames.energy_network.turbofan_network.tank_selector_widget import TankSelectorWidget
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry.frames.energy_network import EnergyNetworkWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets import FuelLineWidget, TankSelectorWidget
+from widgets import DataEntryWidget
 
 import RCAIDE
 

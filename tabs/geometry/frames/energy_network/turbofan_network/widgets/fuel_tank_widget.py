@@ -1,7 +1,6 @@
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
-from utilities import Units
-from tabs.geometry.frames.geometry_frame import GeometryFrame
+from widgets import DataEntryWidget
+from tabs.geometry.frames import GeometryFrame
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 

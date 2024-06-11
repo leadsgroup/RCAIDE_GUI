@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget, QFrame, QComboBox)
 
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
+from widgets import DataEntryWidget
 
 data_units_labels = [
     [

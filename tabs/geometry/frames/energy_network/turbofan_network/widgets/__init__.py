@@ -1,0 +1,5 @@
+from fuelline_widget import FuelLineWidget
+from fuel_tank_widget import FuelTankWidget
+from propulsor_widget import PropulsorWidget
+from tank_selector_widget import TankSelectorWidget
+from turbofan_widget import TurbofanWidget

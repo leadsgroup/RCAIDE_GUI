@@ -2,10 +2,10 @@ import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
-from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
-from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
-from utilities import show_popup, Units
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry.frames import GeometryFrame
+from tabs.geometry.widgets import NacelleSectionWidget
+from utilities import show_popup, create_line_bar, Units
+from widgets import DataEntryWidget
 
 
 class NacelleFrame(QWidget, GeometryFrame):

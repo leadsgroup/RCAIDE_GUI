@@ -2,10 +2,10 @@ from venv import create
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
-from tabs.geometry.frames.geometry_frame import GeometryFrame, create_line_bar
-from tabs.geometry.widgets.fuselage_section_widget import FuselageSectionWidget
-from utilities import show_popup, Units
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry.frames import GeometryFrame
+from tabs.geometry.widgets import FuselageSectionWidget
+from utilities import show_popup, create_line_bar, Units
+from widgets import DataEntryWidget
 
 import RCAIDE
 
@@ -17,7 +17,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         self.data_entry_widget: DataEntryWidget | None = None
 
         self.create_scroll_area()
-        
+
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
         self.main_layout.addWidget(create_line_bar())
@@ -83,7 +83,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
-        
+
         assert self.main_layout is not None
         self.main_layout.addLayout(name_layout)
 
@@ -105,7 +105,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
-        
+
         assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
@@ -133,7 +133,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         assert item is not None
         widget = item.widget()
         assert widget is not None
-        
+
         widget.deleteLater()
         self.fuselage_sections_layout.removeWidget(widget)
         self.fuselage_sections_layout.update()
@@ -162,49 +162,49 @@ class FuselageFrame(QWidget, GeometryFrame):
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
             assert item is not None
-            
+
             widget = item.widget()
             assert widget is not None
-            
+
             widget.deleteLater()
-            
+
         self.fuselage_sections_layout.update()
-        self.index = -1                
-    
+        self.index = -1
+
     def create_rcaide_structure(self, data):
         fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
         fuselage.fineness.nose = data["Fineness Nose"][0]
         fuselage.fineness.tail = data["Fineness Tail"][0]
-        
+
         fuselage.lengths.nose = data["Lengths Nose"][0]
         fuselage.lengths.tail = data["Lengths Tail"][0]
         fuselage.lengths.total = data["Lengths Total"][0]
         fuselage.lengths.cabin = data["Lengths Cabin"][0]
         fuselage.lengths.fore_space = data["Lengths Forespace"][0]
         fuselage.lengths.aft_space = data["Lengths Aftspace"][0]
-        
+
         fuselage.width = data["Width"][0]
-        
+
         fuselage.heights.maximum = data["Heights Maximum"][0]
         fuselage.heights.at_quarter_length = data["Height at Quarter"][0]
         fuselage.heights.at_three_quarters_length = data["Height at Three Quarters"][0]
         fuselage.heights.at_wing_root_quarter_chord = data["Height at Wing Root Quarter Chord"][0]
-        
+
         fuselage.areas.side_projected = data["Areas Side Projected"][0]
         fuselage.areas.wetted = data["Area Wetted"][0]
         fuselage.areas.front_projected = data["Area Front Projected"][0]
-        
+
         fuselage.differential_pressure = data["Differential Pressure"][0]
-        
+
         fuselage.effective_diameter = data["Effective Diameter"][0]
         return fuselage
-
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values()
-        fuselage = self.create_rcaide_structure(self.data_entry_widget.get_values_si())
+        fuselage = self.create_rcaide_structure(
+            self.data_entry_widget.get_values_si())
 
         data["sections"] = []
         for i in range(self.fuselage_sections_layout.count()):

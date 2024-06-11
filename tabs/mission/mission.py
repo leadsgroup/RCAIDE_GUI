@@ -1,8 +1,7 @@
-import sys
 from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 from PyQt6.QtCore import Qt
 from utilities import show_popup
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton, QScrollArea, QApplication
+from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QApplication
 
 
 class MissionWidget(QWidget):

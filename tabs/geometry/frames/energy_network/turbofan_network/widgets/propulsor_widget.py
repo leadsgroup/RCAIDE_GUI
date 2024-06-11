@@ -1,9 +1,8 @@
-from venv import create
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame
 
-from tabs.geometry.frames.energy_network.energy_network_widget import EnergyNetworkWidget
+from tabs.geometry.frames.energy_network import EnergyNetworkWidget
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
+from widgets import DataEntryWidget
 
 import RCAIDE
 from RCAIDE.Library.Methods.Energy.Propulsors.Turbofan_Propulsor import design_turbofan

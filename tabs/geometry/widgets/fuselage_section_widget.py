@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
+from widgets import DataEntryWidget
 
 import RCAIDE
 
