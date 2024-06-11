@@ -1,13 +1,11 @@
-from venv import create
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
-from tabs.geometry.frames import GeometryFrame
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.widgets import FuselageSectionWidget
 from utilities import show_popup, create_line_bar, Units
 from widgets import DataEntryWidget
-
-import RCAIDE
 
 
 class FuselageFrame(QWidget, GeometryFrame):

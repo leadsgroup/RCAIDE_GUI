@@ -2,7 +2,7 @@ import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
-from tabs.geometry import GeometryFrame
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from utilities import show_popup, create_line_bar, Units
 from widgets import DataEntryWidget
 
@@ -14,7 +14,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.data_entry_widget: DataEntryWidget | None = None
 
         self.create_scroll_area()
-        
+
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Landing Gear</b>"))
         self.main_layout.addWidget(create_line_bar())
@@ -66,7 +66,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
-        
+
         assert self.main_layout is not None
         self.main_layout.addLayout(name_layout)
 
@@ -85,7 +85,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
-        
+
         assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 

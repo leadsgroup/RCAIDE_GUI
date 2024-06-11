@@ -82,7 +82,6 @@ class FuelTankFrame(QWidget):
         for section_data in data:
             self.fueltank_sections_layout.addWidget(FuelTankWidget(
                 self.fueltank_sections_layout.count(), self.on_delete_button_pressed, section_data))
-        
 
     def delete_data(self):
         # TODO Implement proper deletion of data

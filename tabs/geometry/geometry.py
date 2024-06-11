@@ -1,12 +1,10 @@
+import json
 from typing import Type
 
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem
 
 from tabs.geometry.frames import *
-
-import RCAIDE
-
-import json
 
 
 class GeometryWidget(QWidget):

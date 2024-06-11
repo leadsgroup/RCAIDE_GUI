@@ -13,9 +13,9 @@ class WingsFrame(QWidget, GeometryFrame):
         """Create a frame for entering wing data."""
         super(WingsFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
-        
+
         self.create_scroll_area()
-        
+
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
         self.main_layout.addWidget(create_line_bar())
@@ -80,7 +80,7 @@ class WingsFrame(QWidget, GeometryFrame):
 
     def add_name_layout(self):
         assert self.main_layout is not None
-        
+
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -112,7 +112,7 @@ class WingsFrame(QWidget, GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
-        
+
         assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
 
@@ -139,7 +139,7 @@ class WingsFrame(QWidget, GeometryFrame):
         assert item is not None
         widget = item.widget()
         assert widget is not None and isinstance(widget, WingSectionWidget)
-        
+
         widget.deleteLater()
         self.wing_sections_layout.removeWidget(widget)
         self.wing_sections_layout.update()
@@ -162,7 +162,7 @@ class WingsFrame(QWidget, GeometryFrame):
         assert item is not None
         widget = item.widget()
         assert widget is not None and isinstance(widget, WingCSWidget)
-        
+
         widget.deleteLater()
         self.wing_cs_layout.removeWidget(widget)
         self.wing_cs_layout.update()
@@ -194,7 +194,7 @@ class WingsFrame(QWidget, GeometryFrame):
             widget = item.widget()
             assert widget is not None and isinstance(widget, WingSectionWidget)
             widget.deleteLater()
-        
+
         self.wing_sections_layout.update()
 
         # Clear the control surfaces
@@ -203,7 +203,7 @@ class WingsFrame(QWidget, GeometryFrame):
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, WingCSWidget)
-            
+
             widget.deleteLater()
         self.wing_cs_layout.update()
 

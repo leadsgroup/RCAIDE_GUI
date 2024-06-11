@@ -1,7 +1,7 @@
-from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 from PyQt6.QtCore import Qt
-from utilities import show_popup
-from PyQt6.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QApplication
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea
+
+from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 
 
 class MissionWidget(QWidget):
@@ -38,7 +38,7 @@ class MissionWidget(QWidget):
         left_layout.addLayout(mission_layout)
         left_layout.addWidget(add_segment_button)
         left_layout.addWidget(save_data_button)
-        left_layout.setAlignment(Qt.AlignmentFlag.AlignTop) 
+        left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         # Add left layout to the main layout
         main_layout.addLayout(left_layout, 2)
 
@@ -72,7 +72,7 @@ class MissionWidget(QWidget):
         # Instantiate MissionSectionWidget and add it to mission_segment_layout
         segment_widget = MissionSegmentWidget()
         self.mission_segment_layout.addWidget(segment_widget)
-    
+
     def save_all_data(self):
         """Append the entered data to a list or perform any other action."""
         """
@@ -89,8 +89,7 @@ class MissionWidget(QWidget):
         show_popup("Data Saved!", self)
         """
 
-#Function to get the widget
+
+# Function to get the widget
 def get_widget() -> QWidget:
     return MissionWidget()
-
-

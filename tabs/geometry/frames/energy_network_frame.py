@@ -1,12 +1,11 @@
+import RCAIDE
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
     QPushButton, QLineEdit, QComboBox
-from PyQt6.QtCore import Qt
 
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanWidget, FuelLineWidget
-from tabs.geometry.frames import GeometryFrame
 from utilities import show_popup
-
-import RCAIDE
 
 
 class EnergyNetworkFrame(QWidget, GeometryFrame):
@@ -171,7 +170,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             widget = item.widget()
             assert widget is not None and isinstance(widget, TurbofanWidget)
             data_values, lines = widget.get_data_values()
-            
+
             if isinstance(data_values, bool):
                 return False, False
 
@@ -179,7 +178,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             data["energy_network"] = data_values
 
         return data, self.create_rcaide_structure((data, lines))
-    
+
     def create_rcaide_structure(self, data_in):
         data, lines = data_in
         if data["energy network selected"] == "Turbofan":
@@ -187,9 +186,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             for line in lines:
                 net.fuel_lines.append(line)
             return net
-        
+
         return None
-        
 
     def save_data(self):
         """Call the save function and pass the entered data to it."""

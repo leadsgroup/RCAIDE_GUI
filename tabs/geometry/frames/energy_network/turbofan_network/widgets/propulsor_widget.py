@@ -1,11 +1,10 @@
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame
+from RCAIDE.Library.Methods.Energy.Propulsors.Turbofan_Propulsor import design_turbofan
 
 from tabs.geometry.frames.energy_network import EnergyNetworkWidget
 from utilities import Units
 from widgets import DataEntryWidget
-
-import RCAIDE
-from RCAIDE.Library.Methods.Energy.Propulsors.Turbofan_Propulsor import design_turbofan
 
 
 class PropulsorWidget(QWidget, EnergyNetworkWidget):

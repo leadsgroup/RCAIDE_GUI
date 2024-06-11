@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
-from widgets.color import Color
+from widgets import Color
 
 
 def get_widget() -> QWidget:

@@ -1,11 +1,10 @@
+import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units
 from widgets import DataEntryWidget
-
-import RCAIDE
 
 
 class FuselageSectionWidget(QWidget):
@@ -69,21 +68,21 @@ class FuselageSectionWidget(QWidget):
 
     def create_rcaide_structure(self, data):
         segment = RCAIDE.Library.Components.Fuselages.Segment()
-        
+
         segment.percent_x_location = data["Percent X Location"][0]
         segment.percent_z_location = data["Percent Z Location"][0]
         segment.height = data["Height"][0]
         segment.width = data["Width"][0]
         segment.tag = data["segment name"]
-        
+
         return segment
-    
+
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
         data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
-        
+
         segment = self.create_rcaide_structure(data_si)
         return data, segment
 

@@ -106,13 +106,13 @@ class WingCSWidget(QWidget):
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
         elif self.cs_type == 2:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
-        
+
         cs.tag = data["CS name"]
         cs.span_fraction_start = data["Span Fraction Start"][0]
         cs.span_fraction_end = data["Span Fraction End"][0]
         cs.deflection = data["Deflection"][0]
         cs.chord_fraction = data["Chord Fraction"][0]
-        
+
         if self.cs_type == 2:
             num_slots = data["Number of Slots"][0]
             config_type = "single_slotted"
@@ -122,7 +122,7 @@ class WingCSWidget(QWidget):
                 config_type = "triple_slotted"
             elif num_slots != 1:
                 print("Illegal number of slots. Defaulting to single slotted.")
-            
+
             cs.configuration_type = config_type
 
         return cs

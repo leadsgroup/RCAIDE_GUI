@@ -1,9 +1,10 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, QVBoxLayout
+from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, \
+    QVBoxLayout
 
 from utilities import Units
-from widgets import UnitPickerWidget
+from widgets.unit_picker_widget import UnitPickerWidget
 
 
 class DataEntryWidget(QWidget):

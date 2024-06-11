@@ -7,6 +7,8 @@ from tabs.geometry import geometry
 from tabs.home import home
 from tabs.mission import mission
 from tabs.solve import solve
+
+
 # from widgets.theme import ThemeSwitch
 
 
@@ -19,12 +21,12 @@ class App(QMainWindow):
         menubar = self.menuBar()
         if menubar is None:
             return
-        
+
         # File menu
         file_menu = menubar.addMenu("File")
         if file_menu is None:
             return
-        
+
         file_menu.addAction("New")
         file_menu.addAction("Open")
         file_menu.addAction("Save")
@@ -47,7 +49,7 @@ class App(QMainWindow):
         tabs.addTab(analysis.get_widget(), "Analysis")
         tabs.addTab(mission.get_widget(), "Mission")
         tabs.addTab(solve.get_widget(), "Solve")
-        
+
         # TODO: Create Aircraft Configurations tab
 
         self.setCentralWidget(tabs)

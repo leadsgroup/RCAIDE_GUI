@@ -1,10 +1,8 @@
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QPushButton, QLineEdit
-
 
 from tabs.geometry.frames.energy_network.turbofan_network.frames import FuelTankFrame, PropulsorFrame
 from widgets import DataEntryWidget
-
-import RCAIDE
 
 
 class FuelLineWidget(QWidget):

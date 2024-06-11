@@ -73,5 +73,5 @@ class AerodynamicsFrame(QWidget):
 
         # Set the layout to the main window/widget
         self.setLayout(layout_scroll)
-        
+
         # TODO: Prefill the default settings

@@ -1,10 +1,9 @@
+import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QTabWidget
 
 from tabs.geometry.frames.energy_network import EnergyNetworkWidget
 from tabs.geometry.frames.energy_network.turbofan_network.widgets import FuelLineWidget, TankSelectorWidget
 from widgets import DataEntryWidget
-
-import RCAIDE
 
 
 class TurbofanWidget(QWidget, EnergyNetworkWidget):
@@ -16,7 +15,7 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
 
         self.fuellines_layout = QVBoxLayout()  # Define main_layout here
         self.fuellines_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         self.tank_selector_data = None
 
         # Header
@@ -61,7 +60,7 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
         self.fuel_tank_selector.clear()
         if data is None or isinstance(data, bool):
             data, _ = self.get_data_values(just_data=True)
-        
+
         self.tank_selector_data = data
         for line_data in data:
             for propulsor_data in line_data["propulsor data"]:
@@ -100,14 +99,14 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
 
             data.append(fuelline_data)
             lines.append(line)
-        
+
         if just_data:
             return data, []
-        
+
         if self.tank_selector_data != data:
             print("Tank selector is not updated!")
             return False, False
-        
+
         for line in lines:
             for propulsor in line.propulsors:
                 assert isinstance(
@@ -121,7 +120,7 @@ class TurbofanWidget(QWidget, EnergyNetworkWidget):
 
                     propulsor.active_fuel_tanks = tank_selector.get_selected_tanks()
                     print("Propulsor Name:", propulsor.tag,
-                            "Active Fuel Tanks:", propulsor.active_fuel_tanks)
+                          "Active Fuel Tanks:", propulsor.active_fuel_tanks)
                     break
 
         return data, lines
