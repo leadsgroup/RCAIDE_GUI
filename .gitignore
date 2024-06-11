@@ -265,4 +265,4 @@ cython_debug/
 /.fleet/
 
 # Data files
-data/*.json
+data/*
