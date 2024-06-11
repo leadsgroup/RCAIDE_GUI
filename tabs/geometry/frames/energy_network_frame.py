@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
     QPushButton, QLineEdit, QComboBox
 
-from tabs.geometry.frames.geometry_frame import GeometryFrame
+from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanWidget, FuelLineWidget
 from utilities import show_popup
 

@@ -1,3 +1,4 @@
+from tabs.geometry.frames.geometry_frame import GeometryFrame
 from tabs.geometry.frames.default_frame import DefaultFrame
 from tabs.geometry.frames.energy_network_frame import EnergyNetworkFrame
 from tabs.geometry.frames.fuselage_frame import FuselageFrame

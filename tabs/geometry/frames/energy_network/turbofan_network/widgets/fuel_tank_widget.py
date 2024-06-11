@@ -1,7 +1,7 @@
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 
-from tabs.geometry.frames.geometry_frame import GeometryFrame
+from tabs.geometry.frames import GeometryFrame
 from utilities import Units
 from widgets import DataEntryWidget
 

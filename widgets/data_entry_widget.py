@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy
     QVBoxLayout
 
 from utilities import Units
-from widgets.unit_picker_widget import UnitPickerWidget
+from widgets import UnitPickerWidget
 
 
 class DataEntryWidget(QWidget):
