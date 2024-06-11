@@ -49,7 +49,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
-        # Add the secctions layout to the main layout
+        # Add the sections layout to the main layout
         self.fuselage_sections_layout = QVBoxLayout()
         self.main_layout.addLayout(self.fuselage_sections_layout)
 
