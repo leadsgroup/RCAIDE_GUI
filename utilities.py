@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QFrame
 
 
 def show_popup(message, parent):
@@ -11,6 +11,15 @@ def show_popup(message, parent):
     # popup.setStandardButtons(QMessageBox.StandardButton.NoButton)
     popup.setStyleSheet("QLabel{min-width: 300px;}")
     popup.show()
+
+
+def create_line_bar():
+    """Create a line bar to separate the widgets."""
+    line_bar = QFrame()
+    line_bar.setFrameShape(QFrame.Shape.HLine)
+    line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+
+    return line_bar
 
 
 class Units:
@@ -141,6 +150,6 @@ class Units:
 
     class Boolean:
         pass
-    
+
     class Heading:
         pass

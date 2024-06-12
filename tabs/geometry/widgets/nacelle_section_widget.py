@@ -1,11 +1,10 @@
+import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
-
-import RCAIDE
+from widgets import DataEntryWidget
 
 
 class NacelleSectionWidget(QWidget):

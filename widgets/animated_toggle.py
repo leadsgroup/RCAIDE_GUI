@@ -2,24 +2,22 @@ from PyQt6.QtCore import (
     Qt, QSize, QPoint, QPointF, QRectF,
     QEasingCurve, QPropertyAnimation, QSequentialAnimationGroup,
     pyqtSlot, pyqtProperty)
-
-from PyQt6.QtWidgets import QCheckBox
 from PyQt6.QtGui import QColor, QBrush, QPaintEvent, QPen, QPainter
+from PyQt6.QtWidgets import QCheckBox
 
 
 class AnimatedToggle(QCheckBox):
-
     _transparent_pen = QPen(Qt.GlobalColor.transparent)
     _light_grey_pen = QPen(Qt.GlobalColor.lightGray)
 
     def __init__(self,
-        parent=None,
-        bar_color=Qt.GlobalColor.gray,
-        checked_color="#00B0FF",
-        handle_color=Qt.GlobalColor.white,
-        pulse_unchecked_color="#44999999",
-        pulse_checked_color="#4400B0EE"
-        ):
+                 parent=None,
+                 bar_color=Qt.GlobalColor.gray,
+                 checked_color="#00B0FF",
+                 handle_color=Qt.GlobalColor.white,
+                 pulse_unchecked_color="#44999999",
+                 pulse_checked_color="#4400B0EE"
+                 ):
         super().__init__(parent)
 
         # Save our properties on the object via self, so we can access them later
@@ -136,4 +134,3 @@ class AnimatedToggle(QCheckBox):
     def pulse_radius(self, pos):
         self._pulse_radius = pos
         self.update()
-

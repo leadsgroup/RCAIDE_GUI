@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.frames.energy_network.turbofan_network.fueltanks.fuel_tank_widget import FuelTankWidget
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets import FuelTankWidget
+from widgets import DataEntryWidget
 
 
 class FuelTankFrame(QWidget):
@@ -82,7 +82,6 @@ class FuelTankFrame(QWidget):
         for section_data in data:
             self.fueltank_sections_layout.addWidget(FuelTankWidget(
                 self.fueltank_sections_layout.count(), self.on_delete_button_pressed, section_data))
-        
 
     def delete_data(self):
         # TODO Implement proper deletion of data

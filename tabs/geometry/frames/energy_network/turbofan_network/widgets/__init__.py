@@ -1,0 +1,5 @@
+from tabs.geometry.frames.energy_network.turbofan_network.widgets.propulsor_widget import PropulsorWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets.fuel_tank_widget import FuelTankWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets.fuelline_widget import FuelLineWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets.tank_selector_widget import TankSelectorWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets.turbofan_widget import TurbofanWidget

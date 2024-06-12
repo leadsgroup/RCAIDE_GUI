@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units
-from widgets.data_entry_widget import DataEntryWidget
+from widgets import DataEntryWidget
 
 
 class WingSectionWidget(QWidget):
@@ -45,13 +45,13 @@ class WingSectionWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
-        
+
         # Delete button
         delete_button = QPushButton("Delete Wing Segment", self)
         # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         # delete_button.setFixedWidth(150)
         delete_button.clicked.connect(self.delete_button_pressed)
-        
+
         # Center delete button
         delete_button_layout = QHBoxLayout()
         # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))

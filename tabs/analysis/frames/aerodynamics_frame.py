@@ -1,77 +1,108 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, \
+    QComboBox, QSpacerItem, QSizePolicy
 
+from utilities import create_line_bar, Units
+from widgets.data_entry_widget import DataEntryWidget
 
-# TODO: Add aerodynamic analysis
 
 class AerodynamicsFrame(QWidget):
     def __init__(self):
         super(AerodynamicsFrame, self).__init__()
         self.data_values = {}
-        self.data_entry_layout = QVBoxLayout()
+        self.main_layout = None
 
-        # Create a scroll area
-        scroll_area = QScrollArea()
-        # Allow the widget inside to resize with the scroll area
-        scroll_area.setWidgetResizable(True)
+        self.create_scroll_area()
 
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-        # Set the main layout inside the scroll content
-        layout = QVBoxLayout(scroll_content)
+        self.main_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
+        self.main_layout.addWidget(create_line_bar())
 
-        # Create a horizontal layout for the label and buttons
-        header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
-
-        layout.addLayout(header_layout)
-        # layout.addWidget(Color("lightblue"))
-
-        # Create a grid layout with 3 columns
-
-        # Create a horizontal line
-        line_bar = QFrame()
-        line_bar.setFrameShape(QFrame.Shape.HLine)
-        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-
-        # Add the line bar to the main layout
-        layout.addWidget(line_bar)
-
-        layout.addLayout(self.data_entry_layout)
-
-        # Add the layout for additional fuselage sections to the main layout
-
-        # Add line above the buttons
-        line_above_buttons = QFrame()
-        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
-        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
-        line_above_buttons.setStyleSheet("background-color: light grey;")
-
-        layout.addWidget(line_above_buttons)
-
-        # Create a QHBoxLayout to contain the buttons
-        button_layout = QHBoxLayout()
-
-        # Append All Fuselage Section Data Button
-        # save_all_data_button = QPushButton("Save All Aerodynamics Data", self)
-        # save_all_data_button.clicked.connect(self.append_all_data)
-        # button_layout.addWidget(save_all_data_button)
-
-        # Add the button layout to the main layout
-        layout.addLayout(button_layout)
-
+        analysis_selector = QComboBox()
+        analysis_selector.addItems(self.analyses)
+        analysis_selector.currentIndexChanged.connect(self.on_analysis_change)
+        self.main_layout.addWidget(analysis_selector)
+        
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
+        self.main_layout.addWidget(self.data_entry_widget)
+        
+        self.main_layout.addWidget(create_line_bar())
+        
         # Adds scroll function
-        layout.addItem(QSpacerItem(
+        self.main_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-        # Set the scroll content as the widget for the scroll area
-        scroll_area.setWidget(scroll_content)
+    
+    def on_analysis_change(self, index):
+        print("Index changed to", index)
+        self.main_layout.removeWidget(self.data_entry_widget)
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
+        self.main_layout.addWidget(self.data_entry_widget)
 
-        # Set the main layout of the scroll area
+    def create_scroll_area(self):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        self.main_layout = QVBoxLayout(scroll_content)
         layout_scroll = QVBoxLayout(self)
         layout_scroll.addWidget(scroll_area)
-
-        # Set the layout to the main window/widget
+        layout_scroll.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout_scroll)
-        
-        # TODO: Prefill the default settings
+
+    analyses = ["Subsonic VLM", "Supersonic VLM"]
+    data_units_labels = [[
+            ("Fuselage Lift Correction", Units.Unitless),
+            ("Trim Drag Correction Factor", Units.Unitless),
+            ("Wing Parasite Drag Form Factor", Units.Unitless),
+            ("Fuselage Parasite Drag Form Factor", Units.Unitless),
+            ("Maximum Lift Coefficient Factor", Units.Unitless),
+            ("Lift-to-Drag Adjustment", Units.Unitless),
+            ("Viscous Lift Dependent Drag Factor", Units.Unitless),
+            ("Drag Coefficient Increment", Units.Unitless),
+            ("Spoiler Drag Increment", Units.Unitless),
+            ("Maximum Lift Coefficient", Units.Unitless),
+            ("Number of Spanwise Vortices", Units.Count),
+            ("Number of Chordwise Vortices", Units.Count),
+            ("Use Surrogate", Units.Boolean),
+            ("Recalculate Total Wetted Area", Units.Boolean),
+            ("Propeller Wake Model", Units.Boolean),
+            ("Discretize Control Surfaces", Units.Boolean),
+            ("Model Fuselage", Units.Boolean),
+            ("Model Nacelle", Units.Boolean),
+            ("Number of Spanwise Vortices", Units.Count),
+            ("Number of Chordwise Vortices", Units.Count),
+            ("Spanwise Cosine Spacing", Units.Boolean),
+            ("Leading Edge Suction Multiplier", Units.Unitless),
+            ("Use VORLAX Matrix Calculation", Units.Boolean),
+        ],
+        [
+            ("Fuselage Lift Correction", Units.Unitless),
+            ("Trim Drag Correction Factor", Units.Unitless),
+            ("Wing Parasite Drag Form Factor", Units.Unitless),
+            ("Fuselage Parasite Drag Form Factor", Units.Unitless),
+            ("Viscous Lift Dependent Drag Factor", Units.Unitless),
+            ("Lift to Drag Adjustment", Units.Unitless),
+            ("Drag Coefficient Increment", Units.Unitless),
+            ("Spoiler Drag Increment", Units.Unitless),
+            ("Oswald Efficiency Factor", Units.Unitless),
+            ("Span Efficiency", Units.Unitless),
+            ("Maximum Lift Coefficient", Units.Unitless),
+            ("Begin Drag Rise Mach Number", Units.Unitless),
+            ("End Drag Rise Mach Number", Units.Unitless),
+            ("Transonic Drag Rise Multiplier", Units.Unitless),
+            ("Use Surrogate", Units.Boolean),
+            ("Propeller Wake Model", Units.Boolean),
+            ("Model Fuselage", Units.Boolean),
+            ("Recalculate Total Wetted Area", Units.Boolean),
+            ("Model Nacelle", Units.Boolean),
+            ("Discretize Control Surfaces", Units.Boolean),
+            ("Peak Mach Number", Units.Unitless),
+            ("Volume Wave Drag Scaling", Units.Unitless),
+            ("Fuselage Parasite Drag Begin Blend Mach", Units.Unitless),
+            ("Fuselage Parasite Drag End Blend Mach", Units.Unitless),
+            ("Number of Spanwise Vortices", Units.Count),
+            ("Number of Chordwise Vortices", Units.Count),
+            ("Spanwise Cosine Spacing", Units.Boolean),
+            ("Leading Edge Suction Multiplier", Units.Unitless),
+            ("Use VORLAX Matrix Calculation", Units.Boolean),
+        ],
+    ]

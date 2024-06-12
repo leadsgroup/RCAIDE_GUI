@@ -1,5 +1,5 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QDialog, QComboBox, QHBoxLayout
+from PyQt6.QtWidgets import QVBoxLayout, QDialog, QComboBox, QHBoxLayout
+
 
 class ControlsPopup(QDialog):
     def __init__(self):
@@ -16,8 +16,6 @@ class ControlsPopup(QDialog):
         dropdown.addItem("Option 1")
         dropdown.addItem("Option 2")
         dropdown.addItem("Option 3")
-
-        
 
         Hlayout.addWidget(dropdown)
         main_layout.addLayout(Hlayout)

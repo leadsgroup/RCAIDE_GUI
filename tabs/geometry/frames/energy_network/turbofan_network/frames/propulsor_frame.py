@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.frames.energy_network.turbofan_network.propulsors.propulsor_widget import PropulsorWidget
-from widgets.data_entry_widget import DataEntryWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets import PropulsorWidget
+from widgets import DataEntryWidget
 
 
 class PropulsorFrame(QWidget):
@@ -26,7 +26,7 @@ class PropulsorFrame(QWidget):
         add_section_button.setMaximumWidth(200)
         add_section_button.clicked.connect(self.add_propulsor_section)
         header_layout.addWidget(add_section_button)
-        
+
         layout.addLayout(header_layout)
 
         # Create a horizontal line
@@ -58,23 +58,23 @@ class PropulsorFrame(QWidget):
         propulsors = []
         for index in range(self.propulsor_sections_layout.count()):
             item = self.propulsor_sections_layout.itemAt(index)
-            assert item is not None            
+            assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, PropulsorWidget)
-            
+
             propulsor_data, propulsor = widget.get_data_values()
             data.append(propulsor_data)
             propulsors.append(propulsor)
 
         return data, propulsors
 
-    def load_data(self, data): 
+    def load_data(self, data):
         while self.propulsor_sections_layout.count():
             item = self.propulsor_sections_layout.takeAt(0)
             assert item is not None
             widget = item.widget()
             assert widget is not None
-            
+
             self.propulsor_sections_layout.removeWidget(widget)
             widget.deleteLater()
 
@@ -94,11 +94,11 @@ class PropulsorFrame(QWidget):
         propulsor = self.propulsor_sections_layout.itemAt(index)
         if propulsor is None:
             return
-        
+
         widget = propulsor.widget()
         if widget is None:
             return
-        
+
         widget.deleteLater()
         self.propulsor_sections_layout.removeWidget(widget)
         self.propulsor_sections_layout.update()
@@ -108,11 +108,11 @@ class PropulsorFrame(QWidget):
             propulsor = self.propulsor_sections_layout.itemAt(i)
             if propulsor is None:
                 continue
-            
+
             widget = propulsor.widget()
             if widget is None or not isinstance(widget, PropulsorWidget):
                 continue
-            
+
             widget.index = i
             print("Updated Index:", i)
 
