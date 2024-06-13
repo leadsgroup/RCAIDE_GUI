@@ -12,8 +12,8 @@ class AnalysisWidget(QWidget):
     def __init__(self):
         super(AnalysisWidget, self).__init__()
 
-        options = ["Aerodynamics", "Atmospheric", "Energy",  "Planets", "Propulsion",
-                   "Weights", "Costs", "Noise", "Stability"]
+        options = ["Aerodynamics", "Atmospheric", "Energy",  "Planets", "Weights", 
+                        "Propulsion", "Costs", "Noise", "Stability"]
 
         self.tree_frame = QWidget()
         self.tree_frame_layout = QVBoxLayout(self.tree_frame)
@@ -24,7 +24,7 @@ class AnalysisWidget(QWidget):
         self.tree_widget.setHeaderLabels(["Analysis", "Enabled"])
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
-            if index >= 6:
+            if index >= 5:
                 item.setCheckState(1, Qt.CheckState.Checked)
             else:
                 item.setData(1, Qt.ItemDataRole.CheckStateRole,
@@ -40,15 +40,15 @@ class AnalysisWidget(QWidget):
 
         self.create_scroll_area()
         # Define actions based on the selected index
-        self.widgets = [AerodynamicsWidget, AtmosphereWidget, EnergyWidget, PlanetsWidget, PropulsionWidget,
-                        WeightsWidget, CostsWidget, NoiseWidget, StabilityWidget]
+        self.widgets = [AerodynamicsWidget, AtmosphereWidget, EnergyWidget, PlanetsWidget, WeightsWidget, \
+                            PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
 
         for widget in self.widgets:
             self.main_layout.addWidget(widget())
         
         self.main_layout.setSpacing(3)
         self.base_layout.setSpacing(3)
-
+        
         self.setLayout(self.base_layout)
 
     def handleItemChanged(self, item, column):
