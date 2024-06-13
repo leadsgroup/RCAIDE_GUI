@@ -2,9 +2,9 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 
-class DefaultFrame(QWidget):
+class DefaultWidget(QWidget):
     def __init__(self):
-        super(DefaultFrame, self).__init__()
+        super(DefaultWidget, self).__init__()
 
         # Set the background color of the DefaultFrame
         # self.setAutoFillBackground(True)

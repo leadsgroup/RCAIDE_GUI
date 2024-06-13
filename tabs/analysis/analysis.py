@@ -1,9 +1,10 @@
 from typing import cast
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
+    QTreeWidgetItem, QScrollArea
 
-from tabs.analysis.frames import *
+from tabs.analysis.widgets import *
 
 
 class AnalysisWidget(QWidget):
@@ -11,55 +12,67 @@ class AnalysisWidget(QWidget):
     def __init__(self):
         super(AnalysisWidget, self).__init__()
 
-        base_layout = QHBoxLayout()
-        main_layout = QStackedLayout()
-        # Define actions based on the selected index
-        self.frames = [DefaultFrame, AerodynamicsFrame, AtmosphereFrame, CostsFrame, EnergyFrame, NoiseFrame,
-                       PlanetsFrame, PropulsionFrame, StabilityFrame, WeightsFrame]
-
-        for frame in self.frames:
-            main_layout.addWidget(frame())
+        options = ["Aerodynamics", "Atmospheric", "Energy",  "Planets", "Propulsion",
+                   "Weights", "Costs", "Noise", "Stability"]
 
         self.tree_frame = QWidget()
-        # self.main_extra_frame = None  # Initialize as None
-
         self.tree_frame_layout = QVBoxLayout(self.tree_frame)
+        self.tree_widget = QTreeWidget()
+        self.tree_frame_layout.addWidget(self.tree_widget)
 
-        # Set a background color for tree_frame
-        # tree_frame_style = """
-        #     background-color: navy
-        # """
-        # self.tree_frame.setStyleSheet(tree_frame_style)
+        self.tree_widget.setColumnCount(2)
+        self.tree_widget.setHeaderLabels(["Analysis", "Enabled"])
+        for index, option in enumerate(options):
+            item = QTreeWidgetItem([option])
+            if index >= 6:
+                item.setCheckState(1, Qt.CheckState.Checked)
+            else:
+                item.setData(1, Qt.ItemDataRole.CheckStateRole,
+                             Qt.CheckState.Checked)
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsUserCheckable)
 
-        # Create a QComboBox and add options
-        self.dropdown = QComboBox()
-        options = ["Select an option", "Aerodynamics", "Atmospheric", "Costs", "Energy", "Noise",
-                   "Planets", "Propulsion", "Stability", "Weights"]
-        self.dropdown.addItems(options)
+            self.tree_widget.addTopLevelItem(item)
+        
+        self.tree_widget.itemChanged.connect(self.handleItemChanged)
 
-        self.tree_frame_layout.addWidget(self.dropdown, alignment=Qt.AlignmentFlag.AlignTop)
+        self.base_layout = QHBoxLayout()
+        self.base_layout.addWidget(self.tree_frame, 1)
 
-        # main_layout.addWidget(Color("navy"), 7)
-        base_layout.addWidget(self.tree_frame, 1)
-        base_layout.addLayout(main_layout, 4)
+        self.create_scroll_area()
+        # Define actions based on the selected index
+        self.widgets = [AerodynamicsWidget, AtmosphereWidget, EnergyWidget, PlanetsWidget, PropulsionWidget,
+                        WeightsWidget, CostsWidget, NoiseWidget, StabilityWidget]
 
-        main_layout.setSpacing(3)
-        base_layout.setSpacing(3)
+        for widget in self.widgets:
+            self.main_layout.addWidget(widget())
+        
+        self.main_layout.setSpacing(3)
+        self.base_layout.setSpacing(3)
 
-        main_layout.setCurrentIndex(0)
+        self.setLayout(self.base_layout)
 
-        self.setLayout(base_layout)
+    def handleItemChanged(self, item, column):
+        if column != 1:
+            return
 
-        # Connect the dropdown's currentIndexChanged signal to a slot
-        self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
+        index = self.tree_widget.indexOfTopLevelItem(item)
+        
+        layout_item = self.main_layout.itemAt(index)
+        assert layout_item is not None
+        widget = layout_item.widget()
+        assert widget is not None
+        widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
 
-    # Initially display the DefaultFrame
-
-    def on_dropdown_change(self, index):
-        layout = self.layout()
-        if layout is not None:
-            main_layout: QStackedLayout = cast(QStackedLayout, layout.itemAt(1))
-            main_layout.setCurrentIndex(index)
+    def create_scroll_area(self):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        self.main_layout = QVBoxLayout(scroll_content)
+        layout_scroll = QVBoxLayout()
+        layout_scroll.addWidget(scroll_area)
+        layout_scroll.setContentsMargins(0, 0, 0, 0)
+        self.base_layout.addLayout(layout_scroll, 4)
 
 
 def get_widget() -> QWidget:
