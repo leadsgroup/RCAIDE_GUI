@@ -5,14 +5,11 @@ from utilities import create_line_bar, Units
 from widgets.data_entry_widget import DataEntryWidget
 
 
-class AerodynamicsFrame(QWidget):
+class AerodynamicsWidget(QWidget):
     def __init__(self):
-        super(AerodynamicsFrame, self).__init__()
+        super(AerodynamicsWidget, self).__init__()
         self.data_values = {}
-        self.main_layout = None
-
-        self.create_scroll_area()
-
+        self.main_layout = QVBoxLayout()
         self.main_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -26,16 +23,22 @@ class AerodynamicsFrame(QWidget):
         
         self.main_layout.addWidget(create_line_bar())
         
+        self.setLayout(self.main_layout)
+        
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(
-            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        # self.main_layout.addItem(QSpacerItem(
+        #     20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     
     def on_analysis_change(self, index):
         print("Index changed to", index)
+        
+        assert self.main_layout is not None
+        
         self.main_layout.removeWidget(self.data_entry_widget)
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
-        self.main_layout.addWidget(self.data_entry_widget)
+        # self.main_layout.addWidget(self.data_entry_widget)
+        self.main_layout.insertWidget(self.main_layout.count() - 2, self.data_entry_widget)
 
     def create_scroll_area(self):
         scroll_area = QScrollArea()
