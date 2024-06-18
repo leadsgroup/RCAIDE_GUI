@@ -6,53 +6,9 @@ from widgets.data_entry_widget import DataEntryWidget
 
 
 class AerodynamicsWidget(QWidget):
-    def __init__(self):
-        super(AerodynamicsWidget, self).__init__()
-        self.data_values = {}
-        self.main_layout = QVBoxLayout()
-        self.main_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
-        self.main_layout.addWidget(create_line_bar())
-
-        analysis_selector = QComboBox()
-        analysis_selector.addItems(self.analyses)
-        analysis_selector.currentIndexChanged.connect(self.on_analysis_change)
-        self.main_layout.addWidget(analysis_selector)
-        
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
-        self.main_layout.addWidget(self.data_entry_widget)
-        
-        self.main_layout.addWidget(create_line_bar())
-        
-        self.setLayout(self.main_layout)
-        
-        # Adds scroll function
-        # self.main_layout.addItem(QSpacerItem(
-        #     20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
-
-    
-    def on_analysis_change(self, index):
-        print("Index changed to", index)
-        
-        assert self.main_layout is not None
-        
-        self.main_layout.removeWidget(self.data_entry_widget)
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
-        # self.main_layout.addWidget(self.data_entry_widget)
-        self.main_layout.insertWidget(self.main_layout.count() - 2, self.data_entry_widget)
-
-    def create_scroll_area(self):
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_content = QWidget()
-        scroll_area.setWidget(scroll_content)
-        self.main_layout = QVBoxLayout(scroll_content)
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
-        layout_scroll.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout_scroll)
-
     analyses = ["Subsonic VLM", "Supersonic VLM"]
-    data_units_labels = [[
+    data_units_labels = [
+        [
             ("Fuselage Lift Correction", Units.Unitless),
             ("Trim Drag Correction Factor", Units.Unitless),
             ("Wing Parasite Drag Form Factor", Units.Unitless),
@@ -109,3 +65,48 @@ class AerodynamicsWidget(QWidget):
             ("Use VORLAX Matrix Calculation", Units.Boolean),
         ],
     ]
+
+    def __init__(self):
+        super(AerodynamicsWidget, self).__init__()
+        self.data_values = {}
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
+        self.main_layout.addWidget(create_line_bar())
+
+        analysis_selector = QComboBox()
+        analysis_selector.addItems(self.analyses)
+        analysis_selector.currentIndexChanged.connect(self.on_analysis_change)
+        self.main_layout.addWidget(analysis_selector)
+
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
+        self.main_layout.addWidget(self.data_entry_widget)
+
+        self.main_layout.addWidget(create_line_bar())
+
+        self.setLayout(self.main_layout)
+
+        # Adds scroll function
+        # self.main_layout.addItem(QSpacerItem(
+        #     20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+
+    def on_analysis_change(self, index):
+        print("Index changed to", index)
+
+        assert self.main_layout is not None
+
+        self.main_layout.removeWidget(self.data_entry_widget)
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
+        # self.main_layout.addWidget(self.data_entry_widget)
+        self.main_layout.insertWidget(
+            self.main_layout.count() - 1, self.data_entry_widget)
+
+    def create_scroll_area(self):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        self.main_layout = QVBoxLayout(scroll_content)
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+        layout_scroll.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout_scroll)

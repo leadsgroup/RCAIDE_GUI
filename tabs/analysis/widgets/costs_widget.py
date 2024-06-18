@@ -14,6 +14,7 @@ class CostsWidget(QWidget):
 
         self.main_layout.addWidget(QLabel("<b>Costs</b>"))
         self.main_layout.addWidget(create_line_bar())
+        self.main_layout.addWidget(QLabel("Computes industrial and operating costs"))
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
