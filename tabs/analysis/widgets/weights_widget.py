@@ -2,9 +2,12 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from utilities import Units, create_line_bar
 from widgets import DataEntryWidget
+from tabs.analysis.widgets import AnalysisWidget
+
+import RCAIDE
 
 
-class WeightsWidget(QWidget):
+class WeightsWidget(QWidget, AnalysisWidget):
     data_units_labels = [
         ("Max Takeoff Weight", Units.Mass),
         ("Actual Takeoff Weight", Units.Mass),
@@ -19,7 +22,6 @@ class WeightsWidget(QWidget):
 
     def __init__(self):
         super(WeightsWidget, self).__init__()
-        self.data_values = {}
         self.main_layout = QVBoxLayout()
 
         self.main_layout.addWidget(QLabel("<b>Weights</b>"))
@@ -30,3 +32,7 @@ class WeightsWidget(QWidget):
 
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
+
+    def create_analysis(self):
+        weights = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+        return weights

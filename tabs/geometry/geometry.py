@@ -161,6 +161,9 @@ class GeometryWidget(QWidget):
                 self.vehicle.append_component(vehicle_component)
 
         return index
+    
+    def get_vehicle(self):
+        return self.vehicle
 
 
 def get_widget() -> QWidget:
