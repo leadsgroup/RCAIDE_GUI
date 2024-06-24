@@ -22,6 +22,18 @@ def create_line_bar():
     return line_bar
 
 
+def set_data(obj : dict, key : str, data):
+    key_list = key.split(".")
+    key = key_list[0]
+    key_list = key_list[1:]
+    
+    if len(key_list) > 0:
+        set_data(obj[key], ".".join(key_list), data)
+        return
+    
+    obj[key] = data
+
+
 class Units:
     class Length:
         METER = ("m", lambda x: x)
@@ -142,8 +154,8 @@ class Units:
 
     class Angle:
         RADIAN = ("rad", lambda x: x)
-        DEGREE = ("°", lambda x: np.deg2rad(x))
-        unit_list = [RADIAN, DEGREE]
+        DEGREE = ("degrees", lambda x: np.deg2rad(x))
+        unit_list = [DEGREE, RADIAN]
 
     class Position:
         pass
@@ -153,6 +165,6 @@ class Units:
 
     class Heading:
         pass
-    
+
     class File:
         pass
