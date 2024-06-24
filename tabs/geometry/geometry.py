@@ -15,10 +15,12 @@ class GeometryWidget(QWidget):
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
                                                   LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["Fuselage", "Wings", "Nacelles",
-                     "Landing Gear", "Energy Network"]
+        self.tabs = ["Fuselages", "Wings", "Nacelles",
+                     "Landing Gear", "Energy Networks"]
+        
         options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
                    "Add Energy Network"]
+        
         self.data = []
         self.vehicle = RCAIDE.Vehicle()
 
@@ -34,23 +36,26 @@ class GeometryWidget(QWidget):
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index - 1)
             self.main_layout.addWidget(frame_widget)  # type: ignore
-
-        # Create a QComboBox and add options
+        
         self.dropdown = QComboBox()
         self.dropdown.addItems(options)
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
+        self.main_layout.addWidget(self.dropdown)
 
+        # Create a QComboBox and add options
         self.tree = QTreeWidget()
         self.tree.setColumnCount(1)
-        self.tree.setHeaderLabels(["Vehicle Elements"])
         self.tree.itemClicked.connect(self.on_tree_item_clicked)
         self.tree.itemDoubleClicked.connect(self.on_tree_item_double_clicked)
+        
+        vehicle_item = QTreeWidgetItem(["Vehicle"])
+        self.tree.addTopLevelItem(vehicle_item)
 
         for tab in self.tabs:
             item = QTreeWidgetItem([f"{tab}"])
-            self.tree.addTopLevelItem(item)
+            vehicle_item.addChild(item)
+            item.
 
-        self.tree_frame_layout.addWidget(self.dropdown)
         self.tree_frame_layout.addWidget(self.tree)
 
         # main_layout.addWidget(Color("navy"), 7)
@@ -164,6 +169,9 @@ class GeometryWidget(QWidget):
     
     def get_vehicle(self):
         return self.vehicle
+    
+    def get_data(self):
+        return self.data
 
 
 def get_widget() -> QWidget:
