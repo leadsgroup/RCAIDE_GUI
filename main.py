@@ -2,14 +2,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
-from tabs.analysis import analysis
-from tabs.geometry import geometry
-from tabs.home import home
-from tabs.mission import mission
-from tabs.solve import solve
-
-
-# from widgets.theme import ThemeSwitch
+from tabs import *
 
 
 class App(QMainWindow):
@@ -45,7 +38,9 @@ class App(QMainWindow):
         tabs.setMovable(True)
 
         tabs.addTab(home.get_widget(), "Home")
-        tabs.addTab(geometry.get_widget(), "Geometry")
+        geometry_widget = geometry.get_widget()
+        tabs.addTab(geometry_widget, "Geometry")
+        tabs.addTab(aircraft_configs.get_widget(geometry_widget), "Aircraft Configurations")
         tabs.addTab(analysis.get_widget(), "Analysis")
         tabs.addTab(mission.get_widget(), "Mission")
         tabs.addTab(solve.get_widget(), "Solve")
