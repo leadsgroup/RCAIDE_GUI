@@ -13,7 +13,7 @@ class GeometryWidget(QWidget):
         super(GeometryWidget, self).__init__()
 
         # Define actions based on the selected index
-        self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
+        self.frames: list[Type[GeometryFrame]] = [VehicleFrame, FuselageFrame, WingsFrame, NacelleFrame,
                                                   LandingGearFrame, EnergyNetworkFrame]
         self.tabs = ["Fuselages", "Wings", "Nacelles",
                      "Landing Gear", "Energy Networks"]
@@ -40,22 +40,15 @@ class GeometryWidget(QWidget):
         self.dropdown = QComboBox()
         self.dropdown.addItems(options)
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
-        self.main_layout.addWidget(self.dropdown)
+        self.tree_frame_layout.addWidget(self.dropdown)
 
         # Create a QComboBox and add options
         self.tree = QTreeWidget()
         self.tree.setColumnCount(1)
         self.tree.itemClicked.connect(self.on_tree_item_clicked)
-        self.tree.itemDoubleClicked.connect(self.on_tree_item_double_clicked)
         
         vehicle_item = QTreeWidgetItem(["Vehicle"])
         self.tree.addTopLevelItem(vehicle_item)
-
-        for tab in self.tabs:
-            item = QTreeWidgetItem([f"{tab}"])
-            vehicle_item.addChild(item)
-            item.
-
         self.tree_frame_layout.addWidget(self.tree)
 
         # main_layout.addWidget(Color("navy"), 7)
@@ -67,7 +60,6 @@ class GeometryWidget(QWidget):
 
         # Initially display the DefaultFrame
         self.main_layout.setCurrentIndex(0)
-
         self.setLayout(base_layout)
 
     def on_dropdown_change(self, index):
@@ -87,43 +79,29 @@ class GeometryWidget(QWidget):
             item: The selected item in the tree.
             _col: The column index of the selected item. (Not used)
 
-        """
-        # get item index
-        is_top_level = not item.parent()
-        if is_top_level:
-            tab_index = self.tree.indexFromItem(item).row()
-            # print(tab_index, "top level")
-            return
+        """        
+        # get item depth
+        depth = 0
+        while item.parent():
+            item = item.parent()
+            depth += 1
 
         tab_index = self.tree.indexFromItem(item.parent()).row()
 
-        top_item = self.tree.topLevelItem(tab_index)
-        assert top_item is not None
-        index = top_item.indexOfChild(item)
-        widget = self.main_layout.widget(tab_index + 1)
-        assert isinstance(widget, GeometryFrame)
-        frame: GeometryFrame = widget
-        frame.load_data(self.data[tab_index][index], index)
-
-        self.main_layout.setCurrentIndex(tab_index + 1)
-        # print(tab_index, index)
-
-    def on_tree_item_double_clicked(self, item, _col):
-        """Create a new structure for the selected item in the tree.
-
-        Args:
-            item: The selected item in the tree.
-            _col: The column index of the selected item. (Not used)
-        """
-        is_top_level = not item.parent()
-        if not is_top_level:
+        if depth == 0:
+            self.main_layout.setCurrentIndex(0)
             return
-
-        tab_index = self.tree.indexFromItem(item).row()
-        frame: GeometryFrame = self.main_layout.widget(
-            tab_index + 1)  # type: ignore
-        frame.create_new_structure()
-        self.main_layout.setCurrentIndex(tab_index + 1)
+        if depth == 1:
+            top_item = self.tree.topLevelItem(tab_index)
+            assert top_item is not None
+            
+            index = top_item.indexOfChild(item)
+            frame = self.main_layout.widget(tab_index + 1)
+            assert isinstance(frame, GeometryFrame)
+            
+            frame.load_data(self.data[tab_index][index], index)
+            self.main_layout.setCurrentIndex(tab_index + 1)
+        
 
     def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.

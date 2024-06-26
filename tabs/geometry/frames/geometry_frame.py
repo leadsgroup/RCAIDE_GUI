@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QVBoxLayout, QLineEdit
+from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QScrollArea, QWidget
 
 
 class GeometryFrame:
@@ -32,3 +32,14 @@ class GeometryFrame:
 
     def create_rcaide_structure(self, data):
         pass
+
+    def create_scroll_area(self):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        self.main_layout = QVBoxLayout(scroll_content)
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+        layout_scroll.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout_scroll)

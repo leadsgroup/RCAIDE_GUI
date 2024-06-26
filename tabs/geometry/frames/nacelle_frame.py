@@ -47,17 +47,6 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.main_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-    def create_scroll_area(self):
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_content = QWidget()
-        scroll_area.setWidget(scroll_content)
-        self.main_layout: QVBoxLayout = QVBoxLayout(scroll_content)
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
-        layout_scroll.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout_scroll)
-
     def add_name_layout(self):
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
