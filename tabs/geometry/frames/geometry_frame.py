@@ -20,12 +20,12 @@ class GeometryFrame:
         """
         self.save_function = function
 
-    def set_tab_index(self, index):
+    def set_tab_index(self, tab_index):
         """Set the tab index for the frame.
 
         Args:
-            index: The index of the tab."""
-        self.tab_index = index
+            tab_index: The index of the tab."""
+        self.tab_index = tab_index
 
     def create_new_structure(self):
         pass
@@ -39,7 +39,13 @@ class GeometryFrame:
         scroll_content = QWidget()
         scroll_area.setWidget(scroll_content)
         self.main_layout = QVBoxLayout(scroll_content)
-        layout_scroll = QVBoxLayout(self)
+        layout_scroll = QVBoxLayout(self) # type: ignore
         layout_scroll.addWidget(scroll_area)
         layout_scroll.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout_scroll)
+    
+    def get_data_values(self):
+        pass
+    
+    def save_data(self):
+        pass

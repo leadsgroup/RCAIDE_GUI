@@ -3,11 +3,24 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
     QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames import GeometryFrame
-from utilities import show_popup, create_line_bar, Units
+from utilities import show_popup, create_line_bar, set_data, Units
 from widgets import DataEntryWidget
 
 
 class LandingGearFrame(QWidget, GeometryFrame):
+
+    # List of data labels
+    data_units_labels = [
+        ("Main Tire Diameter", Units.Length, "main_tire_diameter"),
+        ("Nose Tire Diameter", Units.Length, "nose_tire_diameter"),
+        ("Main Strut Length", Units.Length, "main_strut_length"),
+        ("Nose Strut Length", Units.Length, "nose_strut_length"),
+        ("Main Units", Units.Count, "main_units"),
+        ("Nose Units", Units.Count, "nose_units"),
+        ("Main Wheels", Units.Count, "main_wheels"),
+        ("Nose Wheels", Units.Count, "nose_wheels")
+    ]
+    
     def __init__(self):
         """Create a frame for entering landing gear data."""
         super(LandingGearFrame, self).__init__()
@@ -21,20 +34,8 @@ class LandingGearFrame(QWidget, GeometryFrame):
 
         self.add_name_layout()
 
-        # List of data labels
-        data_units_labels = [
-            ("Main Tire Diameter", Units.Length),
-            ("Nose Tire Diameter", Units.Length),
-            ("Main Strut Length", Units.Length),
-            ("Nose Strut Length", Units.Length),
-            ("Main Units", Units.Count),
-            ("Nose Units", Units.Count),
-            ("Main Wheels", Units.Count),
-            ("Nose Wheels", Units.Count)
-        ]
-
         # Add the data entry widget to the home layout
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -107,14 +108,10 @@ class LandingGearFrame(QWidget, GeometryFrame):
     def create_rcaide_structure(self, data):
         landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
         landing_gear.tag = data["name"]
-        landing_gear.main_tire_diameter = data["Main Tire Diameter"][0]
-        landing_gear.nose_tire_diameter = data["Nose Tire Diameter"][0]
-        landing_gear.main_strut_length = data["Main Strut Length"][0]
-        landing_gear.nose_strut_length = data["Nose Strut Length"][0]
-        landing_gear.main_units = data["Main Units"][0]
-        landing_gear.nose_units = data["Nose Units"][0]
-        landing_gear.main_wheels = data["Main Wheels"][0]
-        landing_gear.nose_wheels = data["Nose Wheels"][0]
+        for data_unit_label in self.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(landing_gear, rcaide_label, data[user_label][0])
 
         return landing_gear
 

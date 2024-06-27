@@ -9,6 +9,28 @@ from widgets import DataEntryWidget
 
 
 class FuselageFrame(QWidget, GeometryFrame):
+    # List of data labels
+    data_units_labels = [
+        ("Fineness Nose", Units.Unitless, "fineness.nose"),
+        ("Fineness Tail", Units.Unitless, "fineness.tail"),
+        ("Lengths Nose", Units.Length, "lengths.nose"),
+        ("Lengths Tail", Units.Length, "lengths.tail"),
+        ("Lengths Cabin", Units.Length, "lengths.cabin"),
+        ("Lengths Total", Units.Length, "lengths.total"),
+        ("Lengths Forespace", Units.Length, "lengths.fore_space"),
+        ("Lengths Aftspace", Units.Length, "lengths.aft_space"),
+        ("Width", Units.Length, "width"),
+        ("Heights Maximum", Units.Length, "heights.maximum"),
+        ("Height at Quarter", Units.Length, "heights.at_quarter_length"),
+        ("Height at Three Quarters", Units.Length, "heights.at_three_quarters_length"),
+        ("Height at Wing Root Quarter Chord", Units.Length, "heights.at_wing_root_quarter_chord"),
+        ("Areas Side Projected", Units.Area, "areas.side_projected"),
+        ("Area Wetted", Units.Area, "areas.wetted"),
+        ("Area Front Projected", Units.Area, "areas.front_projected"),
+        ("Differential Pressure", Units.Pressure, "differential_pressure"),
+        ("Effective Diameter", Units.Length, "effective_diameter"),
+    ]
+        
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(FuselageFrame, self).__init__()
@@ -22,30 +44,10 @@ class FuselageFrame(QWidget, GeometryFrame):
 
         self.add_name_layout()
 
-        # List of data labels
-        data_units_labels = [
-            ("Fineness Nose", Units.Unitless, "fineness.nose"),
-            ("Fineness Tail", Units.Unitless, "fineness.tail"),
-            ("Lengths Nose", Units.Length, "lengths.nose"),
-            ("Lengths Tail", Units.Length, "lengths.tail"),
-            ("Lengths Cabin", Units.Length, "lengths.cabin"),
-            ("Lengths Total", Units.Length, "lengths.total"),
-            ("Lengths Forespace", Units.Length, "lengths.fore_space"),
-            ("Lengths Aftspace", Units.Length, "lengths.aft_space"),
-            ("Width", Units.Length, "width"),
-            ("Heights Maximum", Units.Length, "heights.maximum"),
-            ("Height at Quarter", Units.Length, "heights.at_quarter_length"),
-            ("Height at Three Quarters", Units.Length, "heights.at_three_quarters_length"),
-            ("Height at Wing Root Quarter Chord", Units.Length, "heights.at_wing_root_quarter_chord"),
-            ("Areas Side Projected", Units.Area, "areas.side_projected"),
-            ("Area Wetted", Units.Area, "areas.wetted"),
-            ("Area Front Projected", Units.Area, "areas.front_projected"),
-            ("Differential Pressure", Units.Pressure, "differential_pressure"),
-            ("Effective Diameter", Units.Length, "effective_diameter"),
-        ]
+        
 
         # Add the data entry widget to the main layout
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -160,7 +162,7 @@ class FuselageFrame(QWidget, GeometryFrame):
 
     def create_rcaide_structure(self, data):
         fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
-        for data_unit_label in self.data_entry_widget.data_units_labels:
+        for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(fuselage, rcaide_label, data[user_label][0])

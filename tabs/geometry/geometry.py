@@ -18,7 +18,7 @@ class GeometryWidget(QWidget):
         self.tabs = ["Fuselages", "Wings", "Nacelles",
                      "Landing Gear", "Energy Networks"]
         
-        options = ["Select an option", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
+        options = ["Vehicle Attributes", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
                    "Add Energy Network"]
         
         self.data = []
@@ -34,7 +34,7 @@ class GeometryWidget(QWidget):
         for index, frame in enumerate(self.frames):
             frame_widget = frame()
             frame_widget.set_save_function(self.save_data)
-            frame_widget.set_tab_index(index - 1)
+            frame_widget.set_tab_index(index)
             self.main_layout.addWidget(frame_widget)  # type: ignore
         
         self.dropdown = QComboBox()
@@ -45,6 +45,7 @@ class GeometryWidget(QWidget):
         # Create a QComboBox and add options
         self.tree = QTreeWidget()
         self.tree.setColumnCount(1)
+        self.tree.setHeaderLabels(["Vehicle Components"])
         self.tree.itemClicked.connect(self.on_tree_item_clicked)
         
         vehicle_item = QTreeWidgetItem(["Vehicle"])
@@ -86,13 +87,13 @@ class GeometryWidget(QWidget):
             item = item.parent()
             depth += 1
 
-        tab_index = self.tree.indexFromItem(item.parent()).row()
 
         if depth == 0:
             self.main_layout.setCurrentIndex(0)
             return
         if depth == 1:
-            top_item = self.tree.topLevelItem(tab_index)
+            top_item = item.parent()
+            tab_index = self.tree.indexFromItem(top_item).row()
             assert top_item is not None
             
             index = top_item.indexOfChild(item)
