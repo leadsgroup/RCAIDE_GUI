@@ -16,7 +16,7 @@ class GeometryWidget(QWidget):
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [VehicleFrame, FuselageFrame, WingsFrame, NacelleFrame,
                                                   LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["Fuselages", "Wings", "Nacelles",
+        self.tabs = ["", "Fuselages", "Wings", "Nacelles",
                      "Landing Gear", "Energy Networks"]
 
         options = ["Add Component", "Add Fuselage", "Add Wing", "Add Nacelle", "Add Landing Gear",
@@ -37,7 +37,7 @@ class GeometryWidget(QWidget):
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index)
             self.main_layout.addWidget(frame_widget)  # type: ignore
-        
+
         vehicle_name_layout = QHBoxLayout()
         vehicle_name_layout.addWidget(QLabel("Vehicle Name:"))
         self.vehicle_name_input = QLineEdit()
@@ -104,7 +104,7 @@ class GeometryWidget(QWidget):
             tree_index = top_item.indexOfChild(item)
             tab_index = self.find_tab_index(tree_index)
 
-            self.main_layout.setCurrentIndex(tab_index + 1)
+            self.main_layout.setCurrentIndex(tab_index)
 
     def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.
@@ -116,7 +116,7 @@ class GeometryWidget(QWidget):
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
         """
-        print("Saving data:", data)
+        # print("Saving data:", data)
         if data is None:
             return
 
@@ -132,18 +132,18 @@ class GeometryWidget(QWidget):
             assert top_item is not None
 
             if not self.data[tab_index]:
-                component_item = QTreeWidgetItem([self.tabs[tab_index - 1]])
+                component_item = QTreeWidgetItem([self.tabs[tab_index]])
                 top_item.insertChild(tree_index, component_item)
 
             if new:
-                self.data[tab_index - 1].append(data)
+                self.data[tab_index].append(data)
                 child = QTreeWidgetItem([data["name"]])
                 item = top_item.child(tree_index)
                 assert item is not None
                 item.addChild(child)
                 index = item.indexOfChild(child)
             else:
-                self.data[tab_index - 1][index] = data
+                self.data[tab_index][index] = data
                 child = top_item.child(tree_index).child(index)
                 assert child is not None
                 child.setText(0, data["name"])
@@ -172,20 +172,21 @@ class GeometryWidget(QWidget):
             if not self.data[i]:
                 tree_index -= 1
 
+        tree_index = max(0, tree_index)
         return tree_index
 
     def find_tab_index(self, tree_index):
+        print(tree_index)
         tab_index = 0
         count = 0
-        
-        for i in range(len(self.data)):
+
+        for i in range(1, len(self.data)):
             if not self.data[i]:
                 continue
-            if count == tree_index + 1:
-                tab_index = i + 1
-                break
             count += 1
-
+            if count == tree_index + 1:
+                tab_index = i
+                break
         return tab_index
 
 
