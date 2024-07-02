@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QTreeWidget
 
 from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 
@@ -39,6 +39,14 @@ class MissionWidget(QWidget):
         left_layout.addWidget(add_segment_button)
         left_layout.addWidget(save_data_button)
         left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        tree = QTreeWidget()
+        tree.setColumnCount(1)
+        tree.setHeaderLabels(["Mission Segments"])
+        
+        left_layout.addWidget(tree)
+        
+        
         # Add left layout to the main layout
         main_layout.addLayout(left_layout, 2)
 

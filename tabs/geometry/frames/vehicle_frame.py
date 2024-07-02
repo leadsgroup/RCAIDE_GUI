@@ -35,7 +35,7 @@ class VehicleFrame(QWidget, GeometryFrame):
         self.name_line_edit = QLineEdit()
         self.name_layout.addWidget(self.name_line_edit, 7)
 
-        self.main_layout.addLayout(self.name_layout)
+        # self.main_layout.addLayout(self.name_layout)
 
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
@@ -57,14 +57,14 @@ class VehicleFrame(QWidget, GeometryFrame):
         self.name_line_edit.setText(data["name"])
         self.data_entry_widget.load_data(data)
 
-    # def create_rcaide_structure(self, data):
-    #     vehicle = RCAIDE.Vehicle()
-    #     vehicle.tag = data["name"]
+    def create_rcaide_structure(self, data):
+        vehicle = RCAIDE.Vehicle()
+        vehicle.tag = data["name"]
 
-    #     for data_unit_label in self.data_units_labels:
-    #         rcaide_label = data_unit_label[-1]
-    #         user_label = data_unit_label[0]
-    #         set_data(vehicle, rcaide_label, data[user_label][0])
+        for data_unit_label in self.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(vehicle, rcaide_label, data[user_label][0])
 
     def get_data_values(self):
         assert self.data_entry_widget is not None and self.name_line_edit is not None

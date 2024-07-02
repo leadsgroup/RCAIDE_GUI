@@ -2,9 +2,10 @@ import json
 from typing import Type
 
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit
 
 from tabs.geometry.frames import *
+from utilities import set_data
 
 
 class GeometryWidget(QWidget):
@@ -17,10 +18,10 @@ class GeometryWidget(QWidget):
                                                   LandingGearFrame, EnergyNetworkFrame]
         self.tabs = ["Fuselages", "Wings", "Nacelles",
                      "Landing Gear", "Energy Networks"]
-        
-        options = ["Vehicle Attributes", "Add Fuselage", "Add Wings", "Add Nacelles", "Add Landing Gear",
+
+        options = ["Add Component", "Add Fuselage", "Add Wing", "Add Nacelle", "Add Landing Gear",
                    "Add Energy Network"]
-        
+
         self.data = []
         self.vehicle = RCAIDE.Vehicle()
 
@@ -37,6 +38,12 @@ class GeometryWidget(QWidget):
             frame_widget.set_tab_index(index)
             self.main_layout.addWidget(frame_widget)  # type: ignore
         
+        vehicle_name_layout = QHBoxLayout()
+        vehicle_name_layout.addWidget(QLabel("Vehicle Name:"))
+        self.vehicle_name_input = QLineEdit()
+        vehicle_name_layout.addWidget(self.vehicle_name_input)
+        self.tree_frame_layout.addLayout(vehicle_name_layout)
+
         self.dropdown = QComboBox()
         self.dropdown.addItems(options)
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
@@ -47,7 +54,7 @@ class GeometryWidget(QWidget):
         self.tree.setColumnCount(1)
         self.tree.setHeaderLabels(["Vehicle Components"])
         self.tree.itemClicked.connect(self.on_tree_item_clicked)
-        
+
         vehicle_item = QTreeWidgetItem(["Vehicle"])
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
@@ -80,29 +87,24 @@ class GeometryWidget(QWidget):
             item: The selected item in the tree.
             _col: The column index of the selected item. (Not used)
 
-        """        
+        """
         # get item depth
         depth = 0
-        while item.parent():
-            item = item.parent()
-            depth += 1
 
+        item2 = item
+        while item2.parent():
+            item2 = item2.parent()
+            depth += 1
 
         if depth == 0:
             self.main_layout.setCurrentIndex(0)
             return
         if depth == 1:
             top_item = item.parent()
-            tab_index = self.tree.indexFromItem(top_item).row()
-            assert top_item is not None
-            
-            index = top_item.indexOfChild(item)
-            frame = self.main_layout.widget(tab_index + 1)
-            assert isinstance(frame, GeometryFrame)
-            
-            frame.load_data(self.data[tab_index][index], index)
+            tree_index = top_item.indexOfChild(item)
+            tab_index = self.find_tab_index(tree_index)
+
             self.main_layout.setCurrentIndex(tab_index + 1)
-        
 
     def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.
@@ -118,39 +120,73 @@ class GeometryWidget(QWidget):
         if data is None:
             return
 
-        if new:
-            self.data[tab_index].append(data)
-            child = QTreeWidgetItem([data["name"]])
-            item = self.tree.topLevelItem(tab_index)
-            assert item is not None
-            item.addChild(child)
-            index = item.indexOfChild(child)
+        if tab_index == 0:
+            self.vehicle.tag = data["name"]
+            for data_unit_label in VehicleFrame.data_units_labels:
+                rcaide_label = data_unit_label[-1]
+                user_label = data_unit_label[0]
+                set_data(self.vehicle, rcaide_label, data[user_label][0])
         else:
-            self.data[tab_index][index] = data
-            top_item = self.tree.topLevelItem(tab_index)
+            top_item = self.tree.topLevelItem(0)
+            tree_index = self.find_tree_index(tab_index)
             assert top_item is not None
 
-            child = top_item.child(index)
-            assert child is not None
-            child.setText(0, data["name"])
+            if not self.data[tab_index]:
+                component_item = QTreeWidgetItem([self.tabs[tab_index - 1]])
+                top_item.insertChild(tree_index, component_item)
+
+            if new:
+                self.data[tab_index - 1].append(data)
+                child = QTreeWidgetItem([data["name"]])
+                item = top_item.child(tree_index)
+                assert item is not None
+                item.addChild(child)
+                index = item.indexOfChild(child)
+            else:
+                self.data[tab_index - 1][index] = data
+                child = top_item.child(tree_index).child(index)
+                assert child is not None
+                child.setText(0, data["name"])
 
         with open("data/geometry.json", "w") as f:
             f.write(json.dumps(self.data, indent=4))
 
         if vehicle_component:
             # Check if it is an energy network being added
-            if tab_index == 4:
+            if tab_index == 5:
                 self.vehicle.append_energy_network(vehicle_component)
             else:
                 self.vehicle.append_component(vehicle_component)
 
         return index
-    
+
     def get_vehicle(self):
         return self.vehicle
-    
+
     def get_data(self):
         return self.data
+
+    def find_tree_index(self, tab_index):
+        tree_index = tab_index
+        for i in range(tree_index):
+            if not self.data[i]:
+                tree_index -= 1
+
+        return tree_index
+
+    def find_tab_index(self, tree_index):
+        tab_index = 0
+        count = 0
+        
+        for i in range(len(self.data)):
+            if not self.data[i]:
+                continue
+            if count == tree_index + 1:
+                tab_index = i + 1
+                break
+            count += 1
+
+        return tab_index
 
 
 def get_widget() -> QWidget:

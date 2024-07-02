@@ -159,8 +159,8 @@ class NacelleFrame(QWidget, GeometryFrame):
         nacelle.origin = origin
         nacelle.areas.wetted = data["Wetted Area"][0]
         nacelle.flow_through = data["Flow Through"][0]
-        nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"][0]
-        nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"][0]
+        # nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"][0]
+        # nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"][0]
 
         return nacelle
 
