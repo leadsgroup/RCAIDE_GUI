@@ -3,6 +3,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from tabs import *
+from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
 
 
 class App(QMainWindow):
@@ -33,25 +34,36 @@ class App(QMainWindow):
         menubar.addMenu("View")
         menubar.addMenu("Help")
 
-        tabs = QTabWidget()
-        tabs.setTabPosition(QTabWidget.TabPosition.North)
-        tabs.setMovable(True)
+        self.tabs = QTabWidget()
+        self.tabs.setTabPosition(QTabWidget.TabPosition.North)
+        # tabs.setMovable(True)
 
-        tabs.addTab(home.get_widget(), "Home")
+        self.tabs.currentChanged.connect()
+
+        self.tabs.addTab(home.get_widget(), "Home")
         geometry_widget = geometry.get_widget()
-        tabs.addTab(geometry_widget, "Geometry")
-        tabs.addTab(aircraft_configs.get_widget(geometry_widget), "Aircraft Configurations")
-        tabs.addTab(analysis.get_widget(), "Analysis")
-        tabs.addTab(mission.get_widget(), "Mission")
-        tabs.addTab(solve.get_widget(), "Solve")
+        self.tabs.addTab(geometry_widget, "Geometry")
+        self.tabs.addTab(aircraft_configs.get_widget(
+            geometry_widget), "Aircraft Configurations")
+        self.tabs.addTab(analysis.get_widget(), "Analysis")
+        self.tabs.addTab(mission.get_widget(), "Mission")
+        self.tabs.addTab(solve.get_widget(), "Solve")
 
-        # TODO: Create Aircraft Configurations tab
-
-        self.setCentralWidget(tabs)
+        self.setCentralWidget(self.tabs)
         self.resize(1280, 720)
 
         # Create the theme switch widget
         # self.theme_switch = ThemeSwitch()
+
+
+    def on_tab_change(self, index: int):
+        if index != 2:
+            return
+        
+        current_frame = self.tabs.currentWidget()
+        assert isinstance(current_frame, AircraftConfigsWidget)
+        
+        current_frame.update_layout()
 
 
 app = QApplication(sys.argv)

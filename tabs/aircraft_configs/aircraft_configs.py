@@ -25,9 +25,9 @@ class AircraftConfigsWidget(QWidget):
         tree_layout.addWidget(self.tree)
         
         self.main_layout = QVBoxLayout()
-        update_layout_button = QPushButton("Load Aircraft Geometry")
-        update_layout_button.clicked.connect(self.update_layout)
-        self.main_layout.addWidget(update_layout_button)
+        # update_layout_button = QPushButton("Load Aircraft Geometry")
+        # update_layout_button.clicked.connect(self.update_layout)
+        # self.main_layout.addWidget(update_layout_button)
         # TODO: make this automatic
         
         name_layout = QHBoxLayout()
