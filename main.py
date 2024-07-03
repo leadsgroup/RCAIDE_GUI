@@ -38,7 +38,7 @@ class App(QMainWindow):
         self.tabs.setTabPosition(QTabWidget.TabPosition.North)
         # tabs.setMovable(True)
 
-        self.tabs.currentChanged.connect()
+        self.tabs.currentChanged.connect(self.on_tab_change)
 
         self.tabs.addTab(home.get_widget(), "Home")
         geometry_widget = geometry.get_widget()
