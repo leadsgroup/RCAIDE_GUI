@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, QLabel, QLineEdit
 
 from tabs.geometry.geometry import GeometryWidget
 from utilities import Units
@@ -27,7 +27,7 @@ class AircraftConfigsWidget(QWidget):
         self.main_layout = QVBoxLayout()
         # update_layout_button = QPushButton("Load Aircraft Geometry")
         # update_layout_button.clicked.connect(self.update_layout)
-        # self.main_layout.addWidget(update_layout_button)
+        # self.main_layout.addWidget(QLabel("hi"))
         # TODO: make this automatic
         
         name_layout = QHBoxLayout()
@@ -67,7 +67,7 @@ class AircraftConfigsWidget(QWidget):
             self.main_layout.removeWidget(self.data_entry_widget)
         
         self.data_entry_widget = DataEntryWidget(data_units_labels)
-        self.main_layout.insertWidget(2, self.data_entry_widget)
+        self.main_layout.insertWidget(1, self.data_entry_widget)
     
     def new_configuration(self):
         self.data_entry_widget.clear_values()

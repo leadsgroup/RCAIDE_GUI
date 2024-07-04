@@ -3,7 +3,6 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from tabs import *
-from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
 
 
 class App(QMainWindow):
@@ -36,7 +35,7 @@ class App(QMainWindow):
 
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(QTabWidget.TabPosition.North)
-        # tabs.setMovable(True)
+        # self.tabs.setMovable(True)
 
         self.tabs.currentChanged.connect(self.on_tab_change)
 
@@ -61,7 +60,7 @@ class App(QMainWindow):
             return
         
         current_frame = self.tabs.currentWidget()
-        assert isinstance(current_frame, AircraftConfigsWidget)
+        assert isinstance(current_frame, aircraft_configs.AircraftConfigsWidget)
         
         current_frame.update_layout()
 
