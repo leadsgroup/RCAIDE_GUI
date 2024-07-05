@@ -1,6 +1,5 @@
 x 2024-07-02 2024-07-01 fix find_tree_index @geometry
 x 2024-07-02 2024-07-01 fix find_tab_index @geometry
-2024-07-01 create solve tab plot selector @plots
+x 2024-07-05 2024-07-01 create solve tab plot selector @plots
 2024-07-01 create select flight controls dropdown @mission
-2024-07-01 auto-update geometry when loading aircraft configs tab @configs
-2024-07-01
+x 2024-07-03 2024-07-01 auto-update geometry when loading aircraft configs tab @configs
