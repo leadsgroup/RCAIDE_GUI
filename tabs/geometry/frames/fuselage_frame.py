@@ -4,11 +4,33 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import FuselageSectionWidget
-from utilities import show_popup, create_line_bar, Units
+from utilities import show_popup, create_line_bar, set_data, Units
 from widgets import DataEntryWidget
 
 
 class FuselageFrame(QWidget, GeometryFrame):
+    # List of data labels
+    data_units_labels = [
+        ("Fineness Nose", Units.Unitless, "fineness.nose"),
+        ("Fineness Tail", Units.Unitless, "fineness.tail"),
+        ("Lengths Nose", Units.Length, "lengths.nose"),
+        ("Lengths Tail", Units.Length, "lengths.tail"),
+        ("Lengths Cabin", Units.Length, "lengths.cabin"),
+        ("Lengths Total", Units.Length, "lengths.total"),
+        ("Lengths Forespace", Units.Length, "lengths.fore_space"),
+        ("Lengths Aftspace", Units.Length, "lengths.aft_space"),
+        ("Width", Units.Length, "width"),
+        ("Heights Maximum", Units.Length, "heights.maximum"),
+        ("Height at Quarter", Units.Length, "heights.at_quarter_length"),
+        ("Height at Three Quarters", Units.Length, "heights.at_three_quarters_length"),
+        ("Height at Wing Root Quarter Chord", Units.Length, "heights.at_wing_root_quarter_chord"),
+        ("Areas Side Projected", Units.Area, "areas.side_projected"),
+        ("Area Wetted", Units.Area, "areas.wetted"),
+        ("Area Front Projected", Units.Area, "areas.front_projected"),
+        ("Differential Pressure", Units.Pressure, "differential_pressure"),
+        ("Effective Diameter", Units.Length, "effective_diameter"),
+    ]
+        
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(FuselageFrame, self).__init__()
@@ -22,30 +44,10 @@ class FuselageFrame(QWidget, GeometryFrame):
 
         self.add_name_layout()
 
-        # List of data labels
-        data_units_labels = [
-            ("Fineness Nose", Units.Unitless),
-            ("Fineness Tail", Units.Unitless),
-            ("Lengths Nose", Units.Length),
-            ("Lengths Tail", Units.Length),
-            ("Lengths Cabin", Units.Length),
-            ("Lengths Total", Units.Length),
-            ("Lengths Forespace", Units.Length),
-            ("Lengths Aftspace", Units.Length),
-            ("Width", Units.Length),
-            ("Heights Maximum", Units.Length),
-            ("Height at Quarter", Units.Length),
-            ("Height at Three Quarters", Units.Length),
-            ("Height at Wing Root Quarter Chord", Units.Length),
-            ("Areas Side Projected", Units.Area),
-            ("Area Wetted", Units.Area),
-            ("Area Front Projected", Units.Area),
-            ("Differential Pressure", Units.Pressure),
-            ("Effective Diameter", Units.Length),
-        ]
+        
 
         # Add the data entry widget to the main layout
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -58,17 +60,6 @@ class FuselageFrame(QWidget, GeometryFrame):
         # Adds scroll function
         self.main_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
-
-    def create_scroll_area(self):
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_content = QWidget()
-        scroll_area.setWidget(scroll_content)
-        self.main_layout = QVBoxLayout(scroll_content)
-        layout_scroll = QVBoxLayout(self)
-        layout_scroll.addWidget(scroll_area)
-        layout_scroll.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout_scroll)
 
     def add_name_layout(self):
         name_layout = QHBoxLayout()
@@ -171,30 +162,11 @@ class FuselageFrame(QWidget, GeometryFrame):
 
     def create_rcaide_structure(self, data):
         fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
-        fuselage.fineness.nose = data["Fineness Nose"][0]
-        fuselage.fineness.tail = data["Fineness Tail"][0]
-
-        fuselage.lengths.nose = data["Lengths Nose"][0]
-        fuselage.lengths.tail = data["Lengths Tail"][0]
-        fuselage.lengths.total = data["Lengths Total"][0]
-        fuselage.lengths.cabin = data["Lengths Cabin"][0]
-        fuselage.lengths.fore_space = data["Lengths Forespace"][0]
-        fuselage.lengths.aft_space = data["Lengths Aftspace"][0]
-
-        fuselage.width = data["Width"][0]
-
-        fuselage.heights.maximum = data["Heights Maximum"][0]
-        fuselage.heights.at_quarter_length = data["Height at Quarter"][0]
-        fuselage.heights.at_three_quarters_length = data["Height at Three Quarters"][0]
-        fuselage.heights.at_wing_root_quarter_chord = data["Height at Wing Root Quarter Chord"][0]
-
-        fuselage.areas.side_projected = data["Areas Side Projected"][0]
-        fuselage.areas.wetted = data["Area Wetted"][0]
-        fuselage.areas.front_projected = data["Area Front Projected"][0]
-
-        fuselage.differential_pressure = data["Differential Pressure"][0]
-
-        fuselage.effective_diameter = data["Effective Diameter"][0]
+        for data_unit_label in self.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(fuselage, rcaide_label, data[user_label][0])
+            
         return fuselage
 
     def get_data_values(self):

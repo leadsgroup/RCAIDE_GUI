@@ -2,14 +2,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
-from tabs.analysis import analysis
-from tabs.geometry import geometry
-from tabs.home import home
-from tabs.mission import mission
-from tabs.solve import solve
-
-
-# from widgets.theme import ThemeSwitch
+from tabs import *
 
 
 class App(QMainWindow):
@@ -40,23 +33,36 @@ class App(QMainWindow):
         menubar.addMenu("View")
         menubar.addMenu("Help")
 
-        tabs = QTabWidget()
-        tabs.setTabPosition(QTabWidget.TabPosition.North)
-        tabs.setMovable(True)
+        self.tabs = QTabWidget()
+        self.tabs.setTabPosition(QTabWidget.TabPosition.North)
+        # self.tabs.setMovable(True)
 
-        tabs.addTab(home.get_widget(), "Home")
-        tabs.addTab(geometry.get_widget(), "Geometry")
-        tabs.addTab(analysis.get_widget(), "Analysis")
-        tabs.addTab(mission.get_widget(), "Mission")
-        tabs.addTab(solve.get_widget(), "Solve")
+        self.tabs.currentChanged.connect(self.on_tab_change)
 
-        # TODO: Create Aircraft Configurations tab
+        self.tabs.addTab(home.get_widget(), "Home")
+        geometry_widget = geometry.get_widget()
+        self.tabs.addTab(geometry_widget, "Geometry")
+        self.tabs.addTab(aircraft_configs.get_widget(
+            geometry_widget), "Aircraft Configurations")
+        self.tabs.addTab(analysis.get_widget(), "Analysis")
+        self.tabs.addTab(mission.get_widget(), "Mission")
+        self.tabs.addTab(solve.get_widget(), "Solve")
 
-        self.setCentralWidget(tabs)
+        self.setCentralWidget(self.tabs)
         self.resize(1280, 720)
 
         # Create the theme switch widget
         # self.theme_switch = ThemeSwitch()
+
+
+    def on_tab_change(self, index: int):
+        if index != 2:
+            return
+        
+        current_frame = self.tabs.currentWidget()
+        assert isinstance(current_frame, aircraft_configs.AircraftConfigsWidget)
+        
+        current_frame.update_layout()
 
 
 app = QApplication(sys.argv)

@@ -118,7 +118,7 @@ class DataEntryWidget(QWidget):
             # Find corresponding unit
             if self.data_units_labels[i][1] == Units.Boolean:
                 data_field = self.data_fields[label]
-                data[label] = data_field.isChecked()
+                data[label] = (data_field.isChecked(), 0)
             elif self.data_units_labels[i][1] == Units.Position:
                 data_field = self.data_fields[label]
                 x_line_edit, y_line_edit, z_line_edit, unit_picker = data_field
@@ -146,7 +146,7 @@ class DataEntryWidget(QWidget):
         for i, label in enumerate(self.data_fields.keys()):
             if self.data_units_labels[i][1] == Units.Boolean:
                 data_field = self.data_fields[label]
-                data[label] = data_field.isChecked()
+                data[label] = (data_field.isChecked(), 0)
             elif self.data_units_labels[i][1] == Units.Position:
                 data_field = self.data_fields[label]
                 x_line_edit, y_line_edit, z_line_edit, unit_picker = data_field

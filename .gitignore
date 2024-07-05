@@ -266,3 +266,5 @@ cython_debug/
 
 # Data files
 data/*
+
+meeting_notes.txt

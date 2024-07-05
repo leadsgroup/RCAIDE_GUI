@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QVBoxLayout, QLineEdit
+from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QScrollArea, QWidget
 
 
 class GeometryFrame:
@@ -20,15 +20,32 @@ class GeometryFrame:
         """
         self.save_function = function
 
-    def set_tab_index(self, index):
+    def set_tab_index(self, tab_index):
         """Set the tab index for the frame.
 
         Args:
-            index: The index of the tab."""
-        self.tab_index = index
+            tab_index: The index of the tab."""
+        self.tab_index = tab_index
 
     def create_new_structure(self):
         pass
 
     def create_rcaide_structure(self, data):
+        pass
+
+    def create_scroll_area(self):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        self.main_layout = QVBoxLayout(scroll_content)
+        layout_scroll = QVBoxLayout(self) # type: ignore
+        layout_scroll.addWidget(scroll_area)
+        layout_scroll.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout_scroll)
+    
+    def get_data_values(self):
+        pass
+    
+    def save_data(self):
         pass

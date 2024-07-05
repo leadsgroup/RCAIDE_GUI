@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
 
 from tabs.mission.widgets.controls_popup import ControlsPopup
-from utilities import Units
+from utilities import Units, create_line_bar
 from widgets import DataEntryWidget
 
 
@@ -77,6 +77,10 @@ class MissionSegmentWidget(QWidget):
 
         subsegment_entry_widget = DataEntryWidget(data_fields)
         self.subsegment_layout.addWidget(subsegment_entry_widget)
+        
+        self.subsegment_layout.addWidget(QLabel("<b>Select Degrees of Freedom</b>"))
+        self.subsegment_layout.addWidget(create_line_bar())
+        
 
         dof_fields = [("Forces in X axis", Units.Boolean), ("Moments about X axis", Units.Boolean),
                       ("Forces in Y axis", Units.Boolean),
@@ -93,7 +97,11 @@ class MissionSegmentWidget(QWidget):
         # Align subsegment layout to top
         self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        add_controls_button = QPushButton("Edit Control Systems")
+        self.subsegment_layout.addWidget(QLabel("<b>Select Flight Controls</b>"))
+        self.subsegment_layout.addWidget(create_line_bar())
+        
+        # TODO: Change to dropdown style flight control editing
+        add_controls_button = QPushButton("Edit Flight Controls")
         add_controls_button.clicked.connect(self.add_controls)
         self.subsegment_layout.addWidget(add_controls_button)
 

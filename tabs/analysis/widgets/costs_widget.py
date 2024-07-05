@@ -2,18 +2,21 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollAr
     QFrame, QSpacerItem, QSizePolicy
 
 from utilities import create_line_bar
+from tabs.analysis.widgets import AnalysisWidget
 
-
-# TODO: Add cost analysis
+import RCAIDE
 
 class CostsWidget(QWidget):
     def __init__(self):
-        super(CostsWidget, self).__init__()
-        self.data_values = {}
+        super(CostsWidget, self).__init__()        
         self.main_layout = QVBoxLayout()
 
         self.main_layout.addWidget(QLabel("<b>Costs</b>"))
         self.main_layout.addWidget(create_line_bar())
+        self.main_layout.addWidget(
+            QLabel("Computes industrial and operating costs"))
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
-
+    
+    def create_analysis(self):
+        return RCAIDE.Framework.Analyses.Costs.Costs()

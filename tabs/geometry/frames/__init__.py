@@ -5,3 +5,4 @@ from tabs.geometry.frames.fuselage_frame import FuselageFrame
 from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
 from tabs.geometry.frames.nacelle_frame import NacelleFrame
 from tabs.geometry.frames.wings_frame import WingsFrame
+from tabs.geometry.frames.vehicle_frame import VehicleFrame

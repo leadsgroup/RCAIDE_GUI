@@ -1,4 +1,4 @@
-# from tabs.analysis.widgets.default_widget import DefaultWidget
+from tabs.analysis.widgets.analysis_widget import AnalysisWidget
 from tabs.analysis.widgets.aerodynamics_widget import AerodynamicsWidget
 from tabs.analysis.widgets.atmosphere_widget import AtmosphereWidget
 from tabs.analysis.widgets.costs_widget import CostsWidget
