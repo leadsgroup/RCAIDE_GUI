@@ -2,7 +2,7 @@ from typing import cast
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
-    QTreeWidgetItem, QScrollArea
+    QTreeWidgetItem, QScrollArea, QHeaderView
 
 from tabs.analysis.widgets import *
 
@@ -21,6 +21,8 @@ class AnalysisWidget(QWidget):
 
         self.tree_widget.setColumnCount(2)
         self.tree_widget.setHeaderLabels(["Analysis", "Enabled"])
+        self.tree_widget.header().setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents)
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
             if index >= 4:
