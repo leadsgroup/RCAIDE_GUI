@@ -1,10 +1,9 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
 
-from tabs.mission.widgets.controls_popup import ControlsPopup
 from utilities import Units, create_line_bar
 from widgets import DataEntryWidget
+from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
 
 
 class MissionSegmentWidget(QWidget):
@@ -99,16 +98,7 @@ class MissionSegmentWidget(QWidget):
 
         self.subsegment_layout.addWidget(QLabel("<b>Select Flight Controls</b>"))
         self.subsegment_layout.addWidget(create_line_bar())
-        
-        # TODO: Change to dropdown style flight control editing
-        add_controls_button = QPushButton("Edit Flight Controls")
-        add_controls_button.clicked.connect(self.add_controls)
-        self.subsegment_layout.addWidget(add_controls_button)
-
-    def add_controls(self):
-        # Instantiate MissionSectionWidget and add it to mission_segment_layout
-        controls_widget = ControlsPopup()
-        controls_widget.exec()
+        self.subsegment_layout.addWidget(FlightControlsWidget())
 
     def clear_layout(self, layout):
         if layout is not None:

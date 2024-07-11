@@ -4,7 +4,7 @@ from tabs.geometry.geometry import GeometryWidget
 from utilities import Units
 from widgets import DataEntryWidget
 
-import RCAIDE
+# import RCAIDE
 
 
 class AircraftConfigsWidget(QWidget):
@@ -70,6 +70,7 @@ class AircraftConfigsWidget(QWidget):
         self.main_layout.insertWidget(1, self.data_entry_widget)
     
     def new_configuration(self):
+        assert self.data_entry_widget is not None
         self.data_entry_widget.clear_values()
 
     def save_data(self):

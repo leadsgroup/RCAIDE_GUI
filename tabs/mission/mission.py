@@ -1,23 +1,21 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QTreeWidget
 
-from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
+from tabs.mission.widgets import MissionSegmentWidget
 
 
 class MissionWidget(QWidget):
-    def __init__(self):
+    def __init__(self, geometry_widget):
         super().__init__()
+
+        self.geometry_widget = geometry_widget
 
         # Create the main layout
         main_layout = QHBoxLayout(self)
-
-        # Create the left side layout for Mission
         left_layout = QVBoxLayout()
 
         # Create the mission layout
         mission_layout = QHBoxLayout()
-
-        # Align mission_layout to the top of left_layout
         mission_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # Add mission name label and input box to the mission layout
@@ -39,14 +37,13 @@ class MissionWidget(QWidget):
         left_layout.addWidget(add_segment_button)
         left_layout.addWidget(save_data_button)
         left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        
+
         tree = QTreeWidget()
         tree.setColumnCount(1)
         tree.setHeaderLabels(["Mission Segments"])
-        
+
         left_layout.addWidget(tree)
-        
-        
+
         # Add left layout to the main layout
         main_layout.addLayout(left_layout, 2)
 
@@ -82,22 +79,13 @@ class MissionWidget(QWidget):
         self.mission_segment_layout.addWidget(segment_widget)
 
     def save_all_data(self):
-        """Append the entered data to a list or perform any other action."""
-        """
-        main_data = self.get_data_values()  # Get data from the main fuselage section
-    
-        # Collect data from additional fuselage_widget
-        mission_data = []
-        for index in range(self.additional_data_values.count()):
-            widget = self.additional_data_values.itemAt(index).widget()
-            mission_data.append(widget.get_data_values())
-    
-        print("Main Fuselage Data:", main_data)
-        print("Additional Fuselage Data:", mission_data)
-        show_popup("Data Saved!", self)
-        """
+        pass
 
+    def update_layout(self):
+        pass
 
 # Function to get the widget
+
+
 def get_widget() -> QWidget:
-    return MissionWidget()
+    return MissionWidget(None)
