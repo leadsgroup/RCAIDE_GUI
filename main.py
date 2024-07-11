@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from tabs import *
 
+import qdarktheme
+
 
 class App(QMainWindow):
     def __init__(self):
@@ -66,6 +68,7 @@ class App(QMainWindow):
 
 
 app = QApplication(sys.argv)
+qdarktheme.setup_theme()
 window = App()
 window.show()
 sys.exit(app.exec())

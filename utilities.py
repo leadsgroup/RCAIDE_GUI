@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt6.QtWidgets import QMessageBox, QFrame
+from PyQt6.QtWidgets import QMessageBox, QFrame, QScrollArea, QVBoxLayout, QWidget
 
 
 def show_popup(message, parent):
@@ -21,6 +21,14 @@ def create_line_bar():
 
     return line_bar
 
+def create_scroll_area(widget: QWidget):
+    scroll_area = QScrollArea()
+    scroll_area.setWidgetResizable(True)
+    scroll_content = QWidget()
+    scroll_area.setWidget(scroll_content)
+    widget.main_layout = QVBoxLayout(scroll_content)
+    layout_scroll = QVBoxLayout()
+    layout_scroll.addWid
 
 def set_data(obj : dict, key : str, data):
     key_list = key.split(".")

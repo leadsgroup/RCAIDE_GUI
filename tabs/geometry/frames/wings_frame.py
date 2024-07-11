@@ -19,6 +19,8 @@ class WingsFrame(QWidget, GeometryFrame):
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
         self.main_layout.addWidget(create_line_bar())
+        
+        # TODO Add extra flags
 
         self.add_name_layout()
 

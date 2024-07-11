@@ -42,22 +42,6 @@ class SolveWidget(QWidget):
         pass
 
     plot_options = {
-        "Geometry": [
-            "Plot 3D Vehicle",
-            "Plot 3D Energy Network",
-            "Generate 3D Vehicle Geometry Data",
-            "Plot 3D Rotor",
-            "Generate 3D Blade Points",
-            "Plot 3D Nacelle",
-            "Generate 3D Basic Nacelle Points",
-            "Generate 3D BOR Nacelle Points",
-            "Generate 3D Stack Nacelle Points",
-            "Plot 3D Wing",
-            "Generate 3D Wing Points",
-            "Plot 3D Vehicle VLM Panelization",
-            "Plot Airfoil",
-            "Plot Rotor",
-        ],
         "Aerodynamics": [
             "Plot Airfoil Boundary Layer Properties",
             "Plot Airfoil Polar Files",
