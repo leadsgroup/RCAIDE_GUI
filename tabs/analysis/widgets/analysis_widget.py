@@ -1,7 +1,6 @@
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
-
+import RCAIDE
 
 class AnalysisWidget():
-    def create_analysis(self):
-        pass
+    def create_analysis(self) -> RCAIDE.Framework.Analyses.Analysis :
+        return RCAIDE.Framework.Analyses.Analysis()
+
