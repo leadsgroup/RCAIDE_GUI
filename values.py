@@ -1,3 +1,4 @@
-geometry_data = [
+vehicle = None
+geometry_data = []
 
-]
+analysis_data = []
