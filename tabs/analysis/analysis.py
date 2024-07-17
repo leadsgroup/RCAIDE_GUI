@@ -1,27 +1,35 @@
 from typing import cast
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
+from PyQt6.QtWidgets import QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
     QTreeWidgetItem, QScrollArea, QHeaderView
 
 from tabs.analysis.widgets import *
 
 
-class AnalysisWidget(QWidget):
+class AnalysisDataWidget(QWidget):
     def __init__(self):
-        super(AnalysisWidget, self).__init__()
+        super(AnalysisDataWidget, self).__init__()
 
         options = ["Aerodynamics", "Atmospheric", "Planets", "Weights",
                    "Propulsion", "Costs", "Noise", "Stability"]
 
         self.tree_frame = QWidget()
         self.tree_frame_layout = QVBoxLayout(self.tree_frame)
+        
+        save_button = QPushButton("Save All Analysis Data")
+        save_button.clicked.connect(self.save_analyses)
+        self.tree_frame_layout.addWidget(save_button)
+
         self.tree_widget = QTreeWidget()
         self.tree_frame_layout.addWidget(self.tree_widget)
 
         self.tree_widget.setColumnCount(2)
         self.tree_widget.setHeaderLabels(["Analysis", "Enabled"])
-        self.tree_widget.header().setSectionResizeMode(
+        
+        header = self.tree_widget.header()
+        assert header is not None
+        header.setSectionResizeMode(
             0, QHeaderView.ResizeMode.ResizeToContents)
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
@@ -42,11 +50,11 @@ class AnalysisWidget(QWidget):
 
         self.create_scroll_area()
         # Define actions based on the selected
-        self.widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
-                        PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
+        self.widgets = [AerodynamicsWidget(), AtmosphereWidget(), PlanetsWidget(), WeightsWidget(),
+                        PropulsionWidget(), CostsWidget(), NoiseWidget(), StabilityWidget()]
 
         for widget in self.widgets:
-            self.main_layout.addWidget(widget())
+            self.main_layout.addWidget(widget)
 
         self.main_layout.setSpacing(3)
         self.base_layout.setSpacing(3)
@@ -76,6 +84,11 @@ class AnalysisWidget(QWidget):
         layout_scroll.setContentsMargins(0, 0, 0, 0)
         self.base_layout.addLayout(layout_scroll, 4)
 
+    def save_analyses(self):
+        for widget in self.widgets:
+            # assert issubclass(widget, AnalysisDataWidget)
+            widget.create_analysis()
+
 
 def get_widget() -> QWidget:
-    return AnalysisWidget()
+    return AnalysisDataWidget()

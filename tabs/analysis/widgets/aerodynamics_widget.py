@@ -1,14 +1,15 @@
+import json
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, \
-    QComboBox, QSpacerItem, QSizePolicy
+    QComboBox
 
-from tabs.analysis.widgets import AnalysisWidget
+from tabs.analysis.widgets import AnalysisDataWidget
 from utilities import create_line_bar, Units, set_data
 from widgets.data_entry_widget import DataEntryWidget
 
 import RCAIDE
 
 
-class AerodynamicsWidget(QWidget, AnalysisWidget):
+class AerodynamicsWidget(QWidget, AnalysisDataWidget):
     analyses = ["Subsonic VLM", "Supersonic VLM"]
     data_units_labels = [
         [
@@ -26,13 +27,13 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
             ("Number of Chordwise Vortices", Units.Count, "number_of_chordwise_vortices"),
             ("Use Surrogate", Units.Boolean, "use_surrogate"),
             ("Recalculate Total Wetted Area", Units.Boolean, "recalculate_total_wetted_area"),
-            ("Propeller Wake Model", Units.Boolean),
-            ("Discretize Control Surfaces", Units.Boolean),
-            ("Model Fuselage", Units.Boolean),
-            ("Model Nacelle", Units.Boolean),
-            ("Spanwise Cosine Spacing", Units.Boolean),
-            ("Leading Edge Suction Multiplier", Units.Unitless),
-            ("Use VORLAX Matrix Calculation", Units.Boolean),
+            ("Propeller Wake Model", Units.Boolean, "propeller_wake_model"),
+            ("Discretize Control Surfaces", Units.Boolean, "discretize_control_surfaces"),
+            ("Model Fuselage", Units.Boolean, "model_fuselage"),
+            ("Model Nacelle", Units.Boolean, "model_nacelle"),
+            ("Spanwise Cosine Spacing", Units.Boolean, "spanwise_cosine_spacing"),
+            ("Leading Edge Suction Multiplier", Units.Unitless, "leading_edge_suction_multiplier"),
+            ("Use VORLAX Matrix Calculation", Units.Boolean, "use_VORLAX_matrix_calculation"),
         ],
         [
             ("Fuselage Lift Correction", Units.Unitless, "fuselage_lift_correction"),
@@ -40,15 +41,15 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
             ("Wing Parasite Drag Form Factor", Units.Unitless, "wing_parasite_drag_form_factor"),
             ("Fuselage Parasite Drag Form Factor", Units.Unitless, "fuselage_parasite_drag_form_factor"),
             ("Viscous Lift Dependent Drag Factor", Units.Unitless, "viscous_lift_dependent_drag_factor"),
-            ("Lift to Drag Adjustment", Units.Unitless, "lift_to_drag_adjustment"),
+            ("Lift-to-Drag Adjustment", Units.Unitless, "lift_to_drag_adjustment"),
             ("Drag Coefficient Increment", Units.Unitless, "drag_coefficient_increment"),
             ("Spoiler Drag Increment", Units.Unitless, "spoiler_drag_increment"),
-            ("Oswald Efficiency Factor", Units.Unitless, "oswald_efficiency_factor"),
-            ("Span Efficiency", Units.Unitless, "span_efficiency"),
+            # ("Oswald Efficiency Factor", Units.Unitless, "oswald_efficiency_factor"),
+            # ("Span Efficiency", Units.Unitless, "span_efficiency"),
             ("Maximum Lift Coefficient", Units.Unitless, "maximum_lift_coefficient"),
             ("Begin Drag Rise Mach Number", Units.Unitless, "begin_drag_rise_mach_number"),
             ("End Drag Rise Mach Number", Units.Unitless, "end_drag_rise_mach_number"),
-            ("Transonic Drag Rise Multiplier", Units.Unitless, "transonic_drag_rise_multiplier"),
+            ("Transonic Drag Multiplier", Units.Unitless, "transonic_drag_multiplier"),
             ("Use Surrogate", Units.Boolean, "use_surrogate"),
             ("Propeller Wake Model", Units.Boolean, "propeller_wake_model"),
             ("Model Fuselage", Units.Boolean, "model_fuselage"),
@@ -80,8 +81,13 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
         self.main_layout.addWidget(self.analysis_selector)
 
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
-        self.main_layout.addWidget(self.data_entry_widget)
 
+        # Load defaults
+        with open("defaults/aerodynamic_analysis.json", "r") as defaults:
+            self.defaults = json.load(defaults)
+        
+        self.data_entry_widget.load_data(self.defaults[0])
+        self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
         self.setLayout(self.main_layout)
@@ -97,6 +103,7 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
 
         self.main_layout.removeWidget(self.data_entry_widget)
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
+        self.data_entry_widget.load_data(self.defaults[1])
         # self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.insertWidget(
             self.main_layout.count() - 1, self.data_entry_widget)
@@ -126,6 +133,5 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
             user_label = data_unit_label[0]
 
             set_data(aerodynamics, rcaide_label, values_si[user_label])
-
+        
         return aerodynamics
-

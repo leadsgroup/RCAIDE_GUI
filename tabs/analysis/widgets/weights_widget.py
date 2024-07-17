@@ -1,12 +1,12 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from utilities import create_line_bar
-from tabs.analysis.widgets import AnalysisWidget
+from tabs.analysis.widgets import AnalysisDataWidget
 
 import RCAIDE
 
 
-class WeightsWidget(QWidget, AnalysisWidget):
+class WeightsWidget(QWidget, AnalysisDataWidget):
     def __init__(self):
         super(WeightsWidget, self).__init__()
         self.main_layout = QVBoxLayout()

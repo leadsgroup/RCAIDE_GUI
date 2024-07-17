@@ -1,12 +1,12 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QComboBox
 
 from utilities import create_line_bar
-from tabs.analysis.widgets import AnalysisWidget
+from tabs.analysis.widgets import AnalysisDataWidget
 
 import RCAIDE
 
 
-class AtmosphereWidget(QWidget, AnalysisWidget):
+class AtmosphereWidget(QWidget, AnalysisDataWidget):
     def __init__(self):
         super(AtmosphereWidget, self).__init__()
         self.main_layout = QVBoxLayout()

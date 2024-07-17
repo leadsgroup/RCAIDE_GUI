@@ -1,10 +1,9 @@
 import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
+import qdarktheme
 
 from tabs import *
-
-import qdarktheme
 
 
 class App(QMainWindow):
@@ -42,10 +41,9 @@ class App(QMainWindow):
         self.tabs.currentChanged.connect(self.on_tab_change)
 
         self.tabs.addTab(home.get_widget(), "Home")
-        geometry_widget = geometry.get_widget()
-        self.tabs.addTab(geometry_widget, "Geometry")
-        self.tabs.addTab(aircraft_configs.get_widget(
-            geometry_widget), "Aircraft Configurations")
+        self.tabs.addTab(geometry.get_widget(), "Geometry")
+        # TODO self.tabs.addTab(AircraftConfigsWidget(), "Visualize Geometry")
+        self.tabs.addTab(aircraft_configs.get_widget(), "Aircraft Configurations")
         self.tabs.addTab(analysis.get_widget(), "Analysis")
         self.tabs.addTab(mission.get_widget(), "Mission")
         self.tabs.addTab(solve.get_widget(), "Solve")
@@ -56,14 +54,13 @@ class App(QMainWindow):
         # Create the theme switch widget
         # self.theme_switch = ThemeSwitch()
 
-
     def on_tab_change(self, index: int):
         if index != 2:
             return
-        
+
         current_frame = self.tabs.currentWidget()
         assert isinstance(current_frame, aircraft_configs.AircraftConfigsWidget)
-        
+
         current_frame.update_layout()
 
 
