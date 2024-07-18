@@ -191,3 +191,10 @@ class DataEntryWidget(QWidget):
                 value, index = data[label]
                 line_edit.setText(str(value))
                 unit_picker.set_index(index)
+    
+    # TODO implement mark_save and changed_since_save
+    def mark_save(self):
+        pass
+    
+    def changed_since_save(self):
+        pass
