@@ -42,7 +42,7 @@ class App(QMainWindow):
 
         self.tabs.addTab(home.get_widget(), "Home")
         self.tabs.addTab(geometry.get_widget(), "Geometry")
-        # TODO self.tabs.addTab(AircraftConfigsWidget(), "Visualize Geometry")
+        self.tabs.addTab(TabWidget(), "Visualize Geometry")
         self.tabs.addTab(aircraft_configs.get_widget(), "Aircraft Configurations")
         self.tabs.addTab(analysis.get_widget(), "Analysis")
         self.tabs.addTab(mission.get_widget(), "Mission")
