@@ -1,7 +1,6 @@
-from PyQt6.QtCore import QLine
 from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, QLabel, QLineEdit
 
-from tabs.geometry.geometry import GeometryWidget
+from tabs import TabWidget
 from utilities import Units, create_line_bar
 from widgets import DataEntryWidget
 
@@ -9,7 +8,7 @@ import values
 # import RCAIDE
 
 
-class AircraftConfigsWidget(QWidget):
+class AircraftConfigsWidget(TabWidget):
     def __init__(self):
         super().__init__()
         self.vehicle = None
@@ -100,7 +99,7 @@ class AircraftConfigsWidget(QWidget):
 
         assert self.prop_de_widget is not None
         self.cs_de_widget.clear_values()
-        
+
         self.index = -1
 
     def get_data(self):
@@ -126,12 +125,12 @@ class AircraftConfigsWidget(QWidget):
 
     def load_data(self, data):
         self.name_line_edit.setText(data["config name"])
-        
-        assert self.cs_de_widget is not None and self.prop_de_widget is not None        
+
+        assert self.cs_de_widget is not None and self.prop_de_widget is not None
         self.cs_de_widget.load_data(data["cs deflections"])
         self.prop_de_widget.load_data(data["propulsors"])
 
-    def on_tree_item_clicked(self, item : QTreeWidgetItem, _col):
+    def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         self.index = self.tree.indexOfTopLevelItem(item)
         self.load_data(values.aircraft_configs[self.index])
 

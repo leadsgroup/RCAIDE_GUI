@@ -5,10 +5,11 @@ from PyQt6.QtWidgets import QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QTre
     QTreeWidgetItem, QHeaderView
 
 from tabs.analysis.widgets import *
+from tabs import TabWidget
 from utilities import create_scroll_area
 
 
-class AnalysisWidget(QWidget):
+class AnalysisWidget(TabWidget):
     def __init__(self):
         super(AnalysisWidget, self).__init__()
 

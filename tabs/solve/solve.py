@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel
 from PyQt6.QtCore import Qt
 
-# import values
+from tabs import TabWidget
 
 
-class SolveWidget(QWidget):
+class SolveWidget(TabWidget):
     def __init__(self):
         super(SolveWidget, self).__init__()
 

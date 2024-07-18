@@ -5,11 +5,12 @@ import RCAIDE
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit
 
 from tabs.geometry.frames import *
+from tabs import TabWidget
 from utilities import set_data
 import values
 
 
-class GeometryWidget(QWidget):
+class GeometryWidget(TabWidget):
     def __init__(self):
         """Create a widget for entering vehicle geometry."""
         super(GeometryWidget, self).__init__()

@@ -55,11 +55,8 @@ class App(QMainWindow):
         # self.theme_switch = ThemeSwitch()
 
     def on_tab_change(self, index: int):
-        if index != 2:
-            return
-
         current_frame = self.tabs.currentWidget()
-        assert isinstance(current_frame, aircraft_configs.AircraftConfigsWidget)
+        assert isinstance(current_frame, TabWidget)
 
         current_frame.update_layout()
 

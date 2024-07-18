@@ -3,12 +3,13 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
     QTreeWidgetItem
 
 from tabs.mission.widgets import MissionSegmentWidget
+from tabs import TabWidget
 from utilities import create_scroll_area
 
 import values
 
 
-class MissionWidget(QWidget):
+class MissionWidget(TabWidget):
     def __init__(self, geometry_widget):
         super().__init__()
 
@@ -80,7 +81,9 @@ class MissionWidget(QWidget):
             self.tree.addTopLevelItem(new_tree_item)
 
     def update_layout(self):
-        pass
+        for widget in self.segment_widgets:
+            assert isinstance(widget, MissionSegmentWidget)
+            widget.update_configs()
 
 
 # Function to get the widget

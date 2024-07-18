@@ -2,7 +2,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
-from utilities import Units, create_line_bar
+from utilities import Units, create_line_bar, clear_layout
+import values
 from widgets import DataEntryWidget
 
 
@@ -55,12 +56,12 @@ class MissionSegmentWidget(QWidget):
 
     # Trying to make sure labels more than 4 get a new row but having clearing problems
     def create_subsegment_layout(self, subsegment_type):
-        print("Creating subsegment layout for type:", subsegment_type)
+        # print("Creating subsegment layout for type:", subsegment_type)
 
         # Clear any existing subsegment layout
-        self.clear_layout(self.subsegment_layout)
-        print("Cleared existing subsegment layout.")
-        self.clear_layout(self.dof_layout)
+        clear_layout(self.subsegment_layout)
+        # print("Cleared existing subsegment layout.")
+        clear_layout(self.dof_layout)
 
         # Get data fields for the selected subsegment type from the dictionary
         data_fields = self.subsegment_data_fields[self.top_dropdown.currentIndex()].get(
@@ -68,7 +69,12 @@ class MissionSegmentWidget(QWidget):
 
         # Initialize or reuse the existing layout
         self.subsegment_layout = QVBoxLayout()
-
+        
+        self.config_layout = QHBoxLayout()
+        
+        self.update_configs()
+        self.subsegment_layout.addLayout(self.config_layout)
+        
         subsegment_entry_widget = DataEntryWidget(data_fields)
         self.subsegment_layout.addWidget(subsegment_entry_widget)
 
@@ -89,7 +95,7 @@ class MissionSegmentWidget(QWidget):
 
         # Add the subsegment layout to the segments layout
         self.segment_layout.addLayout(self.subsegment_layout)
-        print("Subsegment layout created and added.")
+        # print("Subsegment layout created and added.")
 
         # Align subsegment layout to top
         self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -98,20 +104,7 @@ class MissionSegmentWidget(QWidget):
             QLabel("<b>Select Flight Controls</b>"))
         self.subsegment_layout.addWidget(create_line_bar())
         self.subsegment_layout.addWidget(FlightControlsWidget())
-
-    def clear_layout(self, layout):
-        if layout is not None:
-            while layout.count():
-                item = layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    # Remove widget
-                    widget.deleteLater()
-                else:
-                    sublayout = item.layout()
-                    if sublayout is not None:
-                        # Recursively clear sublayout
-                        self.clear_layout(sublayout)
+        self.subsegment_layout.addWidget(create_line_bar())
 
     def populate_nested_dropdown(self, index, nested_dropdown):
         nested_dropdown.clear()
@@ -174,6 +167,15 @@ class MissionSegmentWidget(QWidget):
         data = {"segment name": self.segment_name_input.text()}
 
         return data
+    
+    def update_configs(self):
+        clear_layout(self.config_layout)
+        
+        config_names = [config["config name"] for config in values.aircraft_configs]
+        self.config_selector = QComboBox()
+        self.config_selector.addItems(config_names)
+        self.config_layout.addWidget(QLabel("Aircraft Configuration: "), 3)
+        self.config_layout.addWidget(self.config_selector, 7)
 
     # Dictionary to map subsegment types to their corresponding data fields
     subsegment_data_fields = [{
