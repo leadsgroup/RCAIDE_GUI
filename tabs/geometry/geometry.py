@@ -31,8 +31,9 @@ class GeometryWidget(TabWidget):
             values.geometry_data.append([])
 
         base_layout = QHBoxLayout()
-        self.main_layout = QStackedLayout()
         self.tree_frame_layout = QVBoxLayout()
+        self.right_layout = QVBoxLayout()
+        self.main_layout = QStackedLayout()
 
         for index, frame in enumerate(self.frames):
             frame_widget = frame()
@@ -61,9 +62,10 @@ class GeometryWidget(TabWidget):
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
 
-        # main_layout.addWidget(Color("navy"), 7)
+        self.right_layout.addLayout(self.main_layout, 7)
+        self.right_layout.addWidget(QWidget(), 3)
         base_layout.addLayout(self.tree_frame_layout, 1)
-        base_layout.addLayout(self.main_layout, 4)
+        base_layout.addLayout(self.right_layout, 4)
 
         self.main_layout.setSpacing(3)
         base_layout.setSpacing(3)

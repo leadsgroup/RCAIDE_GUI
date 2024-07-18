@@ -9,8 +9,8 @@ x 2024-07-16 2024-07-11 load default analysis options @analysis
 x 2024-07-17 2024-07-11 show saved mission segments on mission tree @mission
 x 2024-07-17 2024-07-11 show propulsors on aircraft configs tab @configs
 x 2024-07-11 add functionality to save and new config in aircraft configs tab @configs
-x 2024-07-11 select config in mission tab - dropdown with options, goes after segment type, has header
-2024-07-11 split geometry screen into 2 to add aircraft visualization
+x 2024-07-11 select config in mission tab - dropdown with options, goes after segment type, has header @mission
+x 2024-07-11 split geometry screen into 2 to add aircraft visualization @geometry
 x 2024-07-11 add visualize geometry tab
 2024-07-11 start RCAIDE Integration to aircraft configs, mission tab
 2024-07-11 load aircraft
