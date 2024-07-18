@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt6.QtWidgets import QMessageBox, QFrame, QScrollArea, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QLayout, QMessageBox, QFrame, QScrollArea, QVBoxLayout, QWidget
 
 
 def show_popup(message, parent):
@@ -47,6 +47,22 @@ def set_data(obj: dict, key: str, data):
         return
 
     obj[key] = data
+
+def clear_layout(layout: QLayout):
+    """Clear all widgets from the layout."""
+    while layout.count():
+        item = layout.takeAt(0)
+        
+        assert item is not None
+        widget = item.widget()
+        if widget is not None:
+            # Remove widget
+            widget.deleteLater()
+        else:
+            sublayout = item.layout()
+            if sublayout is not None:
+                # Recursively clear sublayout
+                clear_layout(sublayout)
 
 
 class Units:
