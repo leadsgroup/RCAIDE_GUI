@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
-from utilities import show_popup, create_line_bar, Units
+from utilities import show_popup, create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
 
 
@@ -13,7 +13,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         """Create a frame for entering nacelle data."""
         super(NacelleFrame, self).__init__()
 
-        self.create_scroll_area()
+        create_scroll_area(self)
         self.main_layout.addWidget(QLabel("<b>Nacelle</b>"))
         self.main_layout.addWidget(create_line_bar())
 

@@ -2,34 +2,26 @@ from typing import cast
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
-    QTreeWidgetItem, QScrollArea, QHeaderView
+    QTreeWidgetItem, QHeaderView
 
 from tabs.analysis.widgets import *
+from utilities import create_scroll_area
 
 
-class AnalysisDataWidget(QWidget):
+class AnalysisWidget(QWidget):
     def __init__(self):
-        super(AnalysisDataWidget, self).__init__()
+        super(AnalysisWidget, self).__init__()
 
         options = ["Aerodynamics", "Atmospheric", "Planets", "Weights",
                    "Propulsion", "Costs", "Noise", "Stability"]
 
-        self.tree_frame = QWidget()
-        self.tree_frame_layout = QVBoxLayout(self.tree_frame)
-        
-        save_button = QPushButton("Save All Analysis Data")
-        save_button.clicked.connect(self.save_analyses)
-        self.tree_frame_layout.addWidget(save_button)
-
+        self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
         self.tree_frame_layout.addWidget(self.tree_widget)
 
         self.tree_widget.setColumnCount(2)
         self.tree_widget.setHeaderLabels(["Analysis", "Enabled"])
-        
-        header = self.tree_widget.header()
-        assert header is not None
-        header.setSectionResizeMode(
+        self.tree_widget.header().setSectionResizeMode(
             0, QHeaderView.ResizeMode.ResizeToContents)
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
@@ -46,15 +38,19 @@ class AnalysisDataWidget(QWidget):
         self.tree_widget.itemChanged.connect(self.handleItemChanged)
 
         self.base_layout = QHBoxLayout()
-        self.base_layout.addWidget(self.tree_frame, 1)
+        self.base_layout.addLayout(self.tree_frame_layout, 1)
 
-        self.create_scroll_area()
+        self.main_layout = None
+        layout_scroll = create_scroll_area(self, False)
+        self.base_layout.addLayout(layout_scroll, 4)
+
+        assert self.main_layout is not None and isinstance(self.main_layout, QVBoxLayout)
         # Define actions based on the selected
-        self.widgets = [AerodynamicsWidget(), AtmosphereWidget(), PlanetsWidget(), WeightsWidget(),
-                        PropulsionWidget(), CostsWidget(), NoiseWidget(), StabilityWidget()]
+        self.widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
+                        PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
 
         for widget in self.widgets:
-            self.main_layout.addWidget(widget)
+            self.main_layout.addWidget(widget())
 
         self.main_layout.setSpacing(3)
         self.base_layout.setSpacing(3)
@@ -73,17 +69,6 @@ class AnalysisDataWidget(QWidget):
         assert widget is not None
         widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
 
-    def create_scroll_area(self):
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_content = QWidget()
-        scroll_area.setWidget(scroll_content)
-        self.main_layout = QVBoxLayout(scroll_content)
-        layout_scroll = QVBoxLayout()
-        layout_scroll.addWidget(scroll_area)
-        layout_scroll.setContentsMargins(0, 0, 0, 0)
-        self.base_layout.addLayout(layout_scroll, 4)
-
     def save_analyses(self):
         for widget in self.widgets:
             # assert issubclass(widget, AnalysisDataWidget)
@@ -91,4 +76,4 @@ class AnalysisDataWidget(QWidget):
 
 
 def get_widget() -> QWidget:
-    return AnalysisDataWidget()
+    return AnalysisWidget()

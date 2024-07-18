@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, \
     QComboBox
 
 from tabs.analysis.widgets import AnalysisDataWidget
-from utilities import create_line_bar, Units, set_data
+from utilities import create_line_bar, create_scroll_area, Units, set_data
 from widgets.data_entry_widget import DataEntryWidget
 
 import RCAIDE

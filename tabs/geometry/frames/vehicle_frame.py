@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
     QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames import GeometryFrame
-from utilities import show_popup, create_line_bar, set_data, Units
+from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area
 from widgets import DataEntryWidget
 
 
@@ -25,7 +25,7 @@ class VehicleFrame(QWidget, GeometryFrame):
         self.data = []
         self.data_entry_widget = None
         self.main_layout = QVBoxLayout()
-        self.create_scroll_area()
+        create_scroll_area(self)
 
         self.main_layout.addWidget(QLabel("<b>Vehicle</b>"))
         self.main_layout.addWidget(create_line_bar())

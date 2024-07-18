@@ -21,24 +21,32 @@ def create_line_bar():
 
     return line_bar
 
-def create_scroll_area(widget: QWidget):
+
+def create_scroll_area(widget: QWidget, set_layout=True):
     scroll_area = QScrollArea()
     scroll_area.setWidgetResizable(True)
     scroll_content = QWidget()
     scroll_area.setWidget(scroll_content)
     widget.main_layout = QVBoxLayout(scroll_content)
     layout_scroll = QVBoxLayout()
-    layout_scroll.addWid
+    layout_scroll.addWidget(scroll_area)
+    layout_scroll.setContentsMargins(0, 0, 0, 0)
+    if set_layout:
+        print("Setting layout")
+        widget.setLayout(layout_scroll)
 
-def set_data(obj : dict, key : str, data):
+    return layout_scroll
+
+
+def set_data(obj: dict, key: str, data):
     key_list = key.split(".")
     key = key_list[0]
     key_list = key_list[1:]
-    
+
     if len(key_list) > 0:
         set_data(obj[key], ".".join(key_list), data)
         return
-    
+
     obj[key] = data
 
 
