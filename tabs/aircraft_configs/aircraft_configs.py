@@ -94,11 +94,10 @@ class AircraftConfigsWidget(TabWidget):
         self.main_layout.insertWidget(6, self.prop_de_widget)
 
     def new_configuration(self):
-        assert self.cs_de_widget is not None
+        assert self.cs_de_widget is not None and self.prop_de_widget is not None
         self.cs_de_widget.clear_values()
-
-        assert self.prop_de_widget is not None
         self.cs_de_widget.clear_values()
+        self.name_line_edit.clear()
 
         self.index = -1
 
