@@ -12,22 +12,31 @@ data_units_labels = [
         ("Span Fraction End", Units.Unitless),
         ("Deflection", Units.Angle),
         ("Chord Fraction", Units.Unitless),
-    ],
-    [
+    ], [
         ("Span Fraction Start", Units.Unitless),
         ("Span Fraction End", Units.Unitless),
         ("Deflection", Units.Angle),
         ("Chord Fraction", Units.Unitless),
-    ],
-    [
+    ], [
         ("Span Fraction Start", Units.Unitless),
         ("Span Fraction End", Units.Unitless),
         ("Deflection", Units.Angle),
         ("Chord Fraction", Units.Unitless),
         ("Number of Slots", Units.Count),
-    ],
+    ], [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+    ], [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
+    ]
 ]
-cs_types = ["Aileron", "Slat", "Flap"]
+
+cs_types = ["Aileron", "Slat", "Flap", "Elevator", "Rudder"]
 
 
 class WingCSWidget(QWidget):
@@ -49,8 +58,10 @@ class WingCSWidget(QWidget):
     def init_ui(self, section_data):
         self.main_layout = QVBoxLayout()
         # add spacing
-        spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_left = QSpacerItem(
+            80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
         self.name_layout.addWidget(QLabel("Control Surface Name: "))
         self.name_layout.addWidget(QLineEdit(self))
@@ -106,6 +117,10 @@ class WingCSWidget(QWidget):
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
         elif self.cs_type == 2:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+        elif self.cs_type == 3:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
+        elif self.cs_type == 4:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
 
         cs.tag = data["CS name"]
         cs.span_fraction_start = data["Span Fraction Start"][0]

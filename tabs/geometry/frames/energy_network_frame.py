@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, Q
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanWidget, FuelLineWidget
-from utilities import show_popup
+from utilities import show_popup, clear_layout
 
 
 class EnergyNetworkFrame(QWidget, GeometryFrame):
@@ -229,7 +229,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             self.energy_network_combo.setCurrentIndex(network_index)
 
         # Clear existing sections before loading new ones
-        self.clear_layout(self.energy_network_layout)
+        clear_layout(self.energy_network_layout)
 
         # Load sections based on the selected network
         if selected_network == "Turbofan":
@@ -265,7 +265,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
     def display_selected_network(self, index):
         selected_network = self.energy_network_combo.currentText()
         # Clear the layout first
-        self.clear_layout(self.energy_network_layout)
+        clear_layout(self.energy_network_layout)
 
         if selected_network == "Turbofan":
             self.main_energy_network_widget = TurbofanWidget()
@@ -277,10 +277,3 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         else:
             # Handle other energy network options here
             pass
-
-    def clear_layout(self, layout):
-        """Clear all widgets from the layout."""
-        while layout.count():
-            child = layout.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()

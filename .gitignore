@@ -268,3 +268,6 @@ cython_debug/
 data/*
 
 meeting_notes.txt
+pyrightconfig.json
+
+src/*

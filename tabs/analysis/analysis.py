@@ -1,21 +1,22 @@
 from typing import cast
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
-    QTreeWidgetItem, QScrollArea, QHeaderView
+from PyQt6.QtWidgets import QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
+    QTreeWidgetItem, QHeaderView
 
 from tabs.analysis.widgets import *
+from tabs import TabWidget
+from utilities import create_scroll_area
 
 
-class AnalysisWidget(QWidget):
+class AnalysisWidget(TabWidget):
     def __init__(self):
         super(AnalysisWidget, self).__init__()
 
         options = ["Aerodynamics", "Atmospheric", "Planets", "Weights",
                    "Propulsion", "Costs", "Noise", "Stability"]
 
-        self.tree_frame = QWidget()
-        self.tree_frame_layout = QVBoxLayout(self.tree_frame)
+        self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
         self.tree_frame_layout.addWidget(self.tree_widget)
 
@@ -38,9 +39,13 @@ class AnalysisWidget(QWidget):
         self.tree_widget.itemChanged.connect(self.handleItemChanged)
 
         self.base_layout = QHBoxLayout()
-        self.base_layout.addWidget(self.tree_frame, 1)
+        self.base_layout.addLayout(self.tree_frame_layout, 1)
 
-        self.create_scroll_area()
+        self.main_layout = None
+        layout_scroll = create_scroll_area(self, False)
+        self.base_layout.addLayout(layout_scroll, 4)
+
+        assert self.main_layout is not None and isinstance(self.main_layout, QVBoxLayout)
         # Define actions based on the selected
         self.widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
                         PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
@@ -65,16 +70,10 @@ class AnalysisWidget(QWidget):
         assert widget is not None
         widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
 
-    def create_scroll_area(self):
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_content = QWidget()
-        scroll_area.setWidget(scroll_content)
-        self.main_layout = QVBoxLayout(scroll_content)
-        layout_scroll = QVBoxLayout()
-        layout_scroll.addWidget(scroll_area)
-        layout_scroll.setContentsMargins(0, 0, 0, 0)
-        self.base_layout.addLayout(layout_scroll, 4)
+    def save_analyses(self):
+        for widget in self.widgets:
+            # assert issubclass(widget, AnalysisDataWidget)
+            widget.create_analysis()
 
 
 def get_widget() -> QWidget:

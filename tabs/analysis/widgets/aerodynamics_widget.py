@@ -1,72 +1,15 @@
+import json
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, \
-    QComboBox, QSpacerItem, QSizePolicy
+    QComboBox
 
-from tabs.analysis.widgets import AnalysisWidget
-from utilities import create_line_bar, Units
+from tabs.analysis.widgets import AnalysisDataWidget
+from utilities import create_line_bar, create_scroll_area, Units, set_data
 from widgets.data_entry_widget import DataEntryWidget
 
 import RCAIDE
 
 
-class AerodynamicsWidget(QWidget, AnalysisWidget):
-    analyses = ["Subsonic VLM", "Supersonic VLM"]
-    data_units_labels = [
-        [
-            ("Fuselage Lift Correction", Units.Unitless),
-            ("Trim Drag Correction Factor", Units.Unitless),
-            ("Wing Parasite Drag Form Factor", Units.Unitless),
-            ("Fuselage Parasite Drag Form Factor", Units.Unitless),
-            ("Maximum Lift Coefficient Factor", Units.Unitless),
-            ("Lift-to-Drag Adjustment", Units.Unitless),
-            ("Viscous Lift Dependent Drag Factor", Units.Unitless),
-            ("Drag Coefficient Increment", Units.Unitless),
-            ("Spoiler Drag Increment", Units.Unitless),
-            ("Maximum Lift Coefficient", Units.Unitless),
-            ("Number of Spanwise Vortices", Units.Count),
-            ("Number of Chordwise Vortices", Units.Count),
-            ("Use Surrogate", Units.Boolean),
-            ("Recalculate Total Wetted Area", Units.Boolean),
-            ("Propeller Wake Model", Units.Boolean),
-            ("Discretize Control Surfaces", Units.Boolean),
-            ("Model Fuselage", Units.Boolean),
-            ("Model Nacelle", Units.Boolean),
-            ("Spanwise Cosine Spacing", Units.Boolean),
-            ("Leading Edge Suction Multiplier", Units.Unitless),
-            ("Use VORLAX Matrix Calculation", Units.Boolean),
-        ],
-        [
-            ("Fuselage Lift Correction", Units.Unitless),
-            ("Trim Drag Correction Factor", Units.Unitless),
-            ("Wing Parasite Drag Form Factor", Units.Unitless),
-            ("Fuselage Parasite Drag Form Factor", Units.Unitless),
-            ("Viscous Lift Dependent Drag Factor", Units.Unitless),
-            ("Lift to Drag Adjustment", Units.Unitless),
-            ("Drag Coefficient Increment", Units.Unitless),
-            ("Spoiler Drag Increment", Units.Unitless),
-            ("Oswald Efficiency Factor", Units.Unitless),
-            ("Span Efficiency", Units.Unitless),
-            ("Maximum Lift Coefficient", Units.Unitless),
-            ("Begin Drag Rise Mach Number", Units.Unitless),
-            ("End Drag Rise Mach Number", Units.Unitless),
-            ("Transonic Drag Rise Multiplier", Units.Unitless),
-            ("Use Surrogate", Units.Boolean),
-            ("Propeller Wake Model", Units.Boolean),
-            ("Model Fuselage", Units.Boolean),
-            ("Recalculate Total Wetted Area", Units.Boolean),
-            ("Model Nacelle", Units.Boolean),
-            ("Discretize Control Surfaces", Units.Boolean),
-            ("Peak Mach Number", Units.Unitless),
-            ("Volume Wave Drag Scaling", Units.Unitless),
-            ("Fuselage Parasite Drag Begin Blend Mach", Units.Unitless),
-            ("Fuselage Parasite Drag End Blend Mach", Units.Unitless),
-            ("Number of Spanwise Vortices", Units.Count),
-            ("Number of Chordwise Vortices", Units.Count),
-            ("Spanwise Cosine Spacing", Units.Boolean),
-            ("Leading Edge Suction Multiplier", Units.Unitless),
-            ("Use VORLAX Matrix Calculation", Units.Boolean),
-        ],
-    ]
-
+class AerodynamicsWidget(QWidget, AnalysisDataWidget):
     def __init__(self):
         super(AerodynamicsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -80,8 +23,13 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
         self.main_layout.addWidget(self.analysis_selector)
 
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
-        self.main_layout.addWidget(self.data_entry_widget)
 
+        # Load defaults
+        with open("defaults/aerodynamic_analysis.json", "r") as defaults:
+            self.defaults = json.load(defaults)
+
+        self.data_entry_widget.load_data(self.defaults[0])
+        self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
         self.setLayout(self.main_layout)
@@ -97,6 +45,7 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
 
         self.main_layout.removeWidget(self.data_entry_widget)
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
+        self.data_entry_widget.load_data(self.defaults[1])
         # self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.insertWidget(
             self.main_layout.count() - 1, self.data_entry_widget)
@@ -121,43 +70,96 @@ class AerodynamicsWidget(QWidget, AnalysisWidget):
         else:
             aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Supersonic_VLM()
 
-        settings = aerodynamics.settings
-        settings.fuselage_lift_correction = values_si["Fuselage Lift Correction"][0]
-        settings.trim_drag_correction_factor = values_si["Trim Drag Correction Factor"][0]
-        settings.wing_parasite_drag_form_factor = values_si["Wing Parasite Drag Form Factor"][0]
-        settings.fuselage_parasite_drag_form_factor = values_si[
-            "Fuselage Parasite Drag Form Factor"]
-        settings.lift_to_drag_adjustment = values_si["Lift-to-Drag Adjustment"][0]
-        settings.viscous_lift_dependent_drag_factor = values_si[
-            "Viscous Lift Dependent Drag Factor"]
-        settings.drag_coefficient_increment = values_si["Drag Coefficient Increment"][0]
-        settings.spoiler_drag_increment = values_si["Spoiler Drag Increment"][0]
-        settings.number_of_spanwise_vortices = values_si["Number of Spanwise Vortices"][0]
-        settings.number_of_chordwise_vortices = values_si["Number of Chordwise Vortices"][0]
-        settings.use_surrogate = values_si["Use Surrogate"][0]
-        settings.recalculate_total_wetted_area = values_si["Recalculate Total Wetted Area"][0]
-        settings.propeller_wake_model = values_si["Propeller Wake Model"][0]
-        settings.discretize_control_surfaces = values_si["Discretize Control Surfaces"][0]
-        settings.model_fuselage = values_si["Model Fuselage"][0]
-        settings.model_nacelle = values_si["Model Nacelle"][0]
-        settings.spanwise_cosine_spacing = values_si["Spanwise Cosine Spacing"][0]
-        settings.leading_edge_suction_multiplier = values_si["Leading Edge Suction Multiplier"][0]
-        settings.use_VORLAX_matrix_calculation = values_si["Use VORLAX Matrix Calculation"][0]
-        settings.maximum_lift_coefficient = values_si["Maximum Lift Coefficient"][0]
+        for data_unit_label in self.data_units_labels[analysis_num]:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
 
-        if analysis_num == 0:
-            settings.maximum_lift_coefficient_factor = values_si["Maximum Lift Coefficient Factor"][0]
-        elif analysis_num == 1:
-            settings.oswald_efficiency_factor = values_si["Oswald Efficiency Factor"][0]
-            settings.span_efficiency = values_si["Span Efficiency"][0]
-            settings.begin_drag_rise_mach_number = values_si["Begin Drag Rise Mach Number"][0]
-            settings.end_drag_rise_mach_number = values_si["End Drag Rise Mach Number"][0]
-            settings.transonic_drag_rise_multiplier = values_si["Transonic Drag Rise Multiplier"][0]
-            settings.peak_mach_number = values_si["Peak Mach Number"][0]
-            settings.volume_wave_drag_scaling = values_si["Volume Wave Drag Scaling"][0]
-            settings.fuselage_parasite_drag_begin_blend_mach = values_si[
-                "Fuselage Parasite Drag Begin Blend Mach"]
-            settings.fuselage_parasite_drag_end_blend_mach = values_si[
-                "Fuselage Parasite Drag End Blend Mach"]
+            set_data(aerodynamics, rcaide_label, values_si[user_label])
 
         return aerodynamics
+
+    analyses = ["Subsonic VLM", "Supersonic VLM"]
+    data_units_labels = [
+        [
+            ("Fuselage Lift Correction", Units.Unitless, "fuselage_lift_correction"),
+            ("Trim Drag Correction Factor", Units.Unitless,
+             "trim_drag_correction_factor"),
+            ("Wing Parasite Drag Form Factor", Units.Unitless,
+             "wing_parasite_drag_form_factor"),
+            ("Fuselage Parasite Drag Form Factor", Units.Unitless,
+             "fuselage_parasite_drag_form_factor"),
+            ("Maximum Lift Coefficient Factor", Units.Unitless,
+             "maximum_lift_coefficient_factor"),
+            ("Lift-to-Drag Adjustment", Units.Unitless, "lift_to_drag_adjustment"),
+            ("Viscous Lift Dependent Drag Factor", Units.Unitless,
+             "viscous_lift_dependent_drag_factor"),
+            ("Drag Coefficient Increment", Units.Unitless,
+             "drag_coefficient_increment"),
+            ("Spoiler Drag Increment", Units.Unitless, "spoiler_drag_increment"),
+            ("Maximum Lift Coefficient", Units.Unitless, "maximum_lift_coefficient"),
+            ("Number of Spanwise Vortices", Units.Count,
+             "number_of_spanwise_vortices"),
+            ("Number of Chordwise Vortices", Units.Count,
+             "number_of_chordwise_vortices"),
+            ("Use Surrogate", Units.Boolean, "use_surrogate"),
+            ("Recalculate Total Wetted Area", Units.Boolean,
+             "recalculate_total_wetted_area"),
+            ("Propeller Wake Model", Units.Boolean, "propeller_wake_model"),
+            ("Discretize Control Surfaces", Units.Boolean,
+             "discretize_control_surfaces"),
+            ("Model Fuselage", Units.Boolean, "model_fuselage"),
+            ("Model Nacelle", Units.Boolean, "model_nacelle"),
+            ("Spanwise Cosine Spacing", Units.Boolean, "spanwise_cosine_spacing"),
+            ("Leading Edge Suction Multiplier", Units.Unitless,
+             "leading_edge_suction_multiplier"),
+            ("Use VORLAX Matrix Calculation", Units.Boolean,
+             "use_VORLAX_matrix_calculation"),
+        ],
+        [
+            ("Fuselage Lift Correction", Units.Unitless, "fuselage_lift_correction"),
+            ("Trim Drag Correction Factor", Units.Unitless,
+             "trim_drag_correction_factor"),
+            ("Wing Parasite Drag Form Factor", Units.Unitless,
+             "wing_parasite_drag_form_factor"),
+            ("Fuselage Parasite Drag Form Factor", Units.Unitless,
+             "fuselage_parasite_drag_form_factor"),
+            ("Viscous Lift Dependent Drag Factor", Units.Unitless,
+             "viscous_lift_dependent_drag_factor"),
+            ("Lift-to-Drag Adjustment", Units.Unitless, "lift_to_drag_adjustment"),
+            ("Drag Coefficient Increment", Units.Unitless,
+             "drag_coefficient_increment"),
+            ("Spoiler Drag Increment", Units.Unitless, "spoiler_drag_increment"),
+            # ("Oswald Efficiency Factor", Units.Unitless, "oswald_efficiency_factor"),
+            # ("Span Efficiency", Units.Unitless, "span_efficiency"),
+            ("Maximum Lift Coefficient", Units.Unitless, "maximum_lift_coefficient"),
+            ("Begin Drag Rise Mach Number", Units.Unitless,
+             "begin_drag_rise_mach_number"),
+            ("End Drag Rise Mach Number", Units.Unitless,
+             "end_drag_rise_mach_number"),
+            ("Transonic Drag Multiplier", Units.Unitless,
+             "transonic_drag_multiplier"),
+            ("Use Surrogate", Units.Boolean, "use_surrogate"),
+            ("Propeller Wake Model", Units.Boolean, "propeller_wake_model"),
+            ("Model Fuselage", Units.Boolean, "model_fuselage"),
+            ("Recalculate Total Wetted Area", Units.Boolean,
+             "recalculate_total_wetted_area"),
+            ("Model Nacelle", Units.Boolean, "model_nacelle"),
+            ("Discretize Control Surfaces", Units.Boolean,
+             "discretize_control_surfaces"),
+            ("Peak Mach Number", Units.Unitless, "peak_mach_number"),
+            ("Volume Wave Drag Scaling", Units.Unitless, "volume_wave_drag_scaling"),
+            ("Fuselage Parasite Drag Begin Blend Mach", Units.Unitless,
+             "fuselage_parasite_drag_begin_blend_mach"),
+            ("Fuselage Parasite Drag End Blend Mach", Units.Unitless,
+             "fuselage_parasite_drag_end_blend_mach"),
+            ("Number of Spanwise Vortices", Units.Count,
+             "number_of_spanwise_vortices"),
+            ("Number of Chordwise Vortices", Units.Count,
+             "number_of_chordwise_vortices"),
+            ("Spanwise Cosine Spacing", Units.Boolean, "spanwise_cosine_spacing"),
+            ("Leading Edge Suction Multiplier", Units.Unitless,
+             "leading_edge_suction_multiplier"),
+            ("Use VORLAX Matrix Calculation", Units.Boolean,
+             "use_VORLAX_matrix_calculation"),
+        ],
+    ]

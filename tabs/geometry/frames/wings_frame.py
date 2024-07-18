@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import WingCSWidget, WingSectionWidget
-from utilities import show_popup, create_line_bar, Units
+from utilities import show_popup, create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
 
 
@@ -14,11 +14,13 @@ class WingsFrame(QWidget, GeometryFrame):
         super(WingsFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
-        self.create_scroll_area()
+        create_scroll_area(self)
 
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
         self.main_layout.addWidget(create_line_bar())
+        
+        # TODO Add extra flags
 
         self.add_name_layout()
 

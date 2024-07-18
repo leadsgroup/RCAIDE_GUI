@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
 from widgets import Color
+from tabs import TabWidget
 
 
 def get_widget() -> QWidget:
@@ -19,6 +20,6 @@ def get_widget() -> QWidget:
     main_layout.setSpacing(3)
     base_layout.setSpacing(3)
 
-    base_widget = QWidget()
+    base_widget = TabWidget()
     base_widget.setLayout(base_layout)
     return base_widget

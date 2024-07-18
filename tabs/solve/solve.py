@@ -1,20 +1,26 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel
 from PyQt6.QtCore import Qt
 
+from tabs import TabWidget
 
-class SolveWidget(QWidget):
+
+class SolveWidget(TabWidget):
     def __init__(self):
         super(SolveWidget, self).__init__()
 
         base_layout = QHBoxLayout()
         tree_layout = QVBoxLayout()
         main_layout = QVBoxLayout()
+        
+        main_layout.addWidget(QLabel("Click Solve Button to View Plots"))
 
         solve_button = QPushButton("Solve")
+        # noinspection PyUnresolvedReferences
         solve_button.clicked.connect(self.run_solve)
 
         self.tree = QTreeWidget()
         self.init_tree()
+        tree_layout.addWidget(solve_button)
         tree_layout.addWidget(self.tree)
 
         base_layout.addLayout(tree_layout, 3)
@@ -40,24 +46,8 @@ class SolveWidget(QWidget):
 
     def run_solve(self):
         pass
-
+    
     plot_options = {
-        "Geometry": [
-            "Plot 3D Vehicle",
-            "Plot 3D Energy Network",
-            "Generate 3D Vehicle Geometry Data",
-            "Plot 3D Rotor",
-            "Generate 3D Blade Points",
-            "Plot 3D Nacelle",
-            "Generate 3D Basic Nacelle Points",
-            "Generate 3D BOR Nacelle Points",
-            "Generate 3D Stack Nacelle Points",
-            "Plot 3D Wing",
-            "Generate 3D Wing Points",
-            "Plot 3D Vehicle VLM Panelization",
-            "Plot Airfoil",
-            "Plot Rotor",
-        ],
         "Aerodynamics": [
             "Plot Airfoil Boundary Layer Properties",
             "Plot Airfoil Polar Files",

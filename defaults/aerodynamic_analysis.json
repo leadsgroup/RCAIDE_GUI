@@ -1,0 +1,202 @@
+[
+  {
+    "Fuselage Lift Correction": [
+      1.14,
+      0
+    ],
+    "Trim Drag Correction Factor": [
+      1.02,
+      0
+    ],
+    "Wing Parasite Drag Form Factor": [
+      1.1,
+      0
+    ],
+    "Fuselage Parasite Drag Form Factor": [
+      2.3,
+      0
+    ],
+    "Maximum Lift Coefficient Factor": [
+      1.0,
+      0
+    ],
+    "Lift-to-Drag Adjustment": [
+      0.0,
+      0
+    ],
+    "Viscous Lift Dependent Drag Factor": [
+      0.38,
+      0
+    ],
+    "Drag Coefficient Increment": [
+      0.0,
+      0
+    ],
+    "Spoiler Drag Increment": [
+      0.0,
+      0
+    ],
+    "Maximum Lift Coefficient": [
+      10000,
+      0
+    ],
+    "Number of Spanwise Vortices": [
+      15,
+      0
+    ],
+    "Number of Chordwise Vortices": [
+      5,
+      0
+    ],
+    "Use Surrogate": [
+      true,
+      0
+    ],
+    "Recalculate Total Wetted Area": [
+      false,
+      0
+    ],
+    "Propeller Wake Model": [
+      false,
+      0
+    ],
+    "Discretize Control Surfaces": [
+      false,
+      0
+    ],
+    "Model Fuselage": [
+      false,
+      0
+    ],
+    "Model Nacelle": [
+      false,
+      0
+    ],
+    "Spanwise Cosine Spacing": [
+      true,
+      0
+    ],
+    "Leading Edge Suction Multiplier": [
+      1.0,
+      0
+    ],
+    "Use VORLAX Matrix Calculation": [
+      false,
+      0
+    ]
+  },
+  {
+    "Fuselage Lift Correction": [
+      1.14,
+      0
+    ],
+    "Trim Drag Correction Factor": [
+      1.02,
+      0
+    ],
+    "Wing Parasite Drag Form Factor": [
+      1.1,
+      0
+    ],
+    "Fuselage Parasite Drag Form Factor": [
+      2.3,
+      0
+    ],
+    "Maximum Lift Coefficient Factor": [
+      1.0,
+      0
+    ],
+    "Lift-to-Drag Adjustment": [
+      0.0,
+      0
+    ],
+    "Viscous Lift Dependent Drag Factor": [
+      0.38,
+      0
+    ],
+    "Drag Coefficient Increment": [
+      0.0,
+      0
+    ],
+    "Spoiler Drag Increment": [
+      0.0,
+      0
+    ],
+    "Maximum Lift Coefficient": [
+      10000,
+      0
+    ],
+    "Begin Drag Rise Mach Number": [
+      0.95,
+      0
+    ],
+    "End Drag Rise Mach Number": [
+      1.2,
+      0
+    ],
+    "Transonic Drag Multiplier": [
+      1.25,
+      0
+    ],
+    "Number of Spanwise Vortices": [
+      15,
+      0
+    ],
+    "Number of Chordwise Vortices": [
+      5,
+      0
+    ],
+    "Use Surrogate": [
+      true,
+      0
+    ],
+    "Recalculate Total Wetted Area": [
+      false,
+      0
+    ],
+    "Propeller Wake Model": [
+      false,
+      0
+    ],
+    "Discretize Control Surfaces": [
+      false,
+      0
+    ],
+    "Model Fuselage": [
+      false,
+      0
+    ],
+    "Model Nacelle": [
+      false,
+      0
+    ],
+    "Peak Mach Number": [
+      1.04,
+      0
+    ],
+    "Volume Wave Drag Scaling": [
+      3.2,
+      0
+    ],
+    "Fuselage Parasite Drag Begin Blend Mach": [
+      0.91,
+      0
+    ],
+    "Fuselage Parasite Drag End Blend Mach": [
+      0.99,
+      0
+    ],
+    "Spanwise Cosine Spacing": [
+      true,
+      0
+    ],
+    "Leading Edge Suction Multiplier": [
+      1.0,
+      0
+    ],
+    "Use VORLAX Matrix Calculation": [
+      false,
+      0
+    ]
+  }
+]

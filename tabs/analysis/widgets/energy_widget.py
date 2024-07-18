@@ -1,13 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from utilities import create_line_bar
-from tabs.analysis.widgets import AnalysisWidget
+from tabs.analysis.widgets import AnalysisDataWidget
 
 import RCAIDE
 
 
-class EnergyWidget(QWidget, AnalysisWidget):
+class EnergyWidget(QWidget, AnalysisDataWidget):
     def __init__(self):
         super(EnergyWidget, self).__init__()
         self.main_layout = QVBoxLayout()

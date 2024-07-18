@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt6.QtWidgets import QMessageBox, QFrame
+from PyQt6.QtWidgets import QLayout, QMessageBox, QFrame, QScrollArea, QVBoxLayout, QWidget
 
 
 def show_popup(message, parent):
@@ -22,16 +22,47 @@ def create_line_bar():
     return line_bar
 
 
-def set_data(obj : dict, key : str, data):
+def create_scroll_area(widget: QWidget, set_layout=True):
+    widget.scroll_area = QScrollArea()
+    widget.scroll_area.setWidgetResizable(True)
+    scroll_content = QWidget()
+    widget.scroll_area.setWidget(scroll_content)
+    widget.main_layout = QVBoxLayout(scroll_content)
+    layout_scroll = QVBoxLayout()
+    layout_scroll.addWidget(widget.scroll_area)
+    layout_scroll.setContentsMargins(0, 0, 0, 0)
+    if set_layout:
+        widget.setLayout(layout_scroll)
+
+    return layout_scroll
+
+
+def set_data(obj: dict, key: str, data):
     key_list = key.split(".")
     key = key_list[0]
     key_list = key_list[1:]
-    
+
     if len(key_list) > 0:
         set_data(obj[key], ".".join(key_list), data)
         return
-    
+
     obj[key] = data
+
+def clear_layout(layout: QLayout):
+    """Clear all widgets from the layout."""
+    while layout.count():
+        item = layout.takeAt(0)
+        
+        assert item is not None
+        widget = item.widget()
+        if widget is not None:
+            # Remove widget
+            widget.deleteLater()
+        else:
+            sublayout = item.layout()
+            if sublayout is not None:
+                # Recursively clear sublayout
+                clear_layout(sublayout)
 
 
 class Units:

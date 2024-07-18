@@ -1,23 +1,28 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QTreeWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget, \
+    QTreeWidgetItem
 
-from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
+from tabs.mission.widgets import MissionSegmentWidget
+from tabs import TabWidget
+from utilities import create_scroll_area
+
+import values
 
 
-class MissionWidget(QWidget):
-    def __init__(self):
+class MissionWidget(TabWidget):
+    def __init__(self, geometry_widget):
         super().__init__()
 
-        # Create the main layout
-        main_layout = QHBoxLayout(self)
+        self.geometry_widget = geometry_widget
 
-        # Create the left side layout for Mission
-        left_layout = QVBoxLayout()
+        # Create the main layout
+        base_layout = QHBoxLayout(self)
+        tree_layout = QVBoxLayout()
+        self.main_layout = None
+        self.segment_widgets = []
 
         # Create the mission layout
         mission_layout = QHBoxLayout()
-
-        # Align mission_layout to the top of left_layout
         mission_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # Add mission name label and input box to the mission layout
@@ -35,69 +40,54 @@ class MissionWidget(QWidget):
         save_data_button.clicked.connect(self.save_all_data)
 
         # Add the Mission Layout, Add Segment Button, and Save Data Button to the left layout
-        left_layout.addLayout(mission_layout)
-        left_layout.addWidget(add_segment_button)
-        left_layout.addWidget(save_data_button)
-        left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        
-        tree = QTreeWidget()
-        tree.setColumnCount(1)
-        tree.setHeaderLabels(["Mission Segments"])
-        
-        left_layout.addWidget(tree)
-        
-        
+        tree_layout.addLayout(mission_layout)
+        tree_layout.addWidget(add_segment_button)
+        tree_layout.addWidget(save_data_button)
+        tree_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        self.tree = QTreeWidget()
+        self.tree.setColumnCount(1)
+        self.tree.setHeaderLabels(["Mission Segments"])
+
+        tree_layout.addWidget(self.tree)
+
         # Add left layout to the main layout
-        main_layout.addLayout(left_layout, 2)
+        base_layout.addLayout(tree_layout, 2)
 
-        # Create a scroll area for the right side (segments)
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-
-        # Create a layout for the scroll area
-        self.mission_segment_layout = QVBoxLayout()
-
-        # Set the layout of the scroll content widget
-        scroll_content.setLayout(self.mission_segment_layout)
-
-        # Set the widget containing the layout as the scroll area's widget
-        scroll_area.setWidget(scroll_content)
-
-        # Add scroll area to the main layout
-        main_layout.addWidget(scroll_area, 6)
+        layout_scroll = create_scroll_area(self, False)
+        base_layout.addLayout(layout_scroll, 6)
 
         # Add initial segment
         self.add_segment()
 
-        # Set up the base widget
-        self.setWindowTitle("Mission Manager")
-        self.resize(800, 600)
-
     def add_segment(self):
         # Instantiate MissionSectionWidget and add it to mission_segment_layout
         segment_widget = MissionSegmentWidget()
-        self.mission_segment_layout.addWidget(segment_widget)
+        self.segment_widgets.append(segment_widget)
+        self.main_layout.addWidget(segment_widget)
 
     def save_all_data(self):
-        """Append the entered data to a list or perform any other action."""
-        """
-        main_data = self.get_data_values()  # Get data from the main fuselage section
-    
-        # Collect data from additional fuselage_widget
-        mission_data = []
-        for index in range(self.additional_data_values.count()):
-            widget = self.additional_data_values.itemAt(index).widget()
-            mission_data.append(widget.get_data_values())
-    
-        print("Main Fuselage Data:", main_data)
-        print("Additional Fuselage Data:", mission_data)
-        show_popup("Data Saved!", self)
-        """
+        self.tree.clear()
+
+        values.mission_data = []
+        for mission_segment in self.segment_widgets:
+            assert isinstance(mission_segment, MissionSegmentWidget)
+
+            segment_data = mission_segment.get_data()
+            segment_name = segment_data["segment name"]
+            values.mission_data.append(segment_data)
+
+            new_tree_item = QTreeWidgetItem([segment_name])
+            self.tree.addTopLevelItem(new_tree_item)
+
+    def update_layout(self):
+        for widget in self.segment_widgets:
+            assert isinstance(widget, MissionSegmentWidget)
+            widget.update_configs()
 
 
 # Function to get the widget
+
+
 def get_widget() -> QWidget:
-    return MissionWidget()
+    return MissionWidget(None)
