@@ -23,16 +23,15 @@ def create_line_bar():
 
 
 def create_scroll_area(widget: QWidget, set_layout=True):
-    scroll_area = QScrollArea()
-    scroll_area.setWidgetResizable(True)
+    widget.scroll_area = QScrollArea()
+    widget.scroll_area.setWidgetResizable(True)
     scroll_content = QWidget()
-    scroll_area.setWidget(scroll_content)
+    widget.scroll_area.setWidget(scroll_content)
     widget.main_layout = QVBoxLayout(scroll_content)
     layout_scroll = QVBoxLayout()
-    layout_scroll.addWidget(scroll_area)
+    layout_scroll.addWidget(widget.scroll_area)
     layout_scroll.setContentsMargins(0, 0, 0, 0)
     if set_layout:
-        print("Setting layout")
         widget.setLayout(layout_scroll)
 
     return layout_scroll

@@ -28,7 +28,6 @@ class AircraftConfigsWidget(QWidget):
         # update_layout_button = QPushButton("Load Aircraft Geometry")
         # update_layout_button.clicked.connect(self.update_layout)
         # self.main_layout.addWidget(QLabel("hi"))
-        # TODO: make this automatic
         
         name_layout = QHBoxLayout()
         name_layout.addWidget(QLabel("Config Name:"), 3)

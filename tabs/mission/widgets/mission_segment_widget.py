@@ -1,9 +1,9 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
 
+from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
 from utilities import Units, create_line_bar
 from widgets import DataEntryWidget
-from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
 
 
 class MissionSegmentWidget(QWidget):
@@ -14,6 +14,7 @@ class MissionSegmentWidget(QWidget):
         self.segment_layout = QVBoxLayout()
         self.subsegment_layout = QVBoxLayout()
         self.dof_layout = QVBoxLayout()
+        self.top_dropdown = QComboBox()
 
         # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -24,9 +25,9 @@ class MissionSegmentWidget(QWidget):
 
         # Add segment name label and input box
         segment_name_label = QLabel("Segment Name:")
-        segment_name_input = QLineEdit()
+        self.segment_name_input = QLineEdit()
         segment_name.addWidget(segment_name_label)
-        segment_name.addWidget(segment_name_input)
+        segment_name.addWidget(self.segment_name_input)
 
         # Add segment type label and nested dropdown
         segment_type_label = QLabel("Segment Type:")
@@ -58,19 +59,13 @@ class MissionSegmentWidget(QWidget):
 
         # Clear any existing subsegment layout
         self.clear_layout(self.subsegment_layout)
-
         print("Cleared existing subsegment layout.")
-
         self.clear_layout(self.dof_layout)
 
         # Get data fields for the selected subsegment type from the dictionary
         data_fields = self.subsegment_data_fields[self.top_dropdown.currentIndex()].get(
             subsegment_type, [])
 
-        # Add QLineEdit boxes for each data field
-        label_count = len(data_fields)
-        max_labels_per_row = 1
-        current_row_layout = QHBoxLayout()
         # Initialize or reuse the existing layout
         self.subsegment_layout = QVBoxLayout()
 
@@ -87,7 +82,7 @@ class MissionSegmentWidget(QWidget):
                       ("Moments about Y axis", Units.Boolean),
                       ("Forces in Z axis", Units.Boolean),
                       ("Moments about Z axis", Units.Boolean)]
-        
+
         dof_entry_widget = DataEntryWidget(dof_fields)
         self.dof_layout.addWidget(dof_entry_widget)
         self.subsegment_layout.addLayout(self.dof_layout)
@@ -120,8 +115,8 @@ class MissionSegmentWidget(QWidget):
 
     def populate_nested_dropdown(self, index, nested_dropdown):
         nested_dropdown.clear()
-        options = ["Climb", "Cruise", "Descent", "Ground",
-                   "Single_Point", "Transition", "Vertical Flight"]
+        # options = ["Climb", "Cruise", "Descent", "Ground",
+        #            "Single_Point", "Transition", "Vertical Flight"]
         nested_options = [
             ["Constant CAS/Constant Rate", "Constant Dynamic Pressure/Constant Angle", "Constant EAS/Constant Rate",
              "Constant Mach/Constant Angle", "Constant Mach/Constant Rate", "Constant Mach/Linear Altitude",
@@ -145,7 +140,6 @@ class MissionSegmentWidget(QWidget):
         nested_dropdown.addItems(nested_options[index])
 
     def create_nested_dropdown(self):
-        self.top_dropdown = QComboBox()
         self.top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground",
                                     "Single_Point", "Transition", "Vertical Flight"])
 
@@ -172,9 +166,14 @@ class MissionSegmentWidget(QWidget):
 
         return layout
 
-    def deleteWidget(self):
+    def delete_widget(self):
         # delete widget
         self.deleteLater()
+
+    def get_data(self):
+        data = {"segment name": self.segment_name_input.text()}
+
+        return data
 
     # Dictionary to map subsegment types to their corresponding data fields
     subsegment_data_fields = [{
@@ -272,34 +271,6 @@ class MissionSegmentWidget(QWidget):
                                                 ("True Course Angle", Units.Angle)],
     }, {
         # Descent Subsegments
-        "Constant CAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Descent Rate", Units.Velocity), ("CAS",
-                                                                          Units.Velocity),
-                                       ("True Course Angle", Units.Angle)],
-        "Constant EAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Descent Rate", Units.Velocity), ("EAS",
-                                                                          Units.Velocity),
-                                       ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Angle Noise": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                                ("Descent Angle", Units.Unitless), (
-                                                    "Air Speed", Units.Velocity),
-                                                ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Angle": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                          ("Descent Angle",
-                                           Units.Unitless), ("Air Speed", Units.Velocity),
-                                          ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                         ("Descent Rate", Units.Velocity), ("Air Speed",
-                                                                            Units.Velocity),
-                                         ("True Course Angle", Units.Angle)],
-        "Linear Mach/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                      ("Descent Rate", Units.Velocity), (
-                                          "Mach Number End", Units.Unitless),
-                                      ("Mach Number Start", Units.Unitless), ("True Course Angle", Units.Angle)],
-        "Linear Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Descent Rate", Units.Velocity), (
-                                           "Air Speed Start", Units.Velocity),
-                                       ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
         "Constant CAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
                                        ("Descent Rate", Units.Velocity), ("CAS",
                                                                           Units.Velocity),

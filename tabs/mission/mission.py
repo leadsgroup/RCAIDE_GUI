@@ -1,7 +1,11 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QTreeWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget, \
+    QTreeWidgetItem
 
 from tabs.mission.widgets import MissionSegmentWidget
+from utilities import create_scroll_area
+
+import values
 
 
 class MissionWidget(QWidget):
@@ -11,8 +15,10 @@ class MissionWidget(QWidget):
         self.geometry_widget = geometry_widget
 
         # Create the main layout
-        main_layout = QHBoxLayout(self)
-        left_layout = QVBoxLayout()
+        base_layout = QHBoxLayout(self)
+        tree_layout = QVBoxLayout()
+        self.main_layout = None
+        self.segment_widgets = []
 
         # Create the mission layout
         mission_layout = QHBoxLayout()
@@ -33,56 +39,49 @@ class MissionWidget(QWidget):
         save_data_button.clicked.connect(self.save_all_data)
 
         # Add the Mission Layout, Add Segment Button, and Save Data Button to the left layout
-        left_layout.addLayout(mission_layout)
-        left_layout.addWidget(add_segment_button)
-        left_layout.addWidget(save_data_button)
-        left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        tree_layout.addLayout(mission_layout)
+        tree_layout.addWidget(add_segment_button)
+        tree_layout.addWidget(save_data_button)
+        tree_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        tree = QTreeWidget()
-        tree.setColumnCount(1)
-        tree.setHeaderLabels(["Mission Segments"])
+        self.tree = QTreeWidget()
+        self.tree.setColumnCount(1)
+        self.tree.setHeaderLabels(["Mission Segments"])
 
-        left_layout.addWidget(tree)
+        tree_layout.addWidget(self.tree)
 
         # Add left layout to the main layout
-        main_layout.addLayout(left_layout, 2)
+        base_layout.addLayout(tree_layout, 2)
 
-        # Create a scroll area for the right side (segments)
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-
-        # Create a layout for the scroll area
-        self.mission_segment_layout = QVBoxLayout()
-
-        # Set the layout of the scroll content widget
-        scroll_content.setLayout(self.mission_segment_layout)
-
-        # Set the widget containing the layout as the scroll area's widget
-        scroll_area.setWidget(scroll_content)
-
-        # Add scroll area to the main layout
-        main_layout.addWidget(scroll_area, 6)
+        layout_scroll = create_scroll_area(self, False)
+        base_layout.addLayout(layout_scroll, 6)
 
         # Add initial segment
         self.add_segment()
 
-        # Set up the base widget
-        self.setWindowTitle("Mission Manager")
-        self.resize(800, 600)
-
     def add_segment(self):
         # Instantiate MissionSectionWidget and add it to mission_segment_layout
         segment_widget = MissionSegmentWidget()
-        self.mission_segment_layout.addWidget(segment_widget)
+        self.segment_widgets.append(segment_widget)
+        self.main_layout.addWidget(segment_widget)
 
     def save_all_data(self):
-        pass
+        self.tree.clear()
+
+        values.mission_data = []
+        for mission_segment in self.segment_widgets:
+            assert isinstance(mission_segment, MissionSegmentWidget)
+
+            segment_data = mission_segment.get_data()
+            segment_name = segment_data["segment name"]
+            values.mission_data.append(segment_data)
+
+            new_tree_item = QTreeWidgetItem([segment_name])
+            self.tree.addTopLevelItem(new_tree_item)
 
     def update_layout(self):
         pass
+
 
 # Function to get the widget
 

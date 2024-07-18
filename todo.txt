@@ -6,7 +6,7 @@ x 2024-07-03 2024-07-01 auto-update geometry when loading aircraft configs tab @
 x 2024-07-12 2024-07-11 create data sharing framework
 x 2024-07-16 2024-07-11 load default analysis options
 2024-07-11 add control surface / propulsor selection widgets
-2024-07-11 show saved mission segments on mission tree
+x 2024-07-11 show saved mission segments on mission tree
 2024-07-11 show propulsors on aircraft configs tab
 2024-07-11 add functionality to save and new config in aircraft configs tab
 2024-07-11 select config in mission tab - dropdown with options, goes after segment type, has header

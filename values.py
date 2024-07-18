@@ -8,3 +8,6 @@ aircraft_configs = []
 # Analysis Data
 analysis_data = []
 
+# Mission Data
+mission_data = []
+
