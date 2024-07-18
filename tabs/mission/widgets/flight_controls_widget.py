@@ -51,6 +51,5 @@ class FlightControlsWidget(QWidget):
             ("Throttle"),
             ("Thrust Vector Angle"),
             ("Blade Pitch Angle"),
-            ("Propulsor RPM")
         ]
     }

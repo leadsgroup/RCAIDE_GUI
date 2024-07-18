@@ -10,62 +10,6 @@ import json
 
 
 class NoiseWidget(QWidget, AnalysisDataWidget):
-    data_units_labels = [
-        [
-            ("Print Noise Output", Units.Boolean, "print_noise_output"),
-            ("Mean Sea Level Altitude", Units.Boolean, "mean_sea_level_altitude"),
-            ("Aircraft Departure Location", Units.Position,
-             "aircraft_departure_location"),
-            ("Aircraft Destination Location", Units.Position,
-             "aircraft_destination_location"),
-            ("Microphone X Resolution", Units.Count, "microphone_x_resolution"),
-            ("Microphone Y Resolution", Units.Count, "microphone_y_resolution"),
-            # TODO ("Microphone X Stencil", Units.Length),
-            # TODO ("Microphone Y Stencil", Units.Length),
-            ("Microphone Min X", Units.Length, "microphone_min_x"),
-            ("Microphone Max X", Units.Length, "microphone_max_x"),
-            ("Microphone Min Y", Units.Length, "microphone_min_y"),
-            ("Microphone Max Y", Units.Length, "microphone_max_y"),
-            ("Noise Hemisphere", Units.Boolean, "noise_hemisphere"),
-            ("Noise Hemisphere Radius", Units.Length, "noise_hemisphere_radius"),
-            ("Noise Hemisphere Microphone Resolution", Units.Count,
-             "noise_hemisphere_microphone_resolution"),
-            ("Noise Hemisphere Phi Upper Bound", Units.Angle),
-            ("Noise Hemisphere Phi Lower Bound", Units.Angle),
-            ("Noise Hemisphere Theta Upper Bound", Units.Angle),
-            ("Noise Hemisphere Theta Lower Bound", Units.Angle),
-        ],
-        [
-            ("Flyover", Units.Boolean, "flyover"),
-            ("Approach", Units.Boolean, "approach"),
-            ("Sideline", Units.Boolean, "sideline"),
-            ("Sideline X Position", Units.Boolean, "sideline_x_position"),
-            ("Print Noise Output", Units.Boolean, "print_noise_output"),
-            ("Mean Sea Level Altitude", Units.Boolean, "mean_sea_level_altitude"),
-            ("Aircraft Departure Location", Units.Position,
-             "aircraft_departure_location"),
-            ("Aircraft Destination Location", Units.Position,
-             "aircraft_destination_location"),
-            ("Microphone X Resolution", Units.Count, "microphone_x_resolution"),
-            ("Microphone Y Resolution", Units.Count, "microphone_y_resolution"),
-            # TODO ("Microphone X Stencil", Units.Length),
-            # TODO ("Microphone Y Stencil", Units.Length),
-            ("Microphone Min X", Units.Length, "microphone_min_x"),
-            ("Microphone Max X", Units.Length, "microphone_max_x"),
-            ("Microphone Min Y", Units.Length, "microphone_min_y"),
-            ("Microphone Max Y", Units.Length, "microphone_max_y"),
-            ("Noise Hemisphere", Units.Boolean, "noise_hemisphere"),
-            ("Noise Hemisphere Radius", Units.Length, "noise_hemisphere_radius"),
-            ("Noise Hemisphere Microphone Resolution", Units.Count,
-             "noise_hemisphere_microphone_resolution"),
-            ("Noise Hemisphere Phi Upper Bound", Units.Angle),
-            ("Noise Hemisphere Phi Lower Bound", Units.Angle),
-            ("Noise Hemisphere Theta Upper Bound", Units.Angle),
-            ("Noise Hemisphere Theta Lower Bound", Units.Angle),
-        ]
-    ]
-    analyses = ["Correlation Buildup", "Frequency Domain Buildup"]
-
     def __init__(self):
         super(NoiseWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -132,3 +76,59 @@ class NoiseWidget(QWidget, AnalysisDataWidget):
             theta_lower_bound, theta_upper_bound]
 
         return noise
+    
+    data_units_labels = [
+        [
+            ("Print Noise Output", Units.Boolean, "print_noise_output"),
+            ("Mean Sea Level Altitude", Units.Boolean, "mean_sea_level_altitude"),
+            ("Aircraft Departure Location", Units.Position,
+             "aircraft_departure_location"),
+            ("Aircraft Destination Location", Units.Position,
+             "aircraft_destination_location"),
+            ("Microphone X Resolution", Units.Count, "microphone_x_resolution"),
+            ("Microphone Y Resolution", Units.Count, "microphone_y_resolution"),
+            # TODO ("Microphone X Stencil", Units.Length),
+            # TODO ("Microphone Y Stencil", Units.Length),
+            ("Microphone Min X", Units.Length, "microphone_min_x"),
+            ("Microphone Max X", Units.Length, "microphone_max_x"),
+            ("Microphone Min Y", Units.Length, "microphone_min_y"),
+            ("Microphone Max Y", Units.Length, "microphone_max_y"),
+            ("Noise Hemisphere", Units.Boolean, "noise_hemisphere"),
+            ("Noise Hemisphere Radius", Units.Length, "noise_hemisphere_radius"),
+            ("Noise Hemisphere Microphone Resolution", Units.Count,
+             "noise_hemisphere_microphone_resolution"),
+            ("Noise Hemisphere Phi Upper Bound", Units.Angle),
+            ("Noise Hemisphere Phi Lower Bound", Units.Angle),
+            ("Noise Hemisphere Theta Upper Bound", Units.Angle),
+            ("Noise Hemisphere Theta Lower Bound", Units.Angle),
+        ],
+        [
+            ("Flyover", Units.Boolean, "flyover"),
+            ("Approach", Units.Boolean, "approach"),
+            ("Sideline", Units.Boolean, "sideline"),
+            ("Sideline X Position", Units.Boolean, "sideline_x_position"),
+            ("Print Noise Output", Units.Boolean, "print_noise_output"),
+            ("Mean Sea Level Altitude", Units.Boolean, "mean_sea_level_altitude"),
+            ("Aircraft Departure Location", Units.Position,
+             "aircraft_departure_location"),
+            ("Aircraft Destination Location", Units.Position,
+             "aircraft_destination_location"),
+            ("Microphone X Resolution", Units.Count, "microphone_x_resolution"),
+            ("Microphone Y Resolution", Units.Count, "microphone_y_resolution"),
+            # TODO ("Microphone X Stencil", Units.Length),
+            # TODO ("Microphone Y Stencil", Units.Length),
+            ("Microphone Min X", Units.Length, "microphone_min_x"),
+            ("Microphone Max X", Units.Length, "microphone_max_x"),
+            ("Microphone Min Y", Units.Length, "microphone_min_y"),
+            ("Microphone Max Y", Units.Length, "microphone_max_y"),
+            ("Noise Hemisphere", Units.Boolean, "noise_hemisphere"),
+            ("Noise Hemisphere Radius", Units.Length, "noise_hemisphere_radius"),
+            ("Noise Hemisphere Microphone Resolution", Units.Count,
+             "noise_hemisphere_microphone_resolution"),
+            ("Noise Hemisphere Phi Upper Bound", Units.Angle),
+            ("Noise Hemisphere Phi Lower Bound", Units.Angle),
+            ("Noise Hemisphere Theta Upper Bound", Units.Angle),
+            ("Noise Hemisphere Theta Lower Bound", Units.Angle),
+        ]
+    ]
+    analyses = ["Correlation Buildup", "Frequency Domain Buildup"]

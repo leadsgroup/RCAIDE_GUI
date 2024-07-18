@@ -4,13 +4,13 @@ from tabs.geometry.geometry import GeometryWidget
 from utilities import Units
 from widgets import DataEntryWidget
 
+import values
 # import RCAIDE
 
 
 class AircraftConfigsWidget(QWidget):
-    def __init__(self, geometry_widget):
+    def __init__(self):
         super().__init__()
-        self.geometry_widget: GeometryWidget = geometry_widget
         self.vehicle = None
         self.data = None
 
@@ -49,12 +49,12 @@ class AircraftConfigsWidget(QWidget):
         self.setLayout(base_layout)
 
     def update_layout(self):
-        self.vehicle = self.geometry_widget.get_vehicle()
-        self.data = self.geometry_widget.get_data()
+        self.vehicle = values.vehicle
+        self.data = values.geometry_data
 
         control_surface_data = []
 
-        for wing in self.data[1]:
+        for wing in self.data[2]:
             for control_surface in wing["control_surfaces"]:
                 control_surface_data.append(control_surface)
 
@@ -77,5 +77,5 @@ class AircraftConfigsWidget(QWidget):
         pass
 
 
-def get_widget(geometry_widget) -> QWidget:
-    return AircraftConfigsWidget(geometry_widget)
+def get_widget() -> QWidget:
+    return AircraftConfigsWidget()

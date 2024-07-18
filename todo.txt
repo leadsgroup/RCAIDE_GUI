@@ -4,7 +4,7 @@ x 2024-07-05 2024-07-01 create solve tab plot selector @plots
 x 2024-07-01 create select flight controls dropdown @mission
 x 2024-07-03 2024-07-01 auto-update geometry when loading aircraft configs tab @configs
 x 2024-07-12 2024-07-11 create data sharing framework
-2024-07-11 load default analysis options
+x 2024-07-16 2024-07-11 load default analysis options
 2024-07-11 add control surface / propulsor selection widgets
 2024-07-11 show saved mission segments on mission tree
 2024-07-11 show propulsors on aircraft configs tab

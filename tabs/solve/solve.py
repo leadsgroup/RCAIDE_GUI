@@ -1,5 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel
 from PyQt6.QtCore import Qt
+
+# import values
 
 
 class SolveWidget(QWidget):
@@ -9,12 +11,16 @@ class SolveWidget(QWidget):
         base_layout = QHBoxLayout()
         tree_layout = QVBoxLayout()
         main_layout = QVBoxLayout()
+        
+        main_layout.addWidget(QLabel("Click Solve Button to View Plots"))
 
         solve_button = QPushButton("Solve")
+        # noinspection PyUnresolvedReferences
         solve_button.clicked.connect(self.run_solve)
 
         self.tree = QTreeWidget()
         self.init_tree()
+        tree_layout.addWidget(solve_button)
         tree_layout.addWidget(self.tree)
 
         base_layout.addLayout(tree_layout, 3)
@@ -40,7 +46,7 @@ class SolveWidget(QWidget):
 
     def run_solve(self):
         pass
-
+    
     plot_options = {
         "Aerodynamics": [
             "Plot Airfoil Boundary Layer Properties",
