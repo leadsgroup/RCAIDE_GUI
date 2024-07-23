@@ -10,7 +10,7 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("RCAIDE")
+        self.setWindowTitle("RCAIDE GUI")
 
         menubar = self.menuBar()
         if menubar is None:
@@ -29,10 +29,7 @@ class App(QMainWindow):
         file_menu.addSeparator()
         file_menu.addAction("Quit")
 
-        # Other menus
-        menubar.addMenu("Edit")
-        menubar.addMenu("View")
-        menubar.addMenu("Help")
+        menubar.addMenu("Documentation")
 
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(QTabWidget.TabPosition.North)

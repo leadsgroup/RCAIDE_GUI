@@ -25,7 +25,7 @@ class AerodynamicsWidget(QWidget, AnalysisDataWidget):
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
 
         # Load defaults
-        with open("defaults/aerodynamic_analysis.json", "r") as defaults:
+        with open("app_data/defaults/aerodynamic_analysis.json", "r") as defaults:
             self.defaults = json.load(defaults)
 
         self.data_entry_widget.load_data(self.defaults[0])
