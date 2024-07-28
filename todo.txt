@@ -19,3 +19,5 @@ x 2024-07-18 display images in the defined layout @home
 2024-07-18 add functionality to component click in @geometry
 2024-07-18 implement mark save and changed since save in DataEntryWidget
 2024-07-18 very visible divider between segments
+2024-07-24 add duplication for propulsors
+2024-07-24 AST to read RCAIDE code(?)

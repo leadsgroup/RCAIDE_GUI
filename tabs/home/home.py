@@ -34,7 +34,7 @@ class HomeWidget(TabWidget):
         start_layout = QVBoxLayout()
         flowchart_layout = QHBoxLayout()
         
-        options = ["Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"]
+        options = ["Boeing 737-800 mission", "Airbus A321neo mission", "ATR-72 mission", "Dash-8 Q400 mission"]
         aircraft_selector = QComboBox()
         aircraft_selector.addItems(options)
         

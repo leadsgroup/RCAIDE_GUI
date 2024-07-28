@@ -85,7 +85,7 @@ class GeometryWidget(TabWidget):
         if layout:
             self.main_layout.setCurrentIndex(index)
 
-    def on_tree_item_clicked(self, item, _col):
+    def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         """Change the index of the main layout based on the selected item in the tree.
 
         Args:
@@ -93,26 +93,45 @@ class GeometryWidget(TabWidget):
             _col: The column index of the selected item. (Not used)
 
         """
+        assert item is not None
         # get item depth
         depth = 0
 
-        item2 = item
+        item2: QTreeWidgetItem = item
         while item2.parent():
-            item2 = item2.parent()
+            parent = item2.parent()
+            assert parent is not None
+            
+            item2 = parent
             depth += 1
-
+            
         if depth == 0:
             self.main_layout.setCurrentIndex(0)
             return
         if depth == 1:
             top_item = item.parent()
+            
+            assert top_item is not None
             tree_index = top_item.indexOfChild(item)
             tab_index = self.find_tab_index(tree_index)
 
             self.main_layout.setCurrentIndex(tab_index)
         if depth == 2:
-            # TODO handle the case where the user clicks on a component
-            pass
+            component_item = item.parent()
+            
+            assert component_item is not None
+            top_item = component_item.parent()
+            assert top_item is not None
+            
+            tree_index = top_item.indexOfChild(component_item)
+            tab_index = self.find_tab_index(tree_index)
+            self.main_layout.setCurrentIndex(tab_index)
+            
+            index = component_item.indexOfChild(item)
+            frame = self.main_layout.currentWidget()
+            assert isinstance(frame, GeometryFrame)
+            frame.load_data(values.geometry_data[tab_index][index], index)            
+            
 
     def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.
@@ -156,8 +175,8 @@ class GeometryWidget(TabWidget):
                 assert child is not None
                 child.setText(0, data["name"])
 
-        with open("data/geometry.json", "w") as f:
-            f.write(json.dumps(values.geometry_data, indent=2))
+        # with open("app_data/geometry.json", "w") as f:
+        #     f.write(json.dumps(values.geometry_data, indent=2))
 
         if vehicle_component:
             # Check if it is an energy network being added
