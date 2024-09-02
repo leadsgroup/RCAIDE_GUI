@@ -2,7 +2,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
-from tabs.mission.widgets.segment_data_fields import segment_data_fields
+from tabs.mission.widgets.mission_segment_helper import segment_data_fields
 from utilities import Units, create_line_bar, clear_layout
 import values
 from widgets import DataEntryWidget
@@ -111,26 +111,7 @@ class MissionSegmentWidget(QWidget):
         nested_dropdown.clear()
         # options = ["Climb", "Cruise", "Descent", "Ground",
         #            "Single_Point", "Transition", "Vertical Flight"]
-        nested_options = [
-            ["Constant CAS/Constant Rate", "Constant Dynamic Pressure/Constant Angle", "Constant EAS/Constant Rate",
-             "Constant Mach/Constant Angle", "Constant Mach/Constant Rate", "Constant Mach/Linear Altitude",
-             "Constant Speed/Constant Angle Noise", "Constant Speed/Constant Angle", "Constant Speed/Constant Rate",
-             "Constant Speed/Linear Altitude", "Constant Throttle/Constant Speed", "Linear Mach/Constant Rate",
-             "Linear Speed/Constant Rate"],
-            ["Constant Acceleration/Constant Altitude", "Constant Dynamic Pressure/Constant Altitude Loiter",
-             "Constant Mach/Constant Altitude",
-             "Constant Pitch Rate/Constant Altitude", "Constant Speed/Constant Altitude Loiter",
-             "Constant Speed/Constant Altitude", "Constant Throttle/Constant Altitude"],
-            ["Constant CAS/Constant Rate", "Constant EAS/Constant Rate", "Constant Speed/Constant Angle Noise",
-             "Constant Speed/Constant Angle", "Constant Speed/Constant Rate", "Linear Mach/Constant Rate",
-             "Linear Speed/Constant Rate"],
-            ["Battery Discharge", "Battery Recharge",
-             "Ground", "Landing", "Takeoff"],
-            ["Set Speed/Set Altitude/No Propulsion",
-             "Set Speed/Set Altitude", "Set Speed/Set Throttle"],
-            ["Constant Acceleration/Constant Angle/Linear Climb",
-             "Constant Acceleration/Constant Pitchrate/Constant Altitude"],
-            ["Climb", "Descent", "Hover"]]
+        nested_options = [segment_type.keys() for segment_type in segment_data_fields]
         nested_dropdown.addItems(nested_options[index])
 
     def create_nested_dropdown(self):
