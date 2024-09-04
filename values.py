@@ -1,5 +1,8 @@
+import RCAIDE
+
+
 # Geometry Data
-vehicle = None
+vehicle = RCAIDE.Vehicle()
 geometry_data = []
 
 # Aircraft Configs Data
@@ -10,4 +13,3 @@ analysis_data = []
 
 # Mission Data
 mission_data = []
-

@@ -1,8 +1,10 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
+from PyQt6.lupdate import user
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
-from utilities import Units, create_line_bar, clear_layout
+from tabs.mission.widgets.mission_segment_helper import segment_data_fields, segment_rcaide_classes
+from utilities import Units, create_line_bar, clear_layout, set_data
 import values
 from widgets import DataEntryWidget
 
@@ -16,6 +18,8 @@ class MissionSegmentWidget(QWidget):
         self.subsegment_layout = QVBoxLayout()
         self.dof_layout = QVBoxLayout()
         self.top_dropdown = QComboBox()
+        self.nested_dropdown = QComboBox()
+        self.subsegment_entry_widget = None
 
         # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -56,27 +60,23 @@ class MissionSegmentWidget(QWidget):
 
     # Trying to make sure labels more than 4 get a new row but having clearing problems
     def create_subsegment_layout(self, subsegment_type):
-        # print("Creating subsegment layout for type:", subsegment_type)
-
         # Clear any existing subsegment layout
         clear_layout(self.subsegment_layout)
-        # print("Cleared existing subsegment layout.")
         clear_layout(self.dof_layout)
 
         # Get data fields for the selected subsegment type from the dictionary
-        data_fields = self.subsegment_data_fields[self.top_dropdown.currentIndex()].get(
+        data_fields = segment_data_fields[self.top_dropdown.currentIndex()].get(
             subsegment_type, [])
 
         # Initialize or reuse the existing layout
         self.subsegment_layout = QVBoxLayout()
-        
         self.config_layout = QHBoxLayout()
-        
+
         self.update_configs()
         self.subsegment_layout.addLayout(self.config_layout)
-        
-        subsegment_entry_widget = DataEntryWidget(data_fields)
-        self.subsegment_layout.addWidget(subsegment_entry_widget)
+
+        self.subsegment_entry_widget = DataEntryWidget(data_fields)
+        self.subsegment_layout.addWidget(self.subsegment_entry_widget)
 
         self.subsegment_layout.addWidget(
             QLabel("<b>Select Degrees of Freedom</b>"))
@@ -95,7 +95,6 @@ class MissionSegmentWidget(QWidget):
 
         # Add the subsegment layout to the segments layout
         self.segment_layout.addLayout(self.subsegment_layout)
-        # print("Subsegment layout created and added.")
 
         # Align subsegment layout to top
         self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -110,52 +109,34 @@ class MissionSegmentWidget(QWidget):
         nested_dropdown.clear()
         # options = ["Climb", "Cruise", "Descent", "Ground",
         #            "Single_Point", "Transition", "Vertical Flight"]
-        nested_options = [
-            ["Constant CAS/Constant Rate", "Constant Dynamic Pressure/Constant Angle", "Constant EAS/Constant Rate",
-             "Constant Mach/Constant Angle", "Constant Mach/Constant Rate", "Constant Mach/Linear Altitude",
-             "Constant Speed/Constant Angle Noise", "Constant Speed/Constant Angle", "Constant Speed/Constant Rate",
-             "Constant Speed/Linear Altitude", "Constant Throttle/Constant Speed", "Linear Mach/Constant Rate",
-             "Linear Speed/Constant Rate"],
-            ["Constant Acceleration/Constant Altitude", "Constant Dynamic Pressure/Constant Altitude Loiter",
-             "Constant Mach/Constant Altitude",
-             "Constant Pitch Rate/Constant Altitude", "Constant Speed/Constant Altitude Loiter",
-             "Constant Speed/Constant Altitude", "Constant Throttle/Constant Altitude"],
-            ["Constant CAS/Constant Rate", "Constant EAS/Constant Rate", "Constant Speed/Constant Angle Noise",
-             "Constant Speed/Constant Angle", "Constant Speed/Constant Rate", "Linear Mach/Constant Rate",
-             "Linear Speed/Constant Rate"],
-            ["Battery Discharge", "Battery Recharge",
-             "Ground", "Landing", "Takeoff"],
-            ["Set Speed/Set Altitude/No Propulsion",
-             "Set Speed/Set Altitude", "Set Speed/Set Throttle"],
-            ["Constant Acceleration/Constant Angle/Linear Climb",
-             "Constant Acceleration/Constant Pitchrate/Constant Altitude"],
-            ["Climb", "Descent", "Hover"]]
+        nested_options = [segment_type.keys()
+                          for segment_type in segment_data_fields]
         nested_dropdown.addItems(nested_options[index])
 
     def create_nested_dropdown(self):
         self.top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground",
                                     "Single_Point", "Transition", "Vertical Flight"])
 
-        nested_dropdown = QComboBox()
+        self.nested_dropdown = QComboBox()
 
         # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
-        self.populate_nested_dropdown(0, nested_dropdown)
+        self.populate_nested_dropdown(0, self.nested_dropdown)
 
         # Add label for subsegment type
         subsegment_type_label = QLabel('Sub Segment Type:')
 
         # Connect top dropdown index change to populate the nested dropdown
         self.top_dropdown.currentIndexChanged.connect(
-            lambda index, nd=nested_dropdown: self.populate_nested_dropdown(index, nd))
+            lambda index, nd=self.nested_dropdown: self.populate_nested_dropdown(index, nd))
 
         # Connect nested dropdown index change to create subsegment layout
-        nested_dropdown.currentIndexChanged.connect(
-            lambda index, nd=nested_dropdown: self.create_subsegment_layout(nd.currentText()))
+        self.nested_dropdown.currentIndexChanged.connect(
+            lambda index, nd=self.nested_dropdown: self.create_subsegment_layout(nd.currentText()))
 
         layout = QHBoxLayout()
         layout.addWidget(self.top_dropdown)
         layout.addWidget(subsegment_type_label)
-        layout.addWidget(nested_dropdown)
+        layout.addWidget(self.nested_dropdown)
 
         return layout
 
@@ -165,197 +146,32 @@ class MissionSegmentWidget(QWidget):
 
     def get_data(self):
         data = {"segment name": self.segment_name_input.text()}
+        rcaide_segment = self.create_rcaide_segment()
 
-        return data
-    
+        return data, rcaide_segment
+
     def update_configs(self):
         clear_layout(self.config_layout)
-        
-        config_names = [config["config name"] for config in values.aircraft_configs]
+
+        config_names = [config["config name"]
+                        for config in values.aircraft_configs]
         self.config_selector = QComboBox()
         self.config_selector.addItems(config_names)
         self.config_layout.addWidget(QLabel("Aircraft Configuration: "), 3)
         self.config_layout.addWidget(self.config_selector, 7)
 
-    # Dictionary to map subsegment types to their corresponding data fields
-    subsegment_data_fields = [{
-        # Climb Subsegments
-        "Constant CAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Climb Rate", Units.Velocity), ("CAS",
-                                                                        Units.Velocity),
-                                       ("True Course Angle", Units.Angle)],
-        "Constant Dynamic Pressure/Constant Angle": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                                     ("Climb Angle", Units.Angle), (
-                                                         "Dynamic Pressure", Units.Pressure),
-                                                     ("True Course Angle", Units.Angle)],
-        "Constant Dynamic Pressure/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                                    ("Climb Angle", Units.Angle), (
-                                                        "Dynamic Pressure", Units.Pressure),
-                                                    ("True Course Angle", Units.Angle)],
-        "Constant EAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Climb Rate", Units.Velocity), ("EAS",
-                                                                        Units.Velocity),
-                                       ("True Course Angle", Units.Angle)],
-        "Constant Mach/Constant Angle": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                         ("Climb Angle", Units.Angle), ("True Course Angle", Units.Angle)],
-        "Constant Mach/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                        ("Climb Rate", Units.Velocity), ("Mach Number",
-                                                                         Units.Unitless),
-                                        ("True Course Angle", Units.Angle)],
-        "Constant Mach/Linear Altitude": [("Mach Number", Units.Unitless), ("Distance", Units.Length),
-                                          ("Altitude Start",
-                                           Units.Length), ("Altitude End", Units.Length),
-                                          ("True Course Angle", Units.Unitless)],
-        "Constant Speed/Constant Angle Noise": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                                ("Climb Angle", Units.Angle), ("Air Speed",
-                                                                               Units.Velocity),
-                                                ("True Course Speed", Units.Velocity)],
-        "Constant Speed/Constant Angle": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                          ("Climb Angle", Units.Angle), ("Air Speed",
-                                                                         Units.Velocity),
-                                          ("True Course Speed", Units.Velocity)],
-        "Constant Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                         ("Climb Rate", Units.Velocity), ("Speed",
-                                                                          Units.Velocity),
-                                         ("True Course Angle", Units.Unitless)],
-        "Constant Speed/Linear Altitude": [("Air Speed", Units.Velocity), ("Distance", Units.Length),
-                                           ("Altitude Start",
-                                            Units.Length), ("Altitude End", Units.Length),
-                                           ("True Course Angle", Units.Unitless)],
-        "Constant Throttle/Constant Speed": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                             ("Throttle", Units.Unitless), ("Air Speed",
-                                                                            Units.Velocity),
-                                             ("True Course Angle", Units.Unitless)],
-        "Linear Mach/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                      ("Climb Rate", Units.Velocity), ("Mach Number End",
-                                                                       Units.Unitless),
-                                      ("Mach Number Start", Units.Unitless), ("True Course Angle", Units.Unitless)],
-        "Linear Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Climb Rate", Units.Velocity), ("Air Speed Start",
-                                                                        Units.Velocity),
-                                       ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Unitless)],
-    }, {
-        # Cruise Subsegments
-        "Constant Acceleration/Constant Altitude": [("Altitude", Units.Length), ("Acceleration", Units.Acceleration),
-                                                    ("Air Speed Start",
-                                                     Units.Velocity),
-                                                    ("Air Speed End",
-                                                     Units.Velocity),
-                                                    ("True Course Angle", Units.Angle)],
-        "Constant Dynamic Pressure/Constant Altitude Loiter": [("Altitude", Units.Length),
-                                                               ("Dynamic Pressure",
-                                                                Units.Pressure),
-                                                               ("Time", Units.Time),
-                                                               ("True Course Angle", Units.Angle)],
-        "Constant Dynamics Pressure/Constant Altitude": [("Altitude", Units.Length),
-                                                         ("Acceleration",
-                                                          Units.Acceleration),
-                                                         ("Air Speed Start",
-                                                          Units.Velocity),
-                                                         ("Air Speed End",
-                                                          Units.Velocity),
-                                                         ("True Course Angle", Units.Angle)],
-        "Constant Mach/Constant Altitude Loiter": [("Altitude", Units.Length), ("Mach Number", Units.Unitless),
-                                                   ("Time", Units.Time), ("True Course Angle", Units.Angle)],
-        "Constant Mach/Constant Altitude": [("Altitude", Units.Length), ("Mach Number", Units.Unitless),
-                                            ("Distance", Units.Length), ("True Course Angle", Units.Angle)],
-        "Constant Pitch Rate/Constant Altitude": [("Altitude", Units.Length), ("Pitch Rate", Units.Velocity),
-                                                  ("Pitch Initial", Units.Angle), (
-                                                      "Pitch Final", Units.Angle),
-                                                  ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Altitude Loiter": [("Altitude", Units.Length), ("Air Speed", Units.Velocity),
-                                                    ("Time", Units.Time), ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Altitude": [("Altitude", Units.Length), ("Air Speed", Units.Velocity),
-                                             ("Distance", Units.Length), ("True Course Angle", Units.Angle)],
-        "Constant Throttle/Constant Altitude": [("Throttle", Units.Unitless), ("Altitude", Units.Length),
-                                                ("Air Speed Start", Units.Velocity), (
-                                                    "Air Speed End", Units.Velocity),
-                                                ("True Course Angle", Units.Angle)],
-    }, {
-        # Descent Subsegments
-        "Constant CAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Descent Rate", Units.Velocity), ("CAS",
-                                                                          Units.Velocity),
-                                       ("True Course Angle", Units.Angle)],
-        "Constant EAS/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Descent Rate", Units.Velocity), ("EAS",
-                                                                          Units.Velocity),
-                                       ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Angle Noise": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                                ("Descent Angle", Units.Unitless), (
-                                                    "Air Speed", Units.Velocity),
-                                                ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Angle": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                          ("Descent Angle",
-                                           Units.Unitless), ("Air Speed", Units.Velocity),
-                                          ("True Course Angle", Units.Angle)],
-        "Constant Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                         ("Descent Rate", Units.Velocity), ("Air Speed",
-                                                                            Units.Velocity),
-                                         ("True Course Angle", Units.Angle)],
-        "Linear Mach/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                      ("Descent Rate", Units.Velocity), (
-                                          "Mach Number End", Units.Unitless),
-                                      ("Mach Number Start", Units.Unitless), ("True Course Angle", Units.Angle)],
-        "Linear Speed/Constant Rate": [("Altitude Start", Units.Length), ("Altitude End", Units.Length),
-                                       ("Descent Rate", Units.Velocity), (
-                                           "Air Speed Start", Units.Velocity),
-                                       ("Air Speed End", Units.Velocity), ("True Course Angle", Units.Angle)],
-    }, {
-        # Ground Subsegments
-        "Climb": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Climb Rate", Units.Velocity),
-                  ("True Course Angle", Units.Angle)],
-        "Descent": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity),
-                    ("True Course Angle", Units.Angle)],
-        "Hover": [("Altitude", Units.Length), ("Time", Units.Time), ("True Course Angle", Units.Angle)]
-    }, {
-        # Single Point Subsegments
-        "Set Speed/Set Altitude/No Propulsion": [("Altitude", Units.Length), ("Air Speed", Units.Velocity),
-                                                 ("Distance", Units.Length), (
-                                                     "Acceleration Z", Units.Acceleration),
-                                                 ("True Course Angle", Units.Angle)],
-        "Set Speed/Set Altitude": [("Altitude", Units.Length), ("Air Speed", Units.Velocity),
-                                   ("Distance", Units.Length), ("Acceleration X",
-                                                                Units.Acceleration),
-                                   ("Acceleration Z", Units.Acceleration),
-                                   ("State Numerics Number of Control Points", Units.Unitless)],
-        "Set Speed/Set Throttle": [("Altitude", Units.Length), ("Air Speed", Units.Velocity),
-                                   ("Throttle", Units.Unitless), ("Acceleration Z",
-                                                                  Units.Acceleration),
-                                   ("True Course Angle", Units.Angle)],
-    }, {
-        # Transition Subsegments
-        "Constant Acceleration/Constant Angle/Linear Climb": [("Altitude Start", Units.Length),
-                                                              ("Altitude End",
-                                                               Units.Length),
-                                                              ("Air Speed Start",
-                                                               Units.Velocity),
-                                                              ("Climb Angle",
-                                                               Units.Unitless),
-                                                              ("Acceleration",
-                                                               Units.Acceleration),
-                                                              ("Pitch Initial",
-                                                               Units.Angle),
-                                                              ("Pitch Final",
-                                                               Units.Angle),
-                                                              ("True Course Angle", Units.Angle)],
-        "Constant Acceleration/Constant Pitchrate/Constant Altitude": [("Altitude", Units.Length),
-                                                                       ("Acceleration",
-                                                                        Units.Acceleration),
-                                                                       ("Air Speed Start",
-                                                                        Units.Velocity),
-                                                                       ("Air Speed End",
-                                                                        Units.Velocity),
-                                                                       ("Pitch Initial",
-                                                                        Units.Angle),
-                                                                       ("Pitch Final",
-                                                                        Units.Angle),
-                                                                       ("True Course Angle", Units.Angle)],
-    }, {
-        # Vertical Flight Subsegments
-        "Climb": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Climb Rate", Units.Velocity),
-                  ("True Course Angle", Units.Angle)],
-        "Descent": [("Altitude Start", Units.Length), ("Altitude End", Units.Length), ("Descent Rate", Units.Velocity),
-                    ("True Course Angle", Units.Angle)],
-        "Hover": [("Altitude", Units.Length), ("Time", Units.Time), ("True Course Angle", Units.Angle)]
-    }]
+    def create_rcaide_segment(self):
+        segment = segment_rcaide_classes[self.top_dropdown.currentIndex(
+        )][self.nested_dropdown.currentText()]()
+        segment.tag = self.segment_name_input.text()
+
+        assert self.subsegment_entry_widget is not None and isinstance(
+            self.subsegment_entry_widget, DataEntryWidget)
+        values_si = self.subsegment_entry_widget.get_values_si()
+
+        for data_unit_label in self.subsegment_entry_widget.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(segment, rcaide_label, values_si[user_label])
+
+        return segment

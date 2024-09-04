@@ -48,11 +48,12 @@ def set_data(obj: dict, key: str, data):
 
     obj[key] = data
 
+
 def clear_layout(layout: QLayout):
     """Clear all widgets from the layout."""
     while layout.count():
         item = layout.takeAt(0)
-        
+
         assert item is not None
         widget = item.widget()
         if widget is not None:
@@ -198,4 +199,7 @@ class Units:
         pass
 
     class File:
+        pass
+
+    class String:
         pass

@@ -10,7 +10,7 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("RCAIDE")
+        self.setWindowTitle("RCAIDE GUI")
 
         menubar = self.menuBar()
         if menubar is None:
@@ -29,25 +29,26 @@ class App(QMainWindow):
         file_menu.addSeparator()
         file_menu.addAction("Quit")
 
-        # Other menus
-        menubar.addMenu("Edit")
-        menubar.addMenu("View")
-        menubar.addMenu("Help")
+        menubar.addMenu("Documentation")
 
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(QTabWidget.TabPosition.North)
         # self.tabs.setMovable(True)
 
         self.tabs.currentChanged.connect(self.on_tab_change)
+        
+        self.widgets = []
+        self.widgets.append((home.get_widget(), "Home"))
+        self.widgets.append((geometry.get_widget(), "Geometry"))
+        self.widgets.append((TabWidget(), "Visualize Geometry"))
+        self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
+        self.widgets.append((analysis.get_widget(), "Analysis"))
+        self.widgets.append((mission.get_widget(), "Mission"))
+        self.widgets.append((solve.get_widget(), "Solve"))
 
-        self.tabs.addTab(home.get_widget(), "Home")
-        self.tabs.addTab(geometry.get_widget(), "Geometry")
-        self.tabs.addTab(TabWidget(), "Visualize Geometry")
-        self.tabs.addTab(aircraft_configs.get_widget(), "Aircraft Configurations")
-        self.tabs.addTab(analysis.get_widget(), "Analysis")
-        self.tabs.addTab(mission.get_widget(), "Mission")
-        self.tabs.addTab(solve.get_widget(), "Solve")
-
+        for widget, name in self.widgets:
+            self.tabs.addTab(widget, name)
+        
         self.setCentralWidget(self.tabs)
         self.resize(1280, 720)
 
