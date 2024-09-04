@@ -73,7 +73,7 @@ class MissionWidget(TabWidget):
         for mission_segment in self.segment_widgets:
             assert isinstance(mission_segment, MissionSegmentWidget)
 
-            segment_data = mission_segment.get_data()
+            segment_data, rcaide_segment = mission_segment.get_data()
             segment_name = segment_data["segment name"]
             values.mission_data.append(segment_data)
 

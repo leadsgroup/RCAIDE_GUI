@@ -1,9 +1,10 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
+from PyQt6.lupdate import user
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
-from tabs.mission.widgets.mission_segment_helper import segment_data_fields
-from utilities import Units, create_line_bar, clear_layout
+from tabs.mission.widgets.mission_segment_helper import segment_data_fields, segment_rcaide_classes
+from utilities import Units, create_line_bar, clear_layout, set_data
 import values
 from widgets import DataEntryWidget
 
@@ -17,6 +18,8 @@ class MissionSegmentWidget(QWidget):
         self.subsegment_layout = QVBoxLayout()
         self.dof_layout = QVBoxLayout()
         self.top_dropdown = QComboBox()
+        self.nested_dropdown = QComboBox()
+        self.subsegment_entry_widget = None
 
         # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -57,11 +60,8 @@ class MissionSegmentWidget(QWidget):
 
     # Trying to make sure labels more than 4 get a new row but having clearing problems
     def create_subsegment_layout(self, subsegment_type):
-        # print("Creating subsegment layout for type:", subsegment_type)
-
         # Clear any existing subsegment layout
         clear_layout(self.subsegment_layout)
-        # print("Cleared existing subsegment layout.")
         clear_layout(self.dof_layout)
 
         # Get data fields for the selected subsegment type from the dictionary
@@ -70,14 +70,13 @@ class MissionSegmentWidget(QWidget):
 
         # Initialize or reuse the existing layout
         self.subsegment_layout = QVBoxLayout()
-        
         self.config_layout = QHBoxLayout()
-        
+
         self.update_configs()
         self.subsegment_layout.addLayout(self.config_layout)
-        
-        subsegment_entry_widget = DataEntryWidget(data_fields)
-        self.subsegment_layout.addWidget(subsegment_entry_widget)
+
+        self.subsegment_entry_widget = DataEntryWidget(data_fields)
+        self.subsegment_layout.addWidget(self.subsegment_entry_widget)
 
         self.subsegment_layout.addWidget(
             QLabel("<b>Select Degrees of Freedom</b>"))
@@ -96,7 +95,6 @@ class MissionSegmentWidget(QWidget):
 
         # Add the subsegment layout to the segments layout
         self.segment_layout.addLayout(self.subsegment_layout)
-        # print("Subsegment layout created and added.")
 
         # Align subsegment layout to top
         self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -111,33 +109,34 @@ class MissionSegmentWidget(QWidget):
         nested_dropdown.clear()
         # options = ["Climb", "Cruise", "Descent", "Ground",
         #            "Single_Point", "Transition", "Vertical Flight"]
-        nested_options = [segment_type.keys() for segment_type in segment_data_fields]
+        nested_options = [segment_type.keys()
+                          for segment_type in segment_data_fields]
         nested_dropdown.addItems(nested_options[index])
 
     def create_nested_dropdown(self):
         self.top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground",
                                     "Single_Point", "Transition", "Vertical Flight"])
 
-        nested_dropdown = QComboBox()
+        self.nested_dropdown = QComboBox()
 
         # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
-        self.populate_nested_dropdown(0, nested_dropdown)
+        self.populate_nested_dropdown(0, self.nested_dropdown)
 
         # Add label for subsegment type
         subsegment_type_label = QLabel('Sub Segment Type:')
 
         # Connect top dropdown index change to populate the nested dropdown
         self.top_dropdown.currentIndexChanged.connect(
-            lambda index, nd=nested_dropdown: self.populate_nested_dropdown(index, nd))
+            lambda index, nd=self.nested_dropdown: self.populate_nested_dropdown(index, nd))
 
         # Connect nested dropdown index change to create subsegment layout
-        nested_dropdown.currentIndexChanged.connect(
-            lambda index, nd=nested_dropdown: self.create_subsegment_layout(nd.currentText()))
+        self.nested_dropdown.currentIndexChanged.connect(
+            lambda index, nd=self.nested_dropdown: self.create_subsegment_layout(nd.currentText()))
 
         layout = QHBoxLayout()
         layout.addWidget(self.top_dropdown)
         layout.addWidget(subsegment_type_label)
-        layout.addWidget(nested_dropdown)
+        layout.addWidget(self.nested_dropdown)
 
         return layout
 
@@ -147,14 +146,32 @@ class MissionSegmentWidget(QWidget):
 
     def get_data(self):
         data = {"segment name": self.segment_name_input.text()}
+        rcaide_segment = self.create_rcaide_segment()
 
-        return data
-    
+        return data, rcaide_segment
+
     def update_configs(self):
         clear_layout(self.config_layout)
-        
-        config_names = [config["config name"] for config in values.aircraft_configs]
+
+        config_names = [config["config name"]
+                        for config in values.aircraft_configs]
         self.config_selector = QComboBox()
         self.config_selector.addItems(config_names)
         self.config_layout.addWidget(QLabel("Aircraft Configuration: "), 3)
         self.config_layout.addWidget(self.config_selector, 7)
+
+    def create_rcaide_segment(self):
+        segment = segment_rcaide_classes[self.top_dropdown.currentIndex(
+        )][self.nested_dropdown.currentText()]()
+        segment.tag = self.segment_name_input.text()
+
+        assert self.subsegment_entry_widget is not None and isinstance(
+            self.subsegment_entry_widget, DataEntryWidget)
+        values_si = self.subsegment_entry_widget.get_values_si()
+
+        for data_unit_label in self.subsegment_entry_widget.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(segment, rcaide_label, values_si[user_label])
+
+        return segment
