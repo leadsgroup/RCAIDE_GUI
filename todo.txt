@@ -12,13 +12,15 @@ x 2024-07-18 2024-07-11 select config in mission tab - dropdown with options, go
 x 2024-07-18 2024-07-11 split geometry screen into 2 to add aircraft visualization @geometry
 x 2024-07-18 2024-07-11 add visualize geometry tab @visualize
 x 2024-07-18 display images in the defined layout @home
-2024-07-11 start RCAIDE Integration to aircraft mission tab @configs @mission
+x 2024-09-02 2024-07-11 start RCAIDE Integration to aircraft mission tab @configs @mission
 2024-07-11 load aircraft
-2024-07-17 add scroll to widget function in mission.py
+2024-07-17 add scroll to widget function in mission.py @mission
 2024-07-18 add base configuration by default @configs
 2024-07-18 add functionality to component click in @geometry
 2024-07-18 implement mark save and changed since save in DataEntryWidget
-2024-07-18 very visible divider between segments
-2024-07-24 add duplication for propulsors
+2024-07-18 very visible divider between segments @mission
+2024-07-24 add duplication for propulsors @geometry
 2024-07-24 AST to read RCAIDE code(?)
-2024-09-02 Update configs tab with geometry code
+2024-09-02 Update configs tab with geometry code @configs
+2024-09-04 Add flight forces to RCAIDE Segment @mission
+2024-09-04 Add flight segments to mission in mission.py @mission

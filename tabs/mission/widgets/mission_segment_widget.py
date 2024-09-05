@@ -172,6 +172,6 @@ class MissionSegmentWidget(QWidget):
         for data_unit_label in self.subsegment_entry_widget.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
-            set_data(segment, rcaide_label, values_si[user_label])
+            set_data(segment, rcaide_label, values_si[user_label][0])
 
         return segment
