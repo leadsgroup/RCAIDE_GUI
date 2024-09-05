@@ -16,7 +16,7 @@ x 2024-09-02 2024-07-11 start RCAIDE Integration to aircraft mission tab @config
 2024-07-11 load aircraft
 2024-07-17 add scroll to widget function in mission.py @mission
 2024-07-18 add base configuration by default @configs
-2024-07-18 add functionality to component click in @geometry
+x 2025-07-28 2024-07-18 add functionality to component click in @geometry
 2024-07-18 implement mark save and changed since save in DataEntryWidget
 2024-07-18 very visible divider between segments @mission
 2024-07-24 add duplication for propulsors @geometry
