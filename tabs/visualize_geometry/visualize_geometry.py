@@ -6,6 +6,28 @@ import vtk
 from tabs.visualize_geometry import concorde, b737  # Import both VTK visualizers
 
 
+class CustomInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
+    def __init__(self, parent=None):
+        super().__init__()
+        self.AddObserver("KeyPressEvent", self.on_key_press)
+
+    def on_key_press(self, obj, event):
+        key = self.GetInteractor().GetKeySym()
+        camera = self.GetInteractor().GetRenderWindow().GetRenderers().GetFirstRenderer().GetActiveCamera()
+
+        # Example custom camera controls
+        if key == "Down":
+            camera.Pitch(10)  # Pitch up by 10 degrees
+        elif key == "Up":
+            camera.Pitch(-10)  # Pitch down by 10 degrees
+        elif key == "Left":
+            camera.Yaw(-10)  # Yaw left by 10 degrees
+        elif key == "Right":
+            camera.Yaw(10)  # Yaw right by 10 degrees
+        
+        self.GetInteractor().GetRenderWindow().Render()  # Render the changes
+
+
 class VisualizeGeometryWidget(TabWidget):
     def __init__(self):
         super(VisualizeGeometryWidget, self).__init__()
@@ -94,20 +116,53 @@ class VisualizeGeometryWidget(TabWidget):
             dim = n_segments if n_segments > 0 else 2
             GEOM = concorde.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = concorde.generate_vtk_object(GEOM.PTS)
+            
+            # Set color to red
+            mapper = actor.GetMapper()
+            mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
+            actor.GetProperty().SetColor(0.0, 0.0, 0.0)  # Set wing color to purple
+            actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+            actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
 
+        # # For the symmetric wing   
+        # if wing.symmetric:
+        #     if wing.vertical:
+        #         GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]  # Reflect vertically
+        #         actor = concorde.generate_vtk_object(GEOM.PTS)
+        #         actor.GetProperty().SetColor(1.0, 0.0, 0.0)  # Set color to red for vertical wing
+        #     else:
+        #         GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]  # Reflect horizontally
+        #         actor = concorde.generate_vtk_object(GEOM.PTS)
+        #         actor.GetProperty().SetColor(0.0, 0.0, 0.0)  # Set color to black for symmetric horizontal wings
+                
             if wing.symmetric:
                 if wing.vertical:
                     GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
                 else:
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor = concorde.generate_vtk_object(GEOM.PTS)
+                
+                    
+                # Set color to red for the symmetric part
+                mapper = actor.GetMapper()
+                mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
+                actor.GetProperty().SetColor(0.0, 0.0, 0.0)  # Set symmetric wing color to red
+                actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+                actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
 
         # Plot fuselage
         for fuselage in vehicle.fuselages:
             GEOM = concorde.generate_3d_fuselage_points(fuselage, tessellation=24)
             actor = concorde.generate_vtk_object(GEOM.PTS)
+            
+            # Set color to green
+            mapper = actor.GetMapper()
+            mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
+            actor.GetProperty().SetColor(1.0, 1.0, 1.0)  # Set fuselage color to black
+            actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+            actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
 
         # Set camera and background
@@ -118,6 +173,10 @@ class VisualizeGeometryWidget(TabWidget):
         renderer.SetActiveCamera(camera)
         renderer.ResetCamera()
         renderer.SetBackground(0.1, 0.2, 0.4)  # Background color
+
+        # Use the custom interactor style
+        custom_style = CustomInteractorStyle()
+        render_window_interactor.SetInteractorStyle(custom_style)
 
         # Start the VTK interactor
         render_window_interactor.Initialize()
@@ -165,6 +224,10 @@ class VisualizeGeometryWidget(TabWidget):
         renderer.SetActiveCamera(camera)
         renderer.ResetCamera()
         renderer.SetBackground(0.1, 0.2, 0.4)  # Background color
+
+        # Use the custom interactor style
+        custom_style = CustomInteractorStyle()
+        render_window_interactor.SetInteractorStyle(custom_style)
 
         # Start the VTK interactor
         render_window_interactor.Initialize()
