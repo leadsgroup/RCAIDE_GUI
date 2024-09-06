@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 import qdarktheme
 
 from tabs import *
+from tabs.visualize_geometry import visualize_geometry
 
 
 class App(QMainWindow):
@@ -40,7 +41,7 @@ class App(QMainWindow):
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
         self.widgets.append((geometry.get_widget(), "Geometry"))
-        self.widgets.append((TabWidget(), "Visualize Geometry"))
+        self.widgets.append((visualize_geometry.get_widget(), "Visualize Geometry"))
         self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
         self.widgets.append((analysis.get_widget(), "Analysis"))
         self.widgets.append((mission.get_widget(), "Mission"))
