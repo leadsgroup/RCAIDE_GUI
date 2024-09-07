@@ -6,7 +6,8 @@ vehicle = RCAIDE.Vehicle()
 geometry_data = []
 
 # Aircraft Configs Data
-aircraft_configs = []
+config_data = []
+aircraft_configs = None
 
 # Analysis Data
 analysis_data = []

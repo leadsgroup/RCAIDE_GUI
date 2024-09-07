@@ -141,7 +141,6 @@ class MissionSegmentWidget(QWidget):
         return layout
 
     def delete_widget(self):
-        # delete widget
         self.deleteLater()
 
     def get_data(self):
@@ -154,7 +153,7 @@ class MissionSegmentWidget(QWidget):
         clear_layout(self.config_layout)
 
         config_names = [config["config name"]
-                        for config in values.aircraft_configs]
+                        for config in values.config_data]
         self.config_selector = QComboBox()
         self.config_selector.addItems(config_names)
         self.config_layout.addWidget(QLabel("Aircraft Configuration: "), 3)
