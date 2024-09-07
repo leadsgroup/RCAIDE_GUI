@@ -20,6 +20,7 @@ class MissionSegmentWidget(QWidget):
         self.top_dropdown = QComboBox()
         self.nested_dropdown = QComboBox()
         self.subsegment_entry_widget = None
+        self.flight_controls_widget : FlightControlsWidget = None
 
         # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -102,7 +103,9 @@ class MissionSegmentWidget(QWidget):
         self.subsegment_layout.addWidget(
             QLabel("<b>Select Flight Controls</b>"))
         self.subsegment_layout.addWidget(create_line_bar())
-        self.subsegment_layout.addWidget(FlightControlsWidget())
+        
+        self.flight_controls_widget = FlightControlsWidget()
+        self.subsegment_layout.addWidget(self.flight_controls_widget)
         self.subsegment_layout.addWidget(create_line_bar())
 
     def populate_nested_dropdown(self, index, nested_dropdown):
@@ -172,5 +175,7 @@ class MissionSegmentWidget(QWidget):
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(segment, rcaide_label, values_si[user_label][0])
+        
+        self.flight_controls_widget.set_control_variables(segment)
 
         return segment

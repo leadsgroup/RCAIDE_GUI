@@ -5,16 +5,14 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs import TabWidget
 from utilities import create_scroll_area
-
 import values
+
+import RCAIDE
 
 
 class MissionWidget(TabWidget):
-    def __init__(self, geometry_widget):
+    def __init__(self):
         super().__init__()
-
-        self.geometry_widget = geometry_widget
-
         # Create the main layout
         base_layout = QHBoxLayout(self)
         tree_layout = QVBoxLayout()
@@ -70,12 +68,15 @@ class MissionWidget(TabWidget):
         self.tree.clear()
 
         values.mission_data = []
+        mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        mission.tag = self.mission_name_input.text()
         for mission_segment in self.segment_widgets:
             assert isinstance(mission_segment, MissionSegmentWidget)
 
             segment_data, rcaide_segment = mission_segment.get_data()
             segment_name = segment_data["segment name"]
             values.mission_data.append(segment_data)
+            mission.append_segment(rcaide_segment)
 
             new_tree_item = QTreeWidgetItem([segment_name])
             self.tree.addTopLevelItem(new_tree_item)
@@ -87,7 +88,5 @@ class MissionWidget(TabWidget):
 
 
 # Function to get the widget
-
-
 def get_widget() -> QWidget:
-    return MissionWidget(None)
+    return MissionWidget()

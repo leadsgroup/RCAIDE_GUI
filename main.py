@@ -1,6 +1,7 @@
 import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
+from PyQt6.QtGui import QAction
 import qdarktheme
 
 from tabs import *
@@ -20,10 +21,13 @@ class App(QMainWindow):
         file_menu = menubar.addMenu("File")
         if file_menu is None:
             return
+        
+        save_action = QAction("Save", self)
+        save_action.triggered.connect(self.save_all)
 
         file_menu.addAction("New")
         file_menu.addAction("Open")
-        file_menu.addAction("Save")
+        file_menu.addAction(save_action)
         file_menu.addSeparator()
 
         file_menu.addSeparator()
@@ -60,6 +64,9 @@ class App(QMainWindow):
         assert isinstance(current_frame, TabWidget)
 
         current_frame.update_layout()
+    
+    def save_all(self):
+        print("Save All!")
 
 
 app = QApplication(sys.argv)

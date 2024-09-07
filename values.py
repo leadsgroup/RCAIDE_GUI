@@ -4,6 +4,7 @@ import RCAIDE
 # Geometry Data
 vehicle = RCAIDE.Vehicle()
 geometry_data = []
+propulsor_names = []
 
 # Aircraft Configs Data
 config_data = []

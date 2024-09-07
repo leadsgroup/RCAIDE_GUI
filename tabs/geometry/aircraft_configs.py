@@ -10,6 +10,8 @@ from utilities import set_data
 import values
 from widgets import Color
 
+# WARNING: This file is incomplete and is not intended to be used yet.
+
 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
