@@ -148,11 +148,28 @@ class MissionSegmentWidget(QWidget):
         self.deleteLater()
 
     def get_data(self):
-        data = {"segment name": self.segment_name_input.text()}
+        assert self.subsegment_entry_widget is not None and isinstance(
+            self.subsegment_entry_widget, DataEntryWidget)
         
-        
+        data = self.subsegment_entry_widget.get_values()
+        data["segment name"] = self.segment_name_input.text()
+        data["flight forces"] = self.dof_entry_widget.get_values()
+        data["flight controls"] = self.flight_controls_widget.get_data()
+                
         rcaide_segment = self.create_rcaide_segment()
         return data, rcaide_segment
+    
+    def load_data(self, data):
+        assert self.subsegment_entry_widget is not None and isinstance(
+            self.subsegment_entry_widget, DataEntryWidget)
+        self.subsegment_entry_widget.load_data(data)
+        self.segment_name_input.setText(data["segment name"])
+        
+        assert self.dof_entry_widget is not None and isinstance(
+            self.dof_entry_widget, DataEntryWidget)
+        self.dof_entry_widget.load_data(data["flight forces"])
+        
+        self.flight_controls_widget.load_data(data["flight controls"])
 
     def update_configs(self):
         clear_layout(self.config_layout)
