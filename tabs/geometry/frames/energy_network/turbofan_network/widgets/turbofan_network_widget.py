@@ -6,9 +6,9 @@ from tabs.geometry.frames.energy_network.turbofan_network.widgets import FuelLin
 from widgets import DataEntryWidget
 
 
-class TurbofanWidget(QWidget, EnergyNetworkWidget):
+class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
     def __init__(self):
-        super(TurbofanWidget, self).__init__()
+        super(TurbofanNetworkWidget, self).__init__()
 
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None

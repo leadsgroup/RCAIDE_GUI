@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, Q
     QPushButton, QLineEdit, QComboBox
 
 from tabs.geometry.frames import GeometryFrame
-from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanWidget, FuelLineWidget
+from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanNetworkWidget, FuelLineWidget
 from utilities import show_popup, clear_layout
 
 
@@ -168,8 +168,8 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             item = self.energy_network_layout.itemAt(0)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, TurbofanWidget)
-            data_values, lines = widget.get_data_values()
+            assert widget is not None and isinstance(widget, TurbofanNetworkWidget)
+            data_values, _ = widget.get_data_values()
 
             if isinstance(data_values, bool):
                 return False, False
@@ -177,11 +177,19 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
             # add the fuel line data to the main data
             data["energy_network"] = data_values
 
-        return data, self.create_rcaide_structure((data, lines))
+        return data, self.create_rcaide_structure()
 
-    def create_rcaide_structure(self, data_in):
-        data, lines = data_in
-        if data["energy network selected"] == "Turbofan":
+    def create_rcaide_structure(self):
+        selected_network = self.energy_network_combo.currentText()
+        
+        if selected_network == "Turbofan":
+            item = self.energy_network_layout.itemAt(0)
+            assert item is not None
+            widget = item.widget()
+            assert widget is not None and isinstance(widget, TurbofanNetworkWidget)
+            _, lines = widget.get_data_values()
+
+        if selected_network == "Turbofan":
             net = RCAIDE.Framework.Networks.Turbofan_Engine_Network()
             for line in lines:
                 net.fuel_lines.append(line)
@@ -233,7 +241,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
 
         # Load sections based on the selected network
         if selected_network == "Turbofan":
-            turbofan_widget = TurbofanWidget()
+            turbofan_widget = TurbofanNetworkWidget()
             turbofan_widget.load_data_values(data["energy_network"])
             self.energy_network_layout.addWidget(turbofan_widget)
 
@@ -268,7 +276,7 @@ class EnergyNetworkFrame(QWidget, GeometryFrame):
         clear_layout(self.energy_network_layout)
 
         if selected_network == "Turbofan":
-            self.main_energy_network_widget = TurbofanWidget()
+            self.main_energy_network_widget = TurbofanNetworkWidget()
             self.energy_network_layout.addWidget(
                 self.main_energy_network_widget)
         elif selected_network == "None Selected":
