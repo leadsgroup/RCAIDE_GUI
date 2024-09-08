@@ -171,12 +171,12 @@ class GeometryWidget(TabWidget):
                 index = item.indexOfChild(child)
             else:
                 values.geometry_data[tab_index][index] = data
-                child = top_item.child(tree_index).child(index)
+                child = top_item.child(tree_index)
+                assert child is not None
+                child = child.child(index)
                 assert child is not None
                 child.setText(0, data["name"])
 
-        # with open("app_data/geometry.json", "w") as f:
-        #     f.write(json.dumps(values.geometry_data, indent=2))
 
         if vehicle_component:
             # Check if it is an energy network being added

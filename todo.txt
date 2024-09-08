@@ -1,9 +1,5 @@
-x 2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
-x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
-x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
-2024-09-07 (A) Add saving/loading functionality in mission tab
 2024-07-11 (A) load aircraft
-2024-09-07 (A) save aircraft
+2024-09-07 (A) RCAIDE Integration into configs tab @configs
 2024-09-07 (A) Add propulsor names to values.propulsor_names
 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-07 (A) Complete RCAIDE Integration for configs tab @configs
@@ -15,6 +11,8 @@ x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
 2024-07-24 AST to read RCAIDE code(?)
 2024-09-02 Update configs tab with geometry code @configs
 2024-09-07 Add propulsor groups
+2024-09-08 Reduce complexity of geometry saving system by using values.py @geometry
+2024-09-08 Fix duplicate component issue in @geometry
 x 2024-07-01 create select flight controls dropdown @mission
 x 2024-07-02 2024-07-01 fix find_tab_index @geometry
 x 2024-07-02 2024-07-01 fix find_tree_index @geometry
@@ -30,4 +28,9 @@ x 2024-07-18 2024-07-11 select config in mission tab - dropdown with options, go
 x 2024-07-18 2024-07-11 split geometry screen into 2 to add aircraft visualization @geometry
 x 2024-07-18 display images in the defined layout @home
 x 2024-09-02 2024-07-11 start RCAIDE Integration to aircraft mission tab @configs @mission
+x 2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
+x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
+x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
+x 2024-09-07 (A) Add saving/loading functionality in mission tab @mission
+x 2024-09-07 (A) save aircraft
 x 2025-07-28 2024-07-18 add functionality to component click in @geometry
