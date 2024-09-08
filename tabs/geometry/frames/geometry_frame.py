@@ -10,6 +10,11 @@ class GeometryFrame:
         self.name_line_edit: QLineEdit | None = None
 
     def load_data(self, data, index):
+        """Load the given data into the frame.
+        
+        Args:
+            data: The data to load.
+            index: The index of the data."""
         pass
 
     def set_save_function(self, function):
@@ -28,13 +33,25 @@ class GeometryFrame:
         self.tab_index = tab_index
 
     def create_new_structure(self):
+        """Create a new structure for the frame: clear all fields and set the index to -1."""
         pass
 
     def create_rcaide_structure(self, data):
+        """Create an RCAIDE structure from the given data and return it.
+        
+        Args:
+            data: The data to create the structure from.
+        """
         pass
     
     def get_data_values(self):
+        """Get the data values from the frame's widgets and return it."""
         pass
     
     def save_data(self):
+        """Save the data from the frame into geometry.py, which subsequently saves it in values."""
+        pass
+    
+    def update_layout(self):
+        """Update the layout of the frame. Called when the frame is shown."""
         pass

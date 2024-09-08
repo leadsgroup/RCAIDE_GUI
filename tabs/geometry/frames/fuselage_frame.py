@@ -30,7 +30,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         ("Differential Pressure", Units.Pressure, "differential_pressure"),
         ("Effective Diameter", Units.Length, "effective_diameter"),
     ]
-        
+
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(FuselageFrame, self).__init__()
@@ -41,10 +41,9 @@ class FuselageFrame(QWidget, GeometryFrame):
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
         self.main_layout.addWidget(create_line_bar())
+        self.index = -1
 
         self.add_name_layout()
-
-        
 
         # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
@@ -105,13 +104,15 @@ class FuselageFrame(QWidget, GeometryFrame):
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(
-                    self.tab_index, self.index, entered_data)
+                    tab_index=self.tab_index, index=self.index, data=entered_data)
                 return
             else:
                 self.index = self.save_function(
-                    self.tab_index, fuselage, data=entered_data, new=True)
+                    tab_index=self.tab_index, vehicle_component=fuselage, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
+        else:
+            print("No save function set.")
 
     def add_fuselage_section(self):
         self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
@@ -166,7 +167,7 @@ class FuselageFrame(QWidget, GeometryFrame):
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(fuselage, rcaide_label, data[user_label][0])
-            
+
         return fuselage
 
     def get_data_values(self):
