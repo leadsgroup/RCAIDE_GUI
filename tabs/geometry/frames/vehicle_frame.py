@@ -1,10 +1,10 @@
-import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+    QSpacerItem, QSizePolicy
 
 from tabs.geometry.frames import GeometryFrame
-from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area
+from utilities import create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
+import values
 
 
 class VehicleFrame(QWidget, GeometryFrame):
@@ -19,7 +19,7 @@ class VehicleFrame(QWidget, GeometryFrame):
         ("Reference Area", Units.Area, "reference_area"),
         ("Passengers", Units.Count, "passengers"),
     ]
-    
+
     def __init__(self):
         super().__init__()
         self.data = []
@@ -42,6 +42,7 @@ class VehicleFrame(QWidget, GeometryFrame):
 
         # button_layout = QHBoxLayout()
         save_button = QPushButton("Save")
+        save_button.clicked.connect(self.save_data)
         self.main_layout.addWidget(save_button)
 
         self.main_layout.addItem(QSpacerItem(
@@ -58,24 +59,33 @@ class VehicleFrame(QWidget, GeometryFrame):
         self.data_entry_widget.load_data(data)
 
     def create_rcaide_structure(self, data):
-        vehicle = RCAIDE.Vehicle()
-        vehicle.tag = data["name"]
+        raise NotImplementedError("This method should not be called")
+        # vehicle = RCAIDE.Vehicle()
+        # vehicle.tag = data["name"]
 
-        for data_unit_label in self.data_units_labels:
-            rcaide_label = data_unit_label[-1]
-            user_label = data_unit_label[0]
-            set_data(vehicle, rcaide_label, data[user_label][0])
+        # for data_unit_label in self.data_units_labels:
+        #     rcaide_label = data_unit_label[-1]
+        #     user_label = data_unit_label[0]
+        #     set_data(vehicle, rcaide_label, data[user_label][0])
 
     def get_data_values(self):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
 
-        si_data = self.data_entry_widget.get_values_si()
-        si_data["name"] = data["name"]
+        # si_data = self.data_entry_widget.get_values_si()
+        # si_data["name"] = data["name"]
 
         # vehicle = self.create_rcaide_structure(si_data)
         return data
+
+    def update_layout(self):
+        print("Updating layout")
+        assert self.data_entry_widget is not None and isinstance(
+            self.data_entry_widget, DataEntryWidget)
+        
+        if values.geometry_data[0]:
+            self.data_entry_widget.load_data(values.geometry_data[0])
 
     def save_data(self):
         assert self.save_function is not None

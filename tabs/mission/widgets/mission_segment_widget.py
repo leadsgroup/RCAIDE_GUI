@@ -155,11 +155,16 @@ class MissionSegmentWidget(QWidget):
         data["segment name"] = self.segment_name_input.text()
         data["flight forces"] = self.dof_entry_widget.get_values()
         data["flight controls"] = self.flight_controls_widget.get_data()
+        data["top dropdown"] = self.top_dropdown.currentIndex()
+        data["nested dropdown"] = self.nested_dropdown.currentText()
                 
         rcaide_segment = self.create_rcaide_segment()
         return data, rcaide_segment
     
     def load_data(self, data):
+        self.top_dropdown.setCurrentIndex(data["top dropdown"])
+        self.nested_dropdown.setCurrentText(data["nested dropdown"])
+
         assert self.subsegment_entry_widget is not None and isinstance(
             self.subsegment_entry_widget, DataEntryWidget)
         self.subsegment_entry_widget.load_data(data)

@@ -51,3 +51,7 @@ class GeometryFrame:
     def save_data(self):
         """Save the data from the frame into geometry.py, which subsequently saves it in values."""
         pass
+    
+    def update_layout(self):
+        """Update the layout of the frame. Called when the frame is shown."""
+        pass

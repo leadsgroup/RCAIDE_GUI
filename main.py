@@ -73,7 +73,7 @@ class App(QMainWindow):
     def save_all(self):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
-            widget.save_to_values()
+            # widget.save_to_values()
           
         json_data = values.write_to_json()
         name = QFileDialog.getSaveFileName(self, 'Save File', "app_data/aircraft/", "JSON (*.json)")[0]

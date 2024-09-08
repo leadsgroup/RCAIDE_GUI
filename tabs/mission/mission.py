@@ -86,9 +86,11 @@ class MissionWidget(TabWidget):
         for widget in self.segment_widgets:
             widget.deleteLater()
 
+        self.segment_widgets = []
         self.mission_name_input.setText(values.mission_data[0]["segment name"])
         for segment_data in values.mission_data:
             segment_widget = MissionSegmentWidget()
+            # segment_widget.create_subsegment_layout(segment_data["subsegment type"])
             segment_widget.load_data(segment_data)
             self.segment_widgets.append(segment_widget)
             self.main_layout.addWidget(segment_widget)

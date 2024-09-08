@@ -41,7 +41,7 @@ class FlightControlsWidget(QWidget):
     def load_data(self, data):
         for widget in self.data_entry_widgets:
             assert isinstance(widget, DataEntryWidget)
-            widget.load_values(data)
+            widget.load_data(data)
     
     def set_control_variables(self, segment):
         for widget in self.data_entry_widgets:
