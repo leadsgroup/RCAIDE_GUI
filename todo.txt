@@ -1,8 +1,6 @@
-x 2024-07-11 (A) load aircraft
 2024-09-07 (A) RCAIDE Integration into configs tab @configs
 2024-09-07 (A) Add propulsor names to values.propulsor_names
 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
-2024-09-08 (A) Add components to vehicle when loading @geometry
 2024-09-08 Add nacelle selection for turbofan in energy network @geometry
 2024-09-08 Add airfoil selection for nacelle @geometry
 2024-07-17 add scroll to widget function in mission.py @mission
@@ -20,6 +18,7 @@ x 2024-07-02 2024-07-01 fix find_tab_index @geometry
 x 2024-07-02 2024-07-01 fix find_tree_index @geometry
 x 2024-07-03 2024-07-01 auto-update geometry when loading aircraft configs tab @configs
 x 2024-07-05 2024-07-01 create solve tab plot selector @plots
+x 2024-07-11 (A) load aircraft
 x 2024-07-12 2024-07-11 create data sharing framework
 x 2024-07-16 2024-07-11 load default analysis options @analysis
 x 2024-07-17 2024-07-11 show propulsors on aircraft configs tab @configs
@@ -35,4 +34,5 @@ x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
 x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
 x 2024-09-07 (A) Add saving/loading functionality in mission tab @mission
 x 2024-09-07 (A) save aircraft
+x 2024-09-08 (A) Add components to vehicle when loading @geometry
 x 2025-07-28 2024-07-18 add functionality to component click in @geometry
