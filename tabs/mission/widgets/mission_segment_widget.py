@@ -21,6 +21,7 @@ class MissionSegmentWidget(QWidget):
         self.nested_dropdown = QComboBox()
         self.subsegment_entry_widget = None
         self.flight_controls_widget : FlightControlsWidget = None
+        self.dof_entry_widget : DataEntryWidget = None
 
         # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -83,15 +84,15 @@ class MissionSegmentWidget(QWidget):
             QLabel("<b>Select Degrees of Freedom</b>"))
         self.subsegment_layout.addWidget(create_line_bar())
 
-        dof_fields = [("Forces in X axis", Units.Boolean),
-                      ("Moments about X axis", Units.Boolean),
-                      ("Forces in Y axis", Units.Boolean),
-                      ("Moments about Y axis", Units.Boolean),
-                      ("Forces in Z axis", Units.Boolean),
-                      ("Moments about Z axis", Units.Boolean)]
+        dof_fields = [("Forces in X axis", Units.Boolean, "flight_dynamics.force_x"),
+                      ("Moments about X axis", Units.Boolean, "flight_dynamics.moment_x"),
+                      ("Forces in Y axis", Units.Boolean, "flight_dynamics.force_y"),
+                      ("Moments about Y axis", Units.Boolean, "flight_dynamics.moment_y"),
+                      ("Forces in Z axis", Units.Boolean, "flight_dynamics.force_z"),
+                      ("Moments about Z axis", Units.Boolean, "flight_dynamics.moment_z")]
 
-        dof_entry_widget = DataEntryWidget(dof_fields)
-        self.dof_layout.addWidget(dof_entry_widget)
+        self.dof_entry_widget = DataEntryWidget(dof_fields)
+        self.dof_layout.addWidget(self.dof_entry_widget)
         self.subsegment_layout.addLayout(self.dof_layout)
 
         # Add the subsegment layout to the segments layout
@@ -148,8 +149,9 @@ class MissionSegmentWidget(QWidget):
 
     def get_data(self):
         data = {"segment name": self.segment_name_input.text()}
+        
+        
         rcaide_segment = self.create_rcaide_segment()
-
         return data, rcaide_segment
 
     def update_configs(self):
@@ -175,6 +177,15 @@ class MissionSegmentWidget(QWidget):
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(segment, rcaide_label, values_si[user_label][0])
+        
+        assert self.dof_entry_widget is not None and isinstance(
+            self.dof_entry_widget, DataEntryWidget)
+        dof_values = self.dof_entry_widget.get_values()
+        
+        for data_unit_label in self.dof_entry_widget.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(segment, rcaide_label, dof_values[user_label][0])
         
         self.flight_controls_widget.set_control_variables(segment)
 

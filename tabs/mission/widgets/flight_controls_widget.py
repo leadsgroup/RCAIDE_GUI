@@ -53,7 +53,7 @@ class FlightControlsWidget(QWidget):
                 rcaide_label = data_unit_label[-1]
                 user_label = data_unit_label[0]
 
-                set_data(segment, rcaide_label, data[user_label])
+                set_data(segment, rcaide_label, data[user_label][0])
         
         segment.assigned_control_variables.throttle.assigned_propulsors = values.propulsor_names
             

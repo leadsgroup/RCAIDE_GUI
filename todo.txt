@@ -1,11 +1,12 @@
-2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
+x 2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
 x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
 x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
+2024-09-07 (A) Add saving/loading functionality in mission tab
+2024-07-11 (A) load aircraft
+2024-09-07 (A) save aircraft
 2024-09-07 (A) Add propulsor names to values.propulsor_names
 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-07 (A) Complete RCAIDE Integration for configs tab @configs
-2024-09-07 (A) save aircraft
-2024-07-11 (A) load aircraft
 2024-07-17 add scroll to widget function in mission.py @mission
 2024-07-18 add base configuration by default @configs
 2024-07-18 implement mark save and changed since save in DataEntryWidget
@@ -13,6 +14,7 @@ x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
 2024-07-24 add duplication for propulsors @geometry
 2024-07-24 AST to read RCAIDE code(?)
 2024-09-02 Update configs tab with geometry code @configs
+2024-09-07 Add propulsor groups
 x 2024-07-01 create select flight controls dropdown @mission
 x 2024-07-02 2024-07-01 fix find_tab_index @geometry
 x 2024-07-02 2024-07-01 fix find_tree_index @geometry
