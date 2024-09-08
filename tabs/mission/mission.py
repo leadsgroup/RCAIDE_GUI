@@ -5,16 +5,14 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs import TabWidget
 from utilities import create_scroll_area
-
 import values
+
+import RCAIDE
 
 
 class MissionWidget(TabWidget):
-    def __init__(self, geometry_widget):
+    def __init__(self):
         super().__init__()
-
-        self.geometry_widget = geometry_widget
-
         # Create the main layout
         base_layout = QHBoxLayout(self)
         tree_layout = QVBoxLayout()
@@ -70,15 +68,40 @@ class MissionWidget(TabWidget):
         self.tree.clear()
 
         values.mission_data = []
+        values.mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        values.mission.tag = self.mission_name_input.text()
         for mission_segment in self.segment_widgets:
             assert isinstance(mission_segment, MissionSegmentWidget)
 
             segment_data, rcaide_segment = mission_segment.get_data()
             segment_name = segment_data["segment name"]
             values.mission_data.append(segment_data)
+            values.mission.append_segment(rcaide_segment)
 
             new_tree_item = QTreeWidgetItem([segment_name])
             self.tree.addTopLevelItem(new_tree_item)
+
+    def load_from_values(self):
+        self.tree.clear()
+        for widget in self.segment_widgets:
+            widget.deleteLater()
+
+        self.segment_widgets = []
+        self.mission_name_input.setText(values.mission_data[0]["segment name"])
+        for segment_data in values.mission_data:
+            segment_widget = MissionSegmentWidget()
+            # segment_widget.create_subsegment_layout(segment_data["subsegment type"])
+            segment_widget.load_data(segment_data)
+            self.segment_widgets.append(segment_widget)
+            self.main_layout.addWidget(segment_widget)
+            self.tree.addTopLevelItem(
+                QTreeWidgetItem([segment_data["segment name"]]))
+
+            rcaide_segment = segment_widget.create_rcaide_segment()
+            values.mission.append_segment(rcaide_segment)
+
+        values.mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        values.mission.tag = self.mission_name_input.text()
 
     def update_layout(self):
         for widget in self.segment_widgets:
@@ -87,7 +110,5 @@ class MissionWidget(TabWidget):
 
 
 # Function to get the widget
-
-
 def get_widget() -> QWidget:
-    return MissionWidget(None)
+    return MissionWidget()

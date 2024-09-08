@@ -19,5 +19,5 @@ class DefaultFrame(QWidget, GeometryFrame):
         layout = QVBoxLayout(self)
 
         # Add a QLabel with the text to the layout
-        label = QLabel("Please complete and save the Vehicle Attributes tab to begin")
+        label = QLabel("Please select or create a configuration to begin!")
         layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignCenter)

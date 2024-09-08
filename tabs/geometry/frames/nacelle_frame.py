@@ -87,11 +87,11 @@ class NacelleFrame(QWidget, GeometryFrame):
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(
-                    self.tab_index, self.index, entered_data)
+                    tab_index=self.tab_index, index=self.index, data=entered_data)
                 return
             else:
                 self.index = self.save_function(
-                    self.tab_index, vehicle_component=v_comp, data=entered_data, new=True)
+                    tab_index=self.tab_index, vehicle_component=v_comp, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
 

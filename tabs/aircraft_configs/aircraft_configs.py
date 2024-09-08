@@ -114,12 +114,12 @@ class AircraftConfigsWidget(TabWidget):
     def save_data(self):
         data = self.get_data()
         if self.index == -1:
-            self.index = len(values.aircraft_configs)
+            self.index = len(values.config_data)
             values.aircraft_configs.append(data)
             tree_item = QTreeWidgetItem([data["config name"]])
             self.tree.addTopLevelItem(tree_item)
         else:
-            values.aircraft_configs[self.index] = data
+            values.config_data[self.index] = data
             # TODO update config name if changed
 
     def load_data(self, data):
@@ -131,7 +131,7 @@ class AircraftConfigsWidget(TabWidget):
 
     def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         self.index = self.tree.indexOfTopLevelItem(item)
-        self.load_data(values.aircraft_configs[self.index])
+        self.load_data(values.config_data[self.index])
 
 
 def get_widget() -> QWidget:
