@@ -70,6 +70,7 @@ class VisualizeGeometryWidget(TabWidget):
 
         # Creating VTK widget container
         self.vtkWidget = QVTKRenderWindowInteractor(self)
+        #self.vtkWidget.setStyleSheet("background-color: darkgrey;")  # Set the background color
         main_layout.addWidget(self.vtkWidget)
 
         base_widget = QWidget()
@@ -140,10 +141,10 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = concorde.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = concorde.generate_vtk_object(GEOM.PTS)
             
-            # Set color to red
+            # Set color for wings (main and vertical)
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to purple
+            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -156,23 +157,23 @@ class VisualizeGeometryWidget(TabWidget):
                 actor = concorde.generate_vtk_object(GEOM.PTS)
                 
                     
-                # Set color to red for the symmetric part
+                # Set color for wings (symmetric)
                 mapper = actor.GetMapper()
                 mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to red
+                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
 
         # Plot fuselage
         for fuselage in vehicle.fuselages:
-            GEOM = concorde.generate_3d_fuselage_points(fuselage, tessellation=24)
+            GEOM = concorde.generate_3d_fuselage_points(fuselage, tessellation=30)
             actor = concorde.generate_vtk_object(GEOM.PTS)
             
-            # Set color to green
+            # Set color of fuselage
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to black
+            actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -213,10 +214,10 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = b737.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = b737.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Light Gray
+            # Set color of wings (main and vertical)
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Gray
+            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -228,17 +229,17 @@ class VisualizeGeometryWidget(TabWidget):
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor = b737.generate_vtk_object(GEOM.PTS)
 
-                # Set color to Light Gray for the symmetric part
+                # Set color for wings (symmetric)
                 mapper = actor.GetMapper()
                 mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Gray
+                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
 
         # Plot fuselage
         for fuselage in vehicle.fuselages:
-            GEOM = b737.generate_3d_fuselage_points(fuselage, tessellation=24)
+            GEOM = b737.generate_3d_fuselage_points(fuselage, tessellation=30)
             actor = b737.generate_vtk_object(GEOM.PTS)
 
             # Set color to Cornflower Blue
@@ -285,10 +286,10 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = b737.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = b737.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Light Gray
+            # Set color for wings (main and vertical)
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Gray
+            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -300,20 +301,20 @@ class VisualizeGeometryWidget(TabWidget):
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor = b777.generate_vtk_object(GEOM.PTS)
 
-                # Set color to Light Gray for the symmetric part
+                # Set color for wings (symmetric)
                 mapper = actor.GetMapper()
                 mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Gray
+                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
 
         # Plot fuselage
         for fuselage in vehicle.fuselages:
-            GEOM = b777.generate_3d_fuselage_points(fuselage, tessellation=24)
+            GEOM = b777.generate_3d_fuselage_points(fuselage, tessellation=30)
             actor = b777.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Cornflower Blue
+            # Set color for fuselage
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
             actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
@@ -358,10 +359,10 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = atr72.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = atr72.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Light Gray
+            # Set color for wings (main and vertical)
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Gray
+            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -373,20 +374,20 @@ class VisualizeGeometryWidget(TabWidget):
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor = b777.generate_vtk_object(GEOM.PTS)
 
-                # Set color to Light Gray for the symmetric part
+                # Set color for wings (symmetric)
                 mapper = actor.GetMapper()
                 mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Gray
+                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
 
         # Plot fuselage
         for fuselage in vehicle.fuselages:
-            GEOM = atr72.generate_3d_fuselage_points(fuselage, tessellation=24)
+            GEOM = atr72.generate_3d_fuselage_points(fuselage, tessellation=30)
             actor = atr72.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Cornflower Blue
+            # Set color for fuselage
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
             actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
@@ -430,10 +431,10 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = evtol.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = evtol.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Light Gray
+            # Set color for wings (main and vertical)
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Gray
+            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -445,10 +446,10 @@ class VisualizeGeometryWidget(TabWidget):
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor = b777.generate_vtk_object(GEOM.PTS)
 
-                # Set color to Light Gray for the symmetric part
+                # Set color for wings (symmetric)
                 mapper = actor.GetMapper()
                 mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Gray
+                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
@@ -458,10 +459,10 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = evtol.generate_3d_fuselage_points(fuselage, tessellation=24)
             actor = evtol.generate_vtk_object(GEOM.PTS)
 
-            # Set color to Cornflower Blue
+            # Set color of fuselage
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
+            actor.GetProperty().SetColor(0.25, 0.25, 0.25)  # Set fuselage color to Dark Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
@@ -472,7 +473,11 @@ class VisualizeGeometryWidget(TabWidget):
         for boom in vehicle.booms:
             GEOM = evtol.generate_3d_fuselage_points(boom,tessellation = 24 )
             actor = evtol.generate_vtk_object(GEOM.PTS)
-            actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
+            
+            # Set color of booms
+            mapper = actor.GetMapper()
+            mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
+            actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set boom color to Cornflower Blue
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection            
             renderer.AddActor(actor)            
@@ -498,6 +503,10 @@ class VisualizeGeometryWidget(TabWidget):
                             else:
                                 GEOM = evtol.generate_3d_basic_nacelle_points(nacelle,tessellation,number_of_airfoil_points) 
                             actor = evtol.generate_vtk_object(GEOM.PTS)
+
+                            # Set color of nacelles
+                            mapper = actor.GetMapper()
+                            mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
                             actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
                             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection                            
@@ -509,6 +518,10 @@ class VisualizeGeometryWidget(TabWidget):
                             for i in range(num_B):
                                 GEOM = evtol.generate_3d_blade_points(propulsor.rotor,number_of_airfoil_points,dim,i) 
                                 actor = evtol.generate_vtk_object(GEOM.PTS[0])
+
+                                # Set color of rotors
+                                mapper = actor.GetMapper()
+                                mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
                                 actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
                                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection                                
@@ -520,6 +533,10 @@ class VisualizeGeometryWidget(TabWidget):
                             for i in range(num_B):
                                 GEOM = evtol.generate_3d_blade_points(propulsor.propeller,number_of_airfoil_points,dim,i)
                                 actor = evtol.generate_vtk_object(GEOM.PTS[0])
+
+                                # Set color of propellers
+                                mapper = actor.GetMapper()
+                                mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
                                 actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
                                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection                                
@@ -539,26 +556,40 @@ class VisualizeGeometryWidget(TabWidget):
                             else:
                                 GEOM = evtol.generate_3d_basic_nacelle_points(nacelle,tessellation,number_of_airfoil_points)
                             actor = evtol.generate_vtk_object(GEOM.PTS)
+
+                            # Set color of nacelles
+                            mapper = actor.GetMapper()
+                            mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
                             actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
                             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection                            
                             renderer.AddActor(actor) 
+
                         if 'rotor' in propulsor: 
                             num_B     = propulsor.rotor.number_of_blades  
                             dim       = len(propulsor.rotor.radius_distribution) 
                             for i in range(num_B):
                                 GEOM = evtol.generate_3d_blade_points(propulsor.rotor,number_of_airfoil_points,dim,i)
                                 actor = evtol.generate_vtk_object(GEOM.PTS[0])
+
+                                # Set color of rotors
+                                mapper = actor.GetMapper()
+                                mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
                                 actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
                                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection                                
-                                renderer.AddActor(actor)  
+                                renderer.AddActor(actor) 
+
                         if 'propeller' in propulsor:
                             num_B     = propulsor.propeller.number_of_blades  
                             dim       = len(propulsor.propeller.radius_distribution) 
                             for i in range(num_B):
                                 GEOM = evtol.generate_3d_blade_points(propulsor.propeller,number_of_airfoil_points,dim,i)
                                 actor = evtol.generate_vtk_object(GEOM.PTS[0])
+
+                                # Set color of propellers
+                                mapper = actor.GetMapper()
+                                mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
                                 actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
                                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection                                
