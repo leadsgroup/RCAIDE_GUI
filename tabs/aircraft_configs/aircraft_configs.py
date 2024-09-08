@@ -3,16 +3,16 @@ from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, 
 from tabs import TabWidget
 from utilities import Units, create_line_bar
 from widgets import DataEntryWidget
-
 import values
-# import RCAIDE
+
+import RCAIDE
 
 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
         super().__init__()
         self.vehicle = None
-        self.data = None        
+        self.data = None
 
         self.cs_de_widget = None
         self.prop_de_widget = None
@@ -109,6 +109,12 @@ class AircraftConfigsWidget(TabWidget):
         data["propulsors"] = self.prop_de_widget.get_values()
 
         return data
+    
+    def create_rcaide_structure(self):
+        config = RCAIDE.Library.Components.Configs.Config()
+        config.tag = self.name_line_edit.text()
+        
+        return config
 
     def save_data(self):
         data = self.get_data()
@@ -130,13 +136,13 @@ class AircraftConfigsWidget(TabWidget):
     def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         self.index = self.tree.indexOfTopLevelItem(item)
         self.load_data(values.config_data[self.index])
-    
+
     def load_from_values(self):
         self.tree.clear()
         self.index = -1
         for config in values.config_data:
             tree_item = QTreeWidgetItem([config["config name"]])
-            self.tree.addTopLevelItem(tree_item)        
+            self.tree.addTopLevelItem(tree_item)
 
 
 def get_widget() -> QWidget:

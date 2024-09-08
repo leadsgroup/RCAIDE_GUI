@@ -120,7 +120,329 @@
         [],
         [],
         [],
-        []
+        [
+            {
+                "energy network selected": "Turbofan",
+                "name": "Network",
+                "energy_network": [
+                    {
+                        "name": "Line 1",
+                        "fuel tank data": [
+                            {
+                                "Fuel Tank Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Fuel Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Center of Gravity": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Mass": [
+                                    0.0,
+                                    0
+                                ],
+                                "Internal Volume": [
+                                    0.0,
+                                    0
+                                ],
+                                "segment name": "Left Tank"
+                            },
+                            {
+                                "Fuel Tank Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Fuel Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Center of Gravity": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Mass": [
+                                    0.0,
+                                    0
+                                ],
+                                "Internal Volume": [
+                                    0.0,
+                                    0
+                                ],
+                                "segment name": "Right Tank"
+                            }
+                        ],
+                        "propulsor data": [
+                            {
+                                "Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Engine Length": [
+                                    0.0,
+                                    0
+                                ],
+                                "Bypass Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "Design Altitude": [
+                                    0.0,
+                                    0
+                                ],
+                                "Design Mach Number": [
+                                    0.0,
+                                    0
+                                ],
+                                "Design Thrust": [
+                                    0.0,
+                                    0
+                                ],
+                                "Fan Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "Fan Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "IN Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "IN Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPC Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPC Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPC Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPC Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPT Mechanical Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPT Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPT Mechanical Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPT Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Pressure Loss Coeff": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Turbine Inlet Temp": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "CN Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "CN Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "FN Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "FN Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "propulsor name": "Left Engine"
+                            },
+                            {
+                                "Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Engine Length": [
+                                    0.0,
+                                    0
+                                ],
+                                "Bypass Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "Design Altitude": [
+                                    0.0,
+                                    0
+                                ],
+                                "Design Mach Number": [
+                                    0.0,
+                                    0
+                                ],
+                                "Design Thrust": [
+                                    0.0,
+                                    0
+                                ],
+                                "Fan Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "Fan Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "IN Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "IN Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPC Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPC Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPC Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPC Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPT Mechanical Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "LPT Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPT Mechanical Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "HPT Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Pressure Loss Coeff": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Turbine Inlet Temp": [
+                                    0.0,
+                                    0
+                                ],
+                                "Combustor Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "CN Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "CN Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "FN Polytropic Efficiency": [
+                                    0.0,
+                                    0
+                                ],
+                                "FN Pressure Ratio": [
+                                    0.0,
+                                    0
+                                ],
+                                "propulsor name": "Right Engine"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     ],
     "config_data": [],
     "analysis_data": [],

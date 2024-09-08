@@ -9,7 +9,7 @@ propulsor_names = []
 
 # Aircraft Configs Data
 config_data = []
-# aircraft_configs = None
+aircraft_configs = RCAIDE.Library.Components.Configs.Config.Container()
 
 # Analysis Data
 analysis_data = []

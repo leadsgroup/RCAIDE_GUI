@@ -130,8 +130,8 @@ class DataEntryWidget(QWidget):
                 z_value = float(z_line_edit.text()
                                 ) if z_line_edit.text() else 0.0
 
-                data[label] = [x_value, y_value,
-                               z_value], unit_picker.current_index
+                data[label] = [[x_value, y_value,
+                               z_value]], unit_picker.current_index
             elif self.data_units_labels[i][1] == Units.Heading:
                 continue
             else:
@@ -161,8 +161,8 @@ class DataEntryWidget(QWidget):
                 x_value, y_value, z_value = unit_picker.apply_unit(
                     x_value), unit_picker.apply_unit(y_value), unit_picker.apply_unit(z_value)
 
-                data[label] = [x_value, y_value,
-                               z_value], unit_picker.current_index
+                data[label] = [[x_value, y_value,
+                               z_value]], unit_picker.current_index
             elif self.data_units_labels[i][1] == Units.Heading:
                 continue
             else:
@@ -180,6 +180,7 @@ class DataEntryWidget(QWidget):
             elif self.data_units_labels[i][1] == Units.Position:
                 x_line_edit, y_line_edit, z_line_edit, unit_picker = self.data_fields[label]
                 value, index = data[label]
+                value = value[0]
                 x_line_edit.setText(str(value[0]))
                 y_line_edit.setText(str(value[1]))
                 z_line_edit.setText(str(value[2]))

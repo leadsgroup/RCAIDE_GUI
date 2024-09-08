@@ -47,7 +47,7 @@ class FuelLineWidget(QWidget):
             self.load_data_values(data_values, index)
 
     def create_rcaide_structure(self, propulsors, fuel_tanks):
-        fuel_line = RCAIDE.Library.Components.Energy.Distribution.Fuel_Line()
+        fuel_line = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()
         for propulsor in propulsors:
             fuel_line.propulsors.append(propulsor)
 

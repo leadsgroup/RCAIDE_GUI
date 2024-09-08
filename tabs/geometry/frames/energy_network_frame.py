@@ -190,7 +190,7 @@ class EnergyNetworkFrame(GeometryFrame):
             _, lines = widget.get_data_values()
 
         if selected_network == "Turbofan":
-            net = RCAIDE.Framework.Networks.Turbofan_Engine_Network()
+            net = RCAIDE.Framework.Networks.Fuel()
             for line in lines:
                 net.fuel_lines.append(line)
             return net

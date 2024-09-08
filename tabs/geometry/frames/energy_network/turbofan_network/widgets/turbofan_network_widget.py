@@ -95,7 +95,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
             assert widget is not None and isinstance(widget, FuelLineWidget)
             fuelline_data, line = widget.get_data_values()
             assert isinstance(
-                line, RCAIDE.Library.Components.Energy.Distribution.Fuel_Line)
+                line, RCAIDE.Library.Components.Energy.Distributors.Fuel_Line)
 
             data.append(fuelline_data)
             lines.append(line)
