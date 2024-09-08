@@ -175,7 +175,8 @@ class GeometryWidget(TabWidget):
                 if index == -1:
                     values.geometry_data[tab_index].append(data)
                 else:
-                    print("Index is ", index)
+                    # TODO: Create RCAIDE component
+                    pass
 
                 child = QTreeWidgetItem([data["name"]])
                 item = top_item.child(tree_index)
