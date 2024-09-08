@@ -8,7 +8,7 @@ from utilities import show_popup, create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
 
 
-class NacelleFrame(QWidget, GeometryFrame):
+class NacelleFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(NacelleFrame, self).__init__()
@@ -144,12 +144,10 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.nacelle_sections_layout.update()
         self.index = -1
 
-    def create_rcaide_structure(self, data):
-        """Create a nacelle structure from the given data.
-
-        Args:
-            data: The data to create the nacelle structure from.
-        """
+    def create_rcaide_structure(self):
+        """Create a nacelle structure from the given data."""
+        data = self.data_entry_widget.get_values_si()
+        data["name"] = self.name_line_edit.text()
         nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
         nacelle.diameter = data["Diameter"][0]
         nacelle.inlet_diameter = data["Inlet Diameter"][0]
@@ -159,8 +157,9 @@ class NacelleFrame(QWidget, GeometryFrame):
         nacelle.origin = origin
         nacelle.areas.wetted = data["Wetted Area"][0]
         nacelle.flow_through = data["Flow Through"][0]
-        # nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"][0]
-        # nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"][0]
+        nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+        nacelle_airfoil.NACA_4_Series_code          = '2410'
+        nacelle.append_airfoil(nacelle_airfoil)  
 
         return nacelle
 
@@ -170,7 +169,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         data_si = self.data_entry_widget.get_values_si()
         data_si["name"] = self.name_line_edit.text()
 
-        nacelle = self.create_rcaide_structure(data_si)
+        nacelle = self.create_rcaide_structure()
 
         data["sections"] = []
         for i in range(self.nacelle_sections_layout.count()):

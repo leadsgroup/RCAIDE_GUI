@@ -175,8 +175,10 @@ class GeometryWidget(TabWidget):
                 if index == -1:
                     values.geometry_data[tab_index].append(data)
                 else:
-                    # TODO: Create RCAIDE component
-                    pass
+                    frame : GeometryFrame = self.frames[tab_index]()
+                    frame.load_data(data, -1)
+                    vehicle_component = frame.create_rcaide_structure()
+                    frame.deleteLater()
 
                 child = QTreeWidgetItem([data["name"]])
                 item = top_item.child(tree_index)

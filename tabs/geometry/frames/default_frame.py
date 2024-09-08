@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 from tabs.geometry.frames import GeometryFrame
 
 
-class DefaultFrame(QWidget, GeometryFrame):
+class DefaultFrame(GeometryFrame):
     def __init__(self):
         super(DefaultFrame, self).__init__()
 

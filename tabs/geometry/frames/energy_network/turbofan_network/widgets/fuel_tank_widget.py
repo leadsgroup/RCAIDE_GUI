@@ -1,12 +1,12 @@
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 
 from tabs.geometry.frames import GeometryFrame
 from utilities import Units
 from widgets import DataEntryWidget
 
 
-class FuelTankWidget(QWidget, GeometryFrame):
+class FuelTankWidget(GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):
         super(FuelTankWidget, self).__init__()
 

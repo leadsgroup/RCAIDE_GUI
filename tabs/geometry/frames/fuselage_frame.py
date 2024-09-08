@@ -8,7 +8,7 @@ from utilities import show_popup, create_line_bar, set_data, Units, create_scrol
 from widgets import DataEntryWidget
 
 
-class FuselageFrame(QWidget, GeometryFrame):
+class FuselageFrame(GeometryFrame):
     # List of data labels
     data_units_labels = [
         ("Fineness Nose", Units.Unitless, "fineness.nose"),
@@ -161,7 +161,8 @@ class FuselageFrame(QWidget, GeometryFrame):
         self.fuselage_sections_layout.update()
         self.index = -1
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self):
+        data = self.data_entry_widget.get_values_si()
         fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
@@ -174,8 +175,7 @@ class FuselageFrame(QWidget, GeometryFrame):
         """Retrieve the entered data values from the text fields."""
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values()
-        fuselage = self.create_rcaide_structure(
-            self.data_entry_widget.get_values_si())
+        fuselage = self.create_rcaide_structure()
 
         data["sections"] = []
         for i in range(self.fuselage_sections_layout.count()):

@@ -8,7 +8,7 @@ from tabs.geometry.frames.energy_network.turbofan_network.widgets import Turbofa
 from utilities import show_popup, clear_layout
 
 
-class EnergyNetworkFrame(QWidget, GeometryFrame):
+class EnergyNetworkFrame(GeometryFrame):
     def __init__(self):
         super(EnergyNetworkFrame, self).__init__()
 

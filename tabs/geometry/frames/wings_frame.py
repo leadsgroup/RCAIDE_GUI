@@ -8,7 +8,7 @@ from utilities import show_popup, create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
 
 
-class WingsFrame(QWidget, GeometryFrame):
+class WingsFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering wing data."""
         super(WingsFrame, self).__init__()
@@ -201,7 +201,10 @@ class WingsFrame(QWidget, GeometryFrame):
 
         self.index = -1
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self):        
+        data = self.data_entry_widget.get_values_si()
+        data["name"] = self.name_line_edit.text()
+        
         wing = RCAIDE.Library.Components.Wings.Main_Wing()
 
         wing.tag = data["name"]
@@ -238,11 +241,8 @@ class WingsFrame(QWidget, GeometryFrame):
         """Retrieve the entered data values from the text fields."""
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
-        data_si = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
-        data_si["name"] = self.name_line_edit.text()
-
-        wing = self.create_rcaide_structure(data_si)
+        wing = self.create_rcaide_structure()
 
         data["sections"] = []
         for i in range(self.wing_sections_layout.count()):

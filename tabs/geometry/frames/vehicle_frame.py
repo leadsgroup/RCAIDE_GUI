@@ -7,7 +7,7 @@ from widgets import DataEntryWidget
 import values
 
 
-class VehicleFrame(QWidget, GeometryFrame):
+class VehicleFrame(GeometryFrame):
     data_units_labels = [
         ("Max Takeoff Weight", Units.Mass, "mass_properties.max_takeoff"),
         ("Actual Takeoff Weight", Units.Mass, "mass_properties.takeoff"),
@@ -58,7 +58,7 @@ class VehicleFrame(QWidget, GeometryFrame):
         self.name_line_edit.setText(data["name"])
         self.data_entry_widget.load_data(data)
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self):
         raise NotImplementedError("This method should not be called")
         # vehicle = RCAIDE.Vehicle()
         # vehicle.tag = data["name"]

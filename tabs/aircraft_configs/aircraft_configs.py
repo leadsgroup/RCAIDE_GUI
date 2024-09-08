@@ -12,8 +12,7 @@ class AircraftConfigsWidget(TabWidget):
     def __init__(self):
         super().__init__()
         self.vehicle = None
-        self.data = None
-        self.index = -1
+        self.data = None        
 
         self.cs_de_widget = None
         self.prop_de_widget = None
