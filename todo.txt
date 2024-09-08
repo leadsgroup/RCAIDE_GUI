@@ -1,6 +1,9 @@
+x 2024-09-08 (A) Load/Save configs data @configs
 2024-09-07 (A) RCAIDE Integration into configs tab @configs
 2024-09-07 (A) Add propulsor names to values.propulsor_names
 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
+2024-09-08 (A) Add mission to values.py @mission
+2024-09-08 (A) Create mission from data on load @mission
 2024-09-08 Add nacelle selection for turbofan in energy network @geometry
 2024-09-08 Add airfoil selection for nacelle @geometry
 2024-07-17 add scroll to widget function in mission.py @mission

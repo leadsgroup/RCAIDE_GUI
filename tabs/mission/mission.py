@@ -68,15 +68,15 @@ class MissionWidget(TabWidget):
         self.tree.clear()
 
         values.mission_data = []
-        values.mission = RCAIDE.Framework.Mission.Sequential_Segments()
-        values.mission.tag = self.mission_name_input.text()
+        values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        values.rcaide_mission.tag = self.mission_name_input.text()
         for mission_segment in self.segment_widgets:
             assert isinstance(mission_segment, MissionSegmentWidget)
 
             segment_data, rcaide_segment = mission_segment.get_data()
             segment_name = segment_data["segment name"]
             values.mission_data.append(segment_data)
-            values.mission.append_segment(rcaide_segment)
+            values.rcaide_mission.append_segment(rcaide_segment)
 
             new_tree_item = QTreeWidgetItem([segment_name])
             self.tree.addTopLevelItem(new_tree_item)
@@ -88,6 +88,8 @@ class MissionWidget(TabWidget):
 
         self.segment_widgets = []
         self.mission_name_input.setText(values.mission_data[0]["segment name"])
+        values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        values.rcaide_mission.tag = self.mission_name_input.text()
         for segment_data in values.mission_data:
             segment_widget = MissionSegmentWidget()
             # segment_widget.create_subsegment_layout(segment_data["subsegment type"])
@@ -98,10 +100,8 @@ class MissionWidget(TabWidget):
                 QTreeWidgetItem([segment_data["segment name"]]))
 
             rcaide_segment = segment_widget.create_rcaide_segment()
-            values.mission.append_segment(rcaide_segment)
+            values.rcaide_mission.append_segment(rcaide_segment)
 
-        values.mission = RCAIDE.Framework.Mission.Sequential_Segments()
-        values.mission.tag = self.mission_name_input.text()
 
     def update_layout(self):
         for widget in self.segment_widgets:

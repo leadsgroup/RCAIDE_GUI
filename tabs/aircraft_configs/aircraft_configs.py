@@ -114,7 +114,7 @@ class AircraftConfigsWidget(TabWidget):
         data = self.get_data()
         if self.index == -1:
             self.index = len(values.config_data)
-            values.aircraft_configs.append(data)
+            values.config_data.append(data)
             tree_item = QTreeWidgetItem([data["config name"]])
             self.tree.addTopLevelItem(tree_item)
         else:
@@ -123,7 +123,6 @@ class AircraftConfigsWidget(TabWidget):
 
     def load_data(self, data):
         self.name_line_edit.setText(data["config name"])
-
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
         self.cs_de_widget.load_data(data["cs deflections"])
         self.prop_de_widget.load_data(data["propulsors"])
@@ -131,6 +130,13 @@ class AircraftConfigsWidget(TabWidget):
     def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         self.index = self.tree.indexOfTopLevelItem(item)
         self.load_data(values.config_data[self.index])
+    
+    def load_from_values(self):
+        self.tree.clear()
+        self.index = -1
+        for config in values.config_data:
+            tree_item = QTreeWidgetItem([config["config name"]])
+            self.tree.addTopLevelItem(tree_item)        
 
 
 def get_widget() -> QWidget:

@@ -15,7 +15,7 @@ config_data = []
 analysis_data = []
 
 # Mission Data
-mission = RCAIDE.Framework.Mission.Sequential_Segments()
+rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
 mission_data = []
 
 
