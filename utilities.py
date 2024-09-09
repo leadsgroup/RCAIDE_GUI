@@ -65,6 +65,9 @@ def clear_layout(layout: QLayout):
                 # Recursively clear sublayout
                 clear_layout(sublayout)
 
+def convert_name(name: str):
+    return name.replace(" ", "_").lower()
+
 
 class Units:
     class Length:

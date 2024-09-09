@@ -1,0 +1,433 @@
+{
+    "geometry_data": [
+        {
+            "Max Takeoff Weight": [
+                70000.0,
+                0
+            ],
+            "Actual Takeoff Weight": [
+                0.0,
+                0
+            ],
+            "Operating Empty Weight": [
+                0.0,
+                0
+            ],
+            "Maximum Zero Fuel Weight": [
+                0.0,
+                0
+            ],
+            "Cargo Weight": [
+                0.0,
+                0
+            ],
+            "Ultimate Load": [
+                0.0,
+                0
+            ],
+            "Limit Load": [
+                0.0,
+                0
+            ],
+            "Reference Area": [
+                0.0,
+                0
+            ],
+            "Passengers": [
+                0.0,
+                0
+            ],
+            "name": ""
+        },
+        [
+            {
+                "Fineness Nose": [
+                    0.0,
+                    0
+                ],
+                "Fineness Tail": [
+                    0.0,
+                    0
+                ],
+                "Lengths Nose": [
+                    0.0,
+                    0
+                ],
+                "Lengths Tail": [
+                    0.0,
+                    0
+                ],
+                "Lengths Cabin": [
+                    0.0,
+                    0
+                ],
+                "Lengths Total": [
+                    0.0,
+                    0
+                ],
+                "Lengths Forespace": [
+                    0.0,
+                    0
+                ],
+                "Lengths Aftspace": [
+                    0.0,
+                    0
+                ],
+                "Width": [
+                    0.0,
+                    0
+                ],
+                "Heights Maximum": [
+                    0.0,
+                    0
+                ],
+                "Height at Quarter": [
+                    0.0,
+                    0
+                ],
+                "Height at Three Quarters": [
+                    0.0,
+                    0
+                ],
+                "Height at Wing Root Quarter Chord": [
+                    0.0,
+                    0
+                ],
+                "Areas Side Projected": [
+                    0.0,
+                    0
+                ],
+                "Area Wetted": [
+                    0.0,
+                    0
+                ],
+                "Area Front Projected": [
+                    0.0,
+                    0
+                ],
+                "Differential Pressure": [
+                    0.0,
+                    0
+                ],
+                "Effective Diameter": [
+                    0.0,
+                    0
+                ],
+                "sections": [],
+                "name": "f"
+            }
+        ],
+        [
+            {
+                "Taper": [
+                    1.0,
+                    0
+                ],
+                "Dihedral": [
+                    0.0,
+                    0
+                ],
+                "Aspect Ratio": [
+                    0.0,
+                    0
+                ],
+                "Thickness to Chord": [
+                    0.0,
+                    0
+                ],
+                "Aerodynamic Center": [
+                    [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    0
+                ],
+                "Exposed Root Chord Offset": [
+                    0.0,
+                    0
+                ],
+                "Total Length": [
+                    0.0,
+                    0
+                ],
+                "Spans Projected": [
+                    0.0,
+                    0
+                ],
+                "Spans Total": [
+                    0.0,
+                    0
+                ],
+                "Areas Reference": [
+                    0.0,
+                    0
+                ],
+                "Areas Exposed": [
+                    0.0,
+                    0
+                ],
+                "Areas Affected": [
+                    0.0,
+                    0
+                ],
+                "Areas Wetted": [
+                    0.0,
+                    0
+                ],
+                "Root Chord": [
+                    0.0,
+                    0
+                ],
+                "Tip Chord": [
+                    0.0,
+                    0
+                ],
+                "Mean Aerodynamic Chord": [
+                    0.0,
+                    0
+                ],
+                "Mean Geometric Chord": [
+                    0.0,
+                    0
+                ],
+                "Quarter Chord Sweep Angle": [
+                    0.0,
+                    0
+                ],
+                "Half Chord Sweep Angle": [
+                    0.0,
+                    0
+                ],
+                "Leading Edge Sweep Angle": [
+                    0.0,
+                    0
+                ],
+                "Root Chord Twist Angle": [
+                    0.0,
+                    0
+                ],
+                "Tip Chord Twist Angle": [
+                    0.0,
+                    0
+                ],
+                "name": "w",
+                "sections": [],
+                "control_surfaces": []
+            }
+        ],
+        [],
+        [],
+        []
+    ],
+    "config_data": [],
+    "analysis_data": [],
+    "mission_data": [
+        {
+            "Altitude Start": [
+                4.0,
+                0
+            ],
+            "Altitude End": [
+                10000.0,
+                0
+            ],
+            "Climb Rate": [
+                0.0,
+                0
+            ],
+            "CAS": [
+                0.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "climb",
+            "flight forces": {
+                "Forces in X axis": [
+                    true,
+                    0
+                ],
+                "Moments about X axis": [
+                    false,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    true,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    true,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    true,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 0,
+            "nested dropdown": "Constant CAS/Constant Rate"
+        },
+        {
+            "Altitude": [
+                10000.0,
+                0
+            ],
+            "Mach Number": [
+                0.8,
+                0
+            ],
+            "Distance": [
+                0.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "cruise",
+            "flight forces": {
+                "Forces in X axis": [
+                    true,
+                    0
+                ],
+                "Moments about X axis": [
+                    false,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    false,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    false,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    true,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 1,
+            "nested dropdown": "Constant Mach/Constant Altitude"
+        }
+    ]
+}

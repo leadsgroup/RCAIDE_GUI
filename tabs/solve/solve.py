@@ -4,6 +4,9 @@ import pyqtgraph as pg
 import numpy as np
 
 from tabs import TabWidget
+import values
+
+import RCAIDE
 
 
 class SolveWidget(TabWidget):
@@ -80,7 +83,8 @@ class SolveWidget(TabWidget):
     def init_tree(self):
         self.tree.setColumnCount(2)
         self.tree.setHeaderLabels(["Plot Options", "Enabled"])
-        self.tree.header().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        self.tree.header().setSectionResizeMode(
+            0, QHeaderView.ResizeMode.ResizeToContents)
 
         for category, options in self.plot_options.items():
             category_item = QTreeWidgetItem([category])
@@ -88,15 +92,18 @@ class SolveWidget(TabWidget):
 
             for option in options:
                 option_item = QTreeWidgetItem([option])
-                option_item.setCheckState(1, Qt.CheckState.Checked)  # Initially checked
+                option_item.setCheckState(
+                    1, Qt.CheckState.Checked)  # Initially checked
 
                 category_item.addChild(option_item)
 
                 # Add callback to hide/show the sine and cosine waves based on specific plot options
                 if option == "Plot Airfoil Boundary Layer Properties":
-                    self.toggle_sine_plot(option_item)  # Ensure sine wave starts checked and plotted
+                    # Ensure sine wave starts checked and plotted
+                    self.toggle_sine_plot(option_item)
                 elif option == "Plot Airfoil Polar Files":
-                    self.toggle_cosine_plot(option_item)  # Ensure cosine wave starts checked and plotted
+                    # Ensure cosine wave starts checked and plotted
+                    self.toggle_cosine_plot(option_item)
 
                 self.tree.itemChanged.connect(self.handle_item_change)
 
@@ -110,7 +117,8 @@ class SolveWidget(TabWidget):
     def toggle_sine_plot(self, item):
         if item.checkState(1) == Qt.CheckState.Checked:
             if not self.plot_sine:  # Plot if it's not already plotted
-                self.plot_sine = self.plot_widget_sine.plot(self.x, self.y_sin, pen='r', name="Sine Wave")
+                self.plot_sine = self.plot_widget_sine.plot(
+                    self.x, self.y_sin, pen='r', name="Sine Wave")
             self.plot_widget_sine.show()  # Show the sine wave plot when checked
         else:
             if self.plot_sine:
@@ -121,7 +129,8 @@ class SolveWidget(TabWidget):
     def toggle_cosine_plot(self, item):
         if item.checkState(1) == Qt.CheckState.Checked:
             if not self.plot_cosine:  # Plot if it's not already plotted
-                self.plot_cosine = self.plot_widget_cosine.plot(self.x, self.y_cos, pen='b', name="Cosine Wave")
+                self.plot_cosine = self.plot_widget_cosine.plot(
+                    self.x, self.y_cos, pen='b', name="Cosine Wave")
             self.plot_widget_cosine.show()  # Show the cosine wave plot when checked
         else:
             if self.plot_cosine:
@@ -130,7 +139,19 @@ class SolveWidget(TabWidget):
             self.plot_widget_cosine.hide()   # Hide the plot widget when unchecked
 
     def run_solve(self):
-        pass
+        configs = values.aircraft_configs
+
+        analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+        for tag, config in configs.items():
+            analysis = values.analyses
+            analyses[tag] = analysis
+
+        # Step 4 set up a flight mission
+        mission = values.rcaide_mission
+
+        # Step 5 execute flight profile
+        results = mission.evaluate()
 
     plot_options = {
         "Aerodynamics": [

@@ -1,7 +1,7 @@
 from typing import cast
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
     QTreeWidgetItem, QHeaderView
 
 from tabs.analysis.widgets import *
@@ -72,7 +72,7 @@ class AnalysisWidget(TabWidget):
 
     def save_analyses(self):
         for widget in self.widgets:
-            # assert issubclass(widget, AnalysisDataWidget)
+            assert isinstance(widget, AnalysisDataWidget)
             widget.create_analysis()
 
 

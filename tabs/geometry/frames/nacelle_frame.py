@@ -4,11 +4,11 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
-from utilities import show_popup, create_line_bar, Units, create_scroll_area
+from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
 
 
-class NacelleFrame(QWidget, GeometryFrame):
+class NacelleFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(NacelleFrame, self).__init__()
@@ -20,20 +20,20 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.add_name_layout()
 
         # List of data labels
-        data_units_labels = [
-            ("Length", Units.Length),
-            ("Inlet Diameter", Units.Length),
-            ("Diameter", Units.Length),
-            ("Origin", Units.Position),
-            ("Wetted Area", Units.Area),
-            ("Flow Through", Units.Boolean),
-            ("Airfoil Flag", Units.Boolean),
-            ("Airfoil Coordinate File", Units.Unitless)
+        self.data_units_labels = [
+            ("Length", Units.Length, "length"),
+            ("Inlet Diameter", Units.Length, "inlet_diameter"),
+            ("Diameter", Units.Length, "diameter"),
+            ("Origin", Units.Position, "origin"),
+            ("Wetted Area", Units.Area, "areas.wetted"),
+            ("Flow Through", Units.Boolean, "flow_through"),
+            # ("Airfoil Flag", Units.Boolean),
+            # ("Airfoil Coordinate File", Units.Unitless)
         ]
 
         # Add the data entry widget to the main layout
         self.data_entry_widget: DataEntryWidget = DataEntryWidget(
-            data_units_labels)
+            self.data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -144,23 +144,29 @@ class NacelleFrame(QWidget, GeometryFrame):
         self.nacelle_sections_layout.update()
         self.index = -1
 
-    def create_rcaide_structure(self, data):
-        """Create a nacelle structure from the given data.
-
-        Args:
-            data: The data to create the nacelle structure from.
-        """
+    def create_rcaide_structure(self):
+        """Create a nacelle structure from the given data."""
+        data = self.data_entry_widget.get_values_si()
+        data["name"] = self.name_line_edit.text()
         nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
-        nacelle.diameter = data["Diameter"][0]
-        nacelle.inlet_diameter = data["Inlet Diameter"][0]
-        nacelle.length = data["Length"][0]
-        nacelle.tags = data["name"]
-        origin = data["Origin"][0]
-        nacelle.origin = origin
-        nacelle.areas.wetted = data["Wetted Area"][0]
-        nacelle.flow_through = data["Flow Through"][0]
-        # nacelle.Airfoil.NACA_4_series_flag = data["Airfoil Flag"][0]
-        # nacelle.Airfoil.coordinate_file = data["Airfoil Coordinate File"][0]
+        for data_unit_label in self.data_units_labels:
+            user_label = data_unit_label[0]
+            rcaide_label = data_unit_label[-1]
+            set_data(nacelle, rcaide_label, data[user_label][0])
+                
+        nacelle_airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+        nacelle_airfoil.NACA_4_Series_code = '2410'
+        nacelle.append_airfoil(nacelle_airfoil)
+
+        for i in range(self.nacelle_sections_layout.count()):
+            item = self.nacelle_sections_layout.itemAt(i)
+            if item is None:
+                continue
+
+            widget = item.widget()
+            if widget is not None and isinstance(widget, NacelleSectionWidget):
+                _, segment = widget.get_data_values()
+                nacelle.append_segment(segment)
 
         return nacelle
 
@@ -170,7 +176,7 @@ class NacelleFrame(QWidget, GeometryFrame):
         data_si = self.data_entry_widget.get_values_si()
         data_si["name"] = self.name_line_edit.text()
 
-        nacelle = self.create_rcaide_structure(data_si)
+        nacelle = self.create_rcaide_structure()
 
         data["sections"] = []
         for i in range(self.nacelle_sections_layout.count()):

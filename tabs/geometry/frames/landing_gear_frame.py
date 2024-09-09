@@ -7,7 +7,7 @@ from utilities import show_popup, create_line_bar, create_scroll_area, set_data,
 from widgets import DataEntryWidget
 
 
-class LandingGearFrame(QWidget, GeometryFrame):
+class LandingGearFrame(GeometryFrame):
 
     # List of data labels
     data_units_labels = [
@@ -106,7 +106,9 @@ class LandingGearFrame(QWidget, GeometryFrame):
         self.name_line_edit.clear()
         self.index = -1
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self):
+        data = self.data_entry_widget.get_values_si()
+        data["name"] = self.name_line_edit.text()
         landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
         landing_gear.tag = data["name"]
         for data_unit_label in self.data_units_labels:
@@ -121,11 +123,7 @@ class LandingGearFrame(QWidget, GeometryFrame):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
-
-        si_data = self.data_entry_widget.get_values_si()
-        si_data["name"] = data["name"]
-
-        landing_gear = self.create_rcaide_structure(si_data)
+        landing_gear = self.create_rcaide_structure()
         return data, landing_gear
 
     def load_data(self, data, index):

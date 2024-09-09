@@ -1,12 +1,12 @@
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 
 from tabs.geometry.frames import GeometryFrame
 from utilities import Units
 from widgets import DataEntryWidget
 
 
-class FuelTankWidget(QWidget, GeometryFrame):
+class FuelTankWidget(GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):
         super(FuelTankWidget, self).__init__()
 
@@ -70,13 +70,13 @@ class FuelTankWidget(QWidget, GeometryFrame):
         data = self.data_entry_widget.get_values()
         data["segment name"] = title
 
-        data_si = self.data_entry_widget.get_values_si()
-        data_si["segment name"] = title
+        return data, self.create_rcaide_structure()
 
-        return data, self.create_rcaide_structure(data_si)
-
-    def create_rcaide_structure(self, data):
-        fuel_tank = RCAIDE.Library.Components.Energy.Fuel_Tanks.Fuel_Tank()
+    def create_rcaide_structure(self):
+        title = self.section_name_edit.text()
+        data = self.data_entry_widget.get_values_si()
+        data["segment name"] = title
+        fuel_tank = RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks.Fuel_Tank()
         fuel_tank.tag = data["segment name"]
         fuel_tank.origin = data["Fuel Tank Origin"][0]
 

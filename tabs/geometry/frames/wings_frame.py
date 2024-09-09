@@ -4,11 +4,11 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import WingCSWidget, WingSectionWidget
-from utilities import show_popup, create_line_bar, Units, create_scroll_area
+from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data
 from widgets import DataEntryWidget
 
 
-class WingsFrame(QWidget, GeometryFrame):
+class WingsFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering wing data."""
         super(WingsFrame, self).__init__()
@@ -25,33 +25,34 @@ class WingsFrame(QWidget, GeometryFrame):
         self.add_name_layout()
 
         # List of data labels
-        data_units_labels = [
-            ("Taper", Units.Unitless),
-            ("Dihedral", Units.Angle),
-            ("Aspect Ratio", Units.Unitless),
-            ("Thickness to Chord", Units.Unitless),
-            ("Aerodynamic Center", Units.Position),
-            ("Exposed Root Chord Offset", Units.Unitless),
-            ("Total Length", Units.Length),
-            ("Spans Projected", Units.Length),
-            ("Spans Total", Units.Length),
-            ("Areas Reference", Units.Area),
-            ("Areas Exposed", Units.Area),
-            ("Areas Affected", Units.Area),
-            ("Areas Wetted", Units.Area),
-            ("Root Chord", Units.Length),
-            ("Tip Chord", Units.Length),
-            ("Mean Aerodynamic Chord", Units.Length),
-            ("Mean Geometric Chord", Units.Length),
-            ("Quarter Chord Sweep Angle", Units.Angle),
-            ("Half Chord Sweep Angle", Units.Angle),
-            ("Leading Edge Sweep Angle", Units.Angle),
-            ("Root Chord Twist Angle", Units.Angle),
-            ("Tip Chord Twist Angle", Units.Angle)
+        self.data_units_labels = [
+            ("Taper", Units.Unitless, "taper"),
+            ("Dihedral", Units.Angle, "dihedral"),
+            ("Aspect Ratio", Units.Unitless, "aspect_ratio"),
+            ("Thickness to Chord", Units.Unitless, "thickness_to_chord"),
+            ("Aerodynamic Center", Units.Position, "aerodynamic_center"),
+            ("T-Tail", Units.Boolean, "t_tail"),
+            ("Exposed Root Chord Offset", Units.Unitless, "exposed_root_chord_offset"),
+            ("Total Length", Units.Length, "total_length"),
+            ("Spans Projected", Units.Length, "spans.projected"),
+            ("Spans Total", Units.Length, "spans.total"),
+            ("Areas Reference", Units.Area, "areas.reference"),
+            ("Areas Exposed", Units.Area, "areas.exposed"),
+            ("Areas Affected", Units.Area, "areas.affected"),
+            ("Areas Wetted", Units.Area, "areas.wetted"),
+            ("Root Chord", Units.Length, "chords.root"),
+            ("Tip Chord", Units.Length, "chords.tip"),
+            ("Mean Aerodynamic Chord", Units.Length, "chords.mean_aerodynamic"),
+            ("Mean Geometric Chord", Units.Length, "chords.mean_geometric"),
+            ("Quarter Chord Sweep Angle", Units.Angle, "sweeps.quarter_chord"),
+            ("Half Chord Sweep Angle", Units.Angle, "sweeps.half_chord"),
+            ("Leading Edge Sweep Angle", Units.Angle, "sweeps.leading_edge"),
+            ("Root Chord Twist Angle", Units.Angle, "twists.root"),
+            ("Tip Chord Twist Angle", Units.Angle, "twists.tip")
         ]
 
         # Add the data entry widget to the main layout
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -201,36 +202,38 @@ class WingsFrame(QWidget, GeometryFrame):
 
         self.index = -1
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self):        
+        data = self.data_entry_widget.get_values_si()
+        data["name"] = self.name_line_edit.text()
+        
         wing = RCAIDE.Library.Components.Wings.Main_Wing()
 
         wing.tag = data["name"]
-        wing.taper_ratio = data["Taper"][0]
-        wing.dihedral = data["Dihedral"][0]
-        wing.aspect_ratio = data["Aspect Ratio"][0]
-        wing.thickness_to_chord = data["Thickness to Chord"][0]
-        wing.aerodynamic_center = [0, 0, 0]
-        wing.exposed_root_chord_offset = data["Exposed Root Chord Offset"][0]
-        wing.total_length = data["Total Length"][0]
+        
+        for data_unit_label in self.data_units_labels:
+            rcaide_label = data_unit_label[-1]
+            user_label = data_unit_label[0]
+            set_data(wing, rcaide_label, data[user_label][0])
+        
+        for i in range(self.wing_sections_layout.count()):
+            item = self.wing_sections_layout.itemAt(i)
+            if item is None:
+                continue
 
-        wing.spans.projected = data["Spans Projected"][0]
-        wing.spans.total = data["Spans Total"][0]
-        wing.areas.reference = data["Areas Reference"][0]
-        wing.areas.exposed = data["Areas Exposed"][0]
-        wing.areas.affected = data["Areas Affected"][0]
-        wing.areas.wetted = data["Areas Wetted"][0]
+            widget = item.widget()
+            if widget is not None and isinstance(widget, WingSectionWidget):
+                _, wing_section = widget.get_data_values()
+                wing.append_segment(wing_section)
 
-        wing.chords.root = data["Root Chord"][0]
-        wing.chords.tip = data["Tip Chord"][0]
-        wing.chords.mean_aerodynamic = data["Mean Aerodynamic Chord"][0]
-        wing.chords.mean_geometric = data["Mean Geometric Chord"][0]
+        for i in range(self.wing_cs_layout.count()):
+            item = self.wing_cs_layout.itemAt(i)
+            if item is None:
+                continue
 
-        wing.sweeps.quarter_chord = data["Quarter Chord Sweep Angle"][0]
-        wing.sweeps.half_chord = data["Half Chord Sweep Angle"][0]
-        wing.sweeps.leading_edge = data["Leading Edge Sweep Angle"][0]
-
-        wing.twists.root = data["Root Chord Twist Angle"][0]
-        wing.twists.tip = data["Tip Chord Twist Angle"][0]
+            widget = item.widget()
+            if widget is not None and isinstance(widget, WingCSWidget):
+                _, cs = widget.get_data_values()
+                wing.append_control_surface(cs)
 
         return wing
 
@@ -238,11 +241,8 @@ class WingsFrame(QWidget, GeometryFrame):
         """Retrieve the entered data values from the text fields."""
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
-        data_si = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
-        data_si["name"] = self.name_line_edit.text()
-
-        wing = self.create_rcaide_structure(data_si)
+        wing = self.create_rcaide_structure()
 
         data["sections"] = []
         for i in range(self.wing_sections_layout.count()):

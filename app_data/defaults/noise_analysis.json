@@ -9,11 +9,11 @@
 			0
 		],
 		"Aircraft Departure Location": [
-			[0, 0, 0],
+			[[0, 0, 0]],
 			0
 		],
 		"Aircraft Destination Location": [
-			[0, 0, 0],
+			[[0, 0, 0]],
 			0
 		],
 		"Microphone X Resolution": [
@@ -94,11 +94,11 @@
 			0
 		],
 		"Aircraft Departure Location": [
-			[0, 0, 0],
+			[[0, 0, 0]],
 			0
 		],
 		"Aircraft Destination Location": [
-			[0, 0, 0],
+			[[0, 0, 0]],
 			0
 		],
 		"Microphone X Resolution": [

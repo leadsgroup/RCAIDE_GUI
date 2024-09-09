@@ -1,13 +1,14 @@
 from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QScrollArea, QWidget
 
 
-class GeometryFrame:
+class GeometryFrame(QWidget):
     def __init__(self):
+        super().__init__()
         self.tab_index = -1
         self.index = -1
         self.save_function = None
         self.main_layout: QVBoxLayout | None = None
-        self.name_line_edit: QLineEdit | None = None
+        self.name_line_edit: QLineEdit | None = None        
 
     def load_data(self, data, index):
         """Load the given data into the frame.
@@ -36,7 +37,7 @@ class GeometryFrame:
         """Create a new structure for the frame: clear all fields and set the index to -1."""
         pass
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self):
         """Create an RCAIDE structure from the given data and return it.
         
         Args:
@@ -55,3 +56,5 @@ class GeometryFrame:
     def update_layout(self):
         """Update the layout of the frame. Called when the frame is shown."""
         pass
+    
+    
