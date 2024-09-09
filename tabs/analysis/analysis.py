@@ -72,7 +72,7 @@ class AnalysisWidget(TabWidget):
 
     def save_analyses(self):
         for widget in self.widgets:
-            # assert issubclass(widget, AnalysisDataWidget)
+            assert isinstance(widget, AnalysisDataWidget)
             widget.create_analysis()
 
 

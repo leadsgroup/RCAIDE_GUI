@@ -66,9 +66,7 @@ class AerodynamicsWidget(QWidget, AnalysisDataWidget):
         values_si = self.data_entry_widget.get_values_si()
 
         if analysis_num == 0:
-            aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Subsonic_VLM()
-        else:
-            aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Supersonic_VLM()
+            aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
 
         for data_unit_label in self.data_units_labels[analysis_num]:
             rcaide_label = data_unit_label[-1]

@@ -9,14 +9,15 @@ propulsor_names = []
 
 # Aircraft Configs Data
 config_data = []
-aircraft_configs = RCAIDE.Library.Components.Configs.Config.Container()
+rcaide_configs = RCAIDE.Library.Components.Configs.Config.Container()
 
 # Analysis Data
 analysis_data = []
+rcaide_analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
 # Mission Data
-rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
 mission_data = []
+rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
 
 
 def write_to_json():

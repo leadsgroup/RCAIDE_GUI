@@ -136,7 +136,7 @@ class AircraftConfigsWidget(TabWidget):
         if self.index == -1:
             self.index = len(values.config_data)
             values.config_data.append(data)
-            values.aircraft_configs.append(config)
+            values.rcaide_configs.append(config)
             tree_item = QTreeWidgetItem([data["config name"]])
             self.tree.addTopLevelItem(tree_item)
         else:
