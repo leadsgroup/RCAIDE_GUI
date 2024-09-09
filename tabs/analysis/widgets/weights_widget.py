@@ -17,6 +17,7 @@ class WeightsWidget(QWidget, AnalysisDataWidget):
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def create_analysis(self):
+    def create_analysis(self, vehicle: RCAIDE.Vehicle):
         weights = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+        weights.vehicle = vehicle
         return weights

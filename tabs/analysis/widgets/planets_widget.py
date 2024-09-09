@@ -18,7 +18,6 @@ class PlanetsWidget(QWidget, AnalysisDataWidget):
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def create_analysis(self):
+    def create_analysis(self, _vehicle):
         planet = RCAIDE.Framework.Analyses.Planets.Planet()
-
         return planet

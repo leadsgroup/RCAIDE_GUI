@@ -22,9 +22,12 @@ class AtmosphereWidget(QWidget, AnalysisDataWidget):
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def create_analysis(self):
+    def create_analysis(self, _vehicle):
         analysis_num = self.analysis_selector.currentIndex()
         if analysis_num == 0:
-            return RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+            atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
         else:
-            return RCAIDE.Framework.Analyses.Atmospheric.Constant_Temperature()
+            atmosphere = RCAIDE.Framework.Analyses.Atmospheric.Constant_Temperature()
+
+        atmosphere.features.planet = RCAIDE.Framework.Planets.Planet().features
+        return atmosphere

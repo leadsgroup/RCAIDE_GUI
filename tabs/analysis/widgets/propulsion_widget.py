@@ -23,7 +23,7 @@ class PropulsionWidget(QWidget, AnalysisDataWidget):
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def create_analysis(self):
+    def create_analysis(self, _vehicle):
         analysis_num = self.analysis_selector.currentIndex()
         if analysis_num == 0:
             propulsion = RCAIDE.Framework.Analyses.Propulsion.Rotor_Wake_Fidelity_Zero()
