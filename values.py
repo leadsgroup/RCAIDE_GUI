@@ -13,6 +13,7 @@ aircraft_configs = RCAIDE.Library.Components.Configs.Config.Container()
 
 # Analysis Data
 analysis_data = []
+analyses = RCAIDE.Framework.Analyses.Vehicle()
 
 # Mission Data
 rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
