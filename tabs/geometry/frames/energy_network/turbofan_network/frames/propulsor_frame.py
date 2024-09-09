@@ -78,9 +78,9 @@ class PropulsorFrame(QWidget):
             self.propulsor_sections_layout.removeWidget(widget)
             widget.deleteLater()
 
-        for section_data in data:
+        for propulsor_data in data:
             self.propulsor_sections_layout.addWidget(PropulsorWidget(
-                self.propulsor_sections_layout.count(), self.on_delete_button_pressed, section_data))
+                self.propulsor_sections_layout.count(), self.on_delete_button_pressed, propulsor_data))
 
     def delete_data(self):
         """Delete the entered data or perform any other action."""

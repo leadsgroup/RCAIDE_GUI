@@ -108,7 +108,7 @@ class LandingGearFrame(GeometryFrame):
 
     def create_rcaide_structure(self):
         data = self.data_entry_widget.get_values_si()
-        data["name"] = data["name"]
+        data["name"] = self.name_line_edit.text()
         landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
         landing_gear.tag = data["name"]
         for data_unit_label in self.data_units_labels:

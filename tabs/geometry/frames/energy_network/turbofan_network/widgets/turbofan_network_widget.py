@@ -83,6 +83,8 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
         for index, section in enumerate(data):
             self.fuellines_layout.addWidget(
                 FuelLineWidget(index, self.on_delete_button_pressed, section))
+        
+        self.update_fuel_selector(self.get_data_values(just_data=True)[0])
 
     def get_data_values(self, just_data=False):
         # Collect data from fuel line widgets
@@ -104,6 +106,8 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
             return data, []
 
         if self.tank_selector_data != data:
+            print(self.tank_selector_data)
+            print(data)
             print("Tank selector is not updated!")
             return False, False
 

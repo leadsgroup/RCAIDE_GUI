@@ -63,11 +63,13 @@ class AircraftConfigsWidget(TabWidget):
 
         for wing in self.data[2]:
             for control_surface in wing["control_surfaces"]:
+                control_surface["wing name"] = wing["name"]
                 control_surface_data.append(control_surface)
 
         for energy_network in self.data[5]:
             for fuel_line in energy_network["energy_network"]:
                 for propulsor in fuel_line["propulsor data"]:
+                    propulsor["fuel line name"] = fuel_line["name"]
                     propulsor_data.append(propulsor)
 
         cs_deflections_labels = []

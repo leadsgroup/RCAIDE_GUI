@@ -138,7 +138,7 @@ class GeometryWidget(TabWidget):
             assert isinstance(frame, GeometryFrame)
             frame.load_data(values.geometry_data[tab_index][index], index)
 
-    def save_data(self, tab_index=-1, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False):
+    def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False):
         """Save the entered data in a frame to the list.
 
         Args:
@@ -220,8 +220,8 @@ class GeometryWidget(TabWidget):
                     continue
 
                 for index, data in enumerate(data_list):
-                    self.save_data(tab_index=tab_index, tree_index=tab_index - 1,
-                                   index=index, data=data, new=True)
+                    # tree_index = self.find_tree_index(tab_index)
+                    self.save_data(tab_index=tab_index, index=index, data=data, new=True)
 
     # noinspection PyMethodMayBeStatic
     def find_tree_index(self, tab_index):
