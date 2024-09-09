@@ -1,7 +1,7 @@
 from typing import cast
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
     QTreeWidgetItem, QHeaderView
 
 from tabs.analysis.widgets import *
