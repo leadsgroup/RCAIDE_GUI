@@ -162,12 +162,23 @@ class FuselageFrame(GeometryFrame):
         self.index = -1
 
     def create_rcaide_structure(self):
+        assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
         fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(fuselage, rcaide_label, data[user_label][0])
+        
+        for i in range(self.fuselage_sections_layout.count()):
+            item = self.fuselage_sections_layout.itemAt(i)
+            if item is None:
+                continue
+
+            fuselage_section = item.widget()
+            if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
+                _, segment = fuselage_section.get_data_values()
+                fuselage.append_segment(segment)
 
         return fuselage
 

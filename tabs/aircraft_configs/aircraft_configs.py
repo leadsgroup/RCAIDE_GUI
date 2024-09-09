@@ -127,7 +127,7 @@ class AircraftConfigsWidget(TabWidget):
             prop_data = self.propulsor_data[index]
             fuel_line_name = convert_name(prop_data["fuel line name"])
             prop_name = convert_name(prop_data["propulsor name"])
-            config.fuel_lines[fuel_line_name].propulsors[prop_name].enabled = prop[1][0]
+            config.networks.fuel.fuel_lines[fuel_line_name].propulsors[prop_name].enabled = prop[1][0]
         return config
 
     def save_data(self):
@@ -136,11 +136,12 @@ class AircraftConfigsWidget(TabWidget):
         if self.index == -1:
             self.index = len(values.config_data)
             values.config_data.append(data)
+            values.aircraft_configs.append(config)
             tree_item = QTreeWidgetItem([data["config name"]])
             self.tree.addTopLevelItem(tree_item)
         else:
             values.config_data[self.index] = data
-            # TODO update config name if changed
+            # TODO update config if changed
 
     def load_data(self, data):
         self.name_line_edit.setText(data["config name"])

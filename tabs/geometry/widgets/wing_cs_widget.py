@@ -66,11 +66,12 @@ class WingCSWidget(QWidget):
         self.name_layout.addWidget(QLabel("Control Surface Name: "))
         self.name_layout.addWidget(QLineEdit(self))
 
-        cs_type_dropdown = QComboBox()
-        cs_type_dropdown.addItems(cs_types)
-        cs_type_dropdown.setFixedWidth(100)
-        cs_type_dropdown.currentIndexChanged.connect(self.on_dropdown_change)
-        self.name_layout.addWidget(cs_type_dropdown)
+        self.cs_type_dropdown = QComboBox()
+        self.cs_type_dropdown.addItems(cs_types)
+        self.cs_type_dropdown.setFixedWidth(100)
+        self.cs_type_dropdown.currentIndexChanged.connect(
+            self.on_dropdown_change)
+        self.name_layout.addWidget(self.cs_type_dropdown)
         self.name_layout.addItem(spacer_right)
 
         self.main_layout.addLayout(self.name_layout)
@@ -122,6 +123,7 @@ class WingCSWidget(QWidget):
         elif self.cs_type == 4:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
 
+        assert cs is not None
         cs.tag = data["CS name"]
         cs.span_fraction_start = data["Span Fraction Start"][0]
         cs.span_fraction_end = data["Span Fraction End"][0]
@@ -143,15 +145,22 @@ class WingCSWidget(QWidget):
         return cs
 
     def get_data_values(self):
+        assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
+
+        # TODO: Fix
         data["CS name"] = self.name_layout.itemAt(2).widget().text()
         data_si["CS name"] = self.name_layout.itemAt(2).widget().text()
+
+        data["CS type"] = self.cs_type
 
         cs = self.create_rcaide_structure(data_si)
         return data, cs
 
     def load_data_values(self, section_data):
+        assert self.data_entry_widget is not None
+        self.cs_type_dropdown.setCurrentIndex(section_data["CS type"])
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["CS name"])
 

@@ -213,6 +213,10 @@
                     0.0,
                     0
                 ],
+                "T-Tail": [
+                    false,
+                    0
+                ],
                 "name": "Wing A",
                 "sections": [],
                 "control_surfaces": [
@@ -233,7 +237,8 @@
                             0.0,
                             0
                         ],
-                        "CS name": "Aileron"
+                        "CS name": "Aileron",
+                        "CS type": 0
                     }
                 ]
             }
