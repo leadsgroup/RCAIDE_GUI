@@ -1,5 +1,3 @@
-from typing import cast
-
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
     QTreeWidgetItem, QHeaderView
@@ -7,6 +5,9 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
 from tabs.analysis.widgets import *
 from tabs import TabWidget
 from utilities import create_scroll_area
+import values
+
+import RCAIDE
 
 
 class AnalysisWidget(TabWidget):
@@ -45,7 +46,8 @@ class AnalysisWidget(TabWidget):
         layout_scroll = create_scroll_area(self, False)
         self.base_layout.addLayout(layout_scroll, 4)
 
-        assert self.main_layout is not None and isinstance(self.main_layout, QVBoxLayout)
+        assert self.main_layout is not None and isinstance(
+            self.main_layout, QVBoxLayout)
         # Define actions based on the selected
         self.widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
                         PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
@@ -69,11 +71,18 @@ class AnalysisWidget(TabWidget):
         widget = layout_item.widget()
         assert widget is not None
         widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
+        
+    def load_from_values(self):
+        
 
     def save_analyses(self):
-        for widget in self.widgets:
-            assert isinstance(widget, AnalysisDataWidget)
-            widget.create_analysis()
+        for tag, config in values.rcaide_configs.items():
+            analysis = RCAIDE.Framework.Analyses.Vehicle()
+            for widget in self.widgets:
+                assert isinstance(widget, AnalysisDataWidget)
+                analysis.append(widget.create_analysis(config))
+
+            values.rcaide_analyses[tag] = analysis
 
 
 def get_widget() -> QWidget:

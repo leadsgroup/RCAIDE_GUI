@@ -3,9 +3,9 @@ import json
 
 
 # Geometry Data
-vehicle = RCAIDE.Vehicle()
 geometry_data = []
 propulsor_names = []
+vehicle = RCAIDE.Vehicle()
 
 # Aircraft Configs Data
 config_data = []
@@ -25,7 +25,8 @@ def write_to_json():
         "geometry_data": geometry_data,
         "config_data": config_data,
         "analysis_data": analysis_data,
-        "mission_data": mission_data
+        "mission_data": mission_data,
+        "propulsor_names": propulsor_names
     }
 
     data_str = json.dumps(data, indent=4)
@@ -33,10 +34,11 @@ def write_to_json():
 
 
 def read_from_json(data_str):
-    global geometry_data, config_data, analysis_data, mission_data
+    global geometry_data, config_data, analysis_data, mission_data, propulsor_names
 
     data = json.loads(data_str)
     geometry_data = data["geometry_data"]
     config_data = data["config_data"]
     analysis_data = data["analysis_data"]
     mission_data = data["mission_data"]
+    propulsor_names = data["propulsor_names"]
