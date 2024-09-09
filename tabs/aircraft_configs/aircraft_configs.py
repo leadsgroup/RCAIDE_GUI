@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, QLabel, QLineEdit
 
 from tabs import TabWidget
-from utilities import Units, create_line_bar
+from utilities import Units, create_line_bar, convert_name
 from widgets import DataEntryWidget
 import values
 
@@ -58,28 +58,28 @@ class AircraftConfigsWidget(TabWidget):
         self.vehicle = values.vehicle
         self.data = values.geometry_data
 
-        control_surface_data = []
-        propulsor_data = []
+        self.control_surface_data = []
+        self.propulsor_data = []
 
         for wing in self.data[2]:
             for control_surface in wing["control_surfaces"]:
                 control_surface["wing name"] = wing["name"]
-                control_surface_data.append(control_surface)
+                self.control_surface_data.append(control_surface)
 
         for energy_network in self.data[5]:
             for fuel_line in energy_network["energy_network"]:
                 for propulsor in fuel_line["propulsor data"]:
                     propulsor["fuel line name"] = fuel_line["name"]
-                    propulsor_data.append(propulsor)
+                    self.propulsor_data.append(propulsor)
 
         cs_deflections_labels = []
         propulsor_labels = []
-        for control_surface in control_surface_data:
+        for control_surface in self.control_surface_data:
             cs_deflections_labels.append(
                 (control_surface["CS name"] + " Deflection", Units.Angle)
             )
 
-        for propulsor in propulsor_data:
+        for propulsor in self.propulsor_data:
             propulsor_labels.append(
                 (propulsor["propulsor name"] + " Enabled", Units.Boolean)
             )
@@ -113,13 +113,26 @@ class AircraftConfigsWidget(TabWidget):
         return data
     
     def create_rcaide_structure(self):
-        config = RCAIDE.Library.Components.Configs.Config()
+        config = RCAIDE.Library.Components.Configs.Config(values.vehicle)
         config.tag = self.name_line_edit.text()
+        cs_values = self.cs_de_widget.get_values_si()
+        for index, cs in enumerate(cs_values.items()):
+            cs_data = self.control_surface_data[index]
+            wing_name = convert_name(cs_data["wing name"])
+            cs_name = convert_name(cs_data["CS name"])
+            config.wings[wing_name].control_surfaces[cs_name].deflection = cs[1][0]
         
+        prop_values = self.prop_de_widget.get_values_si()
+        for index, prop in enumerate(prop_values.items()):
+            prop_data = self.propulsor_data[index]
+            fuel_line_name = convert_name(prop_data["fuel line name"])
+            prop_name = convert_name(prop_data["propulsor name"])
+            config.fuel_lines[fuel_line_name].propulsors[prop_name].enabled = prop[1][0]
         return config
 
     def save_data(self):
         data = self.get_data()
+        config = self.create_rcaide_structure()
         if self.index == -1:
             self.index = len(values.config_data)
             values.config_data.append(data)
