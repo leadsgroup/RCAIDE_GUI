@@ -238,7 +238,8 @@
                             0
                         ],
                         "CS name": "Aileron",
-                        "CS type": 0
+                        "CS type": 0,
+                        "wing name": "Wing A"
                     }
                 ]
             }
@@ -571,7 +572,65 @@
             }
         ]
     ],
-    "config_data": [],
+    "config_data": [
+        {
+            "config name": "base",
+            "cs deflections": {
+                "Aileron Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "Left Engine Enabled": [
+                    true,
+                    0
+                ],
+                "Right Engine Enabled": [
+                    true,
+                    0
+                ]
+            }
+        },
+        {
+            "config name": "left engine fail",
+            "cs deflections": {
+                "Aileron Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "Left Engine Enabled": [
+                    false,
+                    0
+                ],
+                "Right Engine Enabled": [
+                    true,
+                    0
+                ]
+            }
+        },
+        {
+            "config name": "right engine fail",
+            "cs deflections": {
+                "Aileron Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "Left Engine Enabled": [
+                    true,
+                    0
+                ],
+                "Right Engine Enabled": [
+                    false,
+                    0
+                ]
+            }
+        }
+    ],
     "analysis_data": [],
     "mission_data": [
         {
