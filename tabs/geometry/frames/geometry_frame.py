@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QScrollArea, QWidget
+from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QWidget
+
+import RCAIDE
 
 
 class GeometryFrame(QWidget):
@@ -8,7 +10,7 @@ class GeometryFrame(QWidget):
         self.index = -1
         self.save_function = None
         self.main_layout: QVBoxLayout | None = None
-        self.name_line_edit: QLineEdit | None = None        
+        self.name_line_edit: QLineEdit = QLineEdit()        
 
     def load_data(self, data, index):
         """Load the given data into the frame.
@@ -43,11 +45,11 @@ class GeometryFrame(QWidget):
         Args:
             data: The data to create the structure from.
         """
-        pass
+        return RCAIDE.Library.Components.Component()
     
     def get_data_values(self):
         """Get the data values from the frame's widgets and return it."""
-        pass
+        return ({}, RCAIDE.Library.Components.Component())
     
     def save_data(self):
         """Save the data from the frame into geometry.py, which subsequently saves it in values."""

@@ -1,4 +1,5 @@
 import RCAIDE
+from RCAIDE.Library.Methods.Geometry.Planform import segment_properties
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
@@ -19,7 +20,7 @@ class WingsFrame(GeometryFrame):
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wing</b>"))
         self.main_layout.addWidget(create_line_bar())
-        
+
         # TODO Add extra flags
 
         self.add_name_layout()
@@ -31,8 +32,14 @@ class WingsFrame(GeometryFrame):
             ("Aspect Ratio", Units.Unitless, "aspect_ratio"),
             ("Thickness to Chord", Units.Unitless, "thickness_to_chord"),
             ("Aerodynamic Center", Units.Position, "aerodynamic_center"),
+            ("Origin", Units.Position, "origin"),
+            ("Vertical", Units.Boolean, "vertical"),
+            ("Symmetric", Units.Boolean, "symmetric"),
+            ("High Lift", Units.Boolean, "high_lift"),
+            ("Dynamic Pressure Ratio", Units.Unitless, "dynamic_pressure_ratio"),
             ("T-Tail", Units.Boolean, "t_tail"),
-            ("Exposed Root Chord Offset", Units.Unitless, "exposed_root_chord_offset"),
+            ("Exposed Root Chord Offset", Units.Unitless,
+             "exposed_root_chord_offset"),
             ("Total Length", Units.Length, "total_length"),
             ("Spans Projected", Units.Length, "spans.projected"),
             ("Spans Total", Units.Length, "spans.total"),
@@ -46,7 +53,6 @@ class WingsFrame(GeometryFrame):
             ("Mean Geometric Chord", Units.Length, "chords.mean_geometric"),
             ("Quarter Chord Sweep Angle", Units.Angle, "sweeps.quarter_chord"),
             ("Half Chord Sweep Angle", Units.Angle, "sweeps.half_chord"),
-            ("Leading Edge Sweep Angle", Units.Angle, "sweeps.leading_edge"),
             ("Root Chord Twist Angle", Units.Angle, "twists.root"),
             ("Tip Chord Twist Angle", Units.Angle, "twists.tip")
         ]
@@ -68,14 +74,17 @@ class WingsFrame(GeometryFrame):
         self.add_buttons_layout()
 
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+        self.main_layout.addItem(QSpacerItem(
+            20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def add_name_layout(self):
         assert self.main_layout is not None
 
         name_layout = QHBoxLayout()
-        spacer_left = QSpacerItem(50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_line_edit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
@@ -202,19 +211,20 @@ class WingsFrame(GeometryFrame):
 
         self.index = -1
 
-    def create_rcaide_structure(self):        
+    def create_rcaide_structure(self):
+        assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
-        
+
         wing = RCAIDE.Library.Components.Wings.Main_Wing()
 
         wing.tag = data["name"]
-        
+
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(wing, rcaide_label, data[user_label][0])
-        
+
         for i in range(self.wing_sections_layout.count()):
             item = self.wing_sections_layout.itemAt(i)
             if item is None:
@@ -235,6 +245,7 @@ class WingsFrame(GeometryFrame):
                 _, cs = widget.get_data_values()
                 wing.append_control_surface(cs)
 
+        wing = segment_properties(wing)
         return wing
 
     def get_data_values(self):
@@ -279,6 +290,22 @@ class WingsFrame(GeometryFrame):
         """
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
+        
+        while self.wing_sections_layout.count():
+            child = self.wing_sections_layout.takeAt(0)
+            assert child is not None
+            if child.widget():
+                widget = child.widget()
+                assert widget is not None
+                widget.deleteLater()
+        
+        while self.wing_cs_layout.count():
+            child = self.wing_cs_layout.takeAt(0)
+            assert child is not None
+            if child.widget():
+                widget = child.widget()
+                assert widget is not None
+                widget.deleteLater()
 
         for section in data["sections"]:
             self.wing_sections_layout.addWidget(WingSectionWidget(

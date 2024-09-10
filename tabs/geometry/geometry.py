@@ -64,8 +64,8 @@ class GeometryWidget(TabWidget):
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
 
-        self.right_layout.addWidget(Color("blue"), 3)
-        self.right_layout.addLayout(self.main_layout, 7)
+        # self.right_layout.addWidget(Color("blue"), 3)
+        self.right_layout.addLayout(self.main_layout)
         base_layout.addLayout(self.tree_frame_layout, 1)
         base_layout.addLayout(self.right_layout, 4)
 

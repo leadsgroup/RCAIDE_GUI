@@ -213,6 +213,13 @@ class FuselageFrame(GeometryFrame):
         """
         assert self.data_entry_widget is not None
         self.data_entry_widget.load_data(data)
+        
+        while self.fuselage_sections_layout.count():
+            item = self.fuselage_sections_layout.takeAt(0)
+            assert item is not None
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
 
         for section in data["sections"]:
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
