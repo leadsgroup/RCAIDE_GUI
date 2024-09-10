@@ -655,7 +655,8 @@
                             0
                         ],
                         "CS name": "slat",
-                        "CS type": 1
+                        "CS type": 1,
+                        "wing name": "main_wing"
                     },
                     {
                         "Span Fraction Start": [
@@ -679,7 +680,8 @@
                             0
                         ],
                         "CS name": "flap",
-                        "CS type": 2
+                        "CS type": 2,
+                        "wing name": "main_wing"
                     },
                     {
                         "Span Fraction Start": [
@@ -699,7 +701,8 @@
                             0
                         ],
                         "CS name": "aileron",
-                        "CS type": 0
+                        "CS type": 0,
+                        "wing name": "main_wing"
                     }
                 ]
             },
@@ -900,7 +903,8 @@
                             0
                         ],
                         "CS name": "elevator",
-                        "CS type": 3
+                        "CS type": 3,
+                        "wing name": "horizontal_stabilizer"
                     }
                 ]
             },
@@ -1182,10 +1186,522 @@
                 "name": "nacelle_2"
             }
         ],
-        [],
-        []
+        [
+            {
+                "Main Tire Diameter": [
+                    1.12,
+                    0
+                ],
+                "Nose Tire Diameter": [
+                    0.6858,
+                    0
+                ],
+                "Main Strut Length": [
+                    1.8,
+                    0
+                ],
+                "Nose Strut Length": [
+                    1.2,
+                    0
+                ],
+                "Main Units": [
+                    2.0,
+                    0
+                ],
+                "Nose Units": [
+                    1.0,
+                    0
+                ],
+                "Main Wheels": [
+                    2.0,
+                    0
+                ],
+                "Nose Wheels": [
+                    2.0,
+                    0
+                ],
+                "name": "main_landing_gear"
+            }
+        ],
+        [
+            {
+                "energy network selected": "Turbofan",
+                "name": "network",
+                "energy_network": [
+                    {
+                        "name": "line_1",
+                        "fuel tank data": [
+                            {
+                                "Fuel Tank Origin": [
+                                    [
+                                        [
+                                            26.944,
+                                            0.0,
+                                            1.54
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Fuel Origin": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Center of Gravity": [
+                                    [
+                                        [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Mass": [
+                                    10000.0,
+                                    0
+                                ],
+                                "Internal Volume": [
+                                    12.437810945273633,
+                                    0
+                                ],
+                                "segment name": "fuel_tank"
+                            }
+                        ],
+                        "propulsor data": [
+                            {
+                                "Origin": [
+                                    [
+                                        [
+                                            13.72,
+                                            4.38,
+                                            -1.1
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Engine Length": [
+                                    2.71,
+                                    0
+                                ],
+                                "Bypass Ratio": [
+                                    5.4,
+                                    0
+                                ],
+                                "Design Altitude": [
+                                    10000.0,
+                                    0
+                                ],
+                                "Design Mach Number": [
+                                    0.78,
+                                    0
+                                ],
+                                "Design Thrust": [
+                                    35000.0,
+                                    0
+                                ],
+                                "Fan Polytropic Efficiency": [
+                                    0.93,
+                                    0
+                                ],
+                                "Fan Pressure Ratio": [
+                                    1.7,
+                                    0
+                                ],
+                                "IN Polytropic Efficiency": [
+                                    0.98,
+                                    0
+                                ],
+                                "IN Pressure Ratio": [
+                                    0.98,
+                                    0
+                                ],
+                                "LPC Polytropic Efficiency": [
+                                    0.91,
+                                    0
+                                ],
+                                "LPC Pressure Ratio": [
+                                    1.9,
+                                    0
+                                ],
+                                "HPC Polytropic Efficiency": [
+                                    0.91,
+                                    0
+                                ],
+                                "HPC Pressure Ratio": [
+                                    10.0,
+                                    0
+                                ],
+                                "LPT Mechanical Efficiency": [
+                                    0.99,
+                                    0
+                                ],
+                                "LPT Polytropic Efficiency": [
+                                    0.93,
+                                    0
+                                ],
+                                "HPT Mechanical Efficiency": [
+                                    0.99,
+                                    0
+                                ],
+                                "HPT Polytropic Efficiency": [
+                                    0.93,
+                                    0
+                                ],
+                                "Combustor Efficiency": [
+                                    0.99,
+                                    0
+                                ],
+                                "Combustor Pressure Loss Coeff": [
+                                    1.0,
+                                    0
+                                ],
+                                "Combustor Turbine Inlet Temp": [
+                                    1773.0,
+                                    0
+                                ],
+                                "Combustor Pressure Ratio": [
+                                    0.95,
+                                    0
+                                ],
+                                "CN Polytropic Efficiency": [
+                                    0.95,
+                                    0
+                                ],
+                                "CN Pressure Ratio": [
+                                    0.99,
+                                    0
+                                ],
+                                "FN Polytropic Efficiency": [
+                                    0.95,
+                                    0
+                                ],
+                                "FN Pressure Ratio": [
+                                    0.99,
+                                    0
+                                ],
+                                "propulsor name": "starboard_propulsor",
+                                "fuel line name": "line_1"
+                            },
+                            {
+                                "Origin": [
+                                    [
+                                        [
+                                            13.72,
+                                            -4.38,
+                                            -1.1
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Engine Length": [
+                                    2.71,
+                                    0
+                                ],
+                                "Bypass Ratio": [
+                                    5.4,
+                                    0
+                                ],
+                                "Design Altitude": [
+                                    10000.0,
+                                    0
+                                ],
+                                "Design Mach Number": [
+                                    0.78,
+                                    0
+                                ],
+                                "Design Thrust": [
+                                    35000.0,
+                                    0
+                                ],
+                                "Fan Polytropic Efficiency": [
+                                    0.93,
+                                    0
+                                ],
+                                "Fan Pressure Ratio": [
+                                    1.7,
+                                    0
+                                ],
+                                "IN Polytropic Efficiency": [
+                                    0.98,
+                                    0
+                                ],
+                                "IN Pressure Ratio": [
+                                    0.98,
+                                    0
+                                ],
+                                "LPC Polytropic Efficiency": [
+                                    0.91,
+                                    0
+                                ],
+                                "LPC Pressure Ratio": [
+                                    1.9,
+                                    0
+                                ],
+                                "HPC Polytropic Efficiency": [
+                                    0.91,
+                                    0
+                                ],
+                                "HPC Pressure Ratio": [
+                                    10.0,
+                                    0
+                                ],
+                                "LPT Mechanical Efficiency": [
+                                    0.99,
+                                    0
+                                ],
+                                "LPT Polytropic Efficiency": [
+                                    0.93,
+                                    0
+                                ],
+                                "HPT Mechanical Efficiency": [
+                                    0.99,
+                                    0
+                                ],
+                                "HPT Polytropic Efficiency": [
+                                    0.93,
+                                    0
+                                ],
+                                "Combustor Efficiency": [
+                                    0.99,
+                                    0
+                                ],
+                                "Combustor Pressure Loss Coeff": [
+                                    1.0,
+                                    0
+                                ],
+                                "Combustor Turbine Inlet Temp": [
+                                    1773.0,
+                                    0
+                                ],
+                                "Combustor Pressure Ratio": [
+                                    0.95,
+                                    0
+                                ],
+                                "CN Polytropic Efficiency": [
+                                    0.95,
+                                    0
+                                ],
+                                "CN Pressure Ratio": [
+                                    0.99,
+                                    0
+                                ],
+                                "FN Polytropic Efficiency": [
+                                    0.95,
+                                    0
+                                ],
+                                "FN Pressure Ratio": [
+                                    0.99,
+                                    0
+                                ],
+                                "propulsor name": "port_propulsor",
+                                "fuel line name": "line_1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     ],
-    "config_data": [],
+    "config_data": [
+        {
+            "config name": "base",
+            "cs deflections": {
+                "slat Deflection": [
+                    0.0,
+                    0
+                ],
+                "flap Deflection": [
+                    0.0,
+                    0
+                ],
+                "aileron Deflection": [
+                    0.0,
+                    0
+                ],
+                "elevator Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "starboard_propulsor Enabled": [
+                    true,
+                    0
+                ],
+                "port_propulsor Enabled": [
+                    true,
+                    0
+                ]
+            },
+            "gear down": false
+        },
+        {
+            "config name": "cruise",
+            "cs deflections": {
+                "slat Deflection": [
+                    0.0,
+                    0
+                ],
+                "flap Deflection": [
+                    0.0,
+                    0
+                ],
+                "aileron Deflection": [
+                    0.0,
+                    0
+                ],
+                "elevator Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "starboard_propulsor Enabled": [
+                    true,
+                    0
+                ],
+                "port_propulsor Enabled": [
+                    true,
+                    0
+                ]
+            },
+            "gear down": false
+        },
+        {
+            "config name": "takeoff",
+            "cs deflections": {
+                "slat Deflection": [
+                    25.0,
+                    0
+                ],
+                "flap Deflection": [
+                    20.0,
+                    0
+                ],
+                "aileron Deflection": [
+                    0.0,
+                    0
+                ],
+                "elevator Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "starboard_propulsor Enabled": [
+                    true,
+                    0
+                ],
+                "port_propulsor Enabled": [
+                    true,
+                    0
+                ]
+            },
+            "gear down": false
+        },
+        {
+            "config name": "cutback",
+            "cs deflections": {
+                "slat Deflection": [
+                    20.0,
+                    0
+                ],
+                "flap Deflection": [
+                    20.0,
+                    0
+                ],
+                "aileron Deflection": [
+                    0.0,
+                    0
+                ],
+                "elevator Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "starboard_propulsor Enabled": [
+                    true,
+                    0
+                ],
+                "port_propulsor Enabled": [
+                    true,
+                    0
+                ]
+            },
+            "gear down": false
+        },
+        {
+            "config name": "landing",
+            "cs deflections": {
+                "slat Deflection": [
+                    25.0,
+                    0
+                ],
+                "flap Deflection": [
+                    30.0,
+                    0
+                ],
+                "aileron Deflection": [
+                    0.0,
+                    0
+                ],
+                "elevator Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "starboard_propulsor Enabled": [
+                    true,
+                    0
+                ],
+                "port_propulsor Enabled": [
+                    true,
+                    0
+                ]
+            },
+            "gear down": true
+        },
+        {
+            "config name": "reverse_thrust",
+            "cs deflections": {
+                "slat Deflection": [
+                    25.0,
+                    0
+                ],
+                "flap Deflection": [
+                    30.0,
+                    0
+                ],
+                "aileron Deflection": [
+                    0.0,
+                    0
+                ],
+                "elevator Deflection": [
+                    0.0,
+                    0
+                ]
+            },
+            "propulsors": {
+                "starboard_propulsor Enabled": [
+                    true,
+                    0
+                ],
+                "port_propulsor Enabled": [
+                    true,
+                    0
+                ]
+            },
+            "gear down": true
+        }
+    ],
     "analysis_data": [
         {
             "Fuselage Lift Correction": [
@@ -1408,5 +1924,10 @@
         }
     ],
     "mission_data": [],
-    "propulsor_names": []
+    "propulsor_names": [
+        [
+            "starboard_propulsor",
+            "port_propulsor"
+        ]
+    ]
 }
