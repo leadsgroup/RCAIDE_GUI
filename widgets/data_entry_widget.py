@@ -134,6 +134,11 @@ class DataEntryWidget(QWidget):
                                z_value]], unit_picker.current_index
             elif self.data_units_labels[i][1] == Units.Heading:
                 continue
+            elif self.data_units_labels[i][1] == Units.Count:
+                data_field = self.data_fields[label]
+                line_edit, unit_picker = data_field
+                value = int(line_edit.text()) if line_edit.text() else 0
+                data[label] = value, unit_picker.current_index
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
@@ -165,6 +170,11 @@ class DataEntryWidget(QWidget):
                                z_value]], unit_picker.current_index
             elif self.data_units_labels[i][1] == Units.Heading:
                 continue
+            elif self.data_units_labels[i][1] == Units.Count:
+                data_field = self.data_fields[label]
+                line_edit, unit_picker = data_field
+                value = int(line_edit.text()) if line_edit.text() else 0
+                data[label] = value, unit_picker.current_index
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
