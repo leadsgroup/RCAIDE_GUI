@@ -1,5 +1,6 @@
+from lib2to3.pytree import convert
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
 from RCAIDE.Library.Methods.Propulsors.Turbofan_Propulsor import design_turbofan
 
 from tabs.geometry.frames.energy_network import EnergyNetworkWidget
@@ -23,7 +24,7 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         # TODO: Make sure 2 turbofans aren't at the same origin
 
         data_units_labels = [
-            ("Turbofan", Units.Heading),
+            # ("Turbofan", Units.Heading),
             ("Origin", Units.Position),
             ("Engine Length", Units.Length),
             ("Bypass Ratio", Units.Unitless),
@@ -69,6 +70,13 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
+        
+        nacelle_data = values.geometry_data[3]
+        nacelle_tags = []
+        for nacelle in nacelle_data:
+            nacelle_tags.append(convert_name(nacelle["name"]))
+        self.nacelle_selector = QComboBox()
+        self.nacelle_selector.addItems(nacelle_tags)
 
         # Adding delete button
         delete_button = QPushButton("Delete Propulsor", self)
@@ -168,14 +176,16 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         fan_nozzle.polytropic_efficiency = data["FN Polytropic Efficiency"][0]
         fan_nozzle.pressure_ratio = data["FN Pressure Ratio"][0]
         turbofan.fan_nozzle = fan_nozzle
+        
+        turbofan.nacelle = values.vehicle.nacelles[self.nacelle_selector.currentText()]
 
         design_turbofan(turbofan)
-
         return turbofan
 
     def load_data_values(self, data):
         self.data_entry_widget.load_data(data)
         self.section_name_edit.setText(data["propulsor name"])
+        self.nacelle_selector.setCurrentText(data["nacelle tag"])
 
     def get_data_values(self):
         title = self.section_name_edit.text()
@@ -186,5 +196,7 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
 
         data_si = self.data_entry_widget.get_values_si()
         data_si["propulsor name"] = title
+        
+        data["nacelle tag"] = self.nacelle_selector.currentText()
 
         return data, self.create_rcaide_structure(data_si)

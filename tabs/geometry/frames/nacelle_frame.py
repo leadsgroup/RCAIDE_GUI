@@ -174,6 +174,7 @@ class NacelleFrame(GeometryFrame):
                 _, segment = widget.get_data_values()
                 nacelle.append_segment(segment)
 
+        nacelle.tag = data["name"]
         return nacelle
 
     def get_data_values(self):

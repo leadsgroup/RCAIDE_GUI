@@ -6,7 +6,8 @@ import numpy as np
 from tabs import TabWidget
 import values
 
-import RCAIDE
+from RCAIDE.Framework.Core import Units
+# import RCAIDE
 
 
 class SolveWidget(TabWidget):
@@ -34,32 +35,19 @@ class SolveWidget(TabWidget):
         plot_layout = QVBoxLayout(plot_container)
 
         # Create two PlotWidgets from PyQtGraph
-        self.plot_widget_sine = pg.PlotWidget()  # For sine wave
-        self.plot_widget_cosine = pg.PlotWidget()  # For cosine wave
+        self.aircraft_velocity_plot = pg.PlotWidget()
+        self.aircraft_altitude_plot = pg.PlotWidget()
 
         # Set a fixed size for each plot widget
-        plot_size = QSize(1450, 500) # Set a fixed plot size
-        self.plot_widget_sine.setFixedSize(plot_size)
-        self.plot_widget_cosine.setFixedSize(plot_size)
+        plot_size = QSize(700, 400)  # Set a fixed plot size
+        self.aircraft_velocity_plot.setFixedSize(plot_size)
+        self.aircraft_velocity_plot.addLegend()
+        
+        self.aircraft_altitude_plot.setFixedSize(plot_size)
+        self.aircraft_altitude_plot.addLegend()
 
-        # Add legends to both plot widgets
-        self.plot_widget_sine.addLegend()
-        self.plot_widget_cosine.addLegend()
-
-        # Generate some data (sine and cosine waves)
-        self.x = np.linspace(0, 10, 100)
-        self.y_sin = np.sin(self.x)
-        self.y_cos = np.cos(self.x)
-
-        # Initially, plot widgets are hidden
-        self.plot_sine = None
-        self.plot_cosine = None
-
-        # Add the two PlotWidgets to the plot layout
-        plot_layout.addWidget(self.plot_widget_sine)
-        plot_layout.addWidget(self.plot_widget_cosine)
-
-        # Add the plot container to the scroll area
+        plot_layout.addWidget(self.aircraft_velocity_plot)
+        plot_layout.addWidget(self.aircraft_altitude_plot)
         scroll_area.setWidget(plot_container)
 
         # Add the scroll area to the main_layout
@@ -83,7 +71,7 @@ class SolveWidget(TabWidget):
     def init_tree(self):
         self.tree.setColumnCount(2)
         self.tree.setHeaderLabels(["Plot Options", "Enabled"])
-        
+
         header = self.tree.header()
         assert header is not None
         header.setSectionResizeMode(
@@ -100,61 +88,27 @@ class SolveWidget(TabWidget):
 
                 category_item.addChild(option_item)
 
-                # Add callback to hide/show the sine and cosine waves based on specific plot options
-                if option == "Plot Airfoil Boundary Layer Properties":
-                    # Ensure sine wave starts checked and plotted
-                    self.toggle_sine_plot(option_item)
-                elif option == "Plot Airfoil Polar Files":
-                    # Ensure cosine wave starts checked and plotted
-                    self.toggle_cosine_plot(option_item)
-
-                self.tree.itemChanged.connect(self.handle_item_change)
-
-    def handle_item_change(self, item, column):
-        """Handles toggling both the sine and cosine plots based on their respective plot options."""
-        if item.text(0) == "Plot Airfoil Boundary Layer Properties":
-            self.toggle_sine_plot(item)
-        elif item.text(0) == "Plot Airfoil Polar Files":
-            self.toggle_cosine_plot(item)
-
-    def toggle_sine_plot(self, item):
-        if item.checkState(1) == Qt.CheckState.Checked:
-            if not self.plot_sine:  # Plot if it's not already plotted
-                self.plot_sine = self.plot_widget_sine.plot(
-                    self.x, self.y_sin, pen='r', name="Sine Wave")
-            self.plot_widget_sine.show()  # Show the sine wave plot when checked
-        else:
-            if self.plot_sine:
-                self.plot_widget_sine.clear()  # Clear the sine wave plot when unchecked
-                self.plot_sine = None  # Reset the plot_sine reference
-            self.plot_widget_sine.hide()   # Hide the plot widget when unchecked
-
-    def toggle_cosine_plot(self, item):
-        if item.checkState(1) == Qt.CheckState.Checked:
-            if not self.plot_cosine:  # Plot if it's not already plotted
-                self.plot_cosine = self.plot_widget_cosine.plot(
-                    self.x, self.y_cos, pen='b', name="Cosine Wave")
-            self.plot_widget_cosine.show()  # Show the cosine wave plot when checked
-        else:
-            if self.plot_cosine:
-                self.plot_widget_cosine.clear()  # Clear the cosine wave plot when unchecked
-                self.plot_cosine = None  # Reset the plot_cosine reference
-            self.plot_widget_cosine.hide()   # Hide the plot widget when unchecked
-
     def run_solve(self):
-        configs = values.rcaide_configs
-
-        analyses = RCAIDE.Framework.Analyses.Analysis.Container() # type: ignore
-
-        for tag, config in configs.items():
-            analysis = values.rcaide_analyses
-            analyses[tag] = analysis
-
-        # Step 4 set up a flight mission
         mission = values.rcaide_mission
-
-        # Step 5 execute flight profile
+        print("Starting solve...")
         results = mission.evaluate()
+        print("Done with solve")
+        for segment in results.segments:
+            time = segment.conditions.frames.inertial.time[:, 0] / Units.min
+            
+            velocity = segment.conditions.freestream.velocity[:, 0] / Units.kts
+            altitude = segment.conditions.freestream.altitude[:,0]/Units.feet
+            density = segment.conditions.freestream.density[:, 0]
+            PR = density / 1.225
+            EAS = velocity * np.sqrt(PR)
+            mach = segment.conditions.freestream.mach_number[:, 0]
+            CAS = EAS * (1+((1/8)*((1-PR)*mach**2)) +
+                         ((3/640)*(1-10*PR+(9*PR**2)*(mach**4))))
+            
+            blue_pen = pg.mkPen(color=(0, 0, 255), width=5)
+            red_pen = pg.mkPen(color=(255, 0, 0), width=5)
+            self.aircraft_velocity_plot.plot(time, velocity, pen=blue_pen, name=segment.tag.replace('_', ' '))
+            self.aircraft_altitude_plot.plot(time, altitude, pen=red_pen, name=segment.tag.replace('_', ' '))
 
     plot_options = {
         "Aerodynamics": [

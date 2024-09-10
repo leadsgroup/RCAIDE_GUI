@@ -676,7 +676,7 @@
                             0
                         ],
                         "Number of Slots": [
-                            2.0,
+                            2,
                             0
                         ],
                         "CS name": "flap",
@@ -1205,19 +1205,19 @@
                     0
                 ],
                 "Main Units": [
-                    2.0,
+                    2,
                     0
                 ],
                 "Nose Units": [
-                    1.0,
+                    1,
                     0
                 ],
                 "Main Wheels": [
-                    2.0,
+                    2,
                     0
                 ],
                 "Nose Wheels": [
-                    2.0,
+                    2,
                     0
                 ],
                 "name": "main_landing_gear"
@@ -1386,7 +1386,8 @@
                                     0
                                 ],
                                 "propulsor name": "starboard_propulsor",
-                                "fuel line name": "line_1"
+                                "fuel line name": "line_1",
+                                "nacelle tag": "nacelle_1"
                             },
                             {
                                 "Origin": [
@@ -1500,7 +1501,8 @@
                                     0
                                 ],
                                 "propulsor name": "port_propulsor",
-                                "fuel line name": "line_1"
+                                "fuel line name": "line_1",
+                                "nacelle tag": "nacelle_2"
                             }
                         ]
                     }
@@ -1705,11 +1707,11 @@
     "analysis_data": [
         {
             "Fuselage Lift Correction": [
-                1.0,
+                1.14,
                 0
             ],
             "Trim Drag Correction Factor": [
-                1.02,
+                1.0,
                 0
             ],
             "Wing Parasite Drag Form Factor": [
@@ -1745,11 +1747,11 @@
                 0
             ],
             "Number of Spanwise Vortices": [
-                15.0,
+                25,
                 0
             ],
             "Number of Chordwise Vortices": [
-                5.0,
+                5,
                 0
             ],
             "Use Surrogate": [
@@ -1865,11 +1867,11 @@
                 0
             ],
             "Microphone X Resolution": [
-                100.0,
+                100,
                 0
             ],
             "Microphone Y Resolution": [
-                100.0,
+                100,
                 0
             ],
             "Microphone Min X": [
@@ -1897,7 +1899,7 @@
                 0
             ],
             "Noise Hemisphere Microphone Resolution": [
-                20.0,
+                20,
                 0
             ],
             "Noise Hemisphere Phi Upper Bound": [
@@ -1923,7 +1925,550 @@
             "enabled": false
         }
     ],
-    "mission_data": [],
+    "mission_data": [
+        {
+            "Ground Incline": [
+                0.0,
+                0
+            ],
+            "Velocity Start": [
+                0.0,
+                0
+            ],
+            "Velocity End": [
+                150.0,
+                0
+            ],
+            "Friction Coefficient": [
+                0.04,
+                0
+            ],
+            "Throttle": [
+                1.0,
+                0
+            ],
+            "Altitude": [
+                0.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "takeoff",
+            "flight forces": {
+                "Forces in X axis": [
+                    false,
+                    0
+                ],
+                "Moments about X axis": [
+                    false,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    false,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    false,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    false,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 3,
+            "nested dropdown": "Takeoff",
+            "config": 0
+        },
+        {
+            "Altitude Start": [
+                0.0,
+                0
+            ],
+            "Altitude End": [
+                1000.0,
+                0
+            ],
+            "Climb Rate": [
+                5.0,
+                0
+            ],
+            "Air Speed": [
+                150.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "climb",
+            "flight forces": {
+                "Forces in X axis": [
+                    true,
+                    0
+                ],
+                "Moments about X axis": [
+                    true,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    false,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    true,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    true,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 0,
+            "nested dropdown": "Constant Speed/Constant Rate",
+            "config": 0
+        },
+        {
+            "Altitude": [
+                1000.0,
+                0
+            ],
+            "Air Speed": [
+                220.0,
+                0
+            ],
+            "Distance": [
+                181200.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "cruise",
+            "flight forces": {
+                "Forces in X axis": [
+                    true,
+                    0
+                ],
+                "Moments about X axis": [
+                    false,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    true,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    true,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    true,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 1,
+            "nested dropdown": "Constant Speed/Constant Altitude",
+            "config": 0
+        },
+        {
+            "Altitude Start": [
+                1000.0,
+                0
+            ],
+            "Altitude End": [
+                0.0,
+                0
+            ],
+            "Descent Rate": [
+                5.0,
+                0
+            ],
+            "Air Speed": [
+                145.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "descent",
+            "flight forces": {
+                "Forces in X axis": [
+                    true,
+                    0
+                ],
+                "Moments about X axis": [
+                    false,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    true,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    true,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    true,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 2,
+            "nested dropdown": "Constant Speed/Constant Rate",
+            "config": 0
+        },
+        {
+            "Velocity Start": [
+                145.0,
+                0
+            ],
+            "Velocity End": [
+                0.0,
+                0
+            ],
+            "Friction Coefficient": [
+                0.4,
+                0
+            ],
+            "Throttle": [
+                0.0,
+                0
+            ],
+            "Altitude": [
+                0.0,
+                0
+            ],
+            "Reverse Thrust Ratio": [
+                0.0,
+                0
+            ],
+            "True Course Angle": [
+                0.0,
+                0
+            ],
+            "segment name": "landing",
+            "flight forces": {
+                "Forces in X axis": [
+                    false,
+                    0
+                ],
+                "Moments about X axis": [
+                    false,
+                    0
+                ],
+                "Forces in Y axis": [
+                    false,
+                    0
+                ],
+                "Moments about Y axis": [
+                    false,
+                    0
+                ],
+                "Forces in Z axis": [
+                    false,
+                    0
+                ],
+                "Moments about Z axis": [
+                    false,
+                    0
+                ]
+            },
+            "flight controls": {
+                "Body Angle": [
+                    false,
+                    0
+                ],
+                "Bank Angle": [
+                    false,
+                    0
+                ],
+                "Wind Angle": [
+                    false,
+                    0
+                ],
+                "Velocity": [
+                    false,
+                    0
+                ],
+                "Acceleration": [
+                    false,
+                    0
+                ],
+                "Altitude": [
+                    false,
+                    0
+                ],
+                "Elevator Deflection": [
+                    false,
+                    0
+                ],
+                "Rudder Deflection": [
+                    false,
+                    0
+                ],
+                "Flap Deflection": [
+                    false,
+                    0
+                ],
+                "Slat Deflection": [
+                    false,
+                    0
+                ],
+                "Aileron Deflection": [
+                    false,
+                    0
+                ],
+                "Throttle": [
+                    false,
+                    0
+                ],
+                "Thrust Vector Angle": [
+                    false,
+                    0
+                ]
+            },
+            "top dropdown": 3,
+            "nested dropdown": "Landing",
+            "config": 0
+        }
+    ],
     "propulsor_names": [
         [
             "starboard_propulsor",

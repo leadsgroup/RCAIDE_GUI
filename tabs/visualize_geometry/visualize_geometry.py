@@ -1,6 +1,6 @@
 from RCAIDE.Library.Plots.Geometry import generate_3d_wing_points
 from RCAIDE.Library.Plots.Geometry.plot_3d_fuselage import generate_3d_fuselage_points
-from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle import generate_3d_BOR_nacelle_points 
+from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle import generate_3d_BOR_nacelle_points
 
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel
@@ -15,11 +15,12 @@ import values
 class CustomInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self, parent=None):
         super().__init__()
-        self.AddObserver("KeyPressEvent", self.on_key_press) # type: ignore
+        self.AddObserver("KeyPressEvent", self.on_key_press)  # type: ignore
 
     def on_key_press(self, obj, event):
         key = self.GetInteractor().GetKeySym()
-        camera = self.GetInteractor().GetRenderWindow().GetRenderers().GetFirstRenderer().GetActiveCamera()
+        camera = self.GetInteractor().GetRenderWindow(
+        ).GetRenderers().GetFirstRenderer().GetActiveCamera()
 
         # Example custom camera controls
         if key == "Down":
@@ -30,7 +31,7 @@ class CustomInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             camera.Yaw(-10)  # Yaw left by 10 degrees
         elif key == "Right":
             camera.Yaw(10)  # Yaw right by 10 degrees
-        
+
         self.GetInteractor().GetRenderWindow().Render()  # Render the changes
 
 
@@ -58,7 +59,7 @@ class VisualizeGeometryWidget(TabWidget):
 
         # Creating VTK widget container
         self.vtkWidget = QVTKRenderWindowInteractor(self)
-        #self.vtkWidget.setStyleSheet("background-color: darkgrey;")  # Set the background color
+        # self.vtkWidget.setStyleSheet("background-color: darkgrey;")  # Set the background color
         main_layout.addWidget(self.vtkWidget)
 
         base_widget = QWidget()
@@ -72,7 +73,7 @@ class VisualizeGeometryWidget(TabWidget):
     def init_tree(self):
         self.tree.setColumnCount(1)
         self.tree.setHeaderLabels(["Plot Options"])
-        
+
         header = self.tree.header()
         assert header is not None
         header.setSectionResizeMode(
@@ -103,7 +104,7 @@ class VisualizeGeometryWidget(TabWidget):
         render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
 
         # Number of points for airfoil
-        number_of_airfoil_points = 21
+        number_of_airfoil_points = 155
 
         # Plot wings
         for wing in values.vehicle.wings:
@@ -111,7 +112,7 @@ class VisualizeGeometryWidget(TabWidget):
             dim = n_segments if n_segments > 0 else 2
             GEOM = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = vehicle.generate_vtk_object(GEOM.PTS)
-            
+
             # Set color for wings (main and vertical)
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
@@ -126,33 +127,34 @@ class VisualizeGeometryWidget(TabWidget):
                 else:
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor = vehicle.generate_vtk_object(GEOM.PTS)
-                
-                    
+
                 # Set color for wings (symmetric)
                 mapper = actor.GetMapper()
                 mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
+                # Set symmetric wing color to Light Grey
+                actor.GetProperty().SetColor(0.827, 0.827, 0.827)
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                 renderer.AddActor(actor)
 
         # Plot fuselage
         for fuselage in values.vehicle.fuselages:
-            GEOM = generate_3d_fuselage_points(fuselage, tessellation=30)
+            GEOM = generate_3d_fuselage_points(fuselage, tessellation=200)
             actor = vehicle.generate_vtk_object(GEOM.PTS)
-            
+
             # Set color of fuselage
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-            actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
+            # Set fuselage color to Cornflower Blue
+            actor.GetProperty().SetColor(0.392, 0.584, 0.929)
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
             renderer.AddActor(actor)
-            
+
         for nacelle in values.vehicle.nacelles:
-            GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=30)
+            GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=200)
             actor = vehicle.generate_vtk_object(GEOM.PTS)
-            
+
             # Set color of fuselage
             mapper = actor.GetMapper()
             mapper.ScalarVisibilityOff()
@@ -177,84 +179,10 @@ class VisualizeGeometryWidget(TabWidget):
         # Start the VTK interactor
         render_window_interactor.Initialize()
         render_window_interactor.Start()
-    
+
     def update_layout(self):
         self.run_solve()
 
-    # def display_concorde_vtk(self):
-    #     # Create a VTK renderer and set it to the QVTK widget
-    #     renderer = vtk.vtkRenderer()
-    #     self.vtkWidget.GetRenderWindow().AddRenderer(renderer)
-    #     render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
-
-    #     # Set up the Concorde vehicle visualization
-    #     vehicle = concorde.Concorde_vehicle_setup()
-
-    #     # Number of points for airfoil
-    #     number_of_airfoil_points = 21
-
-    #     # Plot wings
-    #     for wing in vehicle.wings:
-    #         n_segments = len(wing.Segments)
-    #         dim = n_segments if n_segments > 0 else 2
-    #         GEOM = concorde.generate_3d_wing_points(wing, number_of_airfoil_points, dim)
-    #         actor = concorde.generate_vtk_object(GEOM.PTS)
-            
-    #         # Set color for wings (main and vertical)
-    #         mapper = actor.GetMapper()
-    #         mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-    #         actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
-    #         actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
-    #         actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
-    #         renderer.AddActor(actor)
-
-    #         if wing.symmetric:
-    #             if wing.vertical:
-    #                 GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
-    #             else:
-    #                 GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-    #             actor = concorde.generate_vtk_object(GEOM.PTS)
-                
-                    
-    #             # Set color for wings (symmetric)
-    #             mapper = actor.GetMapper()
-    #             mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-    #             actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set symmetric wing color to Light Grey
-    #             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
-    #             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
-    #             renderer.AddActor(actor)
-
-    #     # Plot fuselage
-    #     for fuselage in vehicle.fuselages:
-    #         GEOM = concorde.generate_3d_fuselage_points(fuselage, tessellation=30)
-    #         actor = concorde.generate_vtk_object(GEOM.PTS)
-            
-    #         # Set color of fuselage
-    #         mapper = actor.GetMapper()
-    #         mapper.ScalarVisibilityOff()  # Disable scalar visibility if color is set directly
-    #         actor.GetProperty().SetColor(0.392, 0.584, 0.929)  # Set fuselage color to Cornflower Blue
-    #         actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
-    #         actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
-    #         renderer.AddActor(actor)
-
-    #     # Set camera and background
-    #     camera = vtk.vtkCamera()
-    #     camera.SetPosition(1, 1, 1)
-    #     camera.SetFocalPoint(0, 0, 0)
-
-    #     renderer.SetActiveCamera(camera)
-    #     renderer.ResetCamera()
-    #     renderer.SetBackground(1.0, 1.0, 1.0)  # Background color
-
-    #     # Use the custom interactor style
-    #     custom_style = CustomInteractorStyle()
-    #     render_window_interactor.SetInteractorStyle(custom_style)
-
-    #     # Start the VTK interactor
-    #     render_window_interactor.Initialize()
-    #     render_window_interactor.Start()
-
-   
     plot_options = {
         "Pre Built": [
             "Concorde",
