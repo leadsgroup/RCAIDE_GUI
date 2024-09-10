@@ -167,7 +167,9 @@ class AircraftConfigsWidget(TabWidget):
             index = item.indexOfChild(child)
         else:
             values.config_data[tab_index][index] = data
-            child = top_item.child(tree_index).child(index)
+            child = top_item.child(tree_index)
+            assert child is not None
+            child = child.child(index)
             assert child is not None
             child.setText(0, data["name"])
 
