@@ -180,6 +180,11 @@ class AircraftConfigsWidget(TabWidget):
         for config in values.config_data:
             tree_item = QTreeWidgetItem([config["config name"]])
             self.tree.addTopLevelItem(tree_item)
+            
+            widget = AircraftConfigsWidget()
+            widget.load_data(config)
+            values.rcaide_configs.append(widget.create_rcaide_structure())
+            widget.deleteLater()
 
 
 def get_widget() -> QWidget:
