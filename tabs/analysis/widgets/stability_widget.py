@@ -7,7 +7,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class StabilityWidget(QWidget, AnalysisDataWidget):
+class StabilityWidget(AnalysisDataWidget):
     def __init__(self):
         super(StabilityWidget, self).__init__()
         self.main_layout = QVBoxLayout()

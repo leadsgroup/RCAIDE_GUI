@@ -9,7 +9,7 @@ import RCAIDE
 import json
 
 
-class NoiseWidget(QWidget, AnalysisDataWidget):
+class NoiseWidget(AnalysisDataWidget):
     def __init__(self):
         super(NoiseWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -77,6 +77,17 @@ class NoiseWidget(QWidget, AnalysisDataWidget):
 
         noise.geometry = vehicle
         return noise
+    
+    def get_values(self):
+        data = self.data_entry_widget.get_values()
+        data["analysis_num"] = self.analysis_selector.currentIndex()
+        return data
+    
+    def load_values(self, values):
+        super().load_values(values)
+        self.analysis_selector.setCurrentIndex(values["analysis_num"])
+        self.on_analysis_change(values["analysis_num"])
+        self.data_entry_widget.load_values(values)
 
     data_units_labels = [
         [

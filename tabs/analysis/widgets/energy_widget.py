@@ -6,7 +6,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class EnergyWidget(QWidget, AnalysisDataWidget):
+class EnergyWidget(AnalysisDataWidget):
     def __init__(self):
         super(EnergyWidget, self).__init__()
         self.main_layout = QVBoxLayout()

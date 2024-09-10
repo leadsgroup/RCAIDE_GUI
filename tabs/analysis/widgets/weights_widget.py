@@ -6,7 +6,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class WeightsWidget(QWidget, AnalysisDataWidget):
+class WeightsWidget(AnalysisDataWidget):
     def __init__(self):
         super(WeightsWidget, self).__init__()
         self.main_layout = QVBoxLayout()

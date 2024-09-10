@@ -9,7 +9,7 @@ from widgets.data_entry_widget import DataEntryWidget
 import RCAIDE
 
 
-class AerodynamicsWidget(QWidget, AnalysisDataWidget):
+class AerodynamicsWidget(AnalysisDataWidget):
     def __init__(self):
         super(AerodynamicsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -76,6 +76,13 @@ class AerodynamicsWidget(QWidget, AnalysisDataWidget):
 
         aerodynamics.geometry = vehicle
         return aerodynamics
+    
+    def get_values(self):
+        return self.data_entry_widget.get_values()
+    
+    def load_values(self, values):
+        super().load_values(values)
+        self.data_entry_widget.load_data(values)
 
     analyses = ["Vortex Lattice Method"]
     data_units_labels = [

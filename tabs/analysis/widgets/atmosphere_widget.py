@@ -6,7 +6,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class AtmosphereWidget(QWidget, AnalysisDataWidget):
+class AtmosphereWidget(AnalysisDataWidget):
     def __init__(self):
         super(AtmosphereWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -31,3 +31,10 @@ class AtmosphereWidget(QWidget, AnalysisDataWidget):
 
         atmosphere.features.planet = RCAIDE.Framework.Planets.Planet().features
         return atmosphere
+    
+    def get_values(self):
+        return {"analysis_num": self.analysis_selector.currentIndex()}
+    
+    def load_values(self, values):
+        super().load_values(values)
+        self.analysis_selector.setCurrentIndex(values["analysis_num"])

@@ -7,7 +7,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class CostsWidget(QWidget):
+class CostsWidget(AnalysisDataWidget):
     def __init__(self):
         super(CostsWidget, self).__init__()
         self.main_layout = QVBoxLayout()

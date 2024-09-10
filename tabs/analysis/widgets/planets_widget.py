@@ -7,7 +7,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class PlanetsWidget(QWidget, AnalysisDataWidget):
+class PlanetsWidget(AnalysisDataWidget):
     def __init__(self):
         super(PlanetsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
