@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import FuselageSectionWidget
-from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area
+from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
 
@@ -214,12 +214,7 @@ class FuselageFrame(GeometryFrame):
         assert self.data_entry_widget is not None
         self.data_entry_widget.load_data(data)
         
-        while self.fuselage_sections_layout.count():
-            item = self.fuselage_sections_layout.takeAt(0)
-            assert item is not None
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
+        clear_layout(self.fuselage_sections_layout)
 
         for section in data["sections"]:
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(

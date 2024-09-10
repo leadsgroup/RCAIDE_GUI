@@ -1,10 +1,11 @@
+from turtle import clear
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
-from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area
+from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
 
@@ -214,9 +215,6 @@ class NacelleFrame(GeometryFrame):
             if widget is not None:
                 widget.deleteLater()
 
-        for section in data["sections"]:
-            self.nacelle_sections_layout.addWidget(NacelleSectionWidget(
-                self.nacelle_sections_layout.count(), self.delete_nacelle_section, section))
-
+        clear_layout(self.nacelle_sections_layout)
         self.name_line_edit.setText(data["name"])
         self.index = index

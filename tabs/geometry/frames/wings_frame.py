@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import WingCSWidget, WingSectionWidget
-from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data
+from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data, clear_layout
 from widgets import DataEntryWidget
 
 
@@ -307,13 +307,8 @@ class WingsFrame(GeometryFrame):
                 assert widget is not None
                 widget.deleteLater()
 
-        for section in data["sections"]:
-            self.wing_sections_layout.addWidget(WingSectionWidget(
-                self.wing_sections_layout.count(), self.delete_wing_section, section))
-
-        for section in data["control_surfaces"]:
-            self.wing_cs_layout.addWidget(WingCSWidget(
-                self.wing_cs_layout.count(), self.delete_control_surface, section))
-
+        clear_layout(self.wing_sections_layout)
+        clear_layout(self.wing_cs_layout)
+        
         self.name_line_edit.setText(data["name"])
         self.index = index
