@@ -1,7 +1,7 @@
 x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
 x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
 x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
-2024-09-07 (A) Add propulsor names to values.propulsor_names
+x 2024-09-07 (A) Add propulsor names to values.propulsor_names
 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-08 (A) Add mission to values.py @mission
 2024-09-08 (A) Create mission from data on load @mission

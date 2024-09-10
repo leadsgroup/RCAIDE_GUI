@@ -3,8 +3,9 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
 from RCAIDE.Library.Methods.Propulsors.Turbofan_Propulsor import design_turbofan
 
 from tabs.geometry.frames.energy_network import EnergyNetworkWidget
-from utilities import Units
+from utilities import Units, convert_name
 from widgets import DataEntryWidget
+import values
 
 
 class PropulsorWidget(QWidget, EnergyNetworkWidget):
@@ -180,6 +181,8 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()
         data["propulsor name"] = title
+
+        values.propulsor_names[0].append(convert_name(title))
 
         data_si = self.data_entry_widget.get_values_si()
         data_si["propulsor name"] = title

@@ -4,7 +4,7 @@ import json
 
 # Geometry Data
 geometry_data = []
-propulsor_names = []
+propulsor_names = [[]]
 vehicle = RCAIDE.Vehicle()
 
 # Aircraft Configs Data
