@@ -4,6 +4,7 @@ x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission 
 x 2024-09-07 (A) Add propulsor names to values.propulsor_names
 x 2024-09-08 (A) Add mission to values.py @mission
 x 2024-09-08 (A) Create mission from data on load @mission
+2024-09-10 (A) Test Geometry -> Mission tab
 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-08 (A) Load/Save Fuel Tank Selector data @geometry
 2024-09-09 Don't update default value if field is empty
