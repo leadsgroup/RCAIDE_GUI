@@ -235,7 +235,7 @@ segment_data_fields = [
             ("Velocity Start", Units.Velocity, "velocity_start"), 
             ("Velocity End", Units.Velocity, "velocity_end"), 
             ("Friction Coefficient", Units.Unitless, "friction_coefficient"),
-            ("Throttle", Units.Angle, "throttle"),
+            ("Throttle", Units.Unitless, "throttle"),
             ("Altitude", Units.Length, "altitude"),
             ("True Course Angle", Units.Angle, "true_course")
         ],

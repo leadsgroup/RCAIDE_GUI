@@ -29,7 +29,7 @@ class AtmosphereWidget(AnalysisDataWidget):
         else:
             atmosphere = RCAIDE.Framework.Analyses.Atmospheric.Constant_Temperature()
 
-        atmosphere.features.planet = RCAIDE.Framework.Planets.Planet().features
+        atmosphere.features.planet = RCAIDE.Framework.Analyses.Planets.Planet().features
         return atmosphere
     
     def get_values(self):

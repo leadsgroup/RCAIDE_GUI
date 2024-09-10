@@ -71,8 +71,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
         for data_unit_label in self.data_units_labels[analysis_num]:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
-
-            set_data(aerodynamics, rcaide_label, values_si[user_label])
+            set_data(aerodynamics.settings, rcaide_label, values_si[user_label])
 
         aerodynamics.geometry = vehicle
         return aerodynamics
