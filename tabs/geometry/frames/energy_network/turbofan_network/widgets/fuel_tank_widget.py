@@ -21,7 +21,7 @@ class FuelTankWidget(GeometryFrame):
             ("Fuel", Units.Heading),
             ("Fuel Origin", Units.Position),
             ("Center of Gravity", Units.Position),
-            ("Fuel", Units.Unitless),
+            # ("Fuel", Units.Unitless),
             ("Mass", Units.Mass),
             ("Internal Volume", Units.Volume),
         ]
@@ -80,7 +80,7 @@ class FuelTankWidget(GeometryFrame):
         fuel_tank.tag = data["segment name"]
         fuel_tank.origin = data["Fuel Tank Origin"][0]
 
-        fuel = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
+        fuel = RCAIDE.Library.Attributes.Propellants.Jet_A1()
         fuel.mass_properties.mass = data["Mass"][0]
         fuel.origin = data["Fuel Origin"][0]
         fuel.mass_properties.center_of_gravity = data["Center of Gravity"][0]

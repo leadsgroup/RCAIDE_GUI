@@ -154,7 +154,7 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         combustor.alphac = data["Combustor Pressure Loss Coeff"][0]
         combustor.turbine_inlet_temperature = data["Combustor Turbine Inlet Temp"][0]
         combustor.pressure_ratio = data["Combustor Pressure Ratio"][0]
-        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Jet_A1()
         turbofan.combustor = combustor
 
         core_nozzle = RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle()

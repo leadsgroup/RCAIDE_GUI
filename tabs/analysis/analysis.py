@@ -62,11 +62,13 @@ class AnalysisWidget(TabWidget):
 
         for index, analysis_widget in enumerate(self.analysis_widgets):
             widget = analysis_widget()
-            self.widgets.append(widget)
             assert isinstance(widget, AnalysisDataWidget)
             if index >= 4:
                 widget.setVisible(False)
+            else:
+                widget.setVisible(True)
             
+            self.widgets.append(widget)
             self.main_layout.addWidget(widget)
 
         self.main_layout.setSpacing(3)

@@ -87,7 +87,7 @@ class NoiseWidget(AnalysisDataWidget):
         super().load_values(values)
         self.analysis_selector.setCurrentIndex(values["analysis_num"])
         self.on_analysis_change(values["analysis_num"])
-        self.data_entry_widget.load_values(values)
+        self.data_entry_widget.load_data(values)
 
     data_units_labels = [
         [

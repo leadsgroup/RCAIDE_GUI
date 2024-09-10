@@ -224,6 +224,8 @@ class WingsFrame(GeometryFrame):
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(wing, rcaide_label, data[user_label][0])
+        
+        wing.aerodynamic_center = data["Aerodynamic Center"][0][0]
 
         for i in range(self.wing_sections_layout.count()):
             item = self.wing_sections_layout.itemAt(i)
@@ -290,25 +292,17 @@ class WingsFrame(GeometryFrame):
         """
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
-        
-        while self.wing_sections_layout.count():
-            child = self.wing_sections_layout.takeAt(0)
-            assert child is not None
-            if child.widget():
-                widget = child.widget()
-                assert widget is not None
-                widget.deleteLater()
-        
-        while self.wing_cs_layout.count():
-            child = self.wing_cs_layout.takeAt(0)
-            assert child is not None
-            if child.widget():
-                widget = child.widget()
-                assert widget is not None
-                widget.deleteLater()
 
         clear_layout(self.wing_sections_layout)
         clear_layout(self.wing_cs_layout)
         
+        for section in data["sections"]:
+            self.wing_sections_layout.addWidget(WingSectionWidget(
+                self.wing_sections_layout.count(), self.delete_wing_section, section))
+
+        for section in data["control_surfaces"]:
+            self.wing_cs_layout.addWidget(WingCSWidget(
+                self.wing_cs_layout.count(), self.delete_control_surface, section))
+
         self.name_line_edit.setText(data["name"])
         self.index = index
