@@ -73,7 +73,7 @@ class AnalysisWidget(TabWidget):
         widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
         
     def load_from_values(self):
-        
+        pass
 
     def save_analyses(self):
         for tag, config in values.rcaide_configs.items():

@@ -9,11 +9,11 @@ vehicle = RCAIDE.Vehicle()
 
 # Aircraft Configs Data
 config_data = []
-rcaide_configs = RCAIDE.Library.Components.Configs.Config.Container()
+rcaide_configs = RCAIDE.Library.Components.Configs.Config.Container() # type: ignore
 
 # Analysis Data
 analysis_data = []
-rcaide_analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+rcaide_analyses = RCAIDE.Framework.Analyses.Analysis.Container() # type: ignore
 
 # Mission Data
 mission_data = []
