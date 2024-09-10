@@ -19,10 +19,10 @@ class AnalysisWidget(TabWidget):
 
         self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
-        
+
         save_analysis_button = QPushButton("Save Analyses")
         save_analysis_button.clicked.connect(self.save_analyses)
-        
+
         self.tree_frame_layout.addWidget(save_analysis_button)
         self.tree_frame_layout.addWidget(self.tree_widget)
 
@@ -57,7 +57,7 @@ class AnalysisWidget(TabWidget):
             self.main_layout, QVBoxLayout)
         # Define actions based on the selected
         self.analysis_widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
-                        PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
+                                 PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
         self.widgets = []
 
         for index, analysis_widget in enumerate(self.analysis_widgets):
@@ -67,7 +67,7 @@ class AnalysisWidget(TabWidget):
                 widget.setVisible(False)
             else:
                 widget.setVisible(True)
-            
+
             self.widgets.append(widget)
             self.main_layout.addWidget(widget)
 
@@ -87,33 +87,42 @@ class AnalysisWidget(TabWidget):
         widget = layout_item.widget()
         assert widget is not None
         widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
-        
+
     def load_from_values(self):
         if not values.analysis_data:
             self.save_analyses()
             return
-        
+
         for index, widget in enumerate(self.widgets):
             assert isinstance(widget, AnalysisDataWidget)
             widget.load_values(values.analysis_data[index])
-            
+
         self.save_analyses()
+
+    def get_check_state(self, index) -> bool:
+        top_level_item = self.tree_widget.topLevelItem(index)
+        assert top_level_item is not None
+        return top_level_item.checkState(1) == Qt.CheckState.Checked
 
     def save_analyses(self):
         values.analysis_data = []
         for tag, config in values.rcaide_configs.items():
             analysis = RCAIDE.Framework.Analyses.Vehicle()
-            for widget in self.widgets:
+            for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
-                if widget.isvisible():
+                if self.get_check_state(index):
                     analysis.append(widget.create_analysis(config))
 
+            energy = RCAIDE.Framework.Analyses.Energy.Energy()
+            energy.vehicle = config
+            analysis.append(energy)
+            
             values.rcaide_analyses[tag] = analysis
-        
-        for widget in self.widgets:
+
+        for index, widget in enumerate(self.widgets):
             # assert (widget, AnalysisDataWidget)
             data = widget.get_values()
-            data["enabled"] = widget.isVisible()
+            data["enabled"] = self.get_check_state(index)
             values.analysis_data.append(data)
 
 
