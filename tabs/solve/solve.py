@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel
-from PyQt6.QtCore import Qt
-import pyqtgraph as pg  # PyQtGraph for plotting
-import numpy as np  # NumPy for generating data
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
+from PyQt6.QtCore import Qt, QSize
+import pyqtgraph as pg
+import numpy as np
 
 from tabs import TabWidget
 import values
@@ -24,9 +24,23 @@ class SolveWidget(TabWidget):
         solve_button = QPushButton("Solve")
         solve_button.clicked.connect(self.run_solve)
 
+        # Create a scroll area for the plot widgets
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFixedSize(1500, 947)  # Set a designated scroll area size
+
+        # Create a container widget for the plots
+        plot_container = QWidget()
+        plot_layout = QVBoxLayout(plot_container)
+
         # Create two PlotWidgets from PyQtGraph
         self.plot_widget_sine = pg.PlotWidget()  # For sine wave
         self.plot_widget_cosine = pg.PlotWidget()  # For cosine wave
+
+        # Set a fixed size for each plot widget
+        plot_size = QSize(1450, 500) # Set a fixed plot size
+        self.plot_widget_sine.setFixedSize(plot_size)
+        self.plot_widget_cosine.setFixedSize(plot_size)
 
         # Add legends to both plot widgets
         self.plot_widget_sine.addLegend()
@@ -41,9 +55,15 @@ class SolveWidget(TabWidget):
         self.plot_sine = None
         self.plot_cosine = None
 
-        # Add the two PlotWidgets to the main_layout
-        main_layout.addWidget(self.plot_widget_sine)
-        main_layout.addWidget(self.plot_widget_cosine)
+        # Add the two PlotWidgets to the plot layout
+        plot_layout.addWidget(self.plot_widget_sine)
+        plot_layout.addWidget(self.plot_widget_cosine)
+
+        # Add the plot container to the scroll area
+        scroll_area.setWidget(plot_container)
+
+        # Add the scroll area to the main_layout
+        main_layout.addWidget(scroll_area)
 
         # Tree layout (on the left)
         self.tree = QTreeWidget()
