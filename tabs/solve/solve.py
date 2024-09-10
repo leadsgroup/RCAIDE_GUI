@@ -27,7 +27,7 @@ class SolveWidget(TabWidget):
         # Create a scroll area for the plot widgets
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
-        scroll_area.setFixedSize(1500, 947)  # Set a designated scroll area size
+        # scroll_area.setFixedSize(1500, 900)  # Set a designated scroll area size
 
         # Create a container widget for the plots
         plot_container = QWidget()
@@ -83,7 +83,10 @@ class SolveWidget(TabWidget):
     def init_tree(self):
         self.tree.setColumnCount(2)
         self.tree.setHeaderLabels(["Plot Options", "Enabled"])
-        self.tree.header().setSectionResizeMode(
+        
+        header = self.tree.header()
+        assert header is not None
+        header.setSectionResizeMode(
             0, QHeaderView.ResizeMode.ResizeToContents)
 
         for category, options in self.plot_options.items():
@@ -139,12 +142,12 @@ class SolveWidget(TabWidget):
             self.plot_widget_cosine.hide()   # Hide the plot widget when unchecked
 
     def run_solve(self):
-        configs = values.aircraft_configs
+        configs = values.rcaide_configs
 
-        analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+        analyses = RCAIDE.Framework.Analyses.Analysis.Container() # type: ignore
 
         for tag, config in configs.items():
-            analysis = values.analyses
+            analysis = values.rcaide_analyses
             analyses[tag] = analysis
 
         # Step 4 set up a flight mission
