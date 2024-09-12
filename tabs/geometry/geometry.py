@@ -1,4 +1,3 @@
-import json
 from typing import Type
 
 import RCAIDE
@@ -9,7 +8,6 @@ from tabs.geometry.frames import *
 from tabs import TabWidget
 from utilities import set_data
 import values
-from widgets import Color
 
 
 class GeometryWidget(TabWidget):
@@ -45,8 +43,8 @@ class GeometryWidget(TabWidget):
 
         vehicle_name_layout = QHBoxLayout()
         vehicle_name_layout.addWidget(QLabel("Vehicle Name:"))
-        values.vehicle_name_input = QLineEdit()
-        vehicle_name_layout.addWidget(values.vehicle_name_input)
+        self.vehicle_name_input = QLineEdit()
+        vehicle_name_layout.addWidget(self.vehicle_name_input)
         self.tree_frame_layout.addLayout(vehicle_name_layout)
 
         self.dropdown = QComboBox()
@@ -64,8 +62,8 @@ class GeometryWidget(TabWidget):
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
 
-        self.right_layout.addWidget(Color("blue"), 3)
-        self.right_layout.addLayout(self.main_layout, 7)
+        # self.right_layout.addWidget(Color("blue"), 3)
+        self.right_layout.addLayout(self.main_layout)
         base_layout.addLayout(self.tree_frame_layout, 1)
         base_layout.addLayout(self.right_layout, 4)
 
@@ -197,22 +195,19 @@ class GeometryWidget(TabWidget):
             # Check if it is an energy network being added
             if tab_index == 5:
                 values.vehicle.append_energy_network(vehicle_component)
+            elif tab_index == 4:
+                values.vehicle.landing_gear = vehicle_component
             else:
                 values.vehicle.append_component(vehicle_component)
 
         return index
 
-    # noinspection PyMethodMayBeStatic
-    def get_vehicle(self):
-        return values.vehicle
-
-    # noinspection PyMethodMayBeStatic
-    def get_data(self):
-        return values.geometry_data
-
     def load_from_values(self):
         """Load the geometry data from the values file."""
         if values.geometry_data:
+            if values.geometry_data[0]:
+                self.vehicle_name_input.setText(values.geometry_data[0]["name"])
+            
             for tab_index, data_list in enumerate(values.geometry_data):
                 if tab_index == 0:
                     self.save_data(tab_index=tab_index, data=data_list,

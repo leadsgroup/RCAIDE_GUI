@@ -21,7 +21,6 @@ pyqtdarktheme==2.1.0
 pyqtgraph==0.13.7
 python-dateutil==2.9.0.post0
 pytz==2024.1
--e git+https://github.com/leadsgroup/RCAIDE.git@f800b573aafaa89a3f3f1318571ff0fecb5b02b1#egg=RCAIDE
 scikit-learn==1.5.1
 scipy==1.11.3
 six==1.16.0

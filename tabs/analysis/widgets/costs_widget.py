@@ -6,9 +6,10 @@ from tabs.analysis.widgets import AnalysisDataWidget
 
 import RCAIDE
 
-class CostsWidget(QWidget):
+
+class CostsWidget(AnalysisDataWidget):
     def __init__(self):
-        super(CostsWidget, self).__init__()        
+        super(CostsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
         self.main_layout.addWidget(QLabel("<b>Costs</b>"))
@@ -17,6 +18,8 @@ class CostsWidget(QWidget):
             QLabel("Computes industrial and operating costs"))
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
-    
-    def create_analysis(self):
-        return RCAIDE.Framework.Analyses.Costs.Costs()
+
+    def create_analysis(self, vehicle):
+        costs = RCAIDE.Framework.Analyses.Costs.Costs()
+        costs.vehicle = vehicle
+        return costs

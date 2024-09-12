@@ -41,7 +41,7 @@ class WingSectionWidget(QWidget):
             ("Thickness to Chord", Units.Unitless),
             ("Dihedral Outboard", Units.Angle),
             ("Quarter Chord Sweep", Units.Angle),
-            ("Airfoil", Units.Unitless),
+            # ("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)

@@ -9,7 +9,7 @@ import RCAIDE
 import json
 
 
-class NoiseWidget(QWidget, AnalysisDataWidget):
+class NoiseWidget(AnalysisDataWidget):
     def __init__(self):
         super(NoiseWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -25,10 +25,10 @@ class NoiseWidget(QWidget, AnalysisDataWidget):
 
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
         self.main_layout.addWidget(self.data_entry_widget)
-        
+
         with open("app_data/defaults/noise_analysis.json", "r") as defaults:
             self.defaults = json.load(defaults)
-        
+
         self.data_entry_widget.load_data(self.defaults[0])
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
@@ -45,7 +45,7 @@ class NoiseWidget(QWidget, AnalysisDataWidget):
         self.main_layout.insertWidget(
             self.main_layout.count() - 1, self.data_entry_widget)
 
-    def create_analysis(self):
+    def create_analysis(self, vehicle):
         analysis_num = self.analysis_selector.currentIndex()
         if analysis_num == 0:
             noise = RCAIDE.Framework.Analyses.Noise.Correlation_Buildup()
@@ -75,8 +75,20 @@ class NoiseWidget(QWidget, AnalysisDataWidget):
         settings.noise_hemisphere_theta_angle_bounds = [
             theta_lower_bound, theta_upper_bound]
 
+        noise.geometry = vehicle
         return noise
     
+    def get_values(self):
+        data = self.data_entry_widget.get_values()
+        data["analysis_num"] = self.analysis_selector.currentIndex()
+        return data
+    
+    def load_values(self, values):
+        super().load_values(values)
+        self.analysis_selector.setCurrentIndex(values["analysis_num"])
+        self.on_analysis_change(values["analysis_num"])
+        self.data_entry_widget.load_data(values)
+
     data_units_labels = [
         [
             ("Print Noise Output", Units.Boolean, "print_noise_output"),

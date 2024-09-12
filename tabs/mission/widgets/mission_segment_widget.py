@@ -4,7 +4,7 @@ from PyQt6.lupdate import user
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
 from tabs.mission.widgets.mission_segment_helper import segment_data_fields, segment_rcaide_classes
-from utilities import Units, create_line_bar, clear_layout, set_data
+from utilities import Units, create_line_bar, clear_layout, set_data, convert_name
 import values
 from widgets import DataEntryWidget
 
@@ -157,6 +157,7 @@ class MissionSegmentWidget(QWidget):
         data["flight controls"] = self.flight_controls_widget.get_data()
         data["top dropdown"] = self.top_dropdown.currentIndex()
         data["nested dropdown"] = self.nested_dropdown.currentText()
+        data["config"] = self.config_selector.currentIndex()
                 
         rcaide_segment = self.create_rcaide_segment()
         return data, rcaide_segment
@@ -210,5 +211,9 @@ class MissionSegmentWidget(QWidget):
             set_data(segment, rcaide_label, dof_values[user_label][0])
         
         self.flight_controls_widget.set_control_variables(segment)
-
+        
+        config_tag = convert_name(self.config_selector.currentText())
+        analyses = values.rcaide_analyses[config_tag]
+        segment.analyses.extend(analyses)
+        
         return segment

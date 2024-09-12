@@ -222,8 +222,8 @@ segment_data_fields = [
     {
         # Ground Subsegments
         "Landing": [
-            ("Velocity Start", Units.Length, "velocity_start"), 
-            ("Velocity End", Units.Length, "velocity_end"), 
+            ("Velocity Start", Units.Velocity, "velocity_start"), 
+            ("Velocity End", Units.Velocity, "velocity_end"), 
             ("Friction Coefficient", Units.Unitless, "friction_coefficient"),
             ("Throttle", Units.Angle, "throttle"),
             ("Altitude", Units.Length, "altitude"),
@@ -232,10 +232,10 @@ segment_data_fields = [
         ],
         "Takeoff": [
             ("Ground Incline", Units.Angle, "ground_incline"),
-            ("Velocity Start", Units.Length, "velocity_start"), 
-            ("Velocity End", Units.Length, "velocity_end"), 
+            ("Velocity Start", Units.Velocity, "velocity_start"), 
+            ("Velocity End", Units.Velocity, "velocity_end"), 
             ("Friction Coefficient", Units.Unitless, "friction_coefficient"),
-            ("Throttle", Units.Angle, "throttle"),
+            ("Throttle", Units.Unitless, "throttle"),
             ("Altitude", Units.Length, "altitude"),
             ("True Course Angle", Units.Angle, "true_course")
         ],

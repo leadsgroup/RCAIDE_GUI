@@ -85,9 +85,11 @@ class MissionWidget(TabWidget):
         self.tree.clear()
         for widget in self.segment_widgets:
             widget.deleteLater()
+        
+        assert self.main_layout is not None
 
         self.segment_widgets = []
-        self.mission_name_input.setText(values.mission_data[0]["segment name"])
+        # self.mission_name_input.setText(values.mission_data[0]["segment name"])
         values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
         values.rcaide_mission.tag = self.mission_name_input.text()
         for segment_data in values.mission_data:

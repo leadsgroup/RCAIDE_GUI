@@ -6,7 +6,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 import RCAIDE
 
 
-class EnergyWidget(QWidget, AnalysisDataWidget):
+class EnergyWidget(AnalysisDataWidget):
     def __init__(self):
         super(EnergyWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -16,5 +16,7 @@ class EnergyWidget(QWidget, AnalysisDataWidget):
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def create_analysis(self):
-        return RCAIDE.Framework.Analyses.Energy.Energy()
+    def create_analysis(self, vehicle: RCAIDE.Vehicle):
+        energy = RCAIDE.Framework.Analyses.Energy.Energy()
+        energy.vehicle = vehicle
+        return energy

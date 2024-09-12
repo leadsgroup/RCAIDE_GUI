@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, QLabel, QLineEdit
+from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, \
+                                QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
 
 from tabs import TabWidget
 from utilities import Units, create_line_bar, convert_name
@@ -6,6 +7,7 @@ from widgets import DataEntryWidget
 import values
 
 import RCAIDE
+from RCAIDE.Library.Methods.Stability.Center_of_Gravity import compute_component_centers_of_gravity
 
 
 class AircraftConfigsWidget(TabWidget):
@@ -39,6 +41,12 @@ class AircraftConfigsWidget(TabWidget):
 
         self.main_layout.addWidget(QLabel("<b>Propulsors</b>"))
         self.main_layout.addWidget(create_line_bar())
+
+        self.main_layout.addWidget(QLabel("<b>Landing Gear</b>"))
+        self.main_layout.addWidget(create_line_bar())
+        self.landing_gear_down = QCheckBox("Landing Gear Down")
+        self.main_layout.addWidget(self.landing_gear_down)
+        self.main_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
 
         self.update_layout()
 
@@ -74,15 +82,18 @@ class AircraftConfigsWidget(TabWidget):
 
         cs_deflections_labels = []
         propulsor_labels = []
+        propulsor_data = {}
         for control_surface in self.control_surface_data:
             cs_deflections_labels.append(
                 (control_surface["CS name"] + " Deflection", Units.Angle)
             )
 
         for propulsor in self.propulsor_data:
+            field_name = propulsor["propulsor name"] + " Enabled"
             propulsor_labels.append(
-                (propulsor["propulsor name"] + " Enabled", Units.Boolean)
+                (field_name, Units.Boolean)
             )
+            propulsor_data[field_name] = True, 0
 
         if self.cs_de_widget is not None:
             self.main_layout.removeWidget(self.cs_de_widget)
@@ -92,6 +103,7 @@ class AircraftConfigsWidget(TabWidget):
         self.main_layout.insertWidget(3, self.cs_de_widget)
 
         self.prop_de_widget = DataEntryWidget(propulsor_labels)
+        self.prop_de_widget.load_data(propulsor_data)
         self.main_layout.insertWidget(6, self.prop_de_widget)
 
     def new_configuration(self):
@@ -109,10 +121,16 @@ class AircraftConfigsWidget(TabWidget):
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
         data["cs deflections"] = self.cs_de_widget.get_values()
         data["propulsors"] = self.prop_de_widget.get_values()
+        data["gear down"] = self.landing_gear_down.isChecked()
 
         return data
-    
+
     def create_rcaide_structure(self):
+        values.vehicle.center_of_gravity()
+        compute_component_centers_of_gravity(values.vehicle)
+
+        assert self.cs_de_widget is not None and self.prop_de_widget is not None
+
         config = RCAIDE.Library.Components.Configs.Config(values.vehicle)
         config.tag = self.name_line_edit.text()
         cs_values = self.cs_de_widget.get_values_si()
@@ -121,13 +139,15 @@ class AircraftConfigsWidget(TabWidget):
             wing_name = convert_name(cs_data["wing name"])
             cs_name = convert_name(cs_data["CS name"])
             config.wings[wing_name].control_surfaces[cs_name].deflection = cs[1][0]
-        
+
         prop_values = self.prop_de_widget.get_values_si()
         for index, prop in enumerate(prop_values.items()):
             prop_data = self.propulsor_data[index]
             fuel_line_name = convert_name(prop_data["fuel line name"])
             prop_name = convert_name(prop_data["propulsor name"])
             config.networks.fuel.fuel_lines[fuel_line_name].propulsors[prop_name].enabled = prop[1][0]
+        
+        config.landing_gear.gear_condition = 'down' if self.landing_gear_down.isChecked() else 'up'
         return config
 
     def save_data(self):
@@ -148,6 +168,7 @@ class AircraftConfigsWidget(TabWidget):
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
         self.cs_de_widget.load_data(data["cs deflections"])
         self.prop_de_widget.load_data(data["propulsors"])
+        self.landing_gear_down.setChecked(data["gear down"])
 
     def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         self.index = self.tree.indexOfTopLevelItem(item)
@@ -159,6 +180,11 @@ class AircraftConfigsWidget(TabWidget):
         for config in values.config_data:
             tree_item = QTreeWidgetItem([config["config name"]])
             self.tree.addTopLevelItem(tree_item)
+            
+            widget = AircraftConfigsWidget()
+            widget.load_data(config)
+            values.rcaide_configs.append(widget.create_rcaide_structure())
+            widget.deleteLater()
 
 
 def get_widget() -> QWidget:

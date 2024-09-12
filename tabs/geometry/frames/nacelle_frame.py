@@ -1,10 +1,11 @@
+from turtle import clear
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
-from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area
+from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
 
@@ -14,6 +15,8 @@ class NacelleFrame(GeometryFrame):
         super(NacelleFrame, self).__init__()
 
         create_scroll_area(self)
+        assert self.main_layout is not None and isinstance(
+            self.main_layout, QVBoxLayout)
         self.main_layout.addWidget(QLabel("<b>Nacelle</b>"))
         self.main_layout.addWidget(create_line_bar())
 
@@ -48,6 +51,7 @@ class NacelleFrame(GeometryFrame):
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def add_name_layout(self):
+        assert self.main_layout is not None        
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
             50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -63,6 +67,8 @@ class NacelleFrame(GeometryFrame):
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
+        assert self.main_layout is not None
+        
         new_section_button = QPushButton("New Nacelle Section", self)
         save_button = QPushButton("Save Data", self)
         delete_button = QPushButton("Delete Data", self)
@@ -148,7 +154,7 @@ class NacelleFrame(GeometryFrame):
         """Create a nacelle structure from the given data."""
         data = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
-        nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
+        nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
         for data_unit_label in self.data_units_labels:
             user_label = data_unit_label[0]
             rcaide_label = data_unit_label[-1]
@@ -168,6 +174,7 @@ class NacelleFrame(GeometryFrame):
                 _, segment = widget.get_data_values()
                 nacelle.append_segment(segment)
 
+        nacelle.tag = data["name"]
         return nacelle
 
     def get_data_values(self):
@@ -201,10 +208,14 @@ class NacelleFrame(GeometryFrame):
             index: The index of the data in the list.
         """
         self.data_entry_widget.load_data(data)
+        
+        while self.nacelle_sections_layout.count():
+            item = self.nacelle_sections_layout.takeAt(0)
+            assert item is not None
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
 
-        for section in data["sections"]:
-            self.nacelle_sections_layout.addWidget(NacelleSectionWidget(
-                self.nacelle_sections_layout.count(), self.delete_nacelle_section, section))
-
+        clear_layout(self.nacelle_sections_layout)
         self.name_line_edit.setText(data["name"])
         self.index = index

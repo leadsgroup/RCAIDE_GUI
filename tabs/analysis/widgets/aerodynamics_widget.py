@@ -9,7 +9,7 @@ from widgets.data_entry_widget import DataEntryWidget
 import RCAIDE
 
 
-class AerodynamicsWidget(QWidget, AnalysisDataWidget):
+class AerodynamicsWidget(AnalysisDataWidget):
     def __init__(self):
         super(AerodynamicsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -61,7 +61,7 @@ class AerodynamicsWidget(QWidget, AnalysisDataWidget):
         layout_scroll.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout_scroll)
 
-    def create_analysis(self):
+    def create_analysis(self, vehicle: RCAIDE.Vehicle):
         analysis_num = self.analysis_selector.currentIndex()
         values_si = self.data_entry_widget.get_values_si()
 
@@ -71,10 +71,17 @@ class AerodynamicsWidget(QWidget, AnalysisDataWidget):
         for data_unit_label in self.data_units_labels[analysis_num]:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
+            set_data(aerodynamics.settings, rcaide_label, values_si[user_label][0])
 
-            set_data(aerodynamics, rcaide_label, values_si[user_label])
-
+        aerodynamics.geometry = vehicle
         return aerodynamics
+    
+    def get_values(self):
+        return self.data_entry_widget.get_values()
+    
+    def load_values(self, values):
+        super().load_values(values)
+        self.data_entry_widget.load_data(values)
 
     analyses = ["Vortex Lattice Method"]
     data_units_labels = [
@@ -112,12 +119,19 @@ class AerodynamicsWidget(QWidget, AnalysisDataWidget):
              "leading_edge_suction_multiplier"),
             ("Use VORLAX Matrix Calculation", Units.Boolean,
              "use_VORLAX_matrix_calculation"),
-            ("Supersonic Peak Mach Number", Units.Unitless, "supersonic.peak_mach_number"),
-            ("Supersonic Begin Drag Rise Mach Number", Units.Unitless, "supersonic.begin_drag_rise_mach_number"),
-            ("Supersonic End Drag Rise Mach Number", Units.Unitless, "supersonic.end_drag_rise_mach_number"),
-            ("Supersonic Transonic Drag Multiplier", Units.Unitless, "supersonic.transonic_drag_multiplier"),
-            ("Supersonic Volume Wave Drag Scaling", Units.Unitless, "supersonic.volume_wave_drag_scaling"),
-            ("Supersonic Fuselage Parasite Drag Begin Blend Mach", Units.Unitless, "supersonic.fuselage_parasite_drag_begin_blend_mach"),
-            ("Supersonic Fuselage Parasite Drag End Blend Mach", Units.Unitless, "supersonic.fuselage_parasite_drag_end_blend_mach")
+            ("Supersonic Peak Mach Number", Units.Unitless,
+             "supersonic.peak_mach_number"),
+            ("Supersonic Begin Drag Rise Mach Number", Units.Unitless,
+             "supersonic.begin_drag_rise_mach_number"),
+            ("Supersonic End Drag Rise Mach Number", Units.Unitless,
+             "supersonic.end_drag_rise_mach_number"),
+            ("Supersonic Transonic Drag Multiplier", Units.Unitless,
+             "supersonic.transonic_drag_multiplier"),
+            ("Supersonic Volume Wave Drag Scaling", Units.Unitless,
+             "supersonic.volume_wave_drag_scaling"),
+            ("Supersonic Fuselage Parasite Drag Begin Blend Mach", Units.Unitless,
+             "supersonic.fuselage_parasite_drag_begin_blend_mach"),
+            ("Supersonic Fuselage Parasite Drag End Blend Mach",
+             Units.Unitless, "supersonic.fuselage_parasite_drag_end_blend_mach")
         ]
     ]

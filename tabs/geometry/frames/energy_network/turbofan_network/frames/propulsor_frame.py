@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFra
 
 from tabs.geometry.frames.energy_network.turbofan_network.widgets import PropulsorWidget
 from widgets import DataEntryWidget
+import values
 
 
 class PropulsorFrame(QWidget):
@@ -56,6 +57,7 @@ class PropulsorFrame(QWidget):
         # Collect data from additional fuselage_widget
         data = []
         propulsors = []
+        values.propulsor_names = [[]]
         for index in range(self.propulsor_sections_layout.count()):
             item = self.propulsor_sections_layout.itemAt(index)
             assert item is not None
