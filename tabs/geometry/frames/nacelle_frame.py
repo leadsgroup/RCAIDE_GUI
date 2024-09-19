@@ -1,4 +1,3 @@
-from turtle import clear
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
