@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget, \
-    QTreeWidgetItem
+    QTreeWidgetItem,QFrame
 
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs import TabWidget
@@ -62,7 +62,17 @@ class MissionWidget(TabWidget):
         # Instantiate MissionSectionWidget and add it to mission_segment_layout
         segment_widget = MissionSegmentWidget()
         self.segment_widgets.append(segment_widget)
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.HLine)  
+        separator.setFrameShadow(QFrame.Shadow.Sunken)  
+        separator.setStyleSheet("background-color: gray; height: 20px;")
+
+        self.main_layout.addSpacing(30)
         self.main_layout.addWidget(segment_widget)
+        self.main_layout.addSpacing(30)
+        self.main_layout.addWidget(separator)
+
 
     def save_all_data(self):
         self.tree.clear()
@@ -114,3 +124,4 @@ class MissionWidget(TabWidget):
 # Function to get the widget
 def get_widget() -> QWidget:
     return MissionWidget()
+
