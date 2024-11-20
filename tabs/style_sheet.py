@@ -1,6 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget,QTreeWidgetItem,QFrame
-
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget,QTreeWidgetItem,QFrame, QMainWindow, QApplication, QMainWindow, QTabWidget, QFileDialog, QMenu
 
 def add_line(shape = "HLine", shadow = "Sunken", color = "gray", height = "20"):
     line = QFrame()
@@ -74,5 +73,38 @@ def add_subtitle(text, font_weight="bold", color = "black", font_size="15", Alig
     except:
         raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )    
     return subtitle
+
+
+#This is a function help build header.It has three inputs. The first input is from QMainWindow(), usually it is "self".
+#The second input is the name for this window. The third input is menu_list. like["File","Documentation"].
+def add_header(window, window_name, menu_list = None):
+    window.setWindowTitle(window_name)
+    menubar = window.menuBar()
+    if menubar is None:
+        return 
+    if menu_list:
+        for i in menu_list:
+            menubar.addMenu(i)
+    return 
+
+#After use this function,programmer can find exact menu. 
+def find_menu_variable(window, target_menu):
+    menubar = window.menuBar()
+    if menubar is None:
+        print("No menu bar found.")
+        return
+    menus = [child for child in menubar.children() if isinstance(child, QMenu)]
+    for menu in menus:
+        if menu.title() == target_menu:
+            return menu
+
+if __name__ == '__main__':
+    app = QApplication([])
+    window = QMainWindow()
+    add_header(window, "My Application", menu_list=["File", "Edit", "View"])
+    file_mune = find_menu_variable(window,"File")
+    file_mune.addAction("Quit")
+    window.show()
+    app.exec()
 
 

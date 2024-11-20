@@ -103,7 +103,6 @@ class MissionWidget(TabWidget):
             segment_widget = MissionSegmentWidget()
             # segment_widget.create_subsegment_layout(segment_data["subsegment type"])
             segment_widget.load_data(segment_data)
-            # self.main_layout.addSpacing(30)
             self.segment_widgets.append(segment_widget)
             self.main_layout.addWidget(segment_widget)
             self.tree.addTopLevelItem(
