@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, \
                                 QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
 
+from PyQt6.QtCore import Qt
+
 from tabs import TabWidget
 from utilities import Units, create_line_bar, convert_name
 from widgets import DataEntryWidget
@@ -8,7 +10,7 @@ import values
 
 import RCAIDE
 from RCAIDE.Library.Methods.Stability.Center_of_Gravity import compute_component_centers_of_gravity
-
+from widgets.collapsible_section import CollapsibleSection
 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
@@ -29,37 +31,47 @@ class AircraftConfigsWidget(TabWidget):
         tree_layout.addWidget(self.tree)
 
         self.main_layout = QVBoxLayout()
+
+        configs_widget = QWidget()
+        self.content_layout = QVBoxLayout(configs_widget)
+
         self.name_line_edit = QLineEdit()
         name_layout = QHBoxLayout()
 
         name_layout.addWidget(QLabel("Config Name:"), 3)
         name_layout.addWidget(self.name_line_edit, 7)
-        self.main_layout.addLayout(name_layout)
+        self.content_layout.addLayout(name_layout)
 
-        self.main_layout.addWidget(QLabel("<b>Control Surfaces</b>"))
-        self.main_layout.addWidget(create_line_bar())
+        self.content_layout.addWidget(QLabel("<b>Control Surfaces</b>"))
+        self.content_layout.addWidget(create_line_bar())
 
-        self.main_layout.addWidget(QLabel("<b>Propulsors</b>"))
-        self.main_layout.addWidget(create_line_bar())
+        self.content_layout.addWidget(QLabel("<b>Propulsors</b>"))
+        self.content_layout.addWidget(create_line_bar())
 
-        self.main_layout.addWidget(QLabel("<b>Landing Gear</b>"))
-        self.main_layout.addWidget(create_line_bar())
+        self.content_layout.addWidget(QLabel("<b>Landing Gear</b>"))
+        self.content_layout.addWidget(create_line_bar())
         self.landing_gear_down = QCheckBox("Landing Gear Down")
-        self.main_layout.addWidget(self.landing_gear_down)
-        self.main_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
+        self.content_layout.addWidget(self.landing_gear_down)
+        self.content_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
 
         self.update_layout()
 
         save_button = QPushButton("Save Configuration")
         save_button.clicked.connect(self.save_data)
-        self.main_layout.addWidget(save_button)
+        self.content_layout.addWidget(save_button)
 
         new_config_button = QPushButton("New Configuration")
         new_config_button.clicked.connect(self.new_configuration)
-        self.main_layout.addWidget(new_config_button)
+        self.content_layout.addWidget(new_config_button)
+
+        collapsible = CollapsibleSection("Configuration", configs_widget)
+        self.main_layout.addWidget(collapsible)
+
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         base_layout.addLayout(tree_layout, 3)
         base_layout.addLayout(self.main_layout, 7)
+
         self.setLayout(base_layout)
 
     def update_layout(self):
@@ -96,15 +108,20 @@ class AircraftConfigsWidget(TabWidget):
             propulsor_data[field_name] = True, 0
 
         if self.cs_de_widget is not None:
-            self.main_layout.removeWidget(self.cs_de_widget)
-            self.main_layout.removeWidget(self.prop_de_widget)
+            #self.main_layout.removeWidget(self.cs_de_widget)
+            #self.main_layout.removeWidget(self.prop_de_widget)
+
+            self.content_layout.removeWidget(self.cs_de_widget)
+            self.content_layout.removeWidget(self.prop_de_widget)
 
         self.cs_de_widget = DataEntryWidget(cs_deflections_labels)
-        self.main_layout.insertWidget(3, self.cs_de_widget)
+        #self.main_layout.insertWidget(3, self.cs_de_widget)
+        self.content_layout.insertWidget(3, self.cs_de_widget)
 
         self.prop_de_widget = DataEntryWidget(propulsor_labels)
         self.prop_de_widget.load_data(propulsor_data)
-        self.main_layout.insertWidget(6, self.prop_de_widget)
+        #self.main_layout.insertWidget(6, self.prop_de_widget)
+        self.content_layout.insertWidget(3, self.cs_de_widget)
 
     def new_configuration(self):
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
