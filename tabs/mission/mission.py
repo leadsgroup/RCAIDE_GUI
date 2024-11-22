@@ -1,6 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget, \
-    QTreeWidgetItem,QFrame
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget,QTreeWidgetItem,QFrame
 
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs import TabWidget
@@ -8,6 +7,7 @@ from utilities import create_scroll_area
 import values
 
 import RCAIDE
+import tabs.style_sheet as style
 
 
 class MissionWidget(TabWidget):
@@ -63,11 +63,7 @@ class MissionWidget(TabWidget):
         segment_widget = MissionSegmentWidget()
         self.segment_widgets.append(segment_widget)
 
-        separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.HLine)  
-        separator.setFrameShadow(QFrame.Shadow.Sunken)  
-        separator.setStyleSheet("background-color: gray; height: 20px;")
-
+        separator = style.add_line("HLine","Sunken","gray","30")
         self.main_layout.addSpacing(30)
         self.main_layout.addWidget(segment_widget)
         self.main_layout.addSpacing(30)
@@ -102,6 +98,7 @@ class MissionWidget(TabWidget):
         # self.mission_name_input.setText(values.mission_data[0]["segment name"])
         values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
         values.rcaide_mission.tag = self.mission_name_input.text()
+        
         for segment_data in values.mission_data:
             segment_widget = MissionSegmentWidget()
             # segment_widget.create_subsegment_layout(segment_data["subsegment type"])
@@ -113,6 +110,11 @@ class MissionWidget(TabWidget):
 
             rcaide_segment = segment_widget.create_rcaide_segment()
             values.rcaide_mission.append_segment(rcaide_segment)
+
+            self.main_layout.addSpacing(30)
+            separator = style.add_line("HLine","Sunken","gray","30")
+            self.main_layout.addWidget(separator)
+            self.main_layout.addSpacing(30)
 
 
     def update_layout(self):
