@@ -1,11 +1,3 @@
-x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
-x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
-x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
-x 2024-09-07 (A) Add propulsor names to values.propulsor_names
-x 2024-09-08 (A) Add mission to values.py @mission
-x 2024-09-08 (A) Create mission from data on load @mission
-x 2024-09-10 (A) Test Geometry -> Mission tab
-x 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-17 (A) Fix issues with climb segment convergence @solve
 2024-09-08 Load/Save Fuel Tank Selector data @geometry
 2024-07-18 very visible divider between segments @mission
@@ -44,13 +36,12 @@ x 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-12 change font of different texts @analysis
 2024-09-12 apply collapsable layouts to mission tab @mission
 2024-09-12 change text/combobox size of each segment @mission
-x maybe add a settings bar with file and documentation to change text, color, theme etc
 2024-09-12 Add functionality for Expand All | Collapse All @mission @geometry @analysis
 2024-09-12 axes labels, add different colors @solve
 2024-09-12 add different tabs for plots and a scroll for each tab @solve
 2024-09-12 Add a green button in tool bar for solve @solve
 2024-09-12 view option with file/documentation @solve
-2024-09-12 add all the extra packages on pip install @solve
+2024-09-12 add all the extra packages on pip install
 x 2024-07-01 create select flight controls dropdown @mission
 x 2024-07-02 2024-07-01 fix find_tab_index @geometry
 x 2024-07-02 2024-07-01 fix find_tree_index @geometry
@@ -70,12 +61,21 @@ x 2024-09-02 2024-07-11 start RCAIDE Integration to aircraft mission tab @config
 x 2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
 x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
 x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
+x 2024-09-07 (A) Add propulsor names to values.propulsor_names
 x 2024-09-07 (A) Add saving/loading functionality in mission tab @mission
+x 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 x 2024-09-07 (A) RCAIDE Integration into configs tab @configs
 x 2024-09-07 (A) save aircraft
 x 2024-09-08 (A) Add components to vehicle when loading @geometry
+x 2024-09-08 (A) Add mission to values.py @mission
+x 2024-09-08 (A) Create mission from data on load @mission
 x 2024-09-08 (A) Load/Save configs data @configs
 x 2024-09-08 (A) Test & Fix RCAIDE Integration in Control Surfaces @geometry
+x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
+x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
+x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
 x 2024-09-10 (A) Display values.vehicle in Visualize Geometry @visualize
 x 2024-09-10 (A) Fix geometry tabs not clearing sections / control surfaces
+x 2024-09-10 (A) Test Geometry -> Mission tab
 x 2025-07-28 2024-07-18 add functionality to component click in @geometry
+x maybe add a settings bar with file and documentation to change text, color, theme etc
