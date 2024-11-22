@@ -7,7 +7,6 @@ from widgets import DataEntryWidget
 import values
 
 import RCAIDE
-from RCAIDE.Library.Methods.Stability.Center_of_Gravity import compute_component_centers_of_gravity
 
 
 class AircraftConfigsWidget(TabWidget):
