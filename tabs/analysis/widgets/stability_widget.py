@@ -8,11 +8,12 @@ import RCAIDE
 
 
 class StabilityWidget(AnalysisDataWidget):
-    def __init__(self):
+    def __init__(self,show_title: bool=False):
         super(StabilityWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        self.main_layout.addWidget(QLabel("<b>Stability</b>"))
+        if show_title:
+            self.main_layout.addWidget(QLabel("<b>Stability</b>"))
         self.main_layout.addWidget(create_line_bar())
         self.main_layout.addWidget(QLabel("VLM Perturbation Method"))
         self.main_layout.addWidget(create_line_bar())
