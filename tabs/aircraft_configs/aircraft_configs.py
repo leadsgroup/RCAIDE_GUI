@@ -1,6 +1,9 @@
-from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, \
-                                QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
-
+from PyQt6.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget,
+    QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy, QDockWidget, QTreeWidgetItem, QMenuBar, QGroupBox,
+    QFormLayout
+)
+from PyQt6.QtGui import QAction
 from PyQt6.QtCore import Qt
 
 from tabs import TabWidget
@@ -15,14 +18,32 @@ from widgets.collapsible_section import CollapsibleSection
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
         super().__init__()
+        self.main_window = AircraftConfigsMainWindow()
+        
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.main_window)
+        self.setLayout(layout)
+
+class AircraftConfigsMainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
         self.vehicle = None
         self.data = None
-
         self.cs_de_widget = None
         self.prop_de_widget = None
 
-        base_layout = QHBoxLayout()
-        tree_layout = QVBoxLayout()
+        self.setDockOptions(
+            QMainWindow.DockOption.AllowNestedDocks 
+            | QMainWindow.DockOption.AllowTabbedDocks 
+            | QMainWindow.DockOption.AnimatedDocks
+        )
+
+        self.create_tree_dock()
+        self.create_config_dock()
+
+    def create_tree_dock(self):
+        tree_container = QWidget()
+        tree_layout = QVBoxLayout(tree_container)
 
         self.tree = QTreeWidget()
         self.tree.setColumnCount(1)
@@ -30,8 +51,18 @@ class AircraftConfigsWidget(TabWidget):
         self.tree.itemClicked.connect(self.on_tree_item_clicked)
         tree_layout.addWidget(self.tree)
 
-        self.main_layout = QVBoxLayout()
+        self.tree_dock = QDockWidget("Vehicle Configurations", self)
+        self.tree_dock.setObjectName("vehicle_configs_dock")
 
+        self.tree_dock.setWidget(tree_container)
+        self.tree_dock.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable |
+            QDockWidget.DockWidgetFeature.DockWidgetFloatable  
+        )
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.tree_dock)
+
+    def create_config_dock(self):
+        # Configurations container
         configs_widget = QWidget()
         self.content_layout = QVBoxLayout(configs_widget)
 
@@ -64,15 +95,31 @@ class AircraftConfigsWidget(TabWidget):
         new_config_button.clicked.connect(self.new_configuration)
         self.content_layout.addWidget(new_config_button)
 
+        self.content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         collapsible = CollapsibleSection("Configuration", configs_widget)
-        self.main_layout.addWidget(collapsible)
 
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        container_widget = QWidget() 
+        container_layout = QVBoxLayout(container_widget)
 
-        base_layout.addLayout(tree_layout, 3)
-        base_layout.addLayout(self.main_layout, 7)
+        container_layout.addWidget(collapsible)
+        container_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.setLayout(base_layout)
+        # Create the dockable configurations view
+        self.config_dock = QDockWidget("Configuration Details", self)
+        self.config_dock.setObjectName("config_details_dock")
+
+        self.config_dock.setWidget(container_widget)
+        self.config_dock.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable |
+            QDockWidget.DockWidgetFeature.DockWidgetFloatable 
+        )
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.config_dock)
+
+
+    def reset_layout(self):
+        # Restore the saved default layout
+        self.restoreState(self.default_layout)
 
     def update_layout(self):
         self.vehicle = values.vehicle
@@ -108,19 +155,14 @@ class AircraftConfigsWidget(TabWidget):
             propulsor_data[field_name] = True, 0
 
         if self.cs_de_widget is not None:
-            #self.main_layout.removeWidget(self.cs_de_widget)
-            #self.main_layout.removeWidget(self.prop_de_widget)
-
             self.content_layout.removeWidget(self.cs_de_widget)
             self.content_layout.removeWidget(self.prop_de_widget)
 
         self.cs_de_widget = DataEntryWidget(cs_deflections_labels)
-        #self.main_layout.insertWidget(3, self.cs_de_widget)
         self.content_layout.insertWidget(3, self.cs_de_widget)
 
         self.prop_de_widget = DataEntryWidget(propulsor_labels)
         self.prop_de_widget.load_data(propulsor_data)
-        #self.main_layout.insertWidget(6, self.prop_de_widget)
         self.content_layout.insertWidget(3, self.cs_de_widget)
 
     def new_configuration(self):
@@ -128,7 +170,6 @@ class AircraftConfigsWidget(TabWidget):
         self.cs_de_widget.clear_values()
         self.cs_de_widget.clear_values()
         self.name_line_edit.clear()
-
         self.index = -1
 
     def get_data(self):
@@ -142,31 +183,6 @@ class AircraftConfigsWidget(TabWidget):
 
         return data
 
-    def create_rcaide_structure(self):
-        values.vehicle.center_of_gravity()
-        compute_component_centers_of_gravity(values.vehicle)
-
-        assert self.cs_de_widget is not None and self.prop_de_widget is not None
-
-        config = RCAIDE.Library.Components.Configs.Config(values.vehicle)
-        config.tag = self.name_line_edit.text()
-        cs_values = self.cs_de_widget.get_values_si()
-        for index, cs in enumerate(cs_values.items()):
-            cs_data = self.control_surface_data[index]
-            wing_name = convert_name(cs_data["wing name"])
-            cs_name = convert_name(cs_data["CS name"])
-            config.wings[wing_name].control_surfaces[cs_name].deflection = cs[1][0]
-
-        prop_values = self.prop_de_widget.get_values_si()
-        for index, prop in enumerate(prop_values.items()):
-            prop_data = self.propulsor_data[index]
-            fuel_line_name = convert_name(prop_data["fuel line name"])
-            prop_name = convert_name(prop_data["propulsor name"])
-            config.networks.fuel.fuel_lines[fuel_line_name].propulsors[prop_name].enabled = prop[1][0]
-        
-        config.landing_gear.gear_condition = 'down' if self.landing_gear_down.isChecked() else 'up'
-        return config
-
     def save_data(self):
         data = self.get_data()
         config = self.create_rcaide_structure()
@@ -178,7 +194,6 @@ class AircraftConfigsWidget(TabWidget):
             self.tree.addTopLevelItem(tree_item)
         else:
             values.config_data[self.index] = data
-            # TODO update config if changed
 
     def load_data(self, data):
         self.name_line_edit.setText(data["config name"])
@@ -190,18 +205,6 @@ class AircraftConfigsWidget(TabWidget):
     def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         self.index = self.tree.indexOfTopLevelItem(item)
         self.load_data(values.config_data[self.index])
-
-    def load_from_values(self):
-        self.tree.clear()
-        self.index = -1
-        for config in values.config_data:
-            tree_item = QTreeWidgetItem([config["config name"]])
-            self.tree.addTopLevelItem(tree_item)
-            
-            widget = AircraftConfigsWidget()
-            widget.load_data(config)
-            values.rcaide_configs.append(widget.create_rcaide_structure())
-            widget.deleteLater()
 
 
 def get_widget() -> QWidget:
