@@ -1,7 +1,9 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
 from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QFont
 import pyqtgraph as pg
 import numpy as np
+from matplotlib import colormaps
 
 from tabs import TabWidget
 import values
@@ -39,12 +41,22 @@ class SolveWidget(TabWidget):
         self.aircraft_altitude_plot = pg.PlotWidget()
 
         # Set a fixed size for each plot widget
-        plot_size = QSize(700, 400)  # Set a fixed plot size
+        plot_size = QSize(700, 350)  # Set a fixed plot size
         self.aircraft_velocity_plot.setFixedSize(plot_size)
         self.aircraft_velocity_plot.addLegend()
-        
+        self.aircraft_velocity_plot.setLabel('left', 'Velocity', units='kts') 
+        self.aircraft_velocity_plot.setLabel('bottom', 'Time', units='mins') 
+        self.aircraft_velocity_plot.getAxis('left')
+        self.aircraft_velocity_plot.getAxis('bottom')
+        self.aircraft_velocity_plot.showGrid(x=True, y=True, alpha=0.3)
+
         self.aircraft_altitude_plot.setFixedSize(plot_size)
         self.aircraft_altitude_plot.addLegend()
+        self.aircraft_altitude_plot.setLabel('left', 'Altitude', units='ft')
+        self.aircraft_altitude_plot.setLabel('bottom', 'Time', units='mins')
+        self.aircraft_altitude_plot.getAxis('left')
+        self.aircraft_altitude_plot.getAxis('bottom')
+        self.aircraft_altitude_plot.showGrid(x=True, y=True, alpha=0.3)
 
         plot_layout.addWidget(self.aircraft_velocity_plot)
         plot_layout.addWidget(self.aircraft_altitude_plot)
@@ -93,7 +105,9 @@ class SolveWidget(TabWidget):
         print("Starting solve...")
         results = mission.evaluate()
         print("Done with solve")
-        for segment in results.segments:
+        cmap = colormaps.get_cmap('plasma')
+        num_segments = len(results.segments)
+        for i, segment in enumerate(results.segments):
             time = segment.conditions.frames.inertial.time[:, 0] / Units.min
             
             velocity = segment.conditions.freestream.velocity[:, 0] / Units.kts
@@ -105,10 +119,18 @@ class SolveWidget(TabWidget):
             CAS = EAS * (1+((1/8)*((1-PR)*mach**2)) +
                          ((3/640)*(1-10*PR+(9*PR**2)*(mach**4))))
             
-            blue_pen = pg.mkPen(color=(0, 0, 255), width=5)
-            red_pen = pg.mkPen(color=(255, 0, 0), width=5)
-            self.aircraft_velocity_plot.plot(time, velocity, pen=blue_pen, name=segment.tag.replace('_', ' '))
-            self.aircraft_altitude_plot.plot(time, altitude, pen=red_pen, name=segment.tag.replace('_', ' '))
+            color = cmap(i / num_segments)
+            color_rgba = [int(c * 255) for c in color[:3]]  
+            color_hex = pg.mkColor(*color_rgba)  
+            
+            velocity_pen = pg.mkPen(color=color_hex, width=2)
+            velocity_symbol_brush = pg.mkBrush(color=color_hex)
+            self.aircraft_velocity_plot.plot(time, velocity, pen=velocity_pen, symbol='o',symbolSize=8,  symbolBrush=velocity_symbol_brush, symbolPen=pg.mkPen(color=color_hex), name=segment.tag.replace('_', ' '))
+
+            altitude_pen = pg.mkPen(color=color_hex, width=2)
+            altitude_symbol_brush = pg.mkBrush(color=color_hex)
+            self.aircraft_altitude_plot.plot(time, altitude, pen=altitude_pen, symbol='o', symbolSize=8, symbolBrush=altitude_symbol_brush, symbolPen=pg.mkPen(color=color_hex), name=segment.tag.replace('_', ' '))
+
 
     plot_options = {
         "Aerodynamics": [
