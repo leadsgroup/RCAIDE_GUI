@@ -1,26 +1,24 @@
 from turtle import clear
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
-
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSpacerItem, QSizePolicy, QPushButton, QLineEdit
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
-from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
+from utilities import set_data, show_popup, create_line_bar, Units, clear_layout, create_scroll_area
 from widgets import DataEntryWidget
-
+from widgets.collapsible_section import CollapsibleSection
 
 class NacelleFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(NacelleFrame, self).__init__()
 
-        create_scroll_area(self)
-        assert self.main_layout is not None and isinstance(
-            self.main_layout, QVBoxLayout)
-        self.main_layout.addWidget(QLabel("<b>Nacelle</b>"))
-        self.main_layout.addWidget(create_line_bar())
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
 
-        self.add_name_layout()
+        nacelle_content_widget = QWidget()
+        self.content_layout = QVBoxLayout(nacelle_content_widget)
+
+        self.add_name_layout(self.content_layout)
 
         # List of data labels
         self.data_units_labels = [
@@ -34,40 +32,44 @@ class NacelleFrame(GeometryFrame):
             # ("Airfoil Coordinate File", Units.Unitless)
         ]
 
-        # Add the data entry widget to the main layout
+        # Add the data entry widget to the content layout
         self.data_entry_widget: DataEntryWidget = DataEntryWidget(
             self.data_units_labels)
-        self.main_layout.addWidget(self.data_entry_widget)
-        self.main_layout.addWidget(create_line_bar())
 
-        # Add the secctions layout to the main layout
+        self.content_layout.addWidget(self.data_entry_widget)
+        self.content_layout.addWidget(create_line_bar())
+
+        # Add the secctions layout to the content layout
         self.nacelle_sections_layout = QVBoxLayout()
-        self.main_layout.addLayout(self.nacelle_sections_layout)
+        self.content_layout.addLayout(self.nacelle_sections_layout)
 
-        self.add_buttons_layout()
+        self.add_buttons_layout(self.content_layout)
 
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(
+        self.content_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-    def add_name_layout(self):
-        assert self.main_layout is not None        
+        collapsible = CollapsibleSection("Nacelle", nacelle_content_widget)
+        main_layout.addWidget(collapsible)
+
+    def add_name_layout(self,layout):
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
             50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(
             200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        self.name_line_edit: QLineEdit = QLineEdit(self)
+        self.name_line_edit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
-        self.main_layout.addLayout(name_layout)
+
+        layout.addLayout(name_layout)
 
     # noinspection PyUnresolvedReferences
-    def add_buttons_layout(self):
+    def add_buttons_layout(self,layout):
         """Add the save, delete, and new buttons to the layout."""
-        assert self.main_layout is not None
+        #assert self.main_layout is not None
         
         new_section_button = QPushButton("New Nacelle Section", self)
         save_button = QPushButton("Save Data", self)
@@ -84,7 +86,8 @@ class NacelleFrame(GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
-        self.main_layout.addLayout(buttons_layout)
+        #self.main_layout.addLayout(buttons_layout)
+        layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
     def save_data(self):
