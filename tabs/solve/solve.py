@@ -3,8 +3,10 @@ from PyQt6.QtWidgets import (
     QTreeWidgetItem, QHeaderView, QLabel, QDockWidget, QSizePolicy, QScrollArea
 )
 from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QFont
 import pyqtgraph as pg
 import numpy as np
+from matplotlib import colormaps
 
 from tabs import TabWidget
 from PyQt6.QtGui import QF
