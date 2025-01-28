@@ -7,6 +7,9 @@ import pyqtgraph as pg
 import numpy as np
 
 from tabs import TabWidget
+from PyQt6.QtGui import QF
+from matplotlib import colormaps
+
 import values
 
 from RCAIDE.Framework.Core import Units
@@ -67,7 +70,11 @@ class SolveMainWindow(QMainWindow):
         
         global_layout.addWidget(label)
 
-        self.plot_titles = ["Aircraft Velocity Plot", "Aircraft Altitude Plot"]#, "TEST_PLOT_1", "TEST_PLOT_2"]
+        #plot_title: label_data
+        self.plot_data = {
+            "Aircraft Velocity Plot": [('left', 'Velocity', 'kts'),('bottom', 'Time', 'mins')],
+            "Aircraft Altitude Plot": [('left', 'Altitude', 'ft'),('bottom', 'Time', 'mins')]
+        }
 
         self.dock_container = QMainWindow()
         self.dock_container.setDockOptions(
@@ -78,14 +85,22 @@ class SolveMainWindow(QMainWindow):
 
         self.dock_widgets = []
 
-        for title in self.plot_titles:
+        for plot_title in self.plot_data:
             plot_widget = pg.PlotWidget()
-            plot_widget.setTitle(title)
+            plot_widget.setTitle(plot_title)
             plot_widget.addLegend()
             plot_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
+            first_label,second_label = self.plot_data[plot_title]
+
+            plot_widget.setLabel(first_label[0], first_label[1], units=first_label[2])
+            plot_widget.setLabel(second_label[0], second_label[1], units=second_label[2])
+            plot_widget.getAxis('left')
+            plot_widget.getAxis('bottom')
+            plot_widget.showGrid(x=True, y=True, alpha=0.3)
+
             # Wrap plot in QDockWidget
-            dock_widget = QDockWidget(title, self)
+            dock_widget = QDockWidget(plot_title, self)
             dock_widget.setWidget(plot_widget)
             dock_widget.setFeatures(
                 QDockWidget.DockWidgetFeature.DockWidgetMovable |
@@ -142,22 +157,31 @@ class SolveMainWindow(QMainWindow):
         print("Starting solve...")
         results = mission.evaluate()
         print("Done with solve")
-        for segment in results.segments:
+        cmap = colormaps.get_cmap('plasma')
+        num_segments = len(results.segments)
+        for i, segment in enumerate(results.segments):
             time = segment.conditions.frames.inertial.time[:, 0] / Units.min
-
+            
             velocity = segment.conditions.freestream.velocity[:, 0] / Units.kts
-            altitude = segment.conditions.freestream.altitude[:, 0] / Units.feet
+            altitude = segment.conditions.freestream.altitude[:,0]/Units.feet
             density = segment.conditions.freestream.density[:, 0]
             PR = density / 1.225
             EAS = velocity * np.sqrt(PR)
             mach = segment.conditions.freestream.mach_number[:, 0]
             CAS = EAS * (1+((1/8)*((1-PR)*mach**2)) +
                          ((3/640)*(1-10*PR+(9*PR**2)*(mach**4))))
+            
+            color = cmap(i / num_segments)
+            color_rgba = [int(c * 255) for c in color[:3]]  
+            color_hex = pg.mkColor(*color_rgba)  
+            
+            velocity_pen = pg.mkPen(color=color_hex, width=2)
+            velocity_symbol_brush = pg.mkBrush(color=color_hex)
+            self.aircraft_velocity_plot.plot(time, velocity, pen=velocity_pen, symbol='o',symbolSize=8,  symbolBrush=velocity_symbol_brush, symbolPen=pg.mkPen(color=color_hex), name=segment.tag.replace('_', ' '))
 
-            blue_pen = pg.mkPen(color=(0, 0, 255), width=5)
-            red_pen = pg.mkPen(color=(255, 0, 0), width=5)
-            self.aircraft_velocity_plot.plot(time, velocity, pen=blue_pen, name=segment.tag.replace('_', ' '))
-            self.aircraft_altitude_plot.plot(time, altitude, pen=red_pen, name=segment.tag.replace('_', ' '))
+            altitude_pen = pg.mkPen(color=color_hex, width=2)
+            altitude_symbol_brush = pg.mkBrush(color=color_hex)
+            self.aircraft_altitude_plot.plot(time, altitude, pen=altitude_pen, symbol='o', symbolSize=8, symbolBrush=altitude_symbol_brush, symbolPen=pg.mkPen(color=color_hex), name=segment.tag.replace('_', ' '))
 
     plot_options = {
         "Aerodynamics": [
