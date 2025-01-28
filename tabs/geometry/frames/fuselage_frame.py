@@ -1,12 +1,13 @@
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
-
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout,
+    QSpacerItem, QSizePolicy, QLabel
+)
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import FuselageSectionWidget
-from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
+from utilities import show_popup, create_line_bar, set_data, Units, clear_layout, create_scroll_area
 from widgets import DataEntryWidget
-
+from widgets.collapsible_section import CollapsibleSection
 
 class FuselageFrame(GeometryFrame):
     # List of data labels
@@ -36,31 +37,36 @@ class FuselageFrame(GeometryFrame):
         super(FuselageFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
-        create_scroll_area(self)
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
 
-        assert self.main_layout is not None
-        self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
-        self.main_layout.addWidget(create_line_bar())
+        fuselage_content_widget = QWidget()
+        self.content_layout = QVBoxLayout(fuselage_content_widget)
+
         self.index = -1
 
-        self.add_name_layout()
+        self.add_name_layout(self.content_layout)
 
-        # Add the data entry widget to the main layout
+        # Add the data entry widget to the content layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
-        self.main_layout.addWidget(self.data_entry_widget)
-        self.main_layout.addWidget(create_line_bar())
 
-        # Add the sections layout to the main layout
+        self.content_layout.addWidget(self.data_entry_widget)
+        self.content_layout.addWidget(create_line_bar())
+
+        # Add the sections layout to the content layout
         self.fuselage_sections_layout = QVBoxLayout()
-        self.main_layout.addLayout(self.fuselage_sections_layout)
+        self.content_layout.addLayout(self.fuselage_sections_layout)
 
-        self.add_buttons_layout()
+        self.add_buttons_layout(self.content_layout)
 
         # Adds scroll function
-        self.main_layout.addItem(QSpacerItem(
+        self.content_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-    def add_name_layout(self):
+        collapsible = CollapsibleSection("Fuselage", fuselage_content_widget)
+        main_layout.addWidget(collapsible)
+
+    def add_name_layout(self,layout):
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
             50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -72,11 +78,10 @@ class FuselageFrame(GeometryFrame):
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
 
-        assert self.main_layout is not None
-        self.main_layout.addLayout(name_layout)
+        layout.addLayout(name_layout)
 
     # noinspection PyUnresolvedReferences
-    def add_buttons_layout(self):
+    def add_buttons_layout(self,layout):
         """Add the save, delete, and new buttons to the layout."""
         new_section_button = QPushButton("New Fuselage Section", self)
         save_button = QPushButton("Save Data", self)
@@ -94,8 +99,7 @@ class FuselageFrame(GeometryFrame):
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
 
-        assert self.main_layout is not None
-        self.main_layout.addLayout(buttons_layout)
+        layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
     def save_data(self):

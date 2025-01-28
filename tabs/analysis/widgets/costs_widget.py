@@ -8,11 +8,12 @@ import RCAIDE
 
 
 class CostsWidget(AnalysisDataWidget):
-    def __init__(self):
+    def __init__(self,show_title: bool=False):
         super(CostsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        self.main_layout.addWidget(QLabel("<b>Costs</b>"))
+        if show_title:
+            self.main_layout.addWidget(QLabel("<b>Costs</b>"))
         self.main_layout.addWidget(create_line_bar())
         self.main_layout.addWidget(
             QLabel("Computes industrial and operating costs"))
