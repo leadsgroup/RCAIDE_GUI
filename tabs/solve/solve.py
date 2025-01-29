@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import colormaps
 
 from tabs import TabWidget
-from PyQt6.QtGui import QF
+from PyQt6.QtGui import QFont
 from matplotlib import colormaps
 
 import values
