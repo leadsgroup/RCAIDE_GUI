@@ -3,14 +3,15 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_fuselage import generate_3d_fuselage_
 from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle import generate_3d_BOR_nacelle_points
 
 
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar
 from tabs import TabWidget
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 from tabs.visualize_geometry import vehicle
+from PyQt6.QtGui import QIcon
 
 import values
-
+import os
 
 class CustomInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self, parent=None):
@@ -45,6 +46,7 @@ class VisualizeGeometryWidget(TabWidget):
 
         # self.label = QLabel("Click Display Button to View VTK")
         # main_layout.addWidget(self.label)
+        main_layout.addWidget(self.add_toolbar())
 
         solve_button = QPushButton("Display")
         solve_button.clicked.connect(self.run_solve)
@@ -69,6 +71,40 @@ class VisualizeGeometryWidget(TabWidget):
 
         # Store selected option
         self.selected_option = None
+
+    def add_toolbar(self):
+        self.toolbar = QToolBar("Tools")
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        pan_icon_path = os.path.join(current_dir, "move.png")
+        zoom_in_icon_path = os.path.join(current_dir, "zoom_in.png")
+        zoom_out_icon_path = os.path.join(current_dir, "zoom_out.png")
+
+        pan_icon = QIcon(pan_icon_path)
+        zoom_in_icon = QIcon(zoom_in_icon_path)
+        zoom_out_icon = QIcon(zoom_out_icon_path)
+
+        self.pan_button = QPushButton()
+        self.pan_button.setIcon(pan_icon)
+        self.pan_button.setToolTip("Pan Mode")
+        # self.pan_button.clicked.connect(self.enable_pan_mode) 
+
+        self.zoom_in_button = QPushButton()
+        self.zoom_in_button.setIcon(zoom_in_icon)
+        self.zoom_in_button.setToolTip("Zoom In")
+        # self.zoom_in_button.clicked.connect(self.zoom_in)
+
+        self.zoom_out_button = QPushButton()
+        self.zoom_out_button.setIcon(zoom_out_icon)
+        self.zoom_out_button.setToolTip("Zoom Out")
+        # self.zoom_out_button.clicked.connect(self.zoom_out)
+
+        # Add buttons to toolbar
+        self.toolbar.addWidget(self.pan_button)
+        self.toolbar.addWidget(self.zoom_in_button)
+        self.toolbar.addWidget(self.zoom_out_button)
+
+        return self.toolbar
 
     def init_tree(self):
         self.tree.setColumnCount(1)
