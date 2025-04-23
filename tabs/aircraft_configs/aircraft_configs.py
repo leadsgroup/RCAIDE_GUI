@@ -11,9 +11,9 @@ from utilities import Units, create_line_bar, convert_name
 from widgets import DataEntryWidget
 import values
 
-import RCAIDE
 from RCAIDE.Library.Methods.Stability.Center_of_Gravity import compute_component_centers_of_gravity
 from widgets.collapsible_section import CollapsibleSection
+
 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):

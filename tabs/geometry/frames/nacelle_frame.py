@@ -1,4 +1,3 @@
-from turtle import clear
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSpacerItem, QSizePolicy, QPushButton, QLineEdit
 from tabs.geometry.frames import GeometryFrame
