@@ -7,11 +7,12 @@ import RCAIDE
 
 
 class WeightsWidget(AnalysisDataWidget):
-    def __init__(self):
+    def __init__(self,show_title: bool=False):
         super(WeightsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        self.main_layout.addWidget(QLabel("<b>Weights</b>"))
+        if show_title:
+            self.main_layout.addWidget(QLabel("<b>Weights</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         self.main_layout.addWidget(create_line_bar())

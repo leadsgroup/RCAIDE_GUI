@@ -10,11 +10,12 @@ import json
 
 
 class NoiseWidget(AnalysisDataWidget):
-    def __init__(self):
+    def __init__(self,show_title: bool=False):
         super(NoiseWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        self.main_layout.addWidget(QLabel("<b>Noise</b>"))
+        if show_title:
+            self.main_layout.addWidget(QLabel("<b>Noise</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         self.analysis_selector = QComboBox()
