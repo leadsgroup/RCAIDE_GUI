@@ -332,7 +332,6 @@ segment_rcaide_classes = [
         "Constant Mach/Constant Angle": Segments.Climb.Constant_Mach_Constant_Angle,
         "Constant Mach/Constant Rate": Segments.Climb.Constant_Mach_Constant_Rate,
         "Constant Mach/Linear Altitude": Segments.Climb.Constant_Mach_Linear_Altitude,
-        "Constant Speed/Constant Angle Noise": Segments.Climb.Constant_Speed_Constant_Angle_Noise,
         "Constant Speed/Constant Angle": Segments.Climb.Constant_Speed_Constant_Angle,
         "Constant Speed/Constant Rate": Segments.Climb.Constant_Speed_Constant_Rate,
         "Constant Speed/Linear Altitude": Segments.Climb.Constant_Speed_Linear_Altitude,
@@ -356,7 +355,6 @@ segment_rcaide_classes = [
         # Descent Subsegments
         "Constant CAS/Constant Rate": Segments.Descent.Constant_CAS_Constant_Rate,
         "Constant EAS/Constant Rate": Segments.Descent.Constant_EAS_Constant_Rate,
-        "Constant Speed/Constant Angle Noise": Segments.Descent.Constant_Speed_Constant_Angle_Noise,
         "Constant Speed/Constant Angle": Segments.Descent.Constant_Speed_Constant_Angle,
         "Constant Speed/Constant Rate": Segments.Descent.Constant_Speed_Constant_Rate,
         "Linear Mach/Constant Rate": Segments.Descent.Linear_Mach_Constant_Rate,

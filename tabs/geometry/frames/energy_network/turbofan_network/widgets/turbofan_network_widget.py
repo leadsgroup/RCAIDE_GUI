@@ -112,7 +112,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
             return False, False
 
         for line in lines:
-            for propulsor in line.propulsors:
+            for propulsor in line.assigned_propulsors:
                 assert isinstance(
                     propulsor, RCAIDE.Library.Components.Propulsors.Turbofan)
 

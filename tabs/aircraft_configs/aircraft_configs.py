@@ -7,8 +7,7 @@ from widgets import DataEntryWidget
 import values
 
 import RCAIDE
-from RCAIDE.Library.Methods.Stability.Center_of_Gravity import compute_component_centers_of_gravity
-
+from RCAIDE.Library.Methods.Weights.Center_of_Gravity import compute_component_centers_of_gravity
 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
@@ -126,7 +125,7 @@ class AircraftConfigsWidget(TabWidget):
         return data
 
     def create_rcaide_structure(self):
-        values.vehicle.center_of_gravity()
+        # values.vehicle.mass_properties.center_of_gravity
         compute_component_centers_of_gravity(values.vehicle)
 
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
@@ -145,7 +144,8 @@ class AircraftConfigsWidget(TabWidget):
             prop_data = self.propulsor_data[index]
             fuel_line_name = convert_name(prop_data["fuel line name"])
             prop_name = convert_name(prop_data["propulsor name"])
-            config.networks.fuel.fuel_lines[fuel_line_name].propulsors[prop_name].enabled = prop[1][0]
+            # TODO: Set propulsor enabled properly
+            # config.networks.fuel.fuel_lines[fuel_line_name].assigned_propulsors[prop_name].enabled = prop[1][0]
         
         config.landing_gear.gear_condition = 'down' if self.landing_gear_down.isChecked() else 'up'
         return config

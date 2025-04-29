@@ -178,7 +178,7 @@ class FuselageFrame(GeometryFrame):
             fuselage_section = item.widget()
             if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
                 _, segment = fuselage_section.get_data_values()
-                fuselage.Segments.append(segment)
+                fuselage.segments.append(segment)
 
         return fuselage
 

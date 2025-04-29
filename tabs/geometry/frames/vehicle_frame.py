@@ -14,8 +14,8 @@ class VehicleFrame(GeometryFrame):
         ("Operating Empty Weight", Units.Mass, "mass_properties.operating_empty"),
         ("Maximum Zero Fuel Weight", Units.Mass, "mass_properties.max_zero_fuel"),
         ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
-        ("Ultimate Load", Units.Unitless, "envelope.ultimate_load"),
-        ("Limit Load", Units.Unitless, "envelope.limit_load"),
+        ("Ultimate Load", Units.Unitless, "flight_envelope.ultimate_load"),
+        ("Limit Load", Units.Unitless, "flight_envelope.limit_load"),
         ("Reference Area", Units.Area, "reference_area"),
         ("Passengers", Units.Count, "passengers"),
     ]

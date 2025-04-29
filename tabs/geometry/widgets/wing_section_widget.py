@@ -73,7 +73,7 @@ class WingSectionWidget(QWidget):
         self.setLayout(main_layout)
 
     def create_rcaide_structure(self, data):
-        segment = RCAIDE.Library.Components.Wings.Segment()
+        segment = RCAIDE.Library.Components.Wings.Segments.Segment()
 
         segment.tag = data["segment name"]
         segment.percent_span_location = data["Percent Span Location"][0]

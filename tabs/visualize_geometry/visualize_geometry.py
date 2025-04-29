@@ -108,7 +108,7 @@ class VisualizeGeometryWidget(TabWidget):
 
         # Plot wings
         for wing in values.vehicle.wings:
-            n_segments = len(wing.Segments)
+            n_segments = len(wing.segments)
             dim = n_segments if n_segments > 0 else 2
             GEOM = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
             actor = vehicle.generate_vtk_object(GEOM.PTS)
