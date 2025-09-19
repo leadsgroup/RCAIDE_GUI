@@ -3,7 +3,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QFileInfo
-import qdarktheme
+#import qdarktheme
 
 import values
 from tabs import *
@@ -114,7 +114,7 @@ class App(QMainWindow):
 
 
 app = QApplication(sys.argv)
-qdarktheme.setup_theme()
+#qdarktheme.setup_theme()
 window = App()
 window.show()
 sys.exit(app.exec())
