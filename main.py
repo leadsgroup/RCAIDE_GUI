@@ -62,8 +62,18 @@ class App(QMainWindow):
         self.setCentralWidget(self.tabs)
         self.resize(1280, 720)
 
-        # Create the theme switch widget
-        # self.theme_switch = ThemeSwitch()
+        name = "app_data/aircraft/737.json"
+        try:
+            file = open(name, 'r')
+        except FileNotFoundError:
+            print("Not found?")
+
+        data_str = file.read()
+        file.close()
+        values.read_from_json(data_str)
+        for widget, name in self.widgets:
+            assert isinstance(widget, TabWidget)
+            widget.load_from_values()
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()

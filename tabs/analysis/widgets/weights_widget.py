@@ -18,6 +18,6 @@ class WeightsWidget(AnalysisDataWidget):
         self.setLayout(self.main_layout)
 
     def create_analysis(self, vehicle: RCAIDE.Vehicle):
-        weights = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+        weights = RCAIDE.Framework.Analyses.Weights.Conventional()
         weights.vehicle = vehicle
         return weights

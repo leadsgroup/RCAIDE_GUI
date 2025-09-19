@@ -205,7 +205,7 @@ class FuselageFrame(GeometryFrame):
         return data, fuselage
 
     def load_data(self, data, index):
-        """Load the data into the widgets.
+        """Load the data into the widgets. 
 
         Args:
             data: The data to be loaded into the widgets.

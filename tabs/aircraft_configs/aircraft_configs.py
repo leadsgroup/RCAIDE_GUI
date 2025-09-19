@@ -7,7 +7,7 @@ from widgets import DataEntryWidget
 import values
 
 import RCAIDE
-from RCAIDE.Library.Methods.Weights.Center_of_Gravity import compute_component_centers_of_gravity
+# from RCAIDE.Library.Methods.Weights.Center_of_Gravity import compute_component_centers_of_gravity
 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
@@ -126,7 +126,7 @@ class AircraftConfigsWidget(TabWidget):
 
     def create_rcaide_structure(self):
         # values.vehicle.mass_properties.center_of_gravity
-        compute_component_centers_of_gravity(values.vehicle)
+        # compute_component_centers_of_gravity(values.vehicle)
 
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
 
