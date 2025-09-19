@@ -1923,6 +1923,9 @@
         },
         {
             "enabled": false
+        },
+        {
+            "enabled": false
         }
     ],
     "mission_data": [

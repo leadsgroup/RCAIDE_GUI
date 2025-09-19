@@ -164,7 +164,7 @@ class FuselageFrame(GeometryFrame):
     def create_rcaide_structure(self):
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
-        fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+        fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]

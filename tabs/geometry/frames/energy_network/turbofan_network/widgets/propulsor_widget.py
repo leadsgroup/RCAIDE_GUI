@@ -1,7 +1,7 @@
 from lib2to3.pytree import convert
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor          import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          import design_turbofan 
 
 from tabs.geometry.frames.energy_network import EnergyNetworkWidget
 from utilities import Units, convert_name

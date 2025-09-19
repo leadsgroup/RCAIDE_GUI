@@ -157,13 +157,6 @@ segment_data_fields = [
             ("Distance", Units.Length, "distance"), 
             ("True Course Angle", Units.Angle, "true_course")
         ],
-        "Constant Throttle/Constant Altitude": [
-            ("Throttle", Units.Unitless, "throttle"), 
-            ("Altitude", Units.Length, "altitude"),
-            ("Air Speed Start", Units.Velocity, "air_speed_start"), 
-            ("Air Speed End", Units.Velocity, "air_speed_end"),
-            ("True Course Angle", Units.Angle, "true_course")
-        ],
     }, 
     {
         # Descent Subsegments
@@ -349,7 +342,6 @@ segment_rcaide_classes = [
         "Constant Pitch Rate/Constant Altitude": Segments.Cruise.Constant_Pitch_Rate_Constant_Altitude,
         "Constant Speed/Constant Altitude Loiter": Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter,
         "Constant Speed/Constant Altitude": Segments.Cruise.Constant_Speed_Constant_Altitude,
-        "Constant Throttle/Constant Altitude": Segments.Cruise.Constant_Throttle_Constant_Altitude,
     }, 
     {
         # Descent Subsegments
