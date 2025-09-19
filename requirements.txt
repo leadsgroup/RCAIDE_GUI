@@ -17,8 +17,7 @@ pyparsing
 PyQt6
 PyQt6-Qt6
 PyQt6_sip
-pyqtdarktheme
-pyqtgraph=
+pyqtgraph
 python-dateutil
 pytz
 scikit-learn
