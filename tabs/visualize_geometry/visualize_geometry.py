@@ -1,10 +1,5 @@
 import RCAIDE
 from RCAIDE.Library.Plots import  * 
-#from RCAIDE.Library.Plots.Geometry import generate_3d_wing_points
-#from RCAIDE.Library.Plots.Geometry.plot_3d_fuselage     import generate_3d_fuselage_points
-#from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle      import generate_3d_BOR_nacelle_points
-#from RCAIDE.Library.Plots.Geometry.plot_3d_rotor        import 
-#from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank    import * 
 from RCAIDE.Library.Methods.Geometry.Planform           import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA               import  compute_layout_of_passenger_accommodations 
 
