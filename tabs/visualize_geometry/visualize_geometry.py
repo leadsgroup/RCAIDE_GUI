@@ -250,25 +250,121 @@ class VisualizeGeometryWidget(TabWidget):
                         actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                         actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
                         renderer.AddActor(actor)     
+                     
+            for fuel_line in network.fuel_lines:        
+                for fuel_tank in fuel_line.fuel_tanks:   
+                    if fuel_tank.wing_tag != None:
+                        wing = values.vehicle.wings[fuel_tank.wing_tag]
+                        if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
+                            segment_list = [] 
+                            segment_tags = list(wing.segments.keys())     
+                            for i in range(len(wing.segments) - 1):
+                                seg =  wing.segments[segment_tags[i]]
+                                next_seg =  wing.segments[segment_tags[i+1]]
+                                if seg.has_fuel_tank:
+                                    if seg.tag not in segment_list:
+                                        segment_list.append(seg.tag)
+                                    if next_seg.tag not in segment_list:
+                                        segment_list.append(next_seg.tag) 
+                            
+                            if len(wing.segments)>0:
+                                dim =  len(segment_list)
+                            else:
+                                dim = 2 
+                            
+                            if  len(segment_list) == 0 and len(wing.segments) > 0:
+                                raise AttributeError('Fuel tank defined on segmented wing but no segments have "tank" attribute = True') 
+                            else:  
+                                number_of_airfoil_points = 5
+                                GEOM = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
+        
+                                actor = vehicle.generate_vtk_object(GEOM.PTS)
+                            
+                                # Set color of fuselage
+                                mapper = actor.GetMapper()
+                                mapper.ScalarVisibilityOff()
+                                actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
+                                actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+                                actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                                renderer.AddActor(actor)
+                                
+                        
+                                if wing.symmetric:
+                                    GEOM2 =  deepcopy(GEOM)
+                                    GEOM2.YA1 *= -1
+                                    GEOM2.YA2 *= -1
+                                    GEOM2.YB1 *= -1
+                                    GEOM2.YB2 *= -1
+    
+                                    actor = vehicle.generate_vtk_object(GEOM2.PTS)
+                                
+                                    # Set color of fuselage
+                                    mapper = actor.GetMapper()
+                                    mapper.ScalarVisibilityOff()
+                                    actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
+                                    actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+                                    actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                                    renderer.AddActor(actor) 
+                                
+                    if issubclass(type(fuel_tank),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank): 
+                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation = 24 ) 
+                        actor = vehicle.generate_vtk_object(GEOM.PTS)
                     
-            if plot_tank_geometry:
-                for fuel_line in network.fuel_lines:        
-                    for fuel_tank in distributor.fuel_tanks:   
-                        if fuel_tank.wing_tag != None:
-                            wing = values.vehicle.wings[fuel_tank.wing_tag]
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                                plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, tessellation, color_map = 'oranges') 
-                        if issubclass(type(fuel_tank),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                            plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
-                        elif fuel_tank.fuselage_tag != None:
-                            fuselage = values.vehicle.fuselages[fuel_tank.fuselage_tag]
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                                plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation, color_map = 'oranges') 
-                            elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')
-                        else:
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')            
+                        # Set color of fuselage
+                        mapper = actor.GetMapper()
+                        mapper.ScalarVisibilityOff()
+                        actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
+                        actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+                        actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                        renderer.AddActor(actor)
+                        
+                
+                        if wing.symmetric:
+                            GEOM2 =  deepcopy(GEOM)
+                            GEOM2.YA1 *= -1
+                            GEOM2.YA2 *= -1
+                            GEOM2.YB1 *= -1
+                            GEOM2.YB2 *= -1
+
+                            actor = vehicle.generate_vtk_object(GEOM2.PTS)
+                        
+                            # Set color of fuselage
+                            mapper = actor.GetMapper()
+                            mapper.ScalarVisibilityOff()
+                            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
+                            actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+                            actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                            renderer.AddActor(actor) 
+                        
+                    elif fuel_tank.fuselage_tag != None:
+                        fuselage = values.vehicle.fuselages[fuel_tank.fuselage_tag]
+                        if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
+                            segment_list = [] 
+                            segment_tags = list(fuselage.segments.keys())     
+                            for i in range(len(fuselage.segments) - 1):
+                                seg =  fuselage.segments[segment_tags[i]]
+                                next_seg =  fuselage.segments[segment_tags[i+1]]
+                                if seg.has_fuel_tank: 
+                                    segment_list.append(seg.tag)
+                                    if next_seg.tag not in segment_list:
+                                        segment_list.append(next_seg.tag)  
+                                
+                            GEOM  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation = 24 )
+                            actor = vehicle.generate_vtk_object(GEOM.PTS)
+                    
+                            # Set color of fuselage
+                            mapper = actor.GetMapper()
+                            mapper.ScalarVisibilityOff()
+                            actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
+                            actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+                            actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                            renderer.AddActor(actor)
+                            
+                        elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
+                            plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')
+                    else:
+                        if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
+                            plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')            
 
         # Set camera and background
         camera = vtk.vtkCamera()
