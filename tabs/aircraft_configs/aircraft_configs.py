@@ -1,14 +1,26 @@
+# RCAIDE_GUI/tabs/aircraft_configs/aircraft_configs.py
+# 
+# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports  
+import RCAIDE
+
+# PtQt imports  
 from PyQt6.QtWidgets import QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget, \
                                 QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
 
+# gui imports 
 from tabs import TabWidget
 from utilities import Units, create_line_bar, convert_name
 from widgets import DataEntryWidget
-import values
+import values 
 
-import RCAIDE
-# from RCAIDE.Library.Methods.Weights.Center_of_Gravity import compute_component_centers_of_gravity
-
+# ----------------------------------------------------------------------------------------------------------------------
+#  AircraftConfigsWidget
+# ---------------------------------------------------------------------------------------------------------------------- 
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
         super().__init__()
@@ -125,8 +137,6 @@ class AircraftConfigsWidget(TabWidget):
         return data
 
     def create_rcaide_structure(self):
-        # values.vehicle.mass_properties.center_of_gravity
-        # compute_component_centers_of_gravity(values.vehicle)
 
         assert self.cs_de_widget is not None and self.prop_de_widget is not None
 

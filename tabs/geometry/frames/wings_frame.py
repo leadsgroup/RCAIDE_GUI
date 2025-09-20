@@ -1,5 +1,5 @@
 import RCAIDE
-from RCAIDE.Library.Methods.Geometry.Planform import segment_properties
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
@@ -247,7 +247,7 @@ class WingsFrame(GeometryFrame):
                 _, cs = widget.get_data_values()
                 wing.append_control_surface(cs)
 
-        wing = segment_properties(wing)
+        wing = wing_planform(wing)
         return wing
 
     def get_data_values(self):

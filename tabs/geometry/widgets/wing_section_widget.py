@@ -1,12 +1,25 @@
+# RCAIDE_GUI/tabs/geometry/widgets/wing_section_widget.py
+# 
+# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports  
 import RCAIDE
+
+# PtQt imports  
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
 
+# gui imports 
 from utilities import Units
-from widgets import DataEntryWidget
+from widgets import DataEntryWidget 
 
-
+# ----------------------------------------------------------------------------------------------------------------------
+#  WingSectionWidget
+# ---------------------------------------------------------------------------------------------------------------------- 
 class WingSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
         super(WingSectionWidget, self).__init__()
