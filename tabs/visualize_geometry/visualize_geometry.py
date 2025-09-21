@@ -139,6 +139,7 @@ class VisualizeGeometryWidget(TabWidget):
             actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+            actor.GetProperty().SetOpacity(1.0)
             renderer.AddActor(actor)
 
             if wing.symmetric:
@@ -155,6 +156,7 @@ class VisualizeGeometryWidget(TabWidget):
                 actor.GetProperty().SetColor(0.827, 0.827, 0.827)
                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                actor.GetProperty().SetOpacity(1.0)
                 renderer.AddActor(actor)
         
         # -------------------------------------------------------------------------  
@@ -171,6 +173,7 @@ class VisualizeGeometryWidget(TabWidget):
             actor.GetProperty().SetColor(0.392, 0.584, 0.929)
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+            actor.GetProperty().SetOpacity(1.0)
             renderer.AddActor(actor)
     
         # -------------------------------------------------------------------------  
@@ -186,6 +189,7 @@ class VisualizeGeometryWidget(TabWidget):
             actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+            actor.GetProperty().SetOpacity(1.0)
             renderer.AddActor(actor)
     
         # -------------------------------------------------------------------------  
@@ -212,6 +216,7 @@ class VisualizeGeometryWidget(TabWidget):
                         actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                         actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                         actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                        actor.GetProperty().SetOpacity(1.0)
                         renderer.AddActor(actor) 
                                                      
                 if 'rotor' in propulsor:  
@@ -244,6 +249,7 @@ class VisualizeGeometryWidget(TabWidget):
                         actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                         actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                         actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                        actor.GetProperty().SetOpacity(1.0) 
                         renderer.AddActor(actor)     
                      
             for fuel_line in network.fuel_lines:        
@@ -281,6 +287,7 @@ class VisualizeGeometryWidget(TabWidget):
                                 actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                                 actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                                 actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                                actor.GetProperty().SetOpacity(1.0)
                                 renderer.AddActor(actor)
                                 
                         
@@ -299,6 +306,7 @@ class VisualizeGeometryWidget(TabWidget):
                                     actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                                     actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                                     actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                                    actor.GetProperty().SetOpacity(1.0)
                                     renderer.AddActor(actor)
                                     
                     elif fuel_tank.fuselage_tag != None:
@@ -323,6 +331,7 @@ class VisualizeGeometryWidget(TabWidget):
                             actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                            actor.GetProperty().SetOpacity(1.0)
                             renderer.AddActor(actor)
                        
                     elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
@@ -335,6 +344,7 @@ class VisualizeGeometryWidget(TabWidget):
                         actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                         actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                         actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                        actor.GetProperty().SetOpacity(1.0)
                         renderer.AddActor(actor)
                         
                 
@@ -353,6 +363,7 @@ class VisualizeGeometryWidget(TabWidget):
                             actor.GetProperty().SetColor(0.827, 0.827, 0.827)  # Set wing color to Light Grey
                             actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
                             actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+                            actor.GetProperty().SetOpacity(1.0)
                             renderer.AddActor(actor)       
 
         # Set camera and background
