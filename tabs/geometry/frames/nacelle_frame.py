@@ -17,7 +17,7 @@ class NacelleFrame(GeometryFrame):
         create_scroll_area(self)
         assert self.main_layout is not None and isinstance(
             self.main_layout, QVBoxLayout)
-        self.main_layout.addWidget(QLabel("<b>Nacelle</b>"))
+        self.main_layout.addWidget(QLabel("<b>Nacelles</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         self.add_name_layout()

@@ -39,7 +39,7 @@ class FuselageFrame(GeometryFrame):
         create_scroll_area(self)
 
         assert self.main_layout is not None
-        self.main_layout.addWidget(QLabel("<b>Fuselage</b>"))
+        self.main_layout.addWidget(QLabel("<b>Fuselages</b>"))
         self.main_layout.addWidget(create_line_bar())
         self.index = -1
 

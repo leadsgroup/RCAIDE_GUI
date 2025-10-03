@@ -18,7 +18,7 @@ class WingsFrame(GeometryFrame):
         create_scroll_area(self)
 
         assert self.main_layout is not None
-        self.main_layout.addWidget(QLabel("<b>Wing</b>"))
+        self.main_layout.addWidget(QLabel("<b>Wings</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         # TODO Add extra flags

@@ -15,7 +15,9 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
 
 # gui imports 
 from utilities import Units
-from widgets import DataEntryWidget 
+from widgets import DataEntryWidget
+import os
+import sys
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  WingSectionWidget
@@ -54,7 +56,7 @@ class WingSectionWidget(QWidget):
             ("Thickness to Chord", Units.Unitless),
             ("Dihedral Outboard", Units.Angle),
             ("Quarter Chord Sweep", Units.Angle),
-            # ("Airfoil", Units.Unitless),
+            #("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
@@ -96,7 +98,27 @@ class WingSectionWidget(QWidget):
         segment.thickness_to_chord = data["Thickness to Chord"][0]
         segment.dihedral_outboard = data["Dihedral Outboard"][0]
         segment.sweeps.quarter_chord = data["Quarter Chord Sweep"][0]
-        # segment.airfoil = data["Airfoil"][0]
+        
+        
+        #airfoil_type                =  data["Airfoil Type"][0]
+        #airfoil_code                =  data["Airfoil Code"][0]
+        #airfoil_coordiate_file_path =  data["Airfoil Coordinate File Path"][0]
+        #airfoil_points              =  data["Airfoil Points"][0]
+        #if airfoil_type == None:
+            #pass
+        #elif airfoil_type == "NACA 4-Series":
+            #airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+            #try: 
+                #airfoil.NACA_4_Series_code = airfoil_code
+            #except: 
+                #airfoil.number_of_points   = airfoil_points                
+                #airfoil.NACA_4_Series_code = '0012'
+            #segment.append_airfoil(airfoil)          
+        #elif airfoil_type == "Coordinate File": 
+            #airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+            #airfoil.coordinate_file          = airfoil_coordiate_file_path  
+            #airfoil.number_of_points         = airfoil_points  
+            #segment.append_airfoil(airfoil)           
 
         return segment
 

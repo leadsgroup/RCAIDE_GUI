@@ -29,7 +29,7 @@ class LandingGearFrame(GeometryFrame):
         create_scroll_area(self)
 
         assert self.main_layout is not None
-        self.main_layout.addWidget(QLabel("<b>Landing Gear</b>"))
+        self.main_layout.addWidget(QLabel("<b>Landing Gears</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         self.add_name_layout()

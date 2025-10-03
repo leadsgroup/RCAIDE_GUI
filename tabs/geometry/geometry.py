@@ -21,7 +21,7 @@ class GeometryWidget(TabWidget):
         self.tabs = ["", "Fuselages", "Wings", "Nacelles",
                      "Landing Gear", "Energy Networks"]
 
-        options = ["Set Vehicle Parameters", "Add Fuselage", "Add Wing", "Add Nacelle", "Add Landing Gear",
+        options = ["Add Vehicle Compoment", "Add Fuselage", "Add Wing", "Add Nacelle", "Add Landing Gear",
                    "Add Energy Network"]
 
         values.geometry_data = []
@@ -55,7 +55,7 @@ class GeometryWidget(TabWidget):
         # Create a QComboBox and add options
         self.tree = QTreeWidget()
         self.tree.setColumnCount(1)
-        self.tree.setHeaderLabels(["Vehicle Components"])
+        self.tree.setHeaderLabels(["Component Tree"])
         self.tree.itemClicked.connect(self.on_tree_item_clicked)
 
         vehicle_item = QTreeWidgetItem(["Vehicle"])
