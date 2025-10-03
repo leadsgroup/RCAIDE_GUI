@@ -445,8 +445,16 @@
                     false,
                     0
                 ],
-                "Symmetric": [
+                "X-Y Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
                     true,
+                    0
+                ],
+                "Y-Z Plane Symmetric": [
+                    false,
                     0
                 ],
                 "High Lift": [
@@ -747,8 +755,16 @@
                     false,
                     0
                 ],
-                "Symmetric": [
+                "X-Y Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
                     true,
+                    0
+                ],
+                "Y-Z Plane Symmetric": [
+                    false,
                     0
                 ],
                 "High Lift": [
@@ -949,7 +965,15 @@
                     true,
                     0
                 ],
-                "Symmetric": [
+                "X-Y Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "Y-Z Plane Symmetric": [
                     false,
                     0
                 ],

@@ -6,6 +6,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 from RCAIDE.Framework.Core import Units,  Data
+from  RCAIDE.Library.Plots import *  
 
 # PyQT imports 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
@@ -104,11 +105,7 @@ class SolveWidget(TabWidget):
                 category_item.addChild(option_item)
 
     def run_solve(self):
-        mission = values.rcaide_mission  
-        
-        #pickle_file  =  'boeing_mission.pkl'
-        #with open(pickle_file, 'wb') as file:
-            #pickle.dump(mission, file) 
+        mission  = values.rcaide_mission 
         
         print("Starting solve...")
         
