@@ -473,24 +473,12 @@
                     0.0,
                     0
                 ],
-                "Total Length": [
-                    0.0,
-                    0
-                ],
                 "Spans Projected": [
                     34.32,
                     0
                 ],
-                "Spans Total": [
-                    0.0,
-                    0
-                ],
                 "Areas Reference": [
                     124.862,
-                    0
-                ],
-                "Areas Exposed": [
-                    0.0,
                     0
                 ],
                 "Areas Affected": [
@@ -513,15 +501,11 @@
                     4.235,
                     0
                 ],
-                "Mean Geometric Chord": [
-                    0.0,
-                    0
-                ],
                 "Quarter Chord Sweep Angle": [
                     25.0,
                     0
                 ],
-                "Half Chord Sweep Angle": [
+                "Leading Edge Sweep Angle": [
                     0.0,
                     0
                 ],
@@ -831,7 +815,7 @@
                     0,
                     0
                 ],
-                "Half Chord Sweep Angle": [
+                "Leading Edge Sweep Angle": [
                     0.0,
                     0
                 ],
@@ -1041,7 +1025,7 @@
                     31.2,
                     0
                 ],
-                "Half Chord Sweep Angle": [
+                "Leading Edge Sweep Angle": [
                     0.0,
                     0
                 ],
