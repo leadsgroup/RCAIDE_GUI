@@ -1,7 +1,10 @@
 from turtle import clear
 import RCAIDE
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+    QSpacerItem, QSizePolicy, QScrollArea, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea, QComboBox, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
+    QPushButton, QLineEdit, QComboBox
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
@@ -21,6 +24,7 @@ class NacelleFrame(GeometryFrame):
         self.main_layout.addWidget(create_line_bar())
 
         self.add_name_layout()
+        self.add_nacelle_type()
 
         # List of data labels
         self.data_units_labels = [
@@ -63,6 +67,24 @@ class NacelleFrame(GeometryFrame):
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
         self.main_layout.addLayout(name_layout)
+
+    def add_nacelle_type(self):
+        nacelle_type_label = QLabel("Nacelle Type: ")
+        nacelle_type_layout = QHBoxLayout()
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        nacelle_type_layout.addItem(spacer_left)
+        nacelle_type_layout.addWidget(nacelle_type_label)
+        self.landing_gear_type_combo = QComboBox()
+        self.landing_gear_type_combo.addItems(["Option A", "Option B"])
+        self.landing_gear_type_combo.setFixedWidth(600)
+        nacelle_type_layout.addWidget(self.landing_gear_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
+        nacelle_type_layout.addItem(spacer_right)
+
+        assert self.main_layout is not None
+        self.main_layout.addLayout(nacelle_type_layout)
 
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):

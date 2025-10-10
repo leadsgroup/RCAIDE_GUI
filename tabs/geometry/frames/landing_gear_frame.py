@@ -1,6 +1,8 @@
 import RCAIDE
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+    QSpacerItem, QSizePolicy, QScrollArea, QComboBox, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
+    QPushButton, QLineEdit, QComboBox
 
 from tabs.geometry.frames import GeometryFrame
 from utilities import show_popup, create_line_bar, create_scroll_area, set_data, Units
@@ -33,6 +35,7 @@ class LandingGearFrame(GeometryFrame):
         self.main_layout.addWidget(create_line_bar())
 
         self.add_name_layout()
+        self.add_landing_gear_type()
 
         # Add the data entry widget to the home layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
@@ -59,6 +62,24 @@ class LandingGearFrame(GeometryFrame):
 
         assert self.main_layout is not None
         self.main_layout.addLayout(name_layout)
+    
+    def add_landing_gear_type(self):
+        landing_gear_type_label = QLabel("Landing Gear Type: ")
+        gear_type_layout = QHBoxLayout()
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        gear_type_layout.addItem(spacer_left)
+        gear_type_layout.addWidget(landing_gear_type_label)
+        self.landing_gear_type_combo = QComboBox()
+        self.landing_gear_type_combo.addItems(["Nose Gear", "Main Gear"])
+        self.landing_gear_type_combo.setFixedWidth(600)
+        gear_type_layout.addWidget(self.landing_gear_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
+        gear_type_layout.addItem(spacer_right)
+
+        assert self.main_layout is not None
+        self.main_layout.addLayout(gear_type_layout)
 
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
