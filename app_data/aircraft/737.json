@@ -477,15 +477,15 @@
                     34.32,
                     0
                 ],
-                "Areas Reference": [
+                "Reference Area": [
                     124.862,
                     0
                 ],
-                "Areas Affected": [
+                "Affected Area": [
                     0.0,
                     0
                 ],
-                "Areas Wetted": [
+                "Wetted Area": [
                     225.08,
                     0
                 ],
@@ -779,7 +779,7 @@
                     0.0,
                     0
                 ],
-                "Areas Reference": [
+                "Reference Area": [
                     41.49,
                     0
                 ],
@@ -787,11 +787,11 @@
                     59.354,
                     0
                 ],
-                "Areas Affected": [
+                "Affected Area": [
                     0.0,
                     0
                 ],
-                "Areas Wetted": [
+                "Wetted Area": [
                     71.81,
                     0
                 ],
@@ -989,7 +989,7 @@
                     0.0,
                     0
                 ],
-                "Areas Reference": [
+                "Reference Area": [
                     34.89,
                     0
                 ],
@@ -997,11 +997,11 @@
                     0.0,
                     0
                 ],
-                "Areas Affected": [
+                "Affected Area": [
                     0.0,
                     0
                 ],
-                "Areas Wetted": [
+                "Wetted Area": [
                     57.25,
                     0
                 ],

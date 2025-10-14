@@ -27,6 +27,16 @@ class WingsFrame(GeometryFrame):
 
         # List of data labels
         self.data_units_labels = [
+            ("Spans Projected", Units.Length, "spans.projected"),
+            ("Reference Area", Units.Area, "areas.reference"),
+            ("Wetted Area", Units.Area, "areas.wetted"),
+            ("Root Chord", Units.Length, "chords.root"),
+            ("Tip Chord", Units.Length, "chords.tip"),
+            ("Mean Aerodynamic Chord", Units.Length, "chords.mean_aerodynamic"),
+            ("Quarter Chord Sweep Angle", Units.Angle, "sweeps.quarter_chord"),
+            ("Leading Edge Sweep Angle", Units.Angle, "sweeps.leading_edge"),
+            ("Root Chord Twist Angle", Units.Angle, "twists.root"),
+            ("Tip Chord Twist Angle", Units.Angle, "twists.tip"),
             ("Taper", Units.Unitless, "taper"),
             ("Dihedral", Units.Angle, "dihedral"),
             ("Aspect Ratio", Units.Unitless, "aspect_ratio"),
@@ -37,22 +47,11 @@ class WingsFrame(GeometryFrame):
             ("X-Y Plane Symmetric", Units.Boolean, "xy_plane_symmetric"),
             ("High Lift", Units.Boolean, "high_lift"),
             ("X-Z Plane Symmetric", Units.Boolean, "xz_plane_symmetric"),
-            ("Dynamic Pressure Ratio", Units.Unitless, "dynamic_pressure_ratio"),
-            ("Y-Z Plane Symmetric", Units.Boolean, "yz_plane_symmetric"),
             ("T-Tail", Units.Boolean, "t_tail"),
+            ("Y-Z Plane Symmetric", Units.Boolean, "yz_plane_symmetric"),
+            ("Dynamic Pressure Ratio", Units.Unitless, "dynamic_pressure_ratio"),
             ("Exposed Root Chord Offset", Units.Unitless,
-             "exposed_root_chord_offset"),
-            ("Spans Projected", Units.Length, "spans.projected"),
-            ("Areas Reference", Units.Area, "areas.reference"),
-            ("Areas Affected", Units.Area, "areas.affected"),
-            ("Areas Wetted", Units.Area, "areas.wetted"),
-            ("Root Chord", Units.Length, "chords.root"),
-            ("Tip Chord", Units.Length, "chords.tip"),
-            ("Mean Aerodynamic Chord", Units.Length, "chords.mean_aerodynamic"),
-            ("Quarter Chord Sweep Angle", Units.Angle, "sweeps.quarter_chord"),
-            ("Leading Edge Sweep Angle", Units.Angle, "sweeps.half_chord"),
-            ("Root Chord Twist Angle", Units.Angle, "twists.root"),
-            ("Tip Chord Twist Angle", Units.Angle, "twists.tip")
+             "exposed_root_chord_offset")
         ]
 
         # Add the data entry widget to the main layout

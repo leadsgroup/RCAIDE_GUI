@@ -31,4 +31,13 @@ on hold:
 10. menu to the left and stuff on top (flora's code) --> merge with visualize geometry
 
 
+
+
+
+swap dynamic pressure ratio and t tail - done
+rename the areas in the wing - done
+take off affected area - done
+taper to ttail - take the block and put it down - done
+and a flag to the wing segments called has_tank
+wing_section_widget --> airfoils
 '''
