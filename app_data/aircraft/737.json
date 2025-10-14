@@ -544,6 +544,10 @@
                             28.225,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -569,6 +573,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             25.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "yehudi"
@@ -598,6 +606,10 @@
                             56.75,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "section_2"
                     },
                     {
@@ -623,6 +635,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             0.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "tip"
@@ -854,6 +870,10 @@
                             28.225,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root_segment"
                     },
                     {
@@ -879,6 +899,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             0.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "tip_segment"
@@ -1064,6 +1088,10 @@
                             65,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -1091,6 +1119,10 @@
                             32.771,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "segment_1"
                     },
                     {
@@ -1116,6 +1148,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             0.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "segment_2"

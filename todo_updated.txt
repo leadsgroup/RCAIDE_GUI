@@ -38,6 +38,6 @@ swap dynamic pressure ratio and t tail - done
 rename the areas in the wing - done
 take off affected area - done
 taper to ttail - take the block and put it down - done
-and a flag to the wing segments called has_tank
+and a flag to the wing segments called has_tank - done
 wing_section_widget --> airfoils
 '''

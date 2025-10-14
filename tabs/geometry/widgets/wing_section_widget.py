@@ -56,6 +56,7 @@ class WingSectionWidget(QWidget):
             ("Thickness to Chord", Units.Unitless),
             ("Dihedral Outboard", Units.Angle),
             ("Quarter Chord Sweep", Units.Angle),
+            ("Has Fuel Tank", Units.Boolean),
             #("Airfoil", Units.Unitless),
         ]
 
