@@ -1,24 +1,30 @@
 from turtle import clear
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSpacerItem, QSizePolicy, QPushButton, QLineEdit
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea, QComboBox, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
+    QPushButton, QLineEdit, QComboBox
+
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import NacelleSectionWidget
-from utilities import set_data, show_popup, create_line_bar, Units, clear_layout, create_scroll_area
+from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
-from widgets.collapsible_section import CollapsibleSection
+
 
 class NacelleFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering nacelle data."""
         super(NacelleFrame, self).__init__()
 
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        create_scroll_area(self)
+        assert self.main_layout is not None and isinstance(
+            self.main_layout, QVBoxLayout)
+        self.main_layout.addWidget(QLabel("<b>Nacelles</b>"))
+        self.main_layout.addWidget(create_line_bar())
 
-        nacelle_content_widget = QWidget()
-        self.content_layout = QVBoxLayout(nacelle_content_widget)
-
-        self.add_name_layout(self.content_layout)
+        self.add_name_layout()
+        self.add_nacelle_type()
 
         # List of data labels
         self.data_units_labels = [
@@ -32,44 +38,58 @@ class NacelleFrame(GeometryFrame):
             # ("Airfoil Coordinate File", Units.Unitless)
         ]
 
-        # Add the data entry widget to the content layout
+        # Add the data entry widget to the main layout
         self.data_entry_widget: DataEntryWidget = DataEntryWidget(
             self.data_units_labels)
+        self.main_layout.addWidget(self.data_entry_widget)
+        self.main_layout.addWidget(create_line_bar())
 
-        self.content_layout.addWidget(self.data_entry_widget)
-        self.content_layout.addWidget(create_line_bar())
-
-        # Add the secctions layout to the content layout
+        # Add the secctions layout to the main layout
         self.nacelle_sections_layout = QVBoxLayout()
-        self.content_layout.addLayout(self.nacelle_sections_layout)
+        self.main_layout.addLayout(self.nacelle_sections_layout)
 
-        self.add_buttons_layout(self.content_layout)
+        self.add_buttons_layout()
 
         # Adds scroll function
-        self.content_layout.addItem(QSpacerItem(
+        self.main_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-        collapsible = CollapsibleSection("Nacelle", nacelle_content_widget)
-        main_layout.addWidget(collapsible)
-
-    def add_name_layout(self,layout):
+    def add_name_layout(self):
+        assert self.main_layout is not None        
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
             50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(
             200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        self.name_line_edit = QLineEdit(self)
+        self.name_line_edit: QLineEdit = QLineEdit(self)
         name_layout.addItem(spacer_left)
         name_layout.addWidget(QLabel("Name: "))
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
+        self.main_layout.addLayout(name_layout)
 
-        layout.addLayout(name_layout)
+    def add_nacelle_type(self):
+        nacelle_type_label = QLabel("Nacelle Type: ")
+        nacelle_type_layout = QHBoxLayout()
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        nacelle_type_layout.addItem(spacer_left)
+        nacelle_type_layout.addWidget(nacelle_type_label)
+        self.landing_gear_type_combo = QComboBox()
+        self.landing_gear_type_combo.addItems(["Option A", "Option B"])
+        self.landing_gear_type_combo.setFixedWidth(600)
+        nacelle_type_layout.addWidget(self.landing_gear_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
+        nacelle_type_layout.addItem(spacer_right)
+
+        assert self.main_layout is not None
+        self.main_layout.addLayout(nacelle_type_layout)
 
     # noinspection PyUnresolvedReferences
-    def add_buttons_layout(self,layout):
+    def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
-        #assert self.main_layout is not None
+        assert self.main_layout is not None
         
         new_section_button = QPushButton("New Nacelle Section", self)
         save_button = QPushButton("Save Data", self)
@@ -86,8 +106,7 @@ class NacelleFrame(GeometryFrame):
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
-        #self.main_layout.addLayout(buttons_layout)
-        layout.addLayout(buttons_layout)
+        self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
     def save_data(self):

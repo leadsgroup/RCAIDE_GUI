@@ -8,3 +8,4 @@ from tabs.analysis.widgets.planets_widget import PlanetsWidget
 from tabs.analysis.widgets.propulsion_widget import PropulsionWidget
 from tabs.analysis.widgets.stability_widget import StabilityWidget
 from tabs.analysis.widgets.weights_widget import WeightsWidget
+from tabs.analysis.widgets.geometry_widget import GeometryWidget

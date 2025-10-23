@@ -95,15 +95,14 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, FuelLineWidget)
-            fuelline_data, line = widget.get_data_values()
-            assert isinstance(
-                line, RCAIDE.Library.Components.Energy.Distributors.Fuel_Line)
+            fuelline_data, line, propulsors = widget.get_data_values()
+            assert isinstance(line, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
 
             data.append(fuelline_data)
             lines.append(line)
 
         if just_data:
-            return data, []
+            return data, [], []
 
         if self.tank_selector_data != data:
             print(self.tank_selector_data)
@@ -112,9 +111,8 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
             return False, False
 
         for line in lines:
-            for propulsor in line.propulsors:
-                assert isinstance(
-                    propulsor, RCAIDE.Library.Components.Propulsors.Turbofan)
+            for propulsor in propulsors:
+                assert isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan)
 
                 for index in range(self.fuel_tank_selector.count()):
                     tank_selector = self.fuel_tank_selector.widget(index)
@@ -127,7 +125,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
                           "Active Fuel Tanks:", propulsor.active_fuel_tanks)
                     break
 
-        return data, lines
+        return data, lines, propulsors
 
     def on_delete_button_pressed(self, index):
         widget_item = self.fuellines_layout.itemAt(index)

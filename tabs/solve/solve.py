@@ -1,137 +1,88 @@
-from PyQt6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QTreeWidget, QPushButton,
-    QTreeWidgetItem, QHeaderView, QLabel, QDockWidget, QSizePolicy, QScrollArea
-)
+# RCAIDE_GUI/tabs/solve/solve.py
+# 
+# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+from RCAIDE.Framework.Core import Units,  Data
+from  RCAIDE.Library.Plots import *  
+
+# PyQT imports 
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
 from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QFont
 import pyqtgraph as pg
+
+# numpy imports 
 import numpy as np
-from matplotlib import colormaps
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
+import pickle
 
+# gui imports 
 from tabs import TabWidget
-from PyQt6.QtGui import QF
-from matplotlib import colormaps
-
 import values
 
-from RCAIDE.Framework.Core import Units
-
+# ----------------------------------------------------------------------------------------------------------------------
+#  SolveWidget
+# ----------------------------------------------------------------------------------------------------------------------  
 class SolveWidget(TabWidget):
     def __init__(self):
-        super().__init__()
-        self.main_window = SolveMainWindow()
-        
-        # layout for main window widget
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.main_window)
-        self.setLayout(layout)
+        super(SolveWidget, self).__init__()
 
-class SolveMainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+        base_layout = QHBoxLayout()
+        tree_layout = QVBoxLayout()
+        main_layout = QVBoxLayout()
 
-        self.setDockOptions(
-            QMainWindow.DockOption.AllowNestedDocks 
-            | QMainWindow.DockOption.AllowTabbedDocks 
-            | QMainWindow.DockOption.AnimatedDocks
-        )
+        # Create and add a label to the main_layout
+        main_layout.addWidget(QLabel("Click Solve Button to View Plots"))
 
-        self.create_tree_dock()
-        self.create_plot_docks()
-
-    def create_tree_dock(self):
-        tree_container = QWidget()
-        tree_layout = QVBoxLayout(tree_container)
-
+        # Create the Solve button
         solve_button = QPushButton("Solve")
         solve_button.clicked.connect(self.run_solve)
 
+        # Create a scroll area for the plot widgets
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        # scroll_area.setFixedSize(1500, 900)  # Set a designated scroll area size
+
+        # Create a container widget for the plots
+        plot_container = QWidget()
+        plot_layout = QVBoxLayout(plot_container)
+
+        # Create two PlotWidgets from PyQtGraph
+        self.aircraft_velocity_plot = pg.PlotWidget()
+        self.aircraft_altitude_plot = pg.PlotWidget()
+
+        # Set a fixed size for each plot widget
+        plot_size = QSize(700, 400)  # Set a fixed plot size
+        self.aircraft_velocity_plot.setFixedSize(plot_size)
+        self.aircraft_velocity_plot.addLegend()
+        
+        self.aircraft_altitude_plot.setFixedSize(plot_size)
+        self.aircraft_altitude_plot.addLegend()
+
+        plot_layout.addWidget(self.aircraft_velocity_plot)
+        plot_layout.addWidget(self.aircraft_altitude_plot)
+        scroll_area.setWidget(plot_container)
+
+        # Add the scroll area to the main_layout
+        main_layout.addWidget(scroll_area)
+
+        # Tree layout (on the left)
         self.tree = QTreeWidget()
         self.init_tree()
         tree_layout.addWidget(solve_button)
         tree_layout.addWidget(self.tree)
 
-        self.tree_dock = QDockWidget("Plot Options", self)
-        self.tree_dock.setObjectName("plot_options_dock")
+        # Add layouts to the base_layout
+        base_layout.addLayout(tree_layout, 3)
+        base_layout.addLayout(main_layout, 7)
 
-        self.tree_dock.setWidget(tree_container)
+        base_widget = QWidget()
+        base_widget.setLayout(base_layout)
 
-        self.tree_dock.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetMovable |
-            QDockWidget.DockWidgetFeature.DockWidgetFloatable
-        )
-
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.tree_dock)
-
-    def create_plot_docks(self):
-        global_widget = QWidget()
-        global_layout = QVBoxLayout(global_widget)
-
-        label = QLabel("Click Solve Button to View Plots")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        global_layout.addWidget(label)
-
-        #plot_title: label_data
-        self.plot_data = {
-            "Aircraft Velocity Plot": [('left', 'Velocity', 'kts'),('bottom', 'Time', 'mins')],
-            "Aircraft Altitude Plot": [('left', 'Altitude', 'ft'),('bottom', 'Time', 'mins')]
-        }
-
-        self.dock_container = QMainWindow()
-        self.dock_container.setDockOptions(
-            QMainWindow.DockOption.AllowNestedDocks |
-            QMainWindow.DockOption.AllowTabbedDocks |
-            QMainWindow.DockOption.AnimatedDocks
-        )   
-
-        self.dock_widgets = []
-
-        for plot_title in self.plot_data:
-            plot_widget = pg.PlotWidget()
-            plot_widget.setTitle(plot_title)
-            plot_widget.addLegend()
-            plot_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
-            first_label,second_label = self.plot_data[plot_title]
-
-            plot_widget.setLabel(first_label[0], first_label[1], units=first_label[2])
-            plot_widget.setLabel(second_label[0], second_label[1], units=second_label[2])
-            plot_widget.getAxis('left')
-            plot_widget.getAxis('bottom')
-            plot_widget.showGrid(x=True, y=True, alpha=0.3)
-
-            # Wrap plot in QDockWidget
-            dock_widget = QDockWidget(plot_title, self)
-            dock_widget.setWidget(plot_widget)
-            dock_widget.setFeatures(
-                QDockWidget.DockWidgetFeature.DockWidgetMovable |
-                QDockWidget.DockWidgetFeature.DockWidgetFloatable
-            )
-
-            self.dock_widgets.append(dock_widget)
-
-        for widget in self.dock_widgets:
-            self.dock_container.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, widget)
-
-        # Tabify dock widgets
-        for i in range(1, len(self.dock_widgets)):
-            self.dock_container.tabifyDockWidget(self.dock_widgets[0], self.dock_widgets[i])
-
-        # set first frame as on load frame
-        self.dock_widgets[0].raise_()
-
-        global_layout.addWidget(self.dock_container)
-
-        self.plot_dock = QDockWidget("Configuration Details", self)
-        self.plot_dock.setObjectName("config_details_dock")
-        self.plot_dock.setWidget(global_widget)
-
-        self.plot_dock.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetMovable |
-            QDockWidget.DockWidgetFeature.DockWidgetFloatable
-        )
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.plot_dock)
+        self.setLayout(base_layout)
 
     def init_tree(self):
         self.tree.setColumnCount(2)
@@ -140,8 +91,7 @@ class SolveMainWindow(QMainWindow):
         header = self.tree.header()
         assert header is not None
         header.setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
-        )
+            0, QHeaderView.ResizeMode.ResizeToContents)
 
         for category, options in self.plot_options.items():
             category_item = QTreeWidgetItem([category])
@@ -150,40 +100,84 @@ class SolveMainWindow(QMainWindow):
             for option in options:
                 option_item = QTreeWidgetItem([option])
                 option_item.setCheckState(
-                    1, Qt.CheckState.Checked  # Initially checked
-                )
+                    1, Qt.CheckState.Checked)  # Initially checked
+
                 category_item.addChild(option_item)
 
     def run_solve(self):
-        mission = values.rcaide_mission
+        mission  = values.rcaide_mission 
+        
         print("Starting solve...")
-        results = mission.evaluate()
+        
+        results = mission.evaluate() 
+        
         print("Done with solve")
-        cmap = colormaps.get_cmap('plasma')
-        num_segments = len(results.segments)
+
+        styles = {"color": "white", "font-size": "18px"}  
+        plot_parameters                  = Data()      
+        plot_parameters.line_width       = 5 
+        plot_parameters.line_style       = '-'
+        plot_parameters.marker_size      = 8
+        plot_parameters.legend_font_size = 12
+        plot_parameters.axis_font_size   = 14
+        plot_parameters.title_font_size  = 18    
+        plot_parameters.markers          = ['o', 's', '^', 'X', 'd', 'v', 'P', '>','.', ',', 'o', 'v', '^', '<',\
+                                            '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h'\
+                                             , 'H', '+', 'x', 'D', 'd', '|', '_'] 
+        plot_parameters.color            = 'black'
+        
+
+        line_colors   = cm.inferno(np.linspace(0.2,1,len(results.segments)))
+        
+        max_velocity = 0
+        max_altitude = 0
         for i, segment in enumerate(results.segments):
-            time = segment.conditions.frames.inertial.time[:, 0] / Units.min
+            # segment settings
+            line_width  = plot_parameters.line_width
+            rgba_color  = line_colors[i]*255.0   
+            segment_tag = segment.tag.replace('_', ' ')
+            marker      = plot_parameters.markers[0]
+            marker_size =  plot_parameters.marker_size 
+            line_color    = (int(rgba_color[0]),int(rgba_color[1]),int(rgba_color[2]))
+            line_style    = pg.mkPen(color=line_color, width=line_width)   #  pg.mkPen(color=(255, 0, 0), width=5)
+            marker_color  = line_color
             
+            # unpack variables 
+            time     = segment.conditions.frames.inertial.time[:, 0] / Units.min 
             velocity = segment.conditions.freestream.velocity[:, 0] / Units.kts
             altitude = segment.conditions.freestream.altitude[:,0]/Units.feet
-            density = segment.conditions.freestream.density[:, 0]
-            PR = density / 1.225
-            EAS = velocity * np.sqrt(PR)
-            mach = segment.conditions.freestream.mach_number[:, 0]
-            CAS = EAS * (1+((1/8)*((1-PR)*mach**2)) +
+            density  = segment.conditions.freestream.density[:, 0]
+            
+            # calculate addition variables 
+            PR       = density / 1.225
+            EAS      = velocity * np.sqrt(PR)
+            mach     = segment.conditions.freestream.mach_number[:, 0]
+            CAS      = EAS * (1+((1/8)*((1-PR)*mach**2)) +
                          ((3/640)*(1-10*PR+(9*PR**2)*(mach**4))))
             
-            color = cmap(i / num_segments)
-            color_rgba = [int(c * 255) for c in color[:3]]  
-            color_hex = pg.mkColor(*color_rgba)  
             
-            velocity_pen = pg.mkPen(color=color_hex, width=2)
-            velocity_symbol_brush = pg.mkBrush(color=color_hex)
-            self.aircraft_velocity_plot.plot(time, velocity, pen=velocity_pen, symbol='o',symbolSize=8,  symbolBrush=velocity_symbol_brush, symbolPen=pg.mkPen(color=color_hex), name=segment.tag.replace('_', ' '))
+            # aircraft velocity plot
+            max_velocity = np.maximum(np.max(velocity),max_velocity)
+            self.aircraft_velocity_plot.plot(time, velocity, pen=line_style,  symbol = marker ,  symbolSize=marker_size ,symbolBrush = marker_color,  name=segment_tag)
 
-            altitude_pen = pg.mkPen(color=color_hex, width=2)
-            altitude_symbol_brush = pg.mkBrush(color=color_hex)
-            self.aircraft_altitude_plot.plot(time, altitude, pen=altitude_pen, symbol='o', symbolSize=8, symbolBrush=altitude_symbol_brush, symbolPen=pg.mkPen(color=color_hex), name=segment.tag.replace('_', ' '))
+            # aircraft altitude plot             
+            max_altitude = np.maximum(np.max(altitude),max_altitude)
+            self.aircraft_altitude_plot.plot(time, altitude, pen=line_style,  symbol = marker , symbolSize= marker_size ,symbolBrush = marker_color ,  name=segment_tag)
+            
+        
+        # aircraft velocity plot settings
+        self.aircraft_velocity_plot.setLabel("left", "True Airspeed (kts)", **styles)
+        self.aircraft_velocity_plot.setLabel("bottom", "Time (min)", **styles)
+        self.aircraft_velocity_plot.showGrid(x=True, y=True) 
+        self.aircraft_velocity_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)  
+        self.aircraft_velocity_plot.setYRange(0, max_velocity*1.2)
+
+        # aircraft altitude plot settings             
+        self.aircraft_altitude_plot.setLabel("left", "True Airspeed (kts)", **styles)
+        self.aircraft_altitude_plot.setLabel("bottom", "Time (min)", **styles) 
+        self.aircraft_altitude_plot.showGrid(x=True, y=True) 
+        self.aircraft_altitude_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)  
+        self.aircraft_altitude_plot.setYRange(0, max_altitude*1.2)
 
     plot_options = {
         "Aerodynamics": [
@@ -217,6 +211,7 @@ class SolveMainWindow(QMainWindow):
             "Plot Lateral Stability",
         ],
     }
+
 
 def get_widget() -> QWidget:
     return SolveWidget()

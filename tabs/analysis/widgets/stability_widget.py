@@ -21,5 +21,5 @@ class StabilityWidget(AnalysisDataWidget):
 
     def create_analysis(self, vehicle):
         stability = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()
-        stability.geometry = vehicle
+        stability.vehicle = vehicle
         return stability

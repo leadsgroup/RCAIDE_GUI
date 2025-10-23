@@ -157,13 +157,6 @@ segment_data_fields = [
             ("Distance", Units.Length, "distance"), 
             ("True Course Angle", Units.Angle, "true_course")
         ],
-        "Constant Throttle/Constant Altitude": [
-            ("Throttle", Units.Unitless, "throttle"), 
-            ("Altitude", Units.Length, "altitude"),
-            ("Air Speed Start", Units.Velocity, "air_speed_start"), 
-            ("Air Speed End", Units.Velocity, "air_speed_end"),
-            ("True Course Angle", Units.Angle, "true_course")
-        ],
     }, 
     {
         # Descent Subsegments
@@ -332,7 +325,6 @@ segment_rcaide_classes = [
         "Constant Mach/Constant Angle": Segments.Climb.Constant_Mach_Constant_Angle,
         "Constant Mach/Constant Rate": Segments.Climb.Constant_Mach_Constant_Rate,
         "Constant Mach/Linear Altitude": Segments.Climb.Constant_Mach_Linear_Altitude,
-        "Constant Speed/Constant Angle Noise": Segments.Climb.Constant_Speed_Constant_Angle_Noise,
         "Constant Speed/Constant Angle": Segments.Climb.Constant_Speed_Constant_Angle,
         "Constant Speed/Constant Rate": Segments.Climb.Constant_Speed_Constant_Rate,
         "Constant Speed/Linear Altitude": Segments.Climb.Constant_Speed_Linear_Altitude,
@@ -350,13 +342,11 @@ segment_rcaide_classes = [
         "Constant Pitch Rate/Constant Altitude": Segments.Cruise.Constant_Pitch_Rate_Constant_Altitude,
         "Constant Speed/Constant Altitude Loiter": Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter,
         "Constant Speed/Constant Altitude": Segments.Cruise.Constant_Speed_Constant_Altitude,
-        "Constant Throttle/Constant Altitude": Segments.Cruise.Constant_Throttle_Constant_Altitude,
     }, 
     {
         # Descent Subsegments
         "Constant CAS/Constant Rate": Segments.Descent.Constant_CAS_Constant_Rate,
         "Constant EAS/Constant Rate": Segments.Descent.Constant_EAS_Constant_Rate,
-        "Constant Speed/Constant Angle Noise": Segments.Descent.Constant_Speed_Constant_Angle_Noise,
         "Constant Speed/Constant Angle": Segments.Descent.Constant_Speed_Constant_Angle,
         "Constant Speed/Constant Rate": Segments.Descent.Constant_Speed_Constant_Rate,
         "Linear Mach/Constant Rate": Segments.Descent.Linear_Mach_Constant_Rate,

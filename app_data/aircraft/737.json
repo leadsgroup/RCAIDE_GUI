@@ -445,8 +445,16 @@
                     false,
                     0
                 ],
-                "Symmetric": [
+                "X-Y Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
                     true,
+                    0
+                ],
+                "Y-Z Plane Symmetric": [
+                    false,
                     0
                 ],
                 "High Lift": [
@@ -465,31 +473,19 @@
                     0.0,
                     0
                 ],
-                "Total Length": [
-                    0.0,
-                    0
-                ],
                 "Spans Projected": [
                     34.32,
                     0
                 ],
-                "Spans Total": [
-                    0.0,
-                    0
-                ],
-                "Areas Reference": [
+                "Reference Area": [
                     124.862,
                     0
                 ],
-                "Areas Exposed": [
+                "Affected Area": [
                     0.0,
                     0
                 ],
-                "Areas Affected": [
-                    0.0,
-                    0
-                ],
-                "Areas Wetted": [
+                "Wetted Area": [
                     225.08,
                     0
                 ],
@@ -505,15 +501,11 @@
                     4.235,
                     0
                 ],
-                "Mean Geometric Chord": [
-                    0.0,
-                    0
-                ],
                 "Quarter Chord Sweep Angle": [
                     25.0,
                     0
                 ],
-                "Half Chord Sweep Angle": [
+                "Leading Edge Sweep Angle": [
                     0.0,
                     0
                 ],
@@ -552,6 +544,10 @@
                             28.225,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -577,6 +573,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             25.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "yehudi"
@@ -606,6 +606,10 @@
                             56.75,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "section_2"
                     },
                     {
@@ -631,6 +635,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             0.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "tip"
@@ -747,8 +755,16 @@
                     false,
                     0
                 ],
-                "Symmetric": [
+                "X-Y Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
                     true,
+                    0
+                ],
+                "Y-Z Plane Symmetric": [
+                    false,
                     0
                 ],
                 "High Lift": [
@@ -779,7 +795,7 @@
                     0.0,
                     0
                 ],
-                "Areas Reference": [
+                "Reference Area": [
                     41.49,
                     0
                 ],
@@ -787,11 +803,11 @@
                     59.354,
                     0
                 ],
-                "Areas Affected": [
+                "Affected Area": [
                     0.0,
                     0
                 ],
-                "Areas Wetted": [
+                "Wetted Area": [
                     71.81,
                     0
                 ],
@@ -815,7 +831,7 @@
                     0,
                     0
                 ],
-                "Half Chord Sweep Angle": [
+                "Leading Edge Sweep Angle": [
                     0.0,
                     0
                 ],
@@ -854,6 +870,10 @@
                             28.225,
                             0
                         ],
+                        "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root_segment"
                     },
                     {
@@ -879,6 +899,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             0.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "tip_segment"
@@ -918,7 +942,7 @@
                     0
                 ],
                 "Aspect Ratio": [
-                    1.98865,
+                    2.00411,
                     0
                 ],
                 "Thickness to Chord": [
@@ -938,9 +962,9 @@
                 "Origin": [
                     [
                         [
-                            26.944,
+                            30.299,
                             0.0,
-                            1.54
+                            2.25
                         ]
                     ],
                     0
@@ -949,7 +973,15 @@
                     true,
                     0
                 ],
-                "Symmetric": [
+                "X-Y Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "Y-Z Plane Symmetric": [
                     false,
                     0
                 ],
@@ -970,18 +1002,18 @@
                     0
                 ],
                 "Total Length": [
-                    8.33,
+                    6.08916,
                     0
                 ],
                 "Spans Projected": [
-                    8.33,
+                    6.08916,
                     0
                 ],
                 "Spans Total": [
                     0.0,
                     0
                 ],
-                "Areas Reference": [
+                "Reference Area": [
                     34.89,
                     0
                 ],
@@ -989,16 +1021,16 @@
                     0.0,
                     0
                 ],
-                "Areas Affected": [
+                "Affected Area": [
                     0.0,
                     0
                 ],
-                "Areas Wetted": [
+                "Wetted Area": [
                     57.25,
                     0
                 ],
                 "Root Chord": [
-                    10.1,
+                    6.7216,
                     0
                 ],
                 "Tip Chord": [
@@ -1017,7 +1049,7 @@
                     31.2,
                     0
                 ],
-                "Half Chord Sweep Angle": [
+                "Leading Edge Sweep Angle": [
                     0.0,
                     0
                 ],
@@ -1045,7 +1077,7 @@
                             0
                         ],
                         "Thickness to Chord": [
-                            0.1,
+                            0.07,
                             0
                         ],
                         "Dihedral Outboard": [
@@ -1053,14 +1085,18 @@
                             0
                         ],
                         "Quarter Chord Sweep": [
-                            61.485,
+                            65,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "root"
                     },
                     {
                         "Percent Span Location": [
-                            0.2962,
+                            0.15,
                             0
                         ],
                         "Twist": [
@@ -1068,11 +1104,11 @@
                             0
                         ],
                         "Root Chord Percent": [
-                            0.45,
+                            0.62,
                             0
                         ],
                         "Thickness to Chord": [
-                            0.1,
+                            0.07,
                             0
                         ],
                         "Dihedral Outboard": [
@@ -1080,7 +1116,11 @@
                             0
                         ],
                         "Quarter Chord Sweep": [
-                            31.2,
+                            32.771,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "segment_1"
@@ -1095,11 +1135,11 @@
                             0
                         ],
                         "Root Chord Percent": [
-                            0.1183,
+                            0.23,
                             0
                         ],
                         "Thickness to Chord": [
-                            0.1,
+                            0.07,
                             0
                         ],
                         "Dihedral Outboard": [
@@ -1108,6 +1148,10 @@
                         ],
                         "Quarter Chord Sweep": [
                             0.0,
+                            0
+                        ],
+                        "Has Fuel Tank" : [
+                            false,
                             0
                         ],
                         "segment name": "segment_2"
@@ -1919,6 +1963,9 @@
                 0
             ],
             "analysis_num": 0,
+            "enabled": false
+        },
+        {
             "enabled": false
         },
         {

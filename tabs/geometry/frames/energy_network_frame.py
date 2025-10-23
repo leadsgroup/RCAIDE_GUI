@@ -137,7 +137,7 @@ class EnergyNetworkFrame(GeometryFrame):
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, TurbofanNetworkWidget)
-            data_values, _ = widget.get_data_values()
+            data_values, _, __ = widget.get_data_values()
 
             if isinstance(data_values, bool):
                 return False, False
@@ -155,12 +155,15 @@ class EnergyNetworkFrame(GeometryFrame):
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, TurbofanNetworkWidget)
-            _, lines = widget.get_data_values()
+            _, lines, propulsors = widget.get_data_values()
 
         if selected_network == "Turbofan":
             net = RCAIDE.Framework.Networks.Fuel()
             for line in lines:
                 net.fuel_lines.append(line)
+            
+            for propulsor in propulsors:
+                net.propulsors.append(propulsor)
             return net
 
         return None

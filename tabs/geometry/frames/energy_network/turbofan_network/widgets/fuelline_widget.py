@@ -47,15 +47,18 @@ class FuelLineWidget(QWidget):
             self.load_data_values(data_values, index)
 
     def create_rcaide_structure(self, propulsors, fuel_tanks):
-        fuel_line = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()
+        fuel_line = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
         fuel_line.tag = self.section_name_edit.text()
+        
+        propulsor_group = propulsors
+        fuel_line.assigned_propulsors = [[]]
         for propulsor in propulsors:
-            fuel_line.propulsors.append(propulsor)
+            fuel_line.assigned_propulsors[0].append(propulsor.tag)
 
         for fuel_tank in fuel_tanks:
             fuel_line.fuel_tanks.append(fuel_tank)
 
-        return fuel_line
+        return fuel_line, propulsors
 
     def get_data_values(self):
         """Retrieve the entered data values from both FuelTankFrame and PropulsorFrame."""
@@ -73,8 +76,8 @@ class FuelLineWidget(QWidget):
         propulsor_data = self.propulsor_frame.get_data_values()
         data["propulsor data"], propulsors = propulsor_data
 
-        fuel_line = self.create_rcaide_structure(propulsors, fuel_tanks)
-        return data, fuel_line
+        fuel_line, propulsors = self.create_rcaide_structure(propulsors, fuel_tanks)
+        return data, fuel_line, propulsors
 
     def load_data_values(self, data, index):
         self.index = index
