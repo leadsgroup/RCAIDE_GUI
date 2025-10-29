@@ -15,7 +15,7 @@ class AnalysisWidget(TabWidget):
         super(AnalysisWidget, self).__init__()
 
         options = ["Aerodynamics", "Atmospheric", "Planets", "Weights",
-                   "Propulsion", "Costs", "Noise", "Stability"]
+                   "Propulsion", "Costs", "Noise", "Stability", "Geometry"]
 
         self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
@@ -57,7 +57,7 @@ class AnalysisWidget(TabWidget):
             self.main_layout, QVBoxLayout)
         # Define actions based on the selected
         self.analysis_widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
-                                 PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget]
+                                 PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget, GeometryWidget]
         self.widgets = []
 
         for index, analysis_widget in enumerate(self.analysis_widgets):
@@ -107,7 +107,7 @@ class AnalysisWidget(TabWidget):
             analysis = RCAIDE.Framework.Analyses.Vehicle()
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
-                if self.get_check_state(index):
+                if self.get_check_state(index) or index == len(self.analysis_widgets) - 1:
                     analysis.append(widget.create_analysis(config))
 
             energy = RCAIDE.Framework.Analyses.Energy.Energy()

@@ -1,13 +1,12 @@
 import RCAIDE
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout,
-    QSpacerItem, QSizePolicy, QLabel
-)
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea
+
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import FuselageSectionWidget
-from utilities import show_popup, create_line_bar, set_data, Units, clear_layout, create_scroll_area
+from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
-from widgets.collapsible_section import CollapsibleSection
+
 
 class FuselageFrame(GeometryFrame):
     # List of data labels
@@ -37,36 +36,31 @@ class FuselageFrame(GeometryFrame):
         super(FuselageFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        create_scroll_area(self)
 
-        fuselage_content_widget = QWidget()
-        self.content_layout = QVBoxLayout(fuselage_content_widget)
-
+        assert self.main_layout is not None
+        self.main_layout.addWidget(QLabel("<b>Fuselages</b>"))
+        self.main_layout.addWidget(create_line_bar())
         self.index = -1
 
-        self.add_name_layout(self.content_layout)
+        self.add_name_layout()
 
-        # Add the data entry widget to the content layout
+        # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
+        self.main_layout.addWidget(self.data_entry_widget)
+        self.main_layout.addWidget(create_line_bar())
 
-        self.content_layout.addWidget(self.data_entry_widget)
-        self.content_layout.addWidget(create_line_bar())
-
-        # Add the sections layout to the content layout
+        # Add the sections layout to the main layout
         self.fuselage_sections_layout = QVBoxLayout()
-        self.content_layout.addLayout(self.fuselage_sections_layout)
+        self.main_layout.addLayout(self.fuselage_sections_layout)
 
-        self.add_buttons_layout(self.content_layout)
+        self.add_buttons_layout()
 
         # Adds scroll function
-        self.content_layout.addItem(QSpacerItem(
+        self.main_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-        collapsible = CollapsibleSection("Fuselage", fuselage_content_widget)
-        main_layout.addWidget(collapsible)
-
-    def add_name_layout(self,layout):
+    def add_name_layout(self):
         name_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
             50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -78,10 +72,11 @@ class FuselageFrame(GeometryFrame):
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
 
-        layout.addLayout(name_layout)
+        assert self.main_layout is not None
+        self.main_layout.addLayout(name_layout)
 
     # noinspection PyUnresolvedReferences
-    def add_buttons_layout(self,layout):
+    def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
         new_section_button = QPushButton("New Fuselage Section", self)
         save_button = QPushButton("Save Data", self)
@@ -99,7 +94,8 @@ class FuselageFrame(GeometryFrame):
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
 
-        layout.addLayout(buttons_layout)
+        assert self.main_layout is not None
+        self.main_layout.addLayout(buttons_layout)
 
     # noinspection DuplicatedCode
     def save_data(self):
@@ -168,7 +164,7 @@ class FuselageFrame(GeometryFrame):
     def create_rcaide_structure(self):
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
-        fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+        fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
@@ -182,7 +178,7 @@ class FuselageFrame(GeometryFrame):
             fuselage_section = item.widget()
             if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
                 _, segment = fuselage_section.get_data_values()
-                fuselage.Segments.append(segment)
+                fuselage.segments.append(segment)
 
         return fuselage
 
@@ -209,7 +205,7 @@ class FuselageFrame(GeometryFrame):
         return data, fuselage
 
     def load_data(self, data, index):
-        """Load the data into the widgets.
+        """Load the data into the widgets. 
 
         Args:
             data: The data to be loaded into the widgets.

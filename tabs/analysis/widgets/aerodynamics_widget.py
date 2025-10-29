@@ -6,8 +6,7 @@ from tabs.analysis.widgets import AnalysisDataWidget
 from utilities import create_line_bar, create_scroll_area, Units, set_data
 from widgets.data_entry_widget import DataEntryWidget
 
-import RCAIDE
-
+import RCAIDE 
 
 class AerodynamicsWidget(AnalysisDataWidget):
     def __init__(self,show_title: bool=False):
@@ -76,7 +75,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
             user_label = data_unit_label[0]
             set_data(aerodynamics.settings, rcaide_label, values_si[user_label][0])
 
-        aerodynamics.geometry = vehicle
+        aerodynamics.vehicle = vehicle
         return aerodynamics
     
     def get_values(self):

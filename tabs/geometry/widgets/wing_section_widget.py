@@ -1,12 +1,27 @@
+# RCAIDE_GUI/tabs/geometry/widgets/wing_section_widget.py
+# 
+# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports  
 import RCAIDE
+
+# PtQt imports  
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
 
+# gui imports 
 from utilities import Units
 from widgets import DataEntryWidget
+import os
+import sys
 
-
+# ----------------------------------------------------------------------------------------------------------------------
+#  WingSectionWidget
+# ---------------------------------------------------------------------------------------------------------------------- 
 class WingSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
         super(WingSectionWidget, self).__init__()
@@ -41,7 +56,8 @@ class WingSectionWidget(QWidget):
             ("Thickness to Chord", Units.Unitless),
             ("Dihedral Outboard", Units.Angle),
             ("Quarter Chord Sweep", Units.Angle),
-            # ("Airfoil", Units.Unitless),
+            ("Has Fuel Tank", Units.Boolean),
+            #("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
@@ -73,7 +89,7 @@ class WingSectionWidget(QWidget):
         self.setLayout(main_layout)
 
     def create_rcaide_structure(self, data):
-        segment = RCAIDE.Library.Components.Wings.Segment()
+        segment = RCAIDE.Library.Components.Wings.Segments.Segment()
 
         segment.tag = data["segment name"]
         segment.percent_span_location = data["Percent Span Location"][0]
@@ -83,7 +99,27 @@ class WingSectionWidget(QWidget):
         segment.thickness_to_chord = data["Thickness to Chord"][0]
         segment.dihedral_outboard = data["Dihedral Outboard"][0]
         segment.sweeps.quarter_chord = data["Quarter Chord Sweep"][0]
-        # segment.airfoil = data["Airfoil"][0]
+        
+        
+        #airfoil_type                =  data["Airfoil Type"][0]
+        #airfoil_code                =  data["Airfoil Code"][0]
+        #airfoil_coordiate_file_path =  data["Airfoil Coordinate File Path"][0]
+        #airfoil_points              =  data["Airfoil Points"][0]
+        #if airfoil_type == None:
+            #pass
+        #elif airfoil_type == "NACA 4-Series":
+            #airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+            #try: 
+                #airfoil.NACA_4_Series_code = airfoil_code
+            #except: 
+                #airfoil.number_of_points   = airfoil_points                
+                #airfoil.NACA_4_Series_code = '0012'
+            #segment.append_airfoil(airfoil)          
+        #elif airfoil_type == "Coordinate File": 
+            #airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+            #airfoil.coordinate_file          = airfoil_coordiate_file_path  
+            #airfoil.number_of_points         = airfoil_points  
+            #segment.append_airfoil(airfoil)           
 
         return segment
 

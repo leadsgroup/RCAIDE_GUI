@@ -602,7 +602,7 @@ class WingsFrame(GeometryFrame):
 
 '''
 import RCAIDE
-from RCAIDE.Library.Methods.Geometry.Planform import segment_properties
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
@@ -621,7 +621,7 @@ class WingsFrame(GeometryFrame):
         create_scroll_area(self)
 
         assert self.main_layout is not None
-        self.main_layout.addWidget(QLabel("<b>Wing</b>"))
+        self.main_layout.addWidget(QLabel("<b>Wings</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         # TODO Add extra flags
@@ -630,6 +630,16 @@ class WingsFrame(GeometryFrame):
 
         # List of data labels
         self.data_units_labels = [
+            ("Spans Projected", Units.Length, "spans.projected"),
+            ("Reference Area", Units.Area, "areas.reference"),
+            ("Wetted Area", Units.Area, "areas.wetted"),
+            ("Root Chord", Units.Length, "chords.root"),
+            ("Tip Chord", Units.Length, "chords.tip"),
+            ("Mean Aerodynamic Chord", Units.Length, "chords.mean_aerodynamic"),
+            ("Quarter Chord Sweep Angle", Units.Angle, "sweeps.quarter_chord"),
+            ("Leading Edge Sweep Angle", Units.Angle, "sweeps.leading_edge"),
+            ("Root Chord Twist Angle", Units.Angle, "twists.root"),
+            ("Tip Chord Twist Angle", Units.Angle, "twists.tip"),
             ("Taper", Units.Unitless, "taper"),
             ("Dihedral", Units.Angle, "dihedral"),
             ("Aspect Ratio", Units.Unitless, "aspect_ratio"),
@@ -637,27 +647,14 @@ class WingsFrame(GeometryFrame):
             ("Aerodynamic Center", Units.Position, "aerodynamic_center"),
             ("Origin", Units.Position, "origin"),
             ("Vertical", Units.Boolean, "vertical"),
-            ("Symmetric", Units.Boolean, "symmetric"),
+            ("X-Y Plane Symmetric", Units.Boolean, "xy_plane_symmetric"),
             ("High Lift", Units.Boolean, "high_lift"),
-            ("Dynamic Pressure Ratio", Units.Unitless, "dynamic_pressure_ratio"),
+            ("X-Z Plane Symmetric", Units.Boolean, "xz_plane_symmetric"),
             ("T-Tail", Units.Boolean, "t_tail"),
+            ("Y-Z Plane Symmetric", Units.Boolean, "yz_plane_symmetric"),
+            ("Dynamic Pressure Ratio", Units.Unitless, "dynamic_pressure_ratio"),
             ("Exposed Root Chord Offset", Units.Unitless,
-             "exposed_root_chord_offset"),
-            ("Total Length", Units.Length, "total_length"),
-            ("Spans Projected", Units.Length, "spans.projected"),
-            ("Spans Total", Units.Length, "spans.total"),
-            ("Areas Reference", Units.Area, "areas.reference"),
-            ("Areas Exposed", Units.Area, "areas.exposed"),
-            ("Areas Affected", Units.Area, "areas.affected"),
-            ("Areas Wetted", Units.Area, "areas.wetted"),
-            ("Root Chord", Units.Length, "chords.root"),
-            ("Tip Chord", Units.Length, "chords.tip"),
-            ("Mean Aerodynamic Chord", Units.Length, "chords.mean_aerodynamic"),
-            ("Mean Geometric Chord", Units.Length, "chords.mean_geometric"),
-            ("Quarter Chord Sweep Angle", Units.Angle, "sweeps.quarter_chord"),
-            ("Half Chord Sweep Angle", Units.Angle, "sweeps.half_chord"),
-            ("Root Chord Twist Angle", Units.Angle, "twists.root"),
-            ("Tip Chord Twist Angle", Units.Angle, "twists.tip")
+             "exposed_root_chord_offset")
         ]
 
         # Add the data entry widget to the main layout
@@ -850,7 +847,7 @@ class WingsFrame(GeometryFrame):
                 _, cs = widget.get_data_values()
                 wing.append_control_surface(cs)
 
-        wing = segment_properties(wing)
+        wing = wing_planform(wing)
         return wing
 
     def get_data_values(self):

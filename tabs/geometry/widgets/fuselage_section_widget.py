@@ -67,7 +67,7 @@ class FuselageSectionWidget(QWidget):
         self.setLayout(main_layout)
 
     def create_rcaide_structure(self, data):
-        segment = RCAIDE.Library.Components.Fuselages.Segment()
+        segment = RCAIDE.Library.Components.Fuselages.Segments.Ellipse_Segment()
 
         segment.percent_x_location = data["Percent X Location"][0]
         segment.percent_z_location = data["Percent Z Location"][0]

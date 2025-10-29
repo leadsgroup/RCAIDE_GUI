@@ -76,7 +76,7 @@ class FuelTankWidget(GeometryFrame):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values_si()
         data["segment name"] = title
-        fuel_tank = RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks.Fuel_Tank()
+        fuel_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
         fuel_tank.tag = data["segment name"]
         fuel_tank.origin = data["Fuel Tank Origin"][0]
 

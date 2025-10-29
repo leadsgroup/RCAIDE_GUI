@@ -20,5 +20,5 @@ class PlanetsWidget(AnalysisDataWidget):
         self.setLayout(self.main_layout)
 
     def create_analysis(self, _vehicle):
-        planet = RCAIDE.Framework.Analyses.Planets.Planet()
+        planet = RCAIDE.Framework.Analyses.Planets.Earth()
         return planet

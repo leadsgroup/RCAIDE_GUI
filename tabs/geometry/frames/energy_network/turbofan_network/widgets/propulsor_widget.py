@@ -1,7 +1,7 @@
 from lib2to3.pytree import convert
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
-from RCAIDE.Library.Methods.Propulsors.Turbofan_Propulsor import design_turbofan
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          import design_turbofan 
 
 from tabs.geometry.frames.energy_network import EnergyNetworkWidget
 from utilities import Units, convert_name
@@ -106,7 +106,7 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         self.on_delete(self.index)
 
     def create_rcaide_structure(self, data):
-        turbofan = RCAIDE.Library.Components.Propulsors.Turbofan()
+        turbofan = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
         turbofan.tag = data["propulsor name"]
         turbofan.origin = data["Origin"][0]
         turbofan.engine_length = data["Engine Length"][0]
@@ -115,48 +115,48 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         turbofan.design_mach_number = data["Design Mach Number"][0]
         turbofan.design_thrust = data["Design Thrust"][0]
 
-        fan = RCAIDE.Library.Components.Propulsors.Converters.Fan()
+        fan = RCAIDE.Library.Components.Powertrain.Converters.Fan()
         fan.tag = "fan"
         fan.polytropic_efficiency = data["Fan Polytropic Efficiency"][0]
         fan.pressure_ratio = data["Fan Pressure Ratio"][0]
         turbofan.fan = fan
 
         turbofan.working_fluid = RCAIDE.Library.Attributes.Gases.Air()
-        ram = RCAIDE.Library.Components.Propulsors.Converters.Ram()
+        ram = RCAIDE.Library.Components.Powertrain.Converters.Ram()
         ram.tag = "ram"
         turbofan.ram = ram
 
-        inlet_nozzle = RCAIDE.Library.Components.Propulsors.Converters.Compression_Nozzle()
+        inlet_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
         inlet_nozzle.tag = "inlet nozzle"
         inlet_nozzle.polytropic_efficiency = data["IN Polytropic Efficiency"][0]
         inlet_nozzle.pressure_ratio = data["IN Pressure Ratio"][0]
         turbofan.inlet_nozzle = inlet_nozzle
 
-        low_pressure_compressor = RCAIDE.Library.Components.Propulsors.Converters.Compressor()
+        low_pressure_compressor = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
         low_pressure_compressor.tag = "lpc"
         low_pressure_compressor.polytropic_efficiency = data["LPC Polytropic Efficiency"][0]
         low_pressure_compressor.pressure_ratio = data["LPC Pressure Ratio"][0]
         turbofan.low_pressure_compressor = low_pressure_compressor
 
-        high_pressure_compressor = RCAIDE.Library.Components.Propulsors.Converters.Compressor()
+        high_pressure_compressor = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
         high_pressure_compressor.tag = "hpc"
         high_pressure_compressor.polytropic_efficiency = data["HPC Polytropic Efficiency"][0]
         high_pressure_compressor.pressure_ratio = data["HPC Pressure Ratio"][0]
         turbofan.high_pressure_compressor = high_pressure_compressor
 
-        low_pressure_turbine = RCAIDE.Library.Components.Propulsors.Converters.Turbine()
+        low_pressure_turbine = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
         low_pressure_turbine.tag = "lpt"
         low_pressure_turbine.mechanical_efficiency = data["LPT Mechanical Efficiency"][0]
         low_pressure_turbine.polytropic_efficiency = data["LPT Polytropic Efficiency"][0]
         turbofan.low_pressure_turbine = low_pressure_turbine
 
-        high_pressure_turbine = RCAIDE.Library.Components.Propulsors.Converters.Turbine()
+        high_pressure_turbine = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
         high_pressure_turbine.tag = "hpt"
         high_pressure_turbine.mechanical_efficiency = data["HPT Mechanical Efficiency"][0]
         high_pressure_turbine.polytropic_efficiency = data["HPT Polytropic Efficiency"][0]
         turbofan.high_pressure_turbine = high_pressure_turbine
 
-        combustor = RCAIDE.Library.Components.Propulsors.Converters.Combustor()
+        combustor = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
         combustor.tag = "comb"
         combustor.efficiency = data["Combustor Efficiency"][0]
         combustor.alphac = data["Combustor Pressure Loss Coeff"][0]
@@ -165,13 +165,13 @@ class PropulsorWidget(QWidget, EnergyNetworkWidget):
         combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Jet_A1()
         turbofan.combustor = combustor
 
-        core_nozzle = RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle()
+        core_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
         core_nozzle.tag = "core nozzle"
         core_nozzle.polytropic_efficiency = data["CN Polytropic Efficiency"][0]
         core_nozzle.pressure_ratio = data["CN Pressure Ratio"][0]
         turbofan.core_nozzle = core_nozzle
 
-        fan_nozzle = RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle()
+        fan_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
         fan_nozzle.tag = "fan nozzle"
         fan_nozzle.polytropic_efficiency = data["FN Polytropic Efficiency"][0]
         fan_nozzle.pressure_ratio = data["FN Pressure Ratio"][0]
