@@ -26,6 +26,10 @@ import values
 # ----------------------------------------------------------------------------------------------------------------------
 #  SolveWidget
 # ----------------------------------------------------------------------------------------------------------------------  
+from RCAIDE.Framework.Core import Units
+import RCAIDE
+
+
 class SolveWidget(TabWidget):
     def __init__(self):
         super(SolveWidget, self).__init__()
@@ -105,12 +109,9 @@ class SolveWidget(TabWidget):
                 category_item.addChild(option_item)
 
     def run_solve(self):
-        mission  = values.rcaide_mission 
-        
-        print("Starting solve...")
-        
-        results = mission.evaluate() 
-        
+        mission = values.rcaide_mission
+        print("Starting solve")
+        results = mission.evaluate()
         print("Done with solve")
 
         styles = {"color": "white", "font-size": "18px"}  
