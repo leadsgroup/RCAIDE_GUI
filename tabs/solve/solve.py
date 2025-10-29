@@ -25,6 +25,10 @@ import values
 # ----------------------------------------------------------------------------------------------------------------------
 #  SolveWidget
 # ----------------------------------------------------------------------------------------------------------------------  
+from RCAIDE.Framework.Core import Units
+import RCAIDE
+
+
 class SolveWidget(TabWidget):
     def __init__(self):
         super(SolveWidget, self).__init__()
@@ -104,16 +108,9 @@ class SolveWidget(TabWidget):
                 category_item.addChild(option_item)
 
     def run_solve(self):
-        mission = values.rcaide_mission  
-        
-        #pickle_file  =  'boeing_mission.pkl'
-        #with open(pickle_file, 'wb') as file:
-            #pickle.dump(mission, file) 
-        
-        print("Starting solve...")
-        
-        results = mission.evaluate() 
-        
+        mission = values.rcaide_mission
+        print("Starting solve")
+        results = mission.evaluate()
         print("Done with solve")
 
         styles = {"color": "white", "font-size": "18px"}  
