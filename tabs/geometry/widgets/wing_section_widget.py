@@ -102,7 +102,7 @@ class WingSectionWidget(QWidget):
         self.naca_layout = QHBoxLayout()
         self.naca_code_label = QLabel("NACA Code:")
         self.naca_code_input = QLineEdit()
-        self.naca_code_input.setPlaceholderText("e.g., 0012")
+        self.naca_code_input.setPlaceholderText("ex: 0012")
         self.naca_layout.addWidget(self.naca_code_label)
         self.naca_layout.addWidget(self.naca_code_input)
         self.naca_layout.addStretch()
