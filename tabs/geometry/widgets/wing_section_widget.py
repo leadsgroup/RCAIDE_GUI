@@ -11,7 +11,7 @@ import RCAIDE
 # PtQt imports  
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget, QFrame)
+                             QVBoxLayout, QWidget, QFrame, QComboBox, QFileDialog)
 
 # gui imports 
 from utilities import Units
@@ -31,6 +31,13 @@ class WingSectionWidget(QWidget):
         self.index = index
         self.on_delete = on_delete
         self.data_entry_widget: DataEntryWidget | None = None
+
+        self.airfoil_type_combo: QComboBox | None = None
+        self.airfoil_code_label: QLabel | None = None
+        self.airfoil_code_line_input: QLineEdit | None = None
+        self.file_path_label: QLabel | None = None
+        self.file_path_line_input: QLineEdit | None = None
+        self.browse_button: QPushButton | None = None
 
         self.name_layout = QHBoxLayout()
         self.init_ui(section_data)
@@ -57,24 +64,69 @@ class WingSectionWidget(QWidget):
             ("Dihedral Outboard", Units.Angle),
             ("Quarter Chord Sweep", Units.Angle),
             ("Has Fuel Tank", Units.Boolean),
-            #("Airfoil", Units.Unitless),
+            ("Has Aft Fuel Tank", Units.Boolean),
+            # ("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
 
         # Delete button
-        delete_button = QPushButton("Delete Wing Segment", self)
-        # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        # delete_button.setFixedWidth(150)
-        delete_button.clicked.connect(self.delete_button_pressed)
+        # delete_button = QPushButton("Delete Wing Segment", self)
+        # # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # # delete_button.setFixedWidth(150)
+        # delete_button.clicked.connect(self.delete_button_pressed)
 
-        # Center delete button
-        delete_button_layout = QHBoxLayout()
-        # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
-        delete_button_layout.addWidget(delete_button)
-        # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        # # Center delete button
+        # delete_button_layout = QHBoxLayout()
+        # # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        # delete_button_layout.addWidget(delete_button)
+        # # delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
 
         main_layout.addWidget(self.data_entry_widget)
+        # main_layout.addLayout(delete_button_layout)
+
+        airfoil_layout = QHBoxLayout() 
+        airfoil_left_col = QVBoxLayout()
+        airfoil_right_col = QVBoxLayout()
+
+        airfoil_type_layout = QHBoxLayout()
+        self.airfoil_type_label = QLabel("Airfoil Type:")
+        self.airfoil_type_combo = QComboBox()
+        self.airfoil_type_combo.addItems(["None", "NACA 4-Series", "Coordinate File"])
+        self.airfoil_type_combo.currentTextChanged.connect(self._update_airfoil_ui_state)
+        airfoil_type_layout.addWidget(self.airfoil_type_label)
+        airfoil_type_layout.addWidget(self.airfoil_type_combo)
+        airfoil_type_layout.addStretch()
+        airfoil_left_col.addLayout(airfoil_type_layout)
+
+        self.naca_layout = QHBoxLayout()
+        self.naca_code_label = QLabel("NACA Code:")
+        self.naca_code_input = QLineEdit()
+        self.naca_code_input.setPlaceholderText("e.g., 0012")
+        self.naca_layout.addWidget(self.naca_code_label)
+        self.naca_layout.addWidget(self.naca_code_input)
+        self.naca_layout.addStretch()
+        airfoil_left_col.addLayout(self.naca_layout)
+
+        self.file_layout = QHBoxLayout()
+        self.file_path_label = QLabel("Airfoil File Path:")
+        self.file_path_input = QLineEdit()
+        self.browse_button = QPushButton("Browse...")
+        self.browse_button.clicked.connect(self._browse_for_file)
+        self.file_layout.addWidget(self.file_path_label)
+        self.file_layout.addWidget(self.file_path_input)
+        self.file_layout.addWidget(self.browse_button)
+        airfoil_right_col.addLayout(self.file_layout)
+
+        airfoil_layout.addLayout(airfoil_left_col, 1)
+        airfoil_layout.addLayout(airfoil_right_col, 1)
+
+        main_layout.addLayout(airfoil_layout)
+
+        delete_button = QPushButton("Delete Wing Segment", self)
+        delete_button.clicked.connect(self.delete_button_pressed)
+        delete_button_layout = QHBoxLayout()
+        delete_button_layout.addWidget(delete_button)
         main_layout.addLayout(delete_button_layout)
 
         # Add horizontal bar
@@ -87,6 +139,9 @@ class WingSectionWidget(QWidget):
             self.load_data_values(section_data)
 
         self.setLayout(main_layout)
+
+        self._update_airfoil_ui_state()
+
 
     def create_rcaide_structure(self, data):
         segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -101,28 +156,65 @@ class WingSectionWidget(QWidget):
         segment.sweeps.quarter_chord = data["Quarter Chord Sweep"][0]
         
         
-        #airfoil_type                =  data["Airfoil Type"][0]
-        #airfoil_code                =  data["Airfoil Code"][0]
-        #airfoil_coordiate_file_path =  data["Airfoil Coordinate File Path"][0]
-        #airfoil_points              =  data["Airfoil Points"][0]
-        #if airfoil_type == None:
-            #pass
-        #elif airfoil_type == "NACA 4-Series":
-            #airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-            #try: 
-                #airfoil.NACA_4_Series_code = airfoil_code
-            #except: 
-                #airfoil.number_of_points   = airfoil_points                
-                #airfoil.NACA_4_Series_code = '0012'
-            #segment.append_airfoil(airfoil)          
-        #elif airfoil_type == "Coordinate File": 
-            #airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
-            #airfoil.coordinate_file          = airfoil_coordiate_file_path  
-            #airfoil.number_of_points         = airfoil_points  
-            #segment.append_airfoil(airfoil)           
+        airfoil_type                = data.get("Airfoil Type", None)
+        airfoil_code                = data.get("Airfoil Code", None)
+        airfoil_coordinate_file_path = data.get("Airfoil Coordinate File Path", None)
+        airfoil_points              = data.get("Airfoil Points", 100)
+        if airfoil_type == None:
+            pass
+        elif airfoil_type == "NACA 4-Series":
+            airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+            try: 
+                airfoil.NACA_4_Series_code = airfoil_code
+            except: 
+                airfoil.number_of_points   = airfoil_points                
+                airfoil.NACA_4_Series_code = '0012'
+            segment.append_airfoil(airfoil)          
+        elif airfoil_type == "Coordinate File": 
+            airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+            airfoil.coordinate_file          = airfoil_coordinate_file_path  
+            airfoil.number_of_points         = airfoil_points  
+            segment.append_airfoil(airfoil)           
 
         return segment
 
+    def _browse_for_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open Airfoil File", "", "Data Files (*.dat);;All Files (*)")
+        if file_path:
+            self.file_path_input.setText(file_path)
+
+    def _update_airfoil_ui_state(self):
+        selected_type = self.airfoil_type_combo.currentText()
+        
+        if selected_type == "NACA 4-Series":
+            # show left col
+            self.naca_code_label.show()
+            self.naca_code_input.show()
+            
+            # hide right col
+            self.file_path_label.hide()
+            self.file_path_input.hide()
+            self.browse_button.hide()
+            
+        elif selected_type == "Coordinate File":
+            # hide left col
+            self.naca_code_label.hide()
+            self.naca_code_input.hide()
+            
+            # show right col
+            self.file_path_label.show()
+            self.file_path_input.show()
+            self.browse_button.show()
+            
+        else: 
+            # hide both
+            self.naca_code_label.hide()
+            self.naca_code_input.hide()
+            
+            self.file_path_label.hide()
+            self.file_path_input.hide()
+            self.browse_button.hide()
+    
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
