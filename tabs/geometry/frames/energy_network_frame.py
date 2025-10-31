@@ -5,9 +5,8 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, Q
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.frames.energy_network.turbofan_network.widgets import TurbofanNetworkWidget, FuelLineWidget
-from utilities import show_popup, clear_layout, create_line_bar
+from utilities import show_popup, clear_layout
 
-from widgets.collapsible_section import CollapsibleSection
 
 class EnergyNetworkFrame(GeometryFrame):
     def __init__(self):
@@ -20,19 +19,44 @@ class EnergyNetworkFrame(GeometryFrame):
         self.tab_index = -1
         self.index = -1
 
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        # Create a scroll area
+        scroll_area = QScrollArea()
+        # Allow the widget inside to resize with the scroll area
+        scroll_area.setWidgetResizable(True)
 
-        energy_network_frame_widget = QWidget()
-        self.content_layout = QVBoxLayout(energy_network_frame_widget)
+        # Create a widget to contain the layout
+        scroll_content = QWidget()
+        # Set the main layout inside the scroll content
+        layout = QVBoxLayout(scroll_content)
+
+        # Create a horizontal layout for the label and buttons
+        header_layout = QHBoxLayout()
+        header_layout.addWidget(QLabel("<b>Energy Network Frame</b>"))
+
+        layout.addLayout(header_layout)
+        # Create a horizontal line
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
+
+        # Add the line bar to the main layout
+        layout.addWidget(line_bar)
 
         self.main_energy_network_widget = self.make_energy_network_widget()
-        self.content_layout.addWidget(self.main_energy_network_widget)
+        # Add the grid layout to the home layout
+        layout.addWidget(self.main_energy_network_widget)
 
-        self.content_layout.addWidget(create_line_bar())
-        self.content_layout.addLayout(self.energy_network_layout)
+        layout.addWidget(line_bar)
+        layout.addLayout(self.energy_network_layout)
 
-        self.content_layout.addWidget(create_line_bar())
+        # Add the layout for additional energy_network sections to the main layout
+        # Add line above the buttons
+        line_above_buttons = QFrame()
+        line_above_buttons.setFrameShape(QFrame.Shape.HLine)
+        line_above_buttons.setFrameShadow(QFrame.Shadow.Sunken)
+        line_above_buttons.setStyleSheet("background-color: light grey;")
+
+        layout.addWidget(line_above_buttons)
 
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
@@ -47,14 +71,22 @@ class EnergyNetworkFrame(GeometryFrame):
             self.create_new_structure)
         button_layout.addWidget(new_energy_network_structure_button)
 
-        self.content_layout.addLayout(button_layout)
-        
-        self.content_layout.addItem(QSpacerItem(
+        # Add the button layout to the main layout
+        layout.addLayout(button_layout)
+
+        # Adds scroll function
+        layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-        collapsible = CollapsibleSection("Energy Network Frame", energy_network_frame_widget)
+        # Set the scroll content as the widget for the scroll area
+        scroll_area.setWidget(scroll_content)
 
-        main_layout.addWidget(collapsible)
+        # Set the main layout of the scroll area
+        layout_scroll = QVBoxLayout(self)
+        layout_scroll.addWidget(scroll_area)
+
+        # Set the layout to the main window/widget
+        self.setLayout(layout_scroll)
 
     def make_energy_network_widget(self):
         """Create a widget for the energy_network section.

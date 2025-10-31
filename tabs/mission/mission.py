@@ -7,9 +7,8 @@ from utilities import create_scroll_area
 import values
 
 import RCAIDE
-
 import tabs.style_sheet as style
-from widgets.collapsible_section import CollapsibleSection
+
 
 class MissionWidget(TabWidget):
     def __init__(self):
@@ -56,22 +55,20 @@ class MissionWidget(TabWidget):
         layout_scroll = create_scroll_area(self, False)
         base_layout.addLayout(layout_scroll, 6)
 
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
         # Add initial segment
         self.add_segment()
 
     def add_segment(self):
+        # Instantiate MissionSectionWidget and add it to mission_segment_layout
         segment_widget = MissionSegmentWidget()
         self.segment_widgets.append(segment_widget)
 
-        collapsible = CollapsibleSection(f"Mission Segment {len(self.segment_widgets)}", segment_widget)
-
         separator = style.add_line("HLine","Sunken","gray","30")
-        self.main_layout.addSpacing(20)
-        self.main_layout.addWidget(collapsible)
-        self.main_layout.addSpacing(20)
+        self.main_layout.addSpacing(30)
+        self.main_layout.addWidget(segment_widget)
+        self.main_layout.addSpacing(30)
         self.main_layout.addWidget(separator)
+
 
     def save_all_data(self):
         self.tree.clear()
@@ -129,3 +126,4 @@ class MissionWidget(TabWidget):
 # Function to get the widget
 def get_widget() -> QWidget:
     return MissionWidget()
+

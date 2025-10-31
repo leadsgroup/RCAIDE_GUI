@@ -548,6 +548,10 @@
                             false,
                             0
                         ],
+                        "Has Aft Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -576,6 +580,10 @@
                             0
                         ],
                         "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
+                        "Has Aft Fuel Tank" : [
                             false,
                             0
                         ],
@@ -610,6 +618,10 @@
                             false,
                             0
                         ],
+                        "Has Aft Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "section_2"
                     },
                     {
@@ -638,6 +650,10 @@
                             0
                         ],
                         "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
+                        "Has Aft Fuel Tank" : [
                             false,
                             0
                         ],
@@ -874,6 +890,10 @@
                             false,
                             0
                         ],
+                        "Has Aft Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root_segment"
                     },
                     {
@@ -902,6 +922,10 @@
                             0
                         ],
                         "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
+                        "Has Aft Fuel Tank" : [
                             false,
                             0
                         ],
@@ -1092,6 +1116,10 @@
                             false,
                             0
                         ],
+                        "Has Aft Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -1123,6 +1151,10 @@
                             false,
                             0
                         ],
+                        "Has Aft Fuel Tank" : [
+                            false,
+                            0
+                        ],
                         "segment name": "segment_1"
                     },
                     {
@@ -1151,6 +1183,10 @@
                             0
                         ],
                         "Has Fuel Tank" : [
+                            false,
+                            0
+                        ],
+                        "Has Aft Fuel Tank" : [
                             false,
                             0
                         ],

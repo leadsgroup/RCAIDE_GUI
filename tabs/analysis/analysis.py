@@ -1,14 +1,14 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
-    QTreeWidgetItem, QHeaderView, QPushButton, QScrollArea
+    QTreeWidgetItem, QHeaderView, QPushButton
 
 from tabs.analysis.widgets import *
 from tabs import TabWidget
 from utilities import create_scroll_area
-from widgets.collapsible_section import CollapsibleSection
 import values
 
 import RCAIDE
+
 
 class AnalysisWidget(TabWidget):
     def __init__(self):
@@ -63,14 +63,17 @@ class AnalysisWidget(TabWidget):
         for index, analysis_widget in enumerate(self.analysis_widgets):
             widget = analysis_widget()
             assert isinstance(widget, AnalysisDataWidget)
+            if index >= 4:
+                widget.setVisible(False)
+            else:
+                widget.setVisible(True)
 
-            collapsible_section = CollapsibleSection(options[index], widget)
-            collapsible_section.setVisible(index < 4)  
+            self.widgets.append(widget)
+            self.main_layout.addWidget(widget)
 
-            self.widgets.append(collapsible_section)
-            self.main_layout.addWidget(collapsible_section)
-        
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.main_layout.setSpacing(3)
+        self.base_layout.setSpacing(3)
+
         self.setLayout(self.base_layout)
 
     def handleItemChanged(self, item, column):
