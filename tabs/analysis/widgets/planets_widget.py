@@ -8,12 +8,11 @@ import RCAIDE
 
 
 class PlanetsWidget(AnalysisDataWidget):
-    def __init__(self,show_title: bool=False):
+    def __init__(self):
         super(PlanetsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        if show_title:
-            self.main_layout.addWidget(QLabel("<b>Planets</b>"))
+        self.main_layout.addWidget(QLabel("<b>Planets</b>"))
         self.main_layout.addWidget(create_line_bar())
         self.main_layout.addWidget(QLabel("Earth"))
         self.main_layout.addWidget(create_line_bar())

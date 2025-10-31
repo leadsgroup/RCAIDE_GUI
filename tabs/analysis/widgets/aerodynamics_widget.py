@@ -9,13 +9,10 @@ from widgets.data_entry_widget import DataEntryWidget
 import RCAIDE 
 
 class AerodynamicsWidget(AnalysisDataWidget):
-    def __init__(self,show_title: bool=False):
+    def __init__(self):
         super(AerodynamicsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
-
-        if show_title:
-            self.main_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
-                    
+        self.main_layout.addWidget(QLabel("<b>Aerodynamics</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         self.analysis_selector = QComboBox()

@@ -7,13 +7,11 @@ import RCAIDE
 
 
 class AtmosphereWidget(AnalysisDataWidget):
-    def __init__(self,show_title: bool=False):
+    def __init__(self):
         super(AtmosphereWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        if show_title:
-            self.main_layout.addWidget(QLabel("<b>Atmosphere</b>"))
-
+        self.main_layout.addWidget(QLabel("<b>Atmosphere</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         options = ["1976 US Standard Atmosphere", "Constant Temperature"]

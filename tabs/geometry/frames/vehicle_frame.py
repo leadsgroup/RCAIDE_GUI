@@ -6,7 +6,6 @@ from utilities import create_line_bar, Units, create_scroll_area
 from widgets import DataEntryWidget
 import values
 
-from widgets.collapsible_section import CollapsibleSection
 
 class VehicleFrame(GeometryFrame):
     data_units_labels = [
@@ -25,32 +24,29 @@ class VehicleFrame(GeometryFrame):
         super().__init__()
         self.data = []
         self.data_entry_widget = None
+        self.main_layout = QVBoxLayout()
+        create_scroll_area(self)
 
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
-
-        vehicle_content_widget = QWidget()
-        self.content_layout = QVBoxLayout(vehicle_content_widget)
+        self.main_layout.addWidget(QLabel("<b>Vehicle</b>"))
+        self.main_layout.addWidget(create_line_bar())
 
         self.name_layout = QHBoxLayout()
         self.name_layout.addWidget(QLabel("Name:"), 3)
         self.name_line_edit = QLineEdit()
         self.name_layout.addWidget(self.name_line_edit, 7)
 
-        self.content_layout.addLayout(self.name_layout)
+        # self.main_layout.addLayout(self.name_layout)
 
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
-        self.content_layout.addWidget(self.data_entry_widget)
+        self.main_layout.addWidget(self.data_entry_widget)
 
+        # button_layout = QHBoxLayout()
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_data)
-        self.content_layout.addWidget(save_button)
+        self.main_layout.addWidget(save_button)
 
-        self.content_layout.addItem(QSpacerItem(
+        self.main_layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
-
-        collapsible = CollapsibleSection("Vehicle", vehicle_content_widget)
-        main_layout.addWidget(collapsible)
 
     def load_data(self, data, index):
         self.data = data

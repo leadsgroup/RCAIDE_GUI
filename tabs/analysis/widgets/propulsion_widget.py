@@ -7,12 +7,11 @@ import RCAIDE
 
 
 class PropulsionWidget(AnalysisDataWidget):
-    def __init__(self,show_title: bool=False):
+    def __init__(self):
         super(PropulsionWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        if show_title:
-            self.main_layout.addWidget(QLabel("<b>Propulsion</b>"))
+        self.main_layout.addWidget(QLabel("<b>Propulsion</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         options = ["Rotor Wake Fidelity 0",
