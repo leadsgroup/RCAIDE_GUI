@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
 x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
 x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
@@ -47,4 +48,55 @@ x 2024-09-08 (A) Load/Save configs data @configs
 x 2024-09-08 (A) Test & Fix RCAIDE Integration in Control Surfaces @geometry
 x 2024-09-10 (A) Display values.vehicle in Visualize Geometry @visualize
 x 2024-09-10 (A) Fix geometry tabs not clearing sections / control surfaces
+=======
+x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
+x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
+x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
+x 2024-09-07 (A) Add propulsor names to values.propulsor_names
+x 2024-09-08 (A) Add mission to values.py @mission
+x 2024-09-08 (A) Create mission from data on load @mission
+x 2024-09-10 (A) Test Geometry -> Mission tab
+x 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
+2024-09-08 Load/Save Fuel Tank Selector data @geometry
+2024-09-09 Don't update default value if field is empty
+x 2024-09-08 (A) Add nacelle selection for turbofan in energy network @geometry
+2024-09-08 Add airfoil selection for nacelle @geometry
+2024-07-17 add scroll to widget function in mission.py @mission
+2024-07-18 implement mark save and changed since save in DataEntryWidget
+2024-07-18 very visible divider between segments @mission
+2024-07-24 add duplication for propulsors @geometry
+2024-07-24 AST to read RCAIDE code(?)
+2024-09-02 Update configs tab with geometry code @configs
+2024-09-07 Add propulsor groups
+2024-09-08 Reduce complexity of geometry saving system by using values.py @geometry
+2024-09-08 Fix duplicate component issue in @geometry
+2024-09-08 Fix create_rcaide_structure in geometry/widgets to not take data as an input to optimize @geometry
+x 2024-07-01 create select flight controls dropdown @mission
+x 2024-07-02 2024-07-01 fix find_tab_index @geometry
+x 2024-07-02 2024-07-01 fix find_tree_index @geometry
+x 2024-07-03 2024-07-01 auto-update geometry when loading aircraft configs tab @configs
+x 2024-07-05 2024-07-01 create solve tab plot selector @plots
+x 2024-07-11 (A) load aircraft
+x 2024-07-12 2024-07-11 create data sharing framework
+x 2024-07-16 2024-07-11 load default analysis options @analysis
+x 2024-07-17 2024-07-11 show propulsors on aircraft configs tab @configs
+x 2024-07-17 2024-07-11 show saved mission segments on mission tree @mission
+x 2024-07-18 2024-07-11 add functionality to save and new config in aircraft configs tab @configs
+x 2024-07-18 2024-07-11 add visualize geometry tab @visualize
+x 2024-07-18 2024-07-11 select config in mission tab - dropdown with options, goes after segment type, has header @mission
+x 2024-07-18 2024-07-11 split geometry screen into 2 to add aircraft visualization @geometry
+x 2024-07-18 display images in the defined layout @home
+x 2024-09-02 2024-07-11 start RCAIDE Integration to aircraft mission tab @configs @mission
+x 2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
+x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
+x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
+x 2024-09-07 (A) Add saving/loading functionality in mission tab @mission
+x 2024-09-07 (A) RCAIDE Integration into configs tab @configs
+x 2024-09-07 (A) save aircraft
+x 2024-09-08 (A) Add components to vehicle when loading @geometry
+x 2024-09-08 (A) Load/Save configs data @configs
+x 2024-09-08 (A) Test & Fix RCAIDE Integration in Control Surfaces @geometry
+x 2024-09-10 (A) Display values.vehicle in Visualize Geometry @visualize
+x 2024-09-10 (A) Fix geometry tabs not clearing sections / control surfaces
+>>>>>>> 23544e7f99258be0ce569db73b497f4c57e31f0f
 x 2025-07-28 2024-07-18 add functionality to component click in @geometry
