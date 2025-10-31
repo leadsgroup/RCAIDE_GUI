@@ -1,7 +1,5 @@
 from PyQt6.QtCore import Qt
-
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget,QTreeWidgetItem,QFrame
-
 
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs import TabWidget
@@ -75,7 +73,6 @@ class MissionWidget(TabWidget):
         self.main_layout.addSpacing(20)
         self.main_layout.addWidget(separator)
 
-
     def save_all_data(self):
         self.tree.clear()
 
@@ -132,4 +129,3 @@ class MissionWidget(TabWidget):
 # Function to get the widget
 def get_widget() -> QWidget:
     return MissionWidget()
-

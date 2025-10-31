@@ -1,47 +1,25 @@
-2024-09-17 (A) Fix issues with climb segment convergence @solve
+x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
+x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
+x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
+x 2024-09-07 (A) Add propulsor names to values.propulsor_names
+x 2024-09-08 (A) Add mission to values.py @mission
+x 2024-09-08 (A) Create mission from data on load @mission
+x 2024-09-10 (A) Test Geometry -> Mission tab
+x 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 2024-09-08 Load/Save Fuel Tank Selector data @geometry
-2024-07-18 very visible divider between segments @mission
-2024-09-09 Don't update default value if field is empty @dataentrywidget
+2024-09-09 Don't update default value if field is empty
+x 2024-09-08 (A) Add nacelle selection for turbofan in energy network @geometry
 2024-09-08 Add airfoil selection for nacelle @geometry
 2024-07-17 add scroll to widget function in mission.py @mission
-2024-07-18 implement mark save and changed since save in DataEntryWidget @dataentrywidget
-2024-09-12 Add collapsibility function to DataEntryWidget @dataentrywidget
+2024-07-18 implement mark save and changed since save in DataEntryWidget
+2024-07-18 very visible divider between segments @mission
 2024-07-24 add duplication for propulsors @geometry
 2024-07-24 AST to read RCAIDE code(?)
+2024-09-02 Update configs tab with geometry code @configs
 2024-09-07 Add propulsor groups
 2024-09-08 Reduce complexity of geometry saving system by using values.py @geometry
 2024-09-08 Fix duplicate component issue in @geometry
 2024-09-08 Fix create_rcaide_structure in geometry/widgets to not take data as an input to optimize @geometry
-2024-09-17 Create templates for headers (titles, subtitles, etc) @all
-2024-09-12 Bigger text for buttons @all
-2024-09-12 Use QSettings to store plot settings and stylesheets @all
-		https://doc.qt.io/qt-6/qsettings.html
-		https://doc.qt.io/qt-6/stylesheet-reference.html
-2024-09-12 split quickstart menu to be on the left and right side of gui steps or make the buttons part of “using gui” steps @home
-2024-09-12 make threads to let user access other parts of interface while one program is running @solve
-		(Make cpu bound process within thread)
-2024-09-12 add progress bar, using num. flight segments solved @solve
-2024-09-12 modify RCAIDE function to have callback @rcaide
-2024-09-12 Convert images to SVGs
-2024-09-12 instead of adding buttons, add pngs in dictionary and recursively populate the buttons:
-		[{name: "Aircraft 1", img: "path"}, {name: "Aircraft 2", img: "path2"}] @home
-2024-09-12 horizontally invert quickstart diagram, move "start from scratch" to right of image @home
-2024-09-12 Create QDockWidgets for every 'tab' in Geometry, Configs, Solve @geometry @configs @solve
-2024-09-12 Create icons for RCAIDE Energy Network components
-2024-09-12 use networkx/pyqtgraph to connect energy networks together and have common datasets @geometry
-2024-09-12 to collapse extra space when switching from propulsor to fuel tank, have a resize function explicitly for the layout @geometry
-2024-09-12 make two windows, one for geometry and one for energy network both shown in tab @geometry
-2024-09-12 add a widget that allows more controls, pan, scroll, switch to view, lighting, color, etc (icons) @visualize
-2024-09-02 Update configs tab with geometry code @configs
-2024-09-12 change font of different texts @analysis
-2024-09-12 apply collapsable layouts to mission tab @mission
-2024-09-12 change text/combobox size of each segment @mission
-2024-09-12 Add functionality for Expand All | Collapse All @mission @geometry @analysis
-2024-09-12 axes labels, add different colors @solve
-2024-09-12 add different tabs for plots and a scroll for each tab @solve
-2024-09-12 Add a green button in tool bar for solve @solve
-2024-09-12 view option with file/documentation @solve
-2024-09-12 add all the extra packages on pip install
 x 2024-07-01 create select flight controls dropdown @mission
 x 2024-07-02 2024-07-01 fix find_tab_index @geometry
 x 2024-07-02 2024-07-01 fix find_tree_index @geometry
@@ -61,21 +39,12 @@ x 2024-09-02 2024-07-11 start RCAIDE Integration to aircraft mission tab @config
 x 2024-09-04 (A) Add flight forces to RCAIDE Segment @mission
 x 2024-09-04 (A) Add flight segments to mission in mission.py @mission
 x 2024-09-07 (A) Add active flight controls to RCAIDE Segment @mission
-x 2024-09-07 (A) Add propulsor names to values.propulsor_names
 x 2024-09-07 (A) Add saving/loading functionality in mission tab @mission
-x 2024-09-07 (A) Create connection between PyQtGraph and RCAIDE @plots
 x 2024-09-07 (A) RCAIDE Integration into configs tab @configs
 x 2024-09-07 (A) save aircraft
 x 2024-09-08 (A) Add components to vehicle when loading @geometry
-x 2024-09-08 (A) Add mission to values.py @mission
-x 2024-09-08 (A) Create mission from data on load @mission
 x 2024-09-08 (A) Load/Save configs data @configs
 x 2024-09-08 (A) Test & Fix RCAIDE Integration in Control Surfaces @geometry
-x 2024-09-09 (A) Complete Load/Save for Analysis @analysis
-x 2024-09-09 (A) Complete RCAIDE Integration between tabs for Analysis, Mission @analysis @mission
-x 2024-09-09 (A) Implement get_values and load_values functions in analysis widgets
 x 2024-09-10 (A) Display values.vehicle in Visualize Geometry @visualize
 x 2024-09-10 (A) Fix geometry tabs not clearing sections / control surfaces
-x 2024-09-10 (A) Test Geometry -> Mission tab
 x 2025-07-28 2024-07-18 add functionality to component click in @geometry
-x maybe add a settings bar with file and documentation to change text, color, theme etc
