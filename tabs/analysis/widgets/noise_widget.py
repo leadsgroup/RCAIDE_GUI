@@ -33,9 +33,7 @@ class NoiseWidget(AnalysisDataWidget):
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def on_analysis_change(self, index):
-        print("Index changed to", index)
-
+    def on_analysis_change(self, index): 
         assert self.main_layout is not None
 
         self.main_layout.removeWidget(self.data_entry_widget)

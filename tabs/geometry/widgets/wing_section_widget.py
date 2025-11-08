@@ -142,23 +142,24 @@ class WingSectionWidget(QWidget):
         self._update_airfoil_ui_state()
 
 
-    def create_rcaide_structure(self, data):
+    def create_rcaide_structure(self, data):  
+        ospath                                = os.path.abspath(__file__)
+        separator                             = os.path.sep    
         segment = RCAIDE.Library.Components.Wings.Segments.Segment()
 
-        segment.tag = data["segment name"]
+        segment.tag                   = data["Segment Name"]
         segment.percent_span_location = data["Percent Span Location"][0]
-        segment.twist = data["Twist"][0]
-
-        segment.root_chord_percent = data["Root Chord Percent"][0]
-        segment.thickness_to_chord = data["Thickness to Chord"][0]
-        segment.dihedral_outboard = data["Dihedral Outboard"][0]
-        segment.sweeps.quarter_chord = data["Quarter Chord Sweep"][0]
+        segment.twist                 = data["Twist"][0] 
+        segment.root_chord_percent    = data["Root Chord Percent"][0]
+        segment.thickness_to_chord    = data["Thickness to Chord"][0]
+        segment.dihedral_outboard     = data["Dihedral Outboard"][0]
+        segment.sweeps.quarter_chord  = data["Quarter Chord Sweep"][0]
         
         
-        airfoil_type                = data.get("Airfoil Type", None)
-        airfoil_code                = data.get("Airfoil Code", None)
-        airfoil_coordinate_file_path = data.get("Airfoil Coordinate File Path", None)
-        airfoil_points              = data.get("Airfoil Points", 100)
+        airfoil_type                  = data.get("Airfoil Type", None)
+        airfoil_code                  = data.get("Airfoil Code", None)
+        airfoil_coordinate_file_path  = data.get("Airfoil Coordinate File Path", None)
+        airfoil_points                = data.get("Airfoil Points", 100)
         if airfoil_type == None:
             pass
         elif airfoil_type == "NACA 4-Series":
@@ -171,7 +172,7 @@ class WingSectionWidget(QWidget):
             segment.append_airfoil(airfoil)          
         elif airfoil_type == "Coordinate File": 
             airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
-            airfoil.coordinate_file          = airfoil_coordinate_file_path  
+            airfoil.coordinate_file          = 'app_data' + separator + 'aircraft' + separator +  airfoil_coordinate_file_path  
             airfoil.number_of_points         = airfoil_points  
             segment.append_airfoil(airfoil)           
 
@@ -217,7 +218,7 @@ class WingSectionWidget(QWidget):
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
-        data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
+        data_si["Segment Name"] = self.name_layout.itemAt(2).widget().text()
         airfoil_type = self.airfoil_type_combo.currentText()
         if airfoil_type != "None":
             data["Airfoil Type"] = airfoil_type
@@ -232,12 +233,12 @@ class WingSectionWidget(QWidget):
             data["Airfoil Type"] = None
         wing_section = self.create_rcaide_structure(data_si)
 
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()
+        data["Segment Name"] = self.name_layout.itemAt(2).widget().text()
         return data, wing_section
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
+        self.name_layout.itemAt(2).widget().setText(section_data["Segment Name"])
 
         if ("Airfoil" in section_data):
             file_path = section_data["Airfoil"][0]

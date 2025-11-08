@@ -73,22 +73,22 @@ class FuselageSectionWidget(QWidget):
         segment.percent_z_location = data["Percent Z Location"][0]
         segment.height = data["Height"][0]
         segment.width = data["Width"][0]
-        segment.tag = data["segment name"]
+        segment.tag = data["Segment Name"]
 
         return segment
 
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()
-        data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
+        data["Segment Name"] = self.name_layout.itemAt(2).widget().text()
+        data_si["Segment Name"] = self.name_layout.itemAt(2).widget().text()
 
         segment = self.create_rcaide_structure(data_si)
         return data, segment
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
+        self.name_layout.itemAt(2).widget().setText(section_data["Segment Name"])
 
     def delete_button_pressed(self):
         print("Delete button pressed")

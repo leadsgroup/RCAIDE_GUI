@@ -131,7 +131,7 @@
                             0.01,
                             0
                         ],
-                        "segment name": "segment_0"
+                        "Segment Name": "segment_0"
                     },
                     {
                         "Percent X Location": [
@@ -150,7 +150,7 @@
                             0.65,
                             0
                         ],
-                        "segment name": "segment_1"
+                        "Segment Name": "segment_1"
                     },
                     {
                         "Percent X Location": [
@@ -169,7 +169,7 @@
                             1.20043,
                             0
                         ],
-                        "segment name": "segment_2"
+                        "Segment Name": "segment_2"
                     },
                     {
                         "Percent X Location": [
@@ -188,7 +188,7 @@
                             1.52783,
                             0
                         ],
-                        "segment name": "segment_3"
+                        "Segment Name": "segment_3"
                     },
                     {
                         "Percent X Location": [
@@ -207,7 +207,7 @@
                             1.96435,
                             0
                         ],
-                        "segment name": "segment_4"
+                        "Segment Name": "segment_4"
                     },
                     {
                         "Percent X Location": [
@@ -226,7 +226,7 @@
                             2.61913,
                             0
                         ],
-                        "segment name": "segment_5"
+                        "Segment Name": "segment_5"
                     },
                     {
                         "Percent X Location": [
@@ -245,7 +245,7 @@
                             3.05565,
                             0
                         ],
-                        "segment name": "segment_6"
+                        "Segment Name": "segment_6"
                     },
                     {
                         "Percent X Location": [
@@ -264,7 +264,7 @@
                             3.71043,
                             0
                         ],
-                        "segment name": "segment_7"
+                        "Segment Name": "segment_7"
                     },
                     {
                         "Percent X Location": [
@@ -283,7 +283,7 @@
                             3.9287,
                             0
                         ],
-                        "segment name": "segment_8"
+                        "Segment Name": "segment_8"
                     },
                     {
                         "Percent X Location": [
@@ -302,7 +302,7 @@
                             3.81957,
                             0
                         ],
-                        "segment name": "segment_9"
+                        "Segment Name": "segment_9"
                     },
                     {
                         "Percent X Location": [
@@ -321,7 +321,7 @@
                             3.81957,
                             0
                         ],
-                        "segment name": "segment_10"
+                        "Segment Name": "segment_10"
                     },
                     {
                         "Percent X Location": [
@@ -340,7 +340,7 @@
                             3.71043,
                             0
                         ],
-                        "segment name": "segment_11"
+                        "Segment Name": "segment_11"
                     },
                     {
                         "Percent X Location": [
@@ -359,7 +359,7 @@
                             3.16478,
                             0
                         ],
-                        "segment name": "segment_12"
+                        "Segment Name": "segment_12"
                     },
                     {
                         "Percent X Location": [
@@ -378,7 +378,7 @@
                             1.96435,
                             0
                         ],
-                        "segment name": "segment_13"
+                        "Segment Name": "segment_13"
                     },
                     {
                         "Percent X Location": [
@@ -397,7 +397,7 @@
                             0.21826,
                             0
                         ],
-                        "segment name": "segment_14"
+                        "Segment Name": "segment_14"
                     }
                 ],
                 "name": "fuselage"
@@ -553,10 +553,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_root_section_airfoil.txt",
+                            "transonic_wing_root_section_airfoil.txt",
                             ""
                         ],
-                        "segment name": "root"
+                        "Segment Name": "root"
                     },
                     {
                         "Percent Span Location": [
@@ -592,10 +592,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_inboard_section_airfoil.txt",
+                            "transonic_wing_inboard_section_airfoil.txt",
                             ""
                         ],
-                        "segment name": "yehudi"
+                        "Segment Name": "yehudi"
                     },
                     {
                         "Percent Span Location": [
@@ -631,10 +631,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_outboard_section_airfoil.txt",
+                            "transonic_wing_outboard_section_airfoil.txt",
                             ""
                         ],
-                        "segment name": "section_2"
+                        "Segment Name": "section_2"
                     },
                     {
                         "Percent Span Location": [
@@ -670,10 +670,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_tip_section_airfoil.txt",
+                            "transonic_wing_tip_section_airfoil.txt",
                             ""
                         ],
-                        "segment name": "tip"
+                        "Segment Name": "tip"
                     }
                 ],
                 "control_surfaces": [
@@ -911,10 +911,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_root_section_airfoil.txt",
+                            "",
                             ""
                         ],
-                        "segment name": "root_segment"
+                        "Segment Name": "root_segment"
                     },
                     {
                         "Percent Span Location": [
@@ -950,10 +950,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_tip_section_airfoil.txt",
+                            "",
                             ""
                         ],
-                        "segment name": "tip_segment"
+                        "Segment Name": "tip_segment"
                     }
                 ],
                 "control_surfaces": [
@@ -1145,10 +1145,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_root_section_airfoil.txt",
+                            "",
                             ""
                         ],
-                        "segment name": "root"
+                        "Segment Name": "root"
                     },
                     {
                         "Percent Span Location": [
@@ -1187,7 +1187,7 @@
                             "",
                             ""
                         ],
-                        "segment name": "segment_1"
+                        "Segment Name": "segment_1"
                     },
                     {
                         "Percent Span Location": [
@@ -1223,10 +1223,10 @@
                             0
                         ],
                         "Airfoil" : [
-                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_tip_section_airfoil.txt",
+                            "",
                             ""
                         ],
-                        "segment name": "tip_segment"
+                        "Segment Name": "tip_segment"
                     }
                 ],
                 "control_surfaces": []
@@ -1386,7 +1386,7 @@
                                     12.437810945273633,
                                     0
                                 ],
-                                "segment name": "fuel_tank"
+                                "Segment Name": "fuel_tank"
                             }
                         ],
                         "propulsor data": [
@@ -2074,7 +2074,7 @@
                 0.0,
                 0
             ],
-            "segment name": "takeoff",
+            "Segment Name": "takeoff",
             "flight forces": {
                 "Forces in X axis": [
                     false,
@@ -2180,7 +2180,7 @@
                 0.0,
                 0
             ],
-            "segment name": "climb",
+            "Segment Name": "climb",
             "flight forces": {
                 "Forces in X axis": [
                     true,
@@ -2282,7 +2282,7 @@
                 0.0,
                 0
             ],
-            "segment name": "cruise",
+            "Segment Name": "cruise",
             "flight forces": {
                 "Forces in X axis": [
                     true,
@@ -2388,7 +2388,7 @@
                 0.0,
                 0
             ],
-            "segment name": "descent",
+            "Segment Name": "descent",
             "flight forces": {
                 "Forces in X axis": [
                     true,
@@ -2502,7 +2502,7 @@
                 0.0,
                 0
             ],
-            "segment name": "landing",
+            "Segment Name": "landing",
             "flight forces": {
                 "Forces in X axis": [
                     false,

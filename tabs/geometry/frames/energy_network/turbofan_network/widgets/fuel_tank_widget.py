@@ -63,21 +63,21 @@ class FuelTankWidget(GeometryFrame):
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.section_name_edit.setText(section_data["segment name"])
+        self.section_name_edit.setText(section_data["Segment Name"])
 
     def get_data_values(self):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()
-        data["segment name"] = title
+        data["Segment Name"] = title
 
         return data, self.create_rcaide_structure()
 
     def create_rcaide_structure(self):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values_si()
-        data["segment name"] = title
+        data["Segment Name"] = title
         fuel_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
-        fuel_tank.tag = data["segment name"]
+        fuel_tank.tag = data["Segment Name"]
         fuel_tank.origin = data["Fuel Tank Origin"][0]
 
         fuel = RCAIDE.Library.Attributes.Propellants.Jet_A1()

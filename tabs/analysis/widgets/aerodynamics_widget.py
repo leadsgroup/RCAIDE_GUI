@@ -37,9 +37,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
         # self.main_layout.addItem(QSpacerItem(
         #     20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
-    def on_analysis_change(self, index):
-        print("Index changed to", index)
-
+    def on_analysis_change(self, index): 
         assert self.main_layout is not None
 
         self.main_layout.removeWidget(self.data_entry_widget)
