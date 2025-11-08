@@ -79,15 +79,15 @@ class NacelleSectionWidget(QWidget):
         segment.percent_z_location = data["Percent Z Location"][0]
         segment.height = data["Height"][0]
         segment.width = data["Width"][0]
-        segment.tag = data["segment name"]
+        segment.tag = data["Segment Name"]
 
         return segment
 
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
-        data["segment name"] = self.name_layout.itemAt(2).widget().text()
-        data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
+        data["Segment Name"] = self.name_layout.itemAt(2).widget().text()
+        data_si["Segment Name"] = self.name_layout.itemAt(2).widget().text()
 
         segment = self.create_rcaide_structure(data_si)
         return data, segment

@@ -80,7 +80,7 @@ class MissionWidget(TabWidget):
             assert isinstance(mission_segment, MissionSegmentWidget)
 
             segment_data, rcaide_segment = mission_segment.get_data()
-            segment_name = segment_data["segment name"]
+            segment_name = segment_data["Segment Name"]
             values.mission_data.append(segment_data)
             values.rcaide_mission.append_segment(rcaide_segment)
 
@@ -95,7 +95,7 @@ class MissionWidget(TabWidget):
         assert self.main_layout is not None
 
         self.segment_widgets = []
-        # self.mission_name_input.setText(values.mission_data[0]["segment name"])
+        # self.mission_name_input.setText(values.mission_data[0]["Segment Name"])
         values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
         values.rcaide_mission.tag = self.mission_name_input.text()
         
@@ -106,7 +106,7 @@ class MissionWidget(TabWidget):
             self.segment_widgets.append(segment_widget)
             self.main_layout.addWidget(segment_widget)
             self.tree.addTopLevelItem(
-                QTreeWidgetItem([segment_data["segment name"]]))
+                QTreeWidgetItem([segment_data["Segment Name"]]))
 
             rcaide_segment = segment_widget.create_rcaide_segment()
             values.rcaide_mission.append_segment(rcaide_segment)

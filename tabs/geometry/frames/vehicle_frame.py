@@ -79,8 +79,7 @@ class VehicleFrame(GeometryFrame):
         # vehicle = self.create_rcaide_structure(si_data)
         return data
 
-    def update_layout(self):
-        print("Updating layout")
+    def update_layout(self): 
         assert self.data_entry_widget is not None and isinstance(
             self.data_entry_widget, DataEntryWidget)
         

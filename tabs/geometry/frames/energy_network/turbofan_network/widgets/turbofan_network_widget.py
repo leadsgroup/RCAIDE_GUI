@@ -64,7 +64,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
         self.tank_selector_data = data
         for line_data in data:
             for propulsor_data in line_data["propulsor data"]:
-                tank_names = [tank["segment name"]
+                tank_names = [tank["Segment Name"]
                               for tank in line_data["fuel tank data"]]
                 propulsor_name = propulsor_data["propulsor name"]
                 self.fuel_tank_selector.addTab(TankSelectorWidget(
@@ -120,9 +120,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
                     if tank_selector.name != propulsor.tag:
                         continue
 
-                    propulsor.active_fuel_tanks = tank_selector.get_selected_tanks()
-                    print("Propulsor Name:", propulsor.tag,
-                          "Active Fuel Tanks:", propulsor.active_fuel_tanks)
+                    propulsor.active_fuel_tanks = tank_selector.get_selected_tanks() 
                     break
 
         return data, lines, propulsors

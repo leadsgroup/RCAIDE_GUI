@@ -26,11 +26,11 @@ class MissionSegmentWidget(QWidget):
         # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # Create each horizontal layout for the segment name and type
+        # Create each horizontal layout for the Segment Name and type
         segment_name = QHBoxLayout()
         segment_type = QHBoxLayout()
 
-        # Add segment name label and input box
+        # Add Segment Name label and input box
         segment_name_label = QLabel("Segment Name:")
         self.segment_name_input = QLineEdit()
         segment_name.addWidget(segment_name_label)
@@ -152,7 +152,7 @@ class MissionSegmentWidget(QWidget):
             self.subsegment_entry_widget, DataEntryWidget)
         
         data = self.subsegment_entry_widget.get_values()
-        data["segment name"] = self.segment_name_input.text()
+        data["Segment Name"] = self.segment_name_input.text()
         data["flight forces"] = self.dof_entry_widget.get_values()
         data["flight controls"] = self.flight_controls_widget.get_data()
         data["top dropdown"] = self.top_dropdown.currentIndex()
@@ -169,7 +169,7 @@ class MissionSegmentWidget(QWidget):
         assert self.subsegment_entry_widget is not None and isinstance(
             self.subsegment_entry_widget, DataEntryWidget)
         self.subsegment_entry_widget.load_data(data)
-        self.segment_name_input.setText(data["segment name"])
+        self.segment_name_input.setText(data["Segment Name"])
         
         assert self.dof_entry_widget is not None and isinstance(
             self.dof_entry_widget, DataEntryWidget)
