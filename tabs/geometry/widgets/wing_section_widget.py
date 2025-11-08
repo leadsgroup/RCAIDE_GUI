@@ -65,7 +65,6 @@ class WingSectionWidget(QWidget):
             ("Quarter Chord Sweep", Units.Angle),
             ("Has Fuel Tank", Units.Boolean),
             ("Has Aft Fuel Tank", Units.Boolean),
-            # ("Airfoil", Units.Unitless),
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
@@ -219,14 +218,48 @@ class WingSectionWidget(QWidget):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data_si["segment name"] = self.name_layout.itemAt(2).widget().text()
-
+        airfoil_type = self.airfoil_type_combo.currentText()
+        if airfoil_type != "None":
+            data["Airfoil Type"] = airfoil_type
+            data["Airfoil Code"] = self.naca_code_input.text()
+            data["Airfoil Coordinate File Path"] = self.file_path_input.text()
+            data_si["Airfoil Type"] = airfoil_type
+            data_si["Airfoil Code"] = self.naca_code_input.text()
+            data_si["Airfoil Coordinate File Path"] = self.file_path_input.text()
+            data_si["Airfoil Points"] = 100 
+        else:
+            data_si["Airfoil Type"] = None
+            data["Airfoil Type"] = None
         wing_section = self.create_rcaide_structure(data_si)
+
         data["segment name"] = self.name_layout.itemAt(2).widget().text()
         return data, wing_section
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["segment name"])
+
+        if ("Airfoil" in section_data):
+            file_path = section_data["Airfoil"][0]
+            if file_path and file_path.strip():
+                self.airfoil_type_combo.setCurrentText("Coordinate File")
+                self.file_path_input.setText(file_path)
+                self.naca_code_input.setText("")
+            else:
+                self.airfoil_type_combo.setCurrentText("None")
+                self.naca_code_input.setText("")
+                self.file_path_input.setText("")
+        elif "Airfoil Type" in section_data:
+            airfoil_type = section_data.get("Airfoil Type", "None")
+            self.airfoil_type_combo.setCurrentText(airfoil_type if airfoil_type else "None")
+            self.naca_code_input.setText(section_data.get("Airfoil Code", ""))
+            self.file_path_input.setText(section_data.get("Airfoil Coordinate File Path", ""))
+        else:
+            self.airfoil_type_combo.setCurrentText("None")
+            self.naca_code_input.setText("")
+            self.file_path_input.setText("")
+
+        self._update_airfoil_ui_state()
 
     def delete_button_pressed(self):
         print("Delete button pressed")
@@ -236,3 +269,31 @@ class WingSectionWidget(QWidget):
             return
 
         self.on_delete(self.index)
+
+    def read_airfoil_dat_file(self, file_path):
+        coordinates = []
+        try:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    line = line.strip()
+                    if not line or (not line[0].isdigit() and line[0] != '-'):
+                        continue
+                    try:
+                        parts = line.split()
+                        if len(parts) >= 2:
+                            x = float(parts[0])
+                            y = float(parts[1])
+                            coordinates.append((x, y))
+                    except ValueError: 
+                        continue
+        except FileNotFoundError:
+            print(f"File not found")
+            return None
+        except Exception as e:
+            print(f"Error reading airfoil file")
+            return None
+        if not coordinates:
+            print(f"Warning: No valid coordinates")
+            return None
+        print("Read successful")
+        return coordinates
