@@ -552,6 +552,10 @@
                             false,
                             0
                         ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_root_section_airfoil.txt",
+                            ""
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -586,6 +590,10 @@
                         "Has Aft Fuel Tank" : [
                             false,
                             0
+                        ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_inboard_section_airfoil.txt",
+                            ""
                         ],
                         "segment name": "yehudi"
                     },
@@ -622,6 +630,10 @@
                             false,
                             0
                         ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_outboard_section_airfoil.txt",
+                            ""
+                        ],
                         "segment name": "section_2"
                     },
                     {
@@ -656,6 +668,10 @@
                         "Has Aft Fuel Tank" : [
                             false,
                             0
+                        ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_tip_section_airfoil.txt",
+                            ""
                         ],
                         "segment name": "tip"
                     }
@@ -894,6 +910,10 @@
                             false,
                             0
                         ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_root_section_airfoil.txt",
+                            ""
+                        ],
                         "segment name": "root_segment"
                     },
                     {
@@ -928,6 +948,10 @@
                         "Has Aft Fuel Tank" : [
                             false,
                             0
+                        ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_tip_section_airfoil.txt",
+                            ""
                         ],
                         "segment name": "tip_segment"
                     }
@@ -1120,6 +1144,10 @@
                             false,
                             0
                         ],
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_root_section_airfoil.txt",
+                            ""
+                        ],
                         "segment name": "root"
                     },
                     {
@@ -1154,6 +1182,10 @@
                         "Has Aft Fuel Tank" : [
                             false,
                             0
+                        ],
+                        "Airfoil" : [
+                            "",
+                            ""
                         ],
                         "segment name": "segment_1"
                     },
@@ -1190,7 +1222,11 @@
                             false,
                             0
                         ],
-                        "segment name": "segment_2"
+                        "Airfoil" : [
+                            "C:/Users/mihir/Documents/LEADS/CODES/RCAIDE_GUI/app_data/aircraft/transonic_wing_tip_section_airfoil.txt",
+                            ""
+                        ],
+                        "segment name": "tip_segment"
                     }
                 ],
                 "control_surfaces": []
