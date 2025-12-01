@@ -14,8 +14,8 @@ class AnalysisWidget(TabWidget):
     def __init__(self):
         super(AnalysisWidget, self).__init__()
 
-        options = ["Aerodynamics", "Atmospheric", "Planets", "Weights",
-                   "Propulsion", "Costs", "Noise", "Stability", "Geometry"]
+        options = ["Aerodynamics", "Atmospheric", "Planets", "Weights", "Geometry",
+                   "Propulsion", "Costs", "Noise", "Stability"]
 
         self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
@@ -34,7 +34,7 @@ class AnalysisWidget(TabWidget):
             0, QHeaderView.ResizeMode.ResizeToContents)
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
-            if index >= 4:
+            if index > 4:
                 item.setCheckState(1, Qt.CheckState.Unchecked)
             else:
                 item.setData(1, Qt.ItemDataRole.CheckStateRole,
@@ -56,8 +56,8 @@ class AnalysisWidget(TabWidget):
         assert self.main_layout is not None and isinstance(
             self.main_layout, QVBoxLayout)
         # Define actions based on the selected
-        self.analysis_widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget,
-                                 PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget, GeometryWidget]
+        self.analysis_widgets = [AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget, GeometryWidget,
+                                 PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget ] 
         self.widgets = []
 
         for index, analysis_widget in enumerate(self.analysis_widgets):
@@ -71,6 +71,7 @@ class AnalysisWidget(TabWidget):
             self.widgets.append(widget)
             self.main_layout.addWidget(widget)
 
+        self.main_layout.addStretch()
         self.main_layout.setSpacing(3)
         self.base_layout.setSpacing(3)
 
