@@ -1863,7 +1863,7 @@
                 0
             ],
             "Number of Spanwise Vortices": [
-                25,
+                15,
                 0
             ],
             "Number of Chordwise Vortices": [
@@ -1894,8 +1894,28 @@
                 false,
                 0
             ],
+            "Wing Spanwise Vortices": [
+                0.0,
+                0
+            ],
+            "Wing Chordwise Vortices": [
+                0,
+                0
+            ],
+            "Fuselage Spanwise Vortices": [
+                0,
+                0
+            ],
+            "Fuselage Chordwise Vortices": [
+                0,
+                0
+            ],
             "Spanwise Cosine Spacing": [
                 true,
+                0
+            ],
+            "Vortex Distribution": [
+                0,
                 0
             ],
             "Leading Edge Suction Multiplier": [
@@ -1904,6 +1924,10 @@
             ],
             "Use VORLAX Matrix Calculation": [
                 false,
+                0
+            ],
+            "Floating Point Precision": [
+                1e-06,
                 0
             ],
             "Supersonic Peak Mach Number": [
@@ -1934,24 +1958,27 @@
                 0.99,
                 0
             ],
+            "enabled": true 
+        }, 
+        {
+            "analysis_num": 0,
+            "enabled": true 
+        },
+        {
+            "enabled": true 
+        },
+        {
+            "enabled": true 
+        },
+        {
             "enabled": true
         },
         {
             "analysis_num": 0,
-            "enabled": true
+            "enabled": false 
         },
         {
-            "enabled": true
-        },
-        {
-            "enabled": true
-        },
-        {
-            "analysis_num": 0,
-            "enabled": false
-        },
-        {
-            "enabled": false
+            "enabled": false 
         },
         {
             "Print Noise Output": [
@@ -2035,13 +2062,10 @@
                 0
             ],
             "analysis_num": 0,
-            "enabled": false
+            "enabled": false 
         },
         {
-            "enabled": false
-        },
-        {
-            "enabled": false
+            "enabled": false 
         }
     ],
     "mission_data": [
