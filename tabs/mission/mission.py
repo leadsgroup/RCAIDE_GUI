@@ -69,6 +69,7 @@ class MissionProfileWidget(QWidget):
         self._timer.timeout.connect(self._advance_animation)
         self._timer.start(40)
         self.setAutoFillBackground(False)
+        
 
     def set_phases(self, names: list[str]) -> None:
         self.phases = [n.title() for n in names] if names else []
