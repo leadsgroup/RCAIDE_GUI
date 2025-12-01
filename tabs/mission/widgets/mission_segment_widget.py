@@ -38,16 +38,35 @@ class MissionSegmentWidget(QWidget):
 
         # Add segment type label and nested dropdown
         segment_type_label = QLabel("Segment Type:")
-        # Call method to create nested dropdown
         nested_dropdown = self.create_nested_dropdown()
+
         segment_type.addWidget(segment_type_label)
+        segment_type.addSpacing(8)  # tighter
         segment_type.addLayout(nested_dropdown)
+        segment_type.addStretch(1)  # pushes the row left and removes the gap
 
         # TODO: Add aircraft configuration dropdown
 
-        # Adding Horizontal Layouts to Vertical Layout
-        self.segment_layout.addLayout(segment_name)
-        self.segment_layout.addLayout(segment_type)
+        # --- Compact Segment Name row (fixes container width) ---
+        segment_name_row = QHBoxLayout()
+        segment_name_row.setContentsMargins(0, 0, 0, 0)
+        segment_name_row.setSpacing(6)
+
+        segment_name_row.addLayout(segment_name)
+        segment_name_row.addStretch(1)    
+
+        # --- Compact Segment Type row ---
+        segment_type_row = QHBoxLayout()
+        segment_type_row.setContentsMargins(0, 0, 0, 0)
+        segment_type_row.setSpacing(6)
+
+        segment_type_row.addLayout(segment_type)
+        segment_type_row.addStretch(1)
+
+        # Add both to segment layout
+        self.segment_layout.addLayout(segment_name_row)
+        self.segment_layout.addLayout(segment_type_row)
+
 
         # Align segment type layout to top of segment_layout
         segment_type.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -73,12 +92,18 @@ class MissionSegmentWidget(QWidget):
         # Initialize or reuse the existing layout
         self.subsegment_layout = QVBoxLayout()
         self.config_layout = QHBoxLayout()
+        self.config_layout.setContentsMargins(0, 0, 0, 0)
+        self.config_layout.setSpacing(0)
+
 
         self.update_configs()
         self.subsegment_layout.addLayout(self.config_layout)
 
         self.subsegment_entry_widget = DataEntryWidget(data_fields)
         self.subsegment_layout.addWidget(self.subsegment_entry_widget)
+                # shrink all input boxes inside DataEntryWidget
+        for line in self.subsegment_entry_widget.findChildren(QLineEdit):
+            line.setFixedWidth(40)   # <- adjust 100–150 as you like
 
         self.subsegment_layout.addWidget(
             QLabel("<b>Select Degrees of Freedom</b>"))
@@ -180,12 +205,22 @@ class MissionSegmentWidget(QWidget):
     def update_configs(self):
         clear_layout(self.config_layout)
 
-        config_names = [config["config name"]
-                        for config in values.config_data]
+        config_names = [config["config name"] for config in values.config_data]
         self.config_selector = QComboBox()
         self.config_selector.addItems(config_names)
-        self.config_layout.addWidget(QLabel("Aircraft Configuration: "), 3)
-        self.config_layout.addWidget(self.config_selector, 7)
+
+        # Fix horizontal spacing
+        self.config_layout.setContentsMargins(0, 0, 0, 0)
+        self.config_layout.setSpacing(4)
+
+        label = QLabel("Aircraft Configuration:")
+        label.setContentsMargins(0, 0, 0, 0)
+
+        self.config_layout.addWidget(label)
+        self.config_layout.addWidget(self.config_selector)
+
+        # push everything left tightly
+        self.config_layout.addStretch(1)
 
     def create_rcaide_segment(self):
         segment = segment_rcaide_classes[self.top_dropdown.currentIndex(

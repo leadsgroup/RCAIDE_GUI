@@ -59,7 +59,7 @@ class FlightControlsWidget(QWidget):
             
 
     fields = {
-        "Autopilot": [
+        "Kinematics": [
             ("Body Angle", Units.Boolean, "assigned_control_variables.body_angle.active"),
             ("Bank Angle", Units.Boolean, "assigned_control_variables.bank_angle.active"),
             ("Wind Angle", Units.Boolean, "assigned_control_variables.wind_angle.active"),
