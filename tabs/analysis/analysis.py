@@ -107,15 +107,15 @@ class AnalysisWidget(TabWidget):
 
     def save_analyses(self):
         values.analysis_data = []
-        for tag, config in values.rcaide_configs.items():
+        for tag, vehicle in values.rcaide_configs.items():
             analysis = RCAIDE.Framework.Analyses.Vehicle()
+            analysis.vehicle = vehicle
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
                 if self.get_check_state(index) or index == len(self.analysis_widgets) - 1:
-                    analysis.append(widget.create_analysis(config))
+                    analysis.append(widget.create_analysis(vehicle))
 
             energy = RCAIDE.Framework.Analyses.Energy.Energy()
-            energy.vehicle = config
             analysis.append(energy)
             
             values.rcaide_analyses[tag] = analysis

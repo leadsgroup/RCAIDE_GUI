@@ -69,8 +69,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(aerodynamics.settings, rcaide_label, values_si[user_label][0])
-
-        aerodynamics.vehicle = vehicle
+ 
         return aerodynamics
     
     def get_values(self):
@@ -92,10 +91,6 @@ class AerodynamicsWidget(AnalysisDataWidget):
             ("Fuselage Spanwise Vortices", Units.Count, "fuselage_spanwise_vortices"),
             ("Fuselage Chordwise Vortices", Units.Count, "fuselage_chordwise_vortices"),
             ("Spanwise Cosine Spacing", Units.Boolean, "spanwise_cosine_spacing"),
-            ("Vortex Distribution", Units.Unitless, "vortex_distribution"),
-            ("Leading Edge Suction Multiplier", Units.Unitless, "leading_edge_suction_multiplier"),
-            ("Use VORLAX Matrix Calculation", Units.Boolean, "use_VORLAX_matrix_calculation"),
-            ("Floating Point Precision", Units.Unitless, "floating_point_precision"),
 
         ]
     ]

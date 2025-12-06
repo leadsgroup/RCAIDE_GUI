@@ -132,13 +132,12 @@ class SolveWidget(TabWidget):
         
         max_velocity = 0
         max_altitude = 0
-        for i, segment in enumerate(results.segments):
-            # segment settings
-            line_width  = plot_parameters.line_width
-            rgba_color  = line_colors[i]*255.0   
-            segment_tag = segment.tag.replace('_', ' ')
-            marker      = plot_parameters.markers[0]
-            marker_size =  plot_parameters.marker_size 
+        for i, segment in enumerate(results.segments): 
+            line_width    = plot_parameters.line_width
+            rgba_color    = line_colors[i]*255.0   
+            segment_tag   = segment.tag.replace('_', ' ')
+            marker        = plot_parameters.markers[0]
+            marker_size   =  plot_parameters.marker_size 
             line_color    = (int(rgba_color[0]),int(rgba_color[1]),int(rgba_color[2]))
             line_style    = pg.mkPen(color=line_color, width=line_width)   #  pg.mkPen(color=(255, 0, 0), width=5)
             marker_color  = line_color
