@@ -8,15 +8,7 @@ from utilities import create_scroll_area
 import values
 
 import RCAIDE
-import  numpy as  np
-
-# TO REMOVE!!!! ===============
-import sys
-import  os
-sys.path.append(os.path.abspath(os.path.join(os.path.join(sys.path[0]), "../../RESEARCH/Aircraft/Boeing_737")))
-from Boeing_737_800    import vehicle_setup as vehicle_setup
-from Boeing_737_800    import configs_setup as configs_setup
-# TO REMOVE!!!! ===============
+import  numpy as  np 
 
 class AnalysisWidget(TabWidget):
     def __init__(self):
@@ -115,15 +107,7 @@ class AnalysisWidget(TabWidget):
 
     def save_analyses(self):
         values.analysis_data = []
-        #for tag, vehicle in values.rcaide_configs.items():
-        
-        # TO REMOVE!!!! ===============        
-        vehicle  = vehicle_setup()    
-        configs  = configs_setup(vehicle)
-        for tag, vehicle in configs.items():
-            
-            # TO REMOVE!!!! ===============            
-            
+        for tag, vehicle in values.rcaide_configs.items():    
             analyses = RCAIDE.Framework.Analyses.Vehicle()
             analyses.vehicle = vehicle
             for index, widget in enumerate(self.widgets):

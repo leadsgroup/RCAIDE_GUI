@@ -5,10 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from RCAIDE.Framework.Core import Units,  Data
-from RCAIDE.Library.Plots import *  
-
-# PyQT imports 
+from RCAIDE.Framework.Core import Units,  Data 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
 from PyQt6.QtCore import Qt, QSize
 import pyqtgraph as pg
@@ -22,6 +19,7 @@ import pickle
 # gui imports 
 from tabs import TabWidget
 from .plots.create_plot_widgets import create_plot_widgets
+from .plots import  *  
 import values
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -107,30 +105,28 @@ class SolveWidget(TabWidget):
         
         
         
-        # WE NEED TO MAKE THESE OPTIONS 
-
-        styles = {"color": "white", "font-size": "18px"}  
+        # WE NEED TO MAKE THESE OPTIONS  
         plot_parameters                  = Data()      
         plot_parameters.line_width       = 5 
         plot_parameters.line_style       = '-'
+        plot_parameters.line_colors      = cm.viridis(np.linspace(0.2,1,len(results.segments)))
         plot_parameters.marker_size      = 8
         plot_parameters.legend_font_size = 12
         plot_parameters.axis_font_size   = 14
         plot_parameters.title_font_size  = 18    
+        plot_parameters.styles           = {"color": "white", "font-size": "18px"}  
         plot_parameters.markers          = ['o', 's', '^', 'X', 'd', 'v', 'P', '>','.', ',', 'o', 'v', '^', '<',\
                                             '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h'\
                                              , 'H', '+', 'x', 'D', 'd', '|', '_'] 
         plot_parameters.color            = 'black'
-        
-
-        line_colors   = cm.viridis(np.linspace(0.2,1,len(results.segments)))
+        plot_parameters.show_grid        = True
+        plot_parameters.save_figure      = False
+         
         
         # REPEAT FOR OTHER PLOTS 
-        plot_aircraft_velocities_flag = True
-        show_grid =  True
-        save_figure = False 
+        plot_aircraft_velocities_flag = True 
         if plot_aircraft_velocities_flag == True:
-            plot_aircraft_velocities(self, results,line_colors, styles, plot_parameters, show_grid, save_figure)
+            plot_aircraft_velocities(self, results, plot_parameters)
          
 
     plot_options = {

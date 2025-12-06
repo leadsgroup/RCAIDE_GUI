@@ -14,12 +14,8 @@ import pyqtgraph as pg
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
 def plot_aircraft_velocities(self,
-                             results,
-                             line_colors,
-                             styles,
-                             plot_parameters, 
-                             show_grid,
-                             save_figure,
+                             results, 
+                             plot_parameters,  
                              save_filename = "Aircraft Velocities",
                              file_type = ".png"):
     """
@@ -95,7 +91,7 @@ def plot_aircraft_velocities(self,
     max_CAS      = 0
     for i, segment in enumerate(results.segments): 
         line_width    = plot_parameters.line_width
-        rgba_color    = line_colors[i]*255.0   
+        rgba_color    = plot_parameters.line_colors[i]*255.0   
         segment_tag   = segment.tag.replace('_', ' ')
         marker        = plot_parameters.markers[0]
         marker_size   =  plot_parameters.marker_size 
@@ -122,29 +118,29 @@ def plot_aircraft_velocities(self,
         self.aircraft_Mach_plot.plot(time, mach, pen=line_style,  symbol = marker ,  symbolSize=marker_size ,symbolBrush = marker_color,  name=segment_tag)
         self.aircraft_CAS_plot.plot(time, CAS, pen=line_style,  symbol = marker ,  symbolSize=marker_size ,symbolBrush = marker_color,  name=segment_tag)
        
-    self.aircraft_TAS_plot.setLabel("left", "True Airspeed (kts)", **styles)
-    self.aircraft_TAS_plot.setLabel("bottom", "Time (min)", **styles)
-    self.aircraft_TAS_plot.showGrid(x=show_grid, y=show_grid) 
+    self.aircraft_TAS_plot.setLabel("left", "True Airspeed (kts)", **plot_parameters.styles)
+    self.aircraft_TAS_plot.setLabel("bottom", "Time (min)", **plot_parameters.styles)
+    self.aircraft_TAS_plot.showGrid(x=plot_parameters.show_grid, y=plot_parameters.show_grid) 
     self.aircraft_TAS_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)
     self.aircraft_TAS_plot.setYRange(0, max_velocity*1.2)
 
-    self.aircraft_EAS_plot.setLabel("left", "Equiv. Airspeed (kts)", **styles)
-    self.aircraft_EAS_plot.setLabel("bottom", "Time (min)", **styles)
-    self.aircraft_EAS_plot.showGrid(x=show_grid, y=show_grid) 
+    self.aircraft_EAS_plot.setLabel("left", "Equiv. Airspeed (kts)", **plot_parameters.styles)
+    self.aircraft_EAS_plot.setLabel("bottom", "Time (min)", **plot_parameters.styles)
+    self.aircraft_EAS_plot.showGrid(x=plot_parameters.show_grid, y=plot_parameters.show_grid) 
     self.aircraft_EAS_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)
     self.aircraft_EAS_plot.setYRange(0, max_EAS*1.2)
     
 
-    self.aircraft_Mach_plot.setLabel("left", "Mach Number", **styles)
-    self.aircraft_Mach_plot.setLabel("bottom", "Time (min)", **styles)
-    self.aircraft_Mach_plot.showGrid(x=show_grid, y=show_grid) 
+    self.aircraft_Mach_plot.setLabel("left", "Mach Number", **plot_parameters.styles)
+    self.aircraft_Mach_plot.setLabel("bottom", "Time (min)", **plot_parameters.styles)
+    self.aircraft_Mach_plot.showGrid(x=plot_parameters.show_grid, y=plot_parameters.show_grid) 
     self.aircraft_Mach_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)
     self.aircraft_Mach_plot.setYRange(0, max_mach*1.2)
     
 
-    self.aircraft_CAS_plot.setLabel("left", "Calibrated Airspeed (kts)", **styles)
-    self.aircraft_CAS_plot.setLabel("bottom", "Time (min)", **styles)
-    self.aircraft_CAS_plot.showGrid(x=show_grid, y=show_grid) 
+    self.aircraft_CAS_plot.setLabel("left", "Calibrated Airspeed (kts)", **plot_parameters.styles)
+    self.aircraft_CAS_plot.setLabel("bottom", "Time (min)", **plot_parameters.styles)
+    self.aircraft_CAS_plot.showGrid(x=plot_parameters.show_grid, y=plot_parameters.show_grid) 
     self.aircraft_CAS_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)      
     self.aircraft_CAS_plot.setYRange(0, max_CAS*1.2)
 
