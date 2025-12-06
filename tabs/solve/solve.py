@@ -6,7 +6,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 from RCAIDE.Framework.Core import Units,  Data
-from  RCAIDE.Library.Plots import *  
+from RCAIDE.Library.Plots import *  
 
 # PyQT imports 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
@@ -21,6 +21,7 @@ import pickle
 
 # gui imports 
 from tabs import TabWidget
+from .plots.create_plot_widgets import create_plot_widgets
 import values
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -54,20 +55,10 @@ class SolveWidget(TabWidget):
         plot_container = QWidget()
         plot_layout = QVBoxLayout(plot_container)
 
-        # Create two PlotWidgets from PyQtGraph
-        self.aircraft_velocity_plot = pg.PlotWidget()
-        self.aircraft_altitude_plot = pg.PlotWidget()
-
-        # Set a fixed size for each plot widget
         plot_size = QSize(700, 400)  # Set a fixed plot size
-        self.aircraft_velocity_plot.setFixedSize(plot_size)
-        self.aircraft_velocity_plot.addLegend()
-        
-        self.aircraft_altitude_plot.setFixedSize(plot_size)
-        self.aircraft_altitude_plot.addLegend()
+        show_legend = True
+        create_plot_widgets(self,plot_layout,plot_size,show_legend) 
 
-        plot_layout.addWidget(self.aircraft_velocity_plot)
-        plot_layout.addWidget(self.aircraft_altitude_plot)
         scroll_area.setWidget(plot_container)
 
         # Add the scroll area to the main_layout
@@ -110,9 +101,13 @@ class SolveWidget(TabWidget):
 
     def run_solve(self):
         mission = values.rcaide_mission
-        print("Starting solve")
+        print("Commencing Mission Simulation")
         results = mission.evaluate()
-        print("Done with solve")
+        print("Completed Mission Simulation")
+        
+        
+        
+        # WE NEED TO MAKE THESE OPTIONS 
 
         styles = {"color": "white", "font-size": "18px"}  
         plot_parameters                  = Data()      
@@ -128,63 +123,18 @@ class SolveWidget(TabWidget):
         plot_parameters.color            = 'black'
         
 
-        line_colors   = cm.inferno(np.linspace(0.2,1,len(results.segments)))
+        line_colors   = cm.viridis(np.linspace(0.2,1,len(results.segments)))
         
-        max_velocity = 0
-        max_altitude = 0
-        for i, segment in enumerate(results.segments): 
-            line_width    = plot_parameters.line_width
-            rgba_color    = line_colors[i]*255.0   
-            segment_tag   = segment.tag.replace('_', ' ')
-            marker        = plot_parameters.markers[0]
-            marker_size   =  plot_parameters.marker_size 
-            line_color    = (int(rgba_color[0]),int(rgba_color[1]),int(rgba_color[2]))
-            line_style    = pg.mkPen(color=line_color, width=line_width)   #  pg.mkPen(color=(255, 0, 0), width=5)
-            marker_color  = line_color
-            
-            # unpack variables 
-            time     = segment.conditions.frames.inertial.time[:, 0] / Units.min 
-            velocity = segment.conditions.freestream.velocity[:, 0] / Units.kts
-            altitude = segment.conditions.freestream.altitude[:,0]/Units.feet
-            density  = segment.conditions.freestream.density[:, 0]
-            
-            # calculate addition variables 
-            PR       = density / 1.225
-            EAS      = velocity * np.sqrt(PR)
-            mach     = segment.conditions.freestream.mach_number[:, 0]
-            CAS      = EAS * (1+((1/8)*((1-PR)*mach**2)) +
-                         ((3/640)*(1-10*PR+(9*PR**2)*(mach**4))))
-            
-            
-            # aircraft velocity plot
-            max_velocity = np.maximum(np.max(velocity),max_velocity)
-            self.aircraft_velocity_plot.plot(time, velocity, pen=line_style,  symbol = marker ,  symbolSize=marker_size ,symbolBrush = marker_color,  name=segment_tag)
-
-            # aircraft altitude plot             
-            max_altitude = np.maximum(np.max(altitude),max_altitude)
-            self.aircraft_altitude_plot.plot(time, altitude, pen=line_style,  symbol = marker , symbolSize= marker_size ,symbolBrush = marker_color ,  name=segment_tag)
-            
-        
-        # aircraft velocity plot settings
-        self.aircraft_velocity_plot.setLabel("left", "True Airspeed (kts)", **styles)
-        self.aircraft_velocity_plot.setLabel("bottom", "Time (min)", **styles)
-        self.aircraft_velocity_plot.showGrid(x=True, y=True) 
-        self.aircraft_velocity_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)  
-        self.aircraft_velocity_plot.setYRange(0, max_velocity*1.2)
-
-        # aircraft altitude plot settings             
-        self.aircraft_altitude_plot.setLabel("left", "True Airspeed (kts)", **styles)
-        self.aircraft_altitude_plot.setLabel("bottom", "Time (min)", **styles) 
-        self.aircraft_altitude_plot.showGrid(x=True, y=True) 
-        self.aircraft_altitude_plot.addLegend(labelTextSize=plot_parameters.legend_font_size)  
-        self.aircraft_altitude_plot.setYRange(0, max_altitude*1.2)
+        # REPEAT FOR OTHER PLOTS 
+        plot_aircraft_velocities_flag = True
+        show_grid =  True
+        save_figure = False 
+        if plot_aircraft_velocities_flag == True:
+            plot_aircraft_velocities(self, results,line_colors, styles, plot_parameters, show_grid, save_figure)
+         
 
     plot_options = {
         "Aerodynamics": [
-            "Plot Airfoil Boundary Layer Properties",
-            "Plot Airfoil Polar Files",
-            "Plot Airfoil Polars",
-            "Plot Airfoil Surface Forces",
             "Plot Aerodynamic Coefficients",
             "Plot Aerodynamic Forces",
             "Plot Drag Components",
