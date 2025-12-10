@@ -91,22 +91,6 @@
     true,
     0
   ],
-  "Vortex Distribution": [
-    0,
-    0
-  ],
-  "Leading Edge Suction Multiplier": [
-    1.0,
-    0
-  ],
-  "Use VORLAX Matrix Calculation": [
-    false,
-    0
-  ],
-  "Floating Point Precision": [
-    1e-06,
-    0
-  ],
   "Supersonic Peak Mach Number": [
     1.04,
     0

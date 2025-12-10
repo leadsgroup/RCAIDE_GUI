@@ -30,8 +30,7 @@ class GeometryWidget(AnalysisDataWidget):
 
 
     def create_analysis(self, vehicle: RCAIDE.Vehicle):
-        geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-        geometry.vehicle = vehicle
+        geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
         data = self.data_entry_widget.get_values()
         if ("Overwrite Reference" in data and
             data["Overwrite Reference"] is not None):

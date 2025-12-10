@@ -17,6 +17,5 @@ class EnergyWidget(AnalysisDataWidget):
         self.setLayout(self.main_layout)
 
     def create_analysis(self, vehicle: RCAIDE.Vehicle):
-        energy = RCAIDE.Framework.Analyses.Energy.Energy()
-        energy.vehicle = vehicle
+        energy = RCAIDE.Framework.Analyses.Energy.Energy() 
         return energy
