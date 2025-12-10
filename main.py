@@ -52,8 +52,15 @@ class App(QMainWindow):
 
         self.widgets.append((visualize_geometry.get_widget(), "Visualize Geometry"))
         self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
-        self.widgets.append((analysis.get_widget(), "Analysis"))
-        self.widgets.append((mission.get_widget(), "Mission"))
+        # make one shared analysis widget for both tabs
+        shared_analysis_widget = analysis.get_widget()
+
+        # add it as its own tab
+        self.widgets.append((shared_analysis_widget, "Analysis"))
+
+        # give Mission tab the same one
+        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission"))
+
         self.widgets.append((solve.get_widget(), "Solve"))
 
         for widget, name in self.widgets:

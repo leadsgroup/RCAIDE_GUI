@@ -1,17 +1,13 @@
-# ============================================================
-#  mission.py — Collapsible Segments + Altitude Diagram + Summary Table
-# ============================================================
-
 from PyQt6.QtCore import Qt, QTimer, QPointF
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QPainterPath
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QGroupBox, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QScrollArea, QFrame,
-    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox, QFormLayout, QGridLayout
+    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox, QFormLayout, QGridLayout, QRadioButton
 )
 
 from tabs.mission.widgets import MissionSegmentWidget
-from tabs.analysis.analysis import AnalysisWidget
+from tabs.mission.widgets import MissionAnalysisWidget as MissionAnalysisWidget
 from tabs import TabWidget
 import values
 import RCAIDE
@@ -205,20 +201,24 @@ class MissionProfileWidget(QWidget):
         painter.drawEllipse(QPointF(mx, my), 7, 7)
 
 # ============================================================
-#  Mission Summary Table (Stable + Compatible)
+#  Mission Summary Table — FIXED SUBSEGMENT TYPE VERSION
 # ============================================================
 class MissionSummaryTable(QTableWidget):
     def __init__(self, mission_widget):
-        super().__init__(0, 8)
+        super().__init__(0, 5)
         self.mission_widget = mission_widget
 
-        self.setMinimumHeight(240)
-        self.setMaximumHeight(240)
+        self.horizontalHeader().setMinimumSectionSize(80)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
         self.setHorizontalHeaderLabels([
-            "Name", "Type", "Altitude", "Velocity",
-            "Throttle", "Ctrl Pts", "Unknowns", "Residuals"
+            "Segment Name",
+            "Subsegment Type",
+            "Ctrl Pts",
+            "Unknowns",
+            "Residuals"
         ])
+
         self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.verticalHeader().setVisible(False)
         self.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -243,69 +243,105 @@ class MissionSummaryTable(QTableWidget):
             }
         """)
 
-        self._show_placeholder()
         self.cellClicked.connect(self._row_clicked)
 
-    def _show_placeholder(self):
-        self.clearContents()
-        self.setRowCount(1)
-        placeholder = QTableWidgetItem("No segments added yet.")
-        placeholder.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setItem(0, 0, placeholder)
-        self.setSpan(0, 0, 1, 8)
-
+    # --------------------------------------------------------
+    # Update summary table (fixed subsegment type)
+    # --------------------------------------------------------
     def update_table(self):
         segs = self.mission_widget.segment_widgets
+
         if not segs:
-            self._show_placeholder()
+            self.clearContents()
+            self.setRowCount(1)
+            item = QTableWidgetItem("No segments added yet.")
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.setItem(0, 0, item)
+            self.setSpan(0, 0, 1, 5)
             return
 
-        self.clearContents()
-        self.setRowCount(len(segs))
+        rows = []
 
-        for row, seg in enumerate(segs):
-            try:
-                data, _ = seg.get_data()
-            except Exception:
-                data = {}
+        for seg in segs:
+            data, _ = seg.get_data()
 
-            name = data.get("Segment Name", f"Segment {row + 1}")
-            s_type = data.get("Segment Type", "Custom")
-            alt = data.get("Altitude", 0.0)
-            vel = data.get("Velocity End", 0.0)
-            throttle = data.get("Throttle", 1.0)
-            ctrl_pts = seg.ctrl_points.text() if hasattr(seg, "ctrl_points") else "2"
+            # Segment name
+            name = data.get("Segment Name", "")
+
+            # *** FIX: Use REAL subsegment dropdown ***
+            subsegment = seg.nested_dropdown.currentText()
+
+            # ctrl points
+            cp = seg.ctrl_points.text() if hasattr(seg, "ctrl_points") else "2"
+
+            # unknowns + residuals
             unknowns = len(data.get("Degrees of Freedom", []))
             residuals = len(data.get("Residuals", []))
 
-            vals = [name, s_type, alt, vel, throttle,
-                    ctrl_pts, unknowns, residuals]
+            rows.append((name.lower(), name, subsegment, cp, unknowns, residuals))
 
-            for col, val in enumerate(vals):
-                item = QTableWidgetItem(str(val))
+        # Sort takeoff first
+        rows.sort(key=lambda r: (r[0] != "takeoff"))
+
+        # Apply table rows
+        self.clearContents()
+        self.setRowCount(len(rows))
+
+        for r, (_, name, subsegment, cp, un, re) in enumerate(rows):
+            vals = [name, subsegment, cp, un, re]
+            for c, v in enumerate(vals):
+                item = QTableWidgetItem(str(v))
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                self.setItem(row, col, item)
+                self.setItem(r, c, item)
 
-        self.resizeColumnsToContents()
-        self.setFixedHeight(240)
+        # auto-height
+        total_height = (
+            self.horizontalHeader().height() +
+            (self.rowHeight(0) * len(rows)) +
+            4
+        )
+        self.setFixedHeight(total_height)
 
+    # --------------------------------------------------------
+    # Clicking a row scrolls to its details panel
+    # --------------------------------------------------------
     def _row_clicked(self, row, col):
-        panel_index = row * 2
+        seg_name = self.item(row, 0).text().lower()
+
+        target_index = None
+        for i, seg in enumerate(self.mission_widget.segment_widgets):
+            data, _ = seg.get_data()
+            if data.get("Segment Name", "").lower() == seg_name:
+                target_index = i
+                break
+
+        if target_index is None:
+            return
+
+        panel_index = target_index * 2
         layout = self.mission_widget.details_layout
+
         if panel_index < layout.count():
             widget = layout.itemAt(panel_index).widget()
+
             if hasattr(widget, "toggle") and not widget.is_open:
                 widget.toggle()
-            self.mission_widget.details_scroll.ensureWidgetVisible(widget)
 
+            self.mission_widget.details_scroll.ensureWidgetVisible(widget)
 
 # ============================================================
 #  Mission Widget (Main)
 # ============================================================
 class MissionWidget(TabWidget):
-    def __init__(self):
+    def __init__(self, shared_analysis_widget=None):
         super().__init__()
+
+        # if main.py gives you an analysis widget, use it
+        if shared_analysis_widget is not None:
+            self.analysis_widget = shared_analysis_widget
+        else:
+            self.analysis_widget = MissionAnalysisWidget()
+
         root = QSplitter(Qt.Orientation.Horizontal)
         root.setHandleWidth(2)
         root.setChildrenCollapsible(False)
@@ -317,7 +353,7 @@ class MissionWidget(TabWidget):
 
         analyses_box = QGroupBox("Mission Analyses")
         analyses_v = QVBoxLayout(analyses_box)
-        analyses_v.addWidget(AnalysisWidget())
+        analyses_v.addWidget(MissionAnalysisWidget())
         left_v.addWidget(analyses_box, 3)
 
         segs_box = QGroupBox("Mission Segments")
@@ -364,7 +400,7 @@ class MissionWidget(TabWidget):
         right_v.addWidget(self.summary_table)
 
         # Segment Details
-        details_box = QGroupBox("Segment Details")
+        details_box = QGroupBox("Segment Handlers")
         details_v = QVBoxLayout(details_box)
         self.details_scroll = QScrollArea()
         self.details_scroll.setWidgetResizable(True)
@@ -374,32 +410,38 @@ class MissionWidget(TabWidget):
         details_v.addWidget(self.details_scroll)
         right_v.addWidget(details_box, 1)
 
+        # ADD TO SPLITTER
         root.addWidget(left_col)
         root.addWidget(right_col)
+
+        # MAIN LAYOUT
         layout = QVBoxLayout(self)
         layout.addWidget(root)
+
+        # >>> AUTO-CENTER SPLITTER ON LAUNCH <<<
+        from PyQt6.QtCore import QTimer
+        QTimer.singleShot(0, lambda: root.setSizes([1000, 1000]))
+
+
         self.segment_widgets = []
 
+    
     # ============================================================
-    #  Segment handlers (CLEAN + COMPACT + GREY CONTAINER)
+    #  SEGMENT HANDLERS — FINAL WORKING VERSION WITH DETAILS BOX
     # ============================================================
-    # Segment handlers
+
     def add_segment(self):
         seg = MissionSegmentWidget()
         seg_layout = getattr(seg, "main_layout", None) or getattr(seg, "layout", lambda: None)()
 
-        # Force compact grid-like alignment (no vertical gaps)
-        if isinstance(seg_layout, (QFormLayout, QGridLayout)):
+        # compact UI
+        try:
             seg_layout.setSpacing(2)
             seg_layout.setContentsMargins(4, 0, 4, 0)
-        else:
-            try:
-                seg_layout.setSpacing(2)
-                seg_layout.setContentsMargins(4, 0, 4, 0)
-            except Exception:
-                pass
+        except:
+            pass
 
-        # Compact input widgets
+        # style fixes
         for widget in seg.findChildren((QLabel, QLineEdit, QComboBox)):
             if isinstance(widget, QLabel):
                 widget.setStyleSheet("QLabel { color:#dbe7ff; margin:0; padding:0; }")
@@ -413,7 +455,6 @@ class MissionWidget(TabWidget):
                         padding:1px 3px;
                         color:#e5f0ff;
                         font-size:11px;
-                        margin:0;
                     }
                 """)
             elif isinstance(widget, QComboBox):
@@ -426,79 +467,64 @@ class MissionWidget(TabWidget):
                         padding:1px 3px;
                         color:#e5f0ff;
                         font-size:11px;
-                        margin:0;
                     }
                     QComboBox::drop-down { width:14px; border:none; }
                 """)
 
-        # Add compact control points row
-        ctrl_row = QHBoxLayout()
-        ctrl_row.setContentsMargins(0, 0, 0, 0)
-        ctrl_row.setSpacing(4)
-
-        seg.ctrl_label = QLabel("Number of Control Points:")
-        seg.ctrl_label.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-
-        seg.ctrl_points = QLineEdit("2")
-        seg.ctrl_points.setFixedWidth(70)
-        seg.ctrl_points.setFixedHeight(22)
-        seg.ctrl_points.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        seg.ctrl_points.setStyleSheet("""
-            QLineEdit {
-                background-color:#2b3038;
-                border:1px solid #3a475a;
-                border-radius:3px;
-                padding:1px 3px;
-                color:#e5f0ff;
-                font-size:11px;
-                margin:0;
-            }
-        """)
-
-        ctrl_row.addWidget(seg.ctrl_label)
-        ctrl_row.addWidget(seg.ctrl_points)
-        ctrl_row.addStretch(1)
-
-        if seg_layout:
-            seg_layout.insertLayout(0, ctrl_row)
-
-        # Build collapsible container
+        # ============================================================
+        #  PANEL WRAPPER
+        # ============================================================
         title = seg.get_default_name().title() if hasattr(seg, "get_default_name") else f"Segment {len(self.segment_widgets)+1}"
+
         panel = CollapsiblePanel(title, seg)
-        panel.setMaximumWidth(900)      # << reduce this number to shrink more
-        panel.setMinimumWidth(900) 
+        panel.setObjectName("segmentPanel")
+        panel.setMaximumWidth(900)
+        panel.setMinimumWidth(900)
         panel.setStyleSheet("""
-            QWidget {
-                background-color:#1c2129;
-                border-radius:4px;
-                margin:0;
-                padding:2px;
+            #segmentPanel {
+                background:#141b29;
+                border:1px solid #2d3a4e;
+                border-radius:6px;
+                padding:6px;
+                margin:4px 0;
             }
         """)
 
         self.segment_widgets.append(seg)
         self.details_layout.addWidget(panel)
 
+        # Divider
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
         line.setStyleSheet("color:#2b3648; margin:2px 0;")
         self.details_layout.addWidget(line)
 
+        # Tree
         self.tree.addTopLevelItem(QTreeWidgetItem([title]))
+
         self._update_profile()
         self.summary_table.update_table()
 
+
+    # ============================================================
+    # PROFILE UPDATE
+    # ============================================================
     def _update_profile(self):
         names = []
         for seg in self.segment_widgets:
             try:
                 data, _ = seg.get_data()
                 names.append(data.get("Segment Name", "Segment"))
-            except Exception:
+            except:
                 names.append("Segment")
+
         self.profile_widget.set_phases(names)
         self.summary_table.update_table()
 
+
+    # ============================================================
+    # SAVE MISSION
+    # ============================================================
     def save_all_data(self):
         self.tree.clear()
         values.mission_data = []
@@ -507,22 +533,34 @@ class MissionWidget(TabWidget):
 
         for idx, seg in enumerate(self.segment_widgets, start=1):
             data, rseg = seg.get_data()
+
+            # control points
             try:
                 cp = int(seg.ctrl_points.text())
-            except Exception:
+            except:
                 cp = 2
-            rseg.control_points = cp
             data["Control Points"] = cp
+            rseg.control_points = cp
+
+            # solver
+            data["Solver"] = "root" if seg.solver_root.isChecked() else "optimize"
+
             values.mission_data.append(data)
             values.rcaide_mission.append_segment(rseg)
+
             seg_name = data.get("Segment Name", f"Segment {idx}")
             self.tree.addTopLevelItem(QTreeWidgetItem([seg_name.title()]))
 
         self._update_profile()
         self.summary_table.update_table()
 
+    # ============================================================
+    # LOAD MISSION
+    # ============================================================
     def load_from_values(self):
         self.tree.clear()
+
+        # clear UI
         for i in reversed(range(self.details_layout.count())):
             w = self.details_layout.itemAt(i).widget()
             if w:
@@ -537,91 +575,38 @@ class MissionWidget(TabWidget):
             seg.load_data(seg_data)
             seg_layout = getattr(seg, "main_layout", None) or getattr(seg, "layout", lambda: None)()
 
-            if isinstance(seg_layout, (QFormLayout, QGridLayout)):
+            try:
                 seg_layout.setSpacing(2)
                 seg_layout.setContentsMargins(4, 0, 4, 0)
-            else:
-                try:
-                    seg_layout.setSpacing(2)
-                    seg_layout.setContentsMargins(4, 0, 4, 0)
-                except Exception:
-                    pass
+            except:
+                pass
 
-            ctrl_row = QHBoxLayout()
-            ctrl_row.setContentsMargins(0, 0, 0, 0)
-            ctrl_row.setSpacing(4)
+            # ============================================================
+            # PANEL WRAPPER
+            # ============================================================
+            title = seg_data.get("Segment Name", "Segment").title()
 
-            seg.ctrl_label = QLabel("Number of Control Points:")
-            seg.ctrl_label.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-
-            seg.ctrl_points = QLineEdit(str(seg_data.get("Control Points", 2)))
-            seg.ctrl_points.setFixedWidth(70)
-            seg.ctrl_points.setFixedHeight(22)
-            seg.ctrl_points.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            seg.ctrl_points.setStyleSheet("""
-                QLineEdit {
-                    background-color:#2b3038;
-                    border:1px solid #3a475a;
-                    border-radius:3px;
-                    padding:1px 3px;
-                    color:#e5f0ff;
-                    font-size:11px;
-                    margin:0;
+            panel = CollapsiblePanel(title, seg)
+            panel.setObjectName("segmentPanel")
+            panel.setStyleSheet("""
+                #segmentPanel {
+                    background:#0d1522;
+                    border:1px solid #2d3a4e;
+                    border-radius:6px;
+                    padding:6px;
+                    margin:4px 0;
                 }
             """)
-
-            ctrl_row.addWidget(seg.ctrl_label)
-            ctrl_row.addWidget(seg.ctrl_points)
-            ctrl_row.addStretch(1)
-            seg_layout.insertLayout(0, ctrl_row)
-
-            for widget in seg.findChildren((QLabel, QLineEdit, QComboBox)):
-                if isinstance(widget, QLabel):
-                    widget.setStyleSheet("QLabel { color:#dbe7ff; margin:0; padding:0; }")
-                elif isinstance(widget, QLineEdit):
-                    widget.setFixedHeight(22)
-                    widget.setStyleSheet("""
-                        QLineEdit {
-                            background-color:#2b3038;
-                            border:1px solid #3a475a;
-                            border-radius:3px;
-                            padding:1px 3px;
-                            color:#e5f0ff;
-                            font-size:11px;
-                            margin:0;
-                        }
-                    """)
-                elif isinstance(widget, QComboBox):
-                    widget.setFixedHeight(22)
-                    widget.setStyleSheet("""
-                        QComboBox {
-                            background-color:#2b3038;
-                            border:1px solid #3a475a;
-                            border-radius:3px;
-                            padding:1px 3px;
-                            color:#e5f0ff;
-                            font-size:11px;
-                            margin:0;
-                        }
-                        QComboBox::drop-down { width:14px; border:none; }
-                    """)
 
             self.segment_widgets.append(seg)
-            panel = CollapsiblePanel(seg_data.get("Segment Name", "Segment").title(), seg)
-            panel.setStyleSheet("""
-                QWidget {
-                    background-color:#1c2129;
-                    border-radius:4px;
-                    margin:0;
-                    padding:2px;
-                }
-            """)
             self.details_layout.addWidget(panel)
 
+            # RCAIDE segment
             rseg = seg.create_rcaide_segment()
             rseg.control_points = seg_data.get("Control Points", 2)
             values.rcaide_mission.append_segment(rseg)
-            self.tree.addTopLevelItem(QTreeWidgetItem([seg_data.get("Segment Name", "Segment").title()]))
+
+            self.tree.addTopLevelItem(QTreeWidgetItem([title]))
 
             line = QFrame()
             line.setFrameShape(QFrame.Shape.HLine)
@@ -630,7 +615,78 @@ class MissionWidget(TabWidget):
 
         self._update_profile()
         self.summary_table.update_table()
+     # ============================================================
+    # REMOVE FAKE CONFIG
+    # ============================================================
+    def _remove_fake_config_from(self, details_layout, seg):
+        """Remove the FAKE 'Aircraft Configuration' dropdown created inside MissionSegmentWidget."""
+        try:
+            for i in range(details_layout.count()):
+                item = details_layout.itemAt(i)
+                w = item.widget()
+                if w is seg.config_selector:
+                    # Remove label before selector
+                    if i - 1 >= 0:
+                        prev = details_layout.itemAt(i - 1).widget()
+                        if isinstance(prev, QLabel) and "Aircraft Configuration" in prev.text():
+                            prev.setParent(None)
+                            details_layout.removeWidget(prev)
+
+                    w.setParent(None)
+                    details_layout.removeWidget(w)
+                    break
+        except:
+            pass
 
 
-def get_widget() -> QWidget:
-    return MissionWidget()
+    # ============================================================
+    # ADD SEGMENT — FIXED VERSION
+    # ============================================================
+    def add_segment(self):
+        seg = MissionSegmentWidget()
+
+        # main segment layout
+        seg_layout = getattr(seg, "segment_layout", None)
+        if seg_layout is None:
+            seg_layout = seg.layout()
+
+        # Clean UI styling
+        try:
+            seg_layout.setSpacing(3)
+            seg_layout.setContentsMargins(4, 2, 4, 2)
+        except:
+            pass
+
+        # Create collapsible panel
+        title = seg.segment_name_input.text() or f"Segment {len(self.segment_widgets)+1}"
+        panel = CollapsiblePanel(title, seg)
+        panel.setObjectName("segmentPanel")
+        panel.setStyleSheet("""
+            #segmentPanel {
+                background:#141b29;
+                border:1px solid #2d3a4e;
+                border-radius:6px;
+                padding:6px;
+                margin:4px 0;
+            }
+        """)
+
+        # Add to UI
+        self.segment_widgets.append(seg)
+        self.details_layout.addWidget(panel)
+
+        # Divider line
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.HLine)
+        line.setStyleSheet("color:#2b3648; margin:2px 0;")
+        self.details_layout.addWidget(line)
+
+        # Update tree, table, and profile
+        self.tree.addTopLevelItem(QTreeWidgetItem([title]))
+        self._update_profile()
+        self.summary_table.update_table()
+
+def get_widget(shared_analysis_widget=None) -> QWidget:
+    return MissionWidget(shared_analysis_widget)
+
+
