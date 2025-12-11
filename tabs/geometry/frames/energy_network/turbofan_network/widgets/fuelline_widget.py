@@ -37,6 +37,7 @@ class FuelLineWidget(QWidget):
         self.tab_widget.addTab(self.propulsor_frame, "Propulsors")
 
         delete_button = QPushButton("Delete Fuel Line", self)
+        delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button.clicked.connect(self.delete_button_pressed)
 
         layout.addWidget(delete_button)

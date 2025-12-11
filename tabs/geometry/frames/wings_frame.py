@@ -93,10 +93,15 @@ class WingsFrame(GeometryFrame):
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
         new_section_button = QPushButton("New Wing Segment", self)
+        new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         new_cs_button = QPushButton("New Control Surface", self)
+        new_cs_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
+        save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button = QPushButton("Delete Data", self)
+        delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         new_button = QPushButton("New Wing Structure", self)
+        new_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
 
         new_section_button.clicked.connect(self.add_wing_section)
         new_cs_button.clicked.connect(self.add_control_surface)

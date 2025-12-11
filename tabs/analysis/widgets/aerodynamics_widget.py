@@ -21,7 +21,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
             self.on_analysis_change)
         self.main_layout.addWidget(self.analysis_selector)
 
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0], num_cols=1)
 
         # Load defaults
         with open("app_data/defaults/aerodynamic_analysis.json", "r") as defaults:
@@ -41,7 +41,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
         assert self.main_layout is not None
 
         self.main_layout.removeWidget(self.data_entry_widget)
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index], num_cols=1)
         self.data_entry_widget.load_data(self.defaults[1])
         # self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.insertWidget(

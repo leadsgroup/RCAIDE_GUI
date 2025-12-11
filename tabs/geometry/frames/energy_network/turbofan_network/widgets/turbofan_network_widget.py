@@ -24,6 +24,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
         layout = self.create_scroll_layout()
 
         add_section_button = QPushButton("Add Fuel Line Section", self)
+        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         add_section_button.setMaximumWidth(200)
 
         add_section_button.clicked.connect(self.add_fuelline_section)
@@ -45,6 +46,7 @@ class TurbofanNetworkWidget(QWidget, EnergyNetworkWidget):
         layout.addLayout(self.fuellines_layout)
 
         update_selector_button = QPushButton("Update Fuel Tank Selector")
+        update_selector_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         update_selector_button.clicked.connect(self.update_fuel_selector)
         layout.addWidget(update_selector_button)
 

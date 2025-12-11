@@ -41,7 +41,7 @@ class SolveWidget(TabWidget):
         main_layout.addWidget(QLabel("Click Solve Button to View Plots"))
 
         # Create the Solve button
-        solve_button = QPushButton("Solve")
+        solve_button = QPushButton("Simulate Mission")
         solve_button.clicked.connect(self.run_solve)
 
         # Create a scroll area for the plot widgets

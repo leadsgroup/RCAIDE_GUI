@@ -62,11 +62,13 @@ class EnergyNetworkFrame(GeometryFrame):
         button_layout = QHBoxLayout()
 
         save_data_button = QPushButton("Save All Energy Network Data", self)
+        save_data_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_data_button.clicked.connect(self.save_data)
         button_layout.addWidget(save_data_button)
 
         new_energy_network_structure_button = QPushButton(
             "Clear All Energy Network Data", self)
+        new_energy_network_structure_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         new_energy_network_structure_button.clicked.connect(
             self.create_new_structure)
         button_layout.addWidget(new_energy_network_structure_button)

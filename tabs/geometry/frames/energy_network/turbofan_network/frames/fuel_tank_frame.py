@@ -25,6 +25,7 @@ class FuelTankFrame(QWidget):
 
         # Add fueltank_ Section Button
         add_section_button = QPushButton("Add Fuel Tank", self)
+        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         add_section_button.setMaximumWidth(200)
         add_section_button.clicked.connect(self.add_fueltank_section)
 
