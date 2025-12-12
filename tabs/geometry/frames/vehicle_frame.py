@@ -9,15 +9,30 @@ import values
 
 class VehicleFrame(GeometryFrame):
     data_units_labels = [
-        ("Max Takeoff Weight", Units.Mass, "mass_properties.max_takeoff"),
-        ("Actual Takeoff Weight", Units.Mass, "mass_properties.takeoff"),
-        ("Operating Empty Weight", Units.Mass, "mass_properties.operating_empty"),
-        ("Maximum Zero Fuel Weight", Units.Mass, "mass_properties.max_zero_fuel"),
-        ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
-        ("Ultimate Load", Units.Unitless, "flight_envelope.ultimate_load"),
-        ("Limit Load", Units.Unitless, "flight_envelope.limit_load"),
         ("Reference Area", Units.Area, "reference_area"),
-        ("Passengers", Units.Count, "passengers"),
+        ("Passengers", Units.Count, "number_of_passengers"),
+        ("Max Takeoff Weight", Units.Mass, "mass_properties.max_takeoff"),
+        ("Takeoff Weight", Units.Mass, "mass_properties.takeoff"),
+        ("Operating Empty Weight", Units.Mass, "mass_properties.operating_empty"),
+        ("Max Fuel Weight", Units.Mass, "mass_properties.max_fuel"),
+        ("Maximum Zero Fuel Weight", Units.Mass, "mass_properties.max_zero_fuel"),
+        ("Fuel Weight", Units.Mass, "mass_properties.fuel"),
+        ("Maximum Payload Weight", Units.Mass, "mass_properties.max_payload"),
+        ("Payload Weight", Units.Mass, "mass_properties.payload"),
+        ("Maximum Landing Weight", Units.Mass, "mass_properties.max_landing"),
+        ("Landing Weight", Units.Mass, "mass_properties.landing"),
+        ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
+        ("Center of Gravity", Units.Position, "origin"),
+        ("Moment of Intertia", Units.Intertia, "mass_properties.moments_of_inertia.tensor"),
+        ("Ultimate Load", Units.Unitless, "flight_envelope.ultimate_load"),
+        ("Positive Limit Load", Units.Unitless, "flight_envelope.positive_limit_load"),
+        ("Negative Limit Load", Units.Unitless, "flight_envelope.negative_limit_load"),
+        ("Design Cruise Altitude", Units.Length, "flight_envelope.design_cruise_altitude"),
+        ("Design Range", Units.Length, "flight_envelope.design_range"),
+        ("Aircraft Category", Units.Unitless, "flight_envelope.category"),
+        ("FAR Part Classification Number", Units.Unitless, "flight_envelope.FAR_part_number"),
+        ("Control Systems", Units.Area, "systems.control"), # should be drop down 
+        ("Accessories", Units.Count, "systems.accessories"), # should be dropdown
     ]
 
     def __init__(self):
