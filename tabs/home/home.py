@@ -313,7 +313,7 @@ QPushButton:hover {
         load_btn.setFixedHeight(42)
 
         aircraft_selector = QComboBox()
-        aircraft_selector.addItems(["Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"])
+        aircraft_selector.addItems(["Select Aircraft","Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"])
         aircraft_selector.setFixedWidth(180)
 
         load_row.addWidget(load_btn)
