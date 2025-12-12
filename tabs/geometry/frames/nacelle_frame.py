@@ -92,9 +92,13 @@ class NacelleFrame(GeometryFrame):
         assert self.main_layout is not None
         
         new_section_button = QPushButton("New Nacelle Section", self)
+        new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
+        save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button = QPushButton("Delete Data", self)
+        delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         new_button = QPushButton("New Nacelle Structure", self)
+        new_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
 
         new_section_button.clicked.connect(self.add_nacelle_section)
         save_button.clicked.connect(self.save_data)

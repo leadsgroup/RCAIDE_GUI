@@ -81,6 +81,7 @@ class WingCSWidget(QWidget):
 
         # Delete button layout
         delete_button = QPushButton("Delete Control Surface")
+        delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button.clicked.connect(self.delete_button_pressed)
         delete_button_layout = QHBoxLayout()
         delete_button_layout.addWidget(delete_button)

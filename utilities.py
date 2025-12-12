@@ -192,6 +192,11 @@ class Units:
         DEGREE = ("degrees", lambda x: np.deg2rad(x))
         unit_list = [DEGREE, RADIAN]
 
+    class Intertia:
+        KILOGRAM_PER_SQUARE_METER = ("kg/m²", lambda x: x)
+        POUND_PER_SQUARE_FOOT = ("sluf/ft²", lambda x: x * 0.204816) 
+        unit_list = [KILOGRAM_PER_SQUARE_METER, POUND_PER_SQUARE_FOOT]        
+
     class Position:
         pass
 

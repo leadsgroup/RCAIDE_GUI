@@ -21,7 +21,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
             self.on_analysis_change)
         self.main_layout.addWidget(self.analysis_selector)
 
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[0], num_cols=1)
 
         # Load defaults
         with open("app_data/defaults/aerodynamic_analysis.json", "r") as defaults:
@@ -41,7 +41,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
         assert self.main_layout is not None
 
         self.main_layout.removeWidget(self.data_entry_widget)
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
+        self.data_entry_widget = DataEntryWidget(self.data_units_labels[index], num_cols=1)
         self.data_entry_widget.load_data(self.defaults[1])
         # self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.insertWidget(
@@ -69,8 +69,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(aerodynamics.settings, rcaide_label, values_si[user_label][0])
-
-        aerodynamics.vehicle = vehicle
+ 
         return aerodynamics
     
     def get_values(self):
@@ -92,10 +91,6 @@ class AerodynamicsWidget(AnalysisDataWidget):
             ("Fuselage Spanwise Vortices", Units.Count, "fuselage_spanwise_vortices"),
             ("Fuselage Chordwise Vortices", Units.Count, "fuselage_chordwise_vortices"),
             ("Spanwise Cosine Spacing", Units.Boolean, "spanwise_cosine_spacing"),
-            ("Vortex Distribution", Units.Unitless, "vortex_distribution"),
-            ("Leading Edge Suction Multiplier", Units.Unitless, "leading_edge_suction_multiplier"),
-            ("Use VORLAX Matrix Calculation", Units.Boolean, "use_VORLAX_matrix_calculation"),
-            ("Floating Point Precision", Units.Unitless, "floating_point_precision"),
 
         ]
     ]

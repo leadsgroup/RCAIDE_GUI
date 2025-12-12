@@ -1,11 +1,14 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit
-from PyQt6.lupdate import user
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit,
+    QGroupBox, QRadioButton
+)
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
 from tabs.mission.widgets.mission_segment_helper import segment_data_fields, segment_rcaide_classes
-from utilities import Units, create_line_bar, clear_layout, set_data, convert_name
+from utilities import Units, set_data, convert_name
 import values
+import RCAIDE
 from widgets import DataEntryWidget
 
 
@@ -13,207 +16,249 @@ class MissionSegmentWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Create the vertical layout for the segment
+        # MAIN LAYOUT
         self.segment_layout = QVBoxLayout()
-        self.subsegment_layout = QVBoxLayout()
-        self.dof_layout = QVBoxLayout()
-        self.top_dropdown = QComboBox()
-        self.nested_dropdown = QComboBox()
-        self.subsegment_entry_widget = None
-        self.flight_controls_widget : FlightControlsWidget = None
-        self.dof_entry_widget : DataEntryWidget = None
-
-        # Align the entire segment_layout to the top
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        # Create each horizontal layout for the Segment Name and type
-        segment_name = QHBoxLayout()
-        segment_type = QHBoxLayout()
-
-        # Add Segment Name label and input box
-        segment_name_label = QLabel("Segment Name:")
-        self.segment_name_input = QLineEdit()
-        segment_name.addWidget(segment_name_label)
-        segment_name.addWidget(self.segment_name_input)
-
-        # Add segment type label and nested dropdown
-        segment_type_label = QLabel("Segment Type:")
-        # Call method to create nested dropdown
-        nested_dropdown = self.create_nested_dropdown()
-        segment_type.addWidget(segment_type_label)
-        segment_type.addLayout(nested_dropdown)
-
-        # TODO: Add aircraft configuration dropdown
-
-        # Adding Horizontal Layouts to Vertical Layout
-        self.segment_layout.addLayout(segment_name)
-        self.segment_layout.addLayout(segment_type)
-
-        # Align segment type layout to top of segment_layout
-        segment_type.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        # Set the layout of the widget as segment_layout
         self.setLayout(self.segment_layout)
 
-        # Create subsegment layout for initial subsegment type and add it to the segment layout
-        # You can set your initial subsegment type here
-        initial_subsegment_type = "Constant CAS/Constant Rate"
-        self.create_subsegment_layout(initial_subsegment_type)
+        # Runtime widgets
+        self.subsegment_entry_widget = None
+        self.dof_entry_widget = None
+        self.flight_controls_widget = None
 
-    # Trying to make sure labels more than 4 get a new row but having clearing problems
-    def create_subsegment_layout(self, subsegment_type):
-        # Clear any existing subsegment layout
-        clear_layout(self.subsegment_layout)
-        clear_layout(self.dof_layout)
+        # Dropdowns
+        self.top_dropdown = QComboBox()
+        self.nested_dropdown = QComboBox()
+        self.config_selector = QComboBox()
 
-        # Get data fields for the selected subsegment type from the dictionary
-        data_fields = segment_data_fields[self.top_dropdown.currentIndex()].get(
-            subsegment_type, [])
+        # ============================================================
+        # GROUP 1 — Specify Segment Settings
+        # ============================================================
+        self.settings_group = QGroupBox("Specify Segment Settings")
+        self.settings_group.setStyleSheet(self._box_style())
+        self.settings_layout = QVBoxLayout(self.settings_group)
 
-        # Initialize or reuse the existing layout
-        self.subsegment_layout = QVBoxLayout()
-        self.config_layout = QHBoxLayout()
+        # Control Points Row
+        cp_row = QHBoxLayout()
+        cp_row.addWidget(QLabel("Number of Control Points:"))
+        self.ctrl_points = QLineEdit("2")
+        self.ctrl_points.setFixedWidth(70)
+        self.ctrl_points.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        cp_row.addWidget(self.ctrl_points)
+        cp_row.addStretch(1)
+        self.settings_layout.addLayout(cp_row)
 
-        self.update_configs()
-        self.subsegment_layout.addLayout(self.config_layout)
+        # Solver Row
+        solver_label = QLabel("Mission Solver:")
+        solver_row = QHBoxLayout()
+        solver_row.addWidget(solver_label)
+        self.solver_root = QRadioButton("Root Solver")
+        self.solver_opt = QRadioButton("Optimize Solver")
+        self.solver_root.setChecked(True)
+        solver_row.addWidget(self.solver_root)
+        solver_row.addWidget(self.solver_opt)
+        solver_row.addStretch(1)
 
-        self.subsegment_entry_widget = DataEntryWidget(data_fields)
-        self.subsegment_layout.addWidget(self.subsegment_entry_widget)
+        self.settings_layout.addLayout(solver_row)
+        self.segment_layout.addWidget(self.settings_group)
 
-        self.subsegment_layout.addWidget(
-            QLabel("<b>Select Degrees of Freedom</b>"))
-        self.subsegment_layout.addWidget(create_line_bar())
+        # ============================================================
+        # GROUP 2 — Specify Segment Details
+        # ============================================================
+        self.details_group = QGroupBox("Specify Segment Details")
+        self.details_group.setStyleSheet(self._box_style())
+        self.details_layout = QVBoxLayout(self.details_group)
+        self.details_layout.setSpacing(6)
+        self.details_layout.setContentsMargins(8, 6, 8, 6)
 
-        dof_fields = [("Forces in X axis", Units.Boolean, "flight_dynamics.force_x"),
-                      ("Moments about X axis", Units.Boolean, "flight_dynamics.moment_x"),
-                      ("Forces in Y axis", Units.Boolean, "flight_dynamics.force_y"),
-                      ("Moments about Y axis", Units.Boolean, "flight_dynamics.moment_y"),
-                      ("Forces in Z axis", Units.Boolean, "flight_dynamics.force_z"),
-                      ("Moments about Z axis", Units.Boolean, "flight_dynamics.moment_z")]
+        # ------------------------------------------------------------
+        # Segment Name (FULL WIDTH, STACKED)
+        # ------------------------------------------------------------
+        name_lbl = QLabel("Segment Name:")
+        self.details_layout.addWidget(name_lbl)
+        self.segment_name_input = QLineEdit()
+        self.details_layout.addWidget(self.segment_name_input)
+
+        # ------------------------------------------------------------
+        # Segment Type (FULL WIDTH, STACKED)
+        # ------------------------------------------------------------
+        stype_lbl = QLabel("Segment Type:")
+        self.details_layout.addWidget(stype_lbl)
+
+        self.top_dropdown.clear()
+        self.top_dropdown.addItems([
+            "Climb", "Cruise", "Descent", "Ground",
+            "Single_Point", "Transition", "Vertical Flight"
+        ])
+        self.top_dropdown.setFixedHeight(28)
+        self.details_layout.addWidget(self.top_dropdown)
+
+        # ------------------------------------------------------------
+        # Subsegment Type (FULL WIDTH, STACKED)
+        # ------------------------------------------------------------
+        ssub_lbl = QLabel("Subsegment Type:")
+        self.details_layout.addWidget(ssub_lbl)
+
+        self.populate_nested_dropdown(self.top_dropdown.currentIndex())
+        self.nested_dropdown.setFixedHeight(28)
+        self.details_layout.addWidget(self.nested_dropdown)
+
+        # ------------------------------------------------------------
+        # Aircraft Configuration (FULL WIDTH, STACKED)
+        # ------------------------------------------------------------
+        cfg_lbl = QLabel("Aircraft Configuration:")
+        self.details_layout.addWidget(cfg_lbl)
+
+        self.config_selector.addItems([c["config name"] for c in values.config_data])
+        self.config_selector.setFixedHeight(28)
+        self.details_layout.addWidget(self.config_selector)
+
+        # Dynamic fields placeholder
+        self.update_subsegment_fields()
+        self.segment_layout.addWidget(self.details_group)
+
+        # ============================================================
+        # GROUP 3 — DOF
+        # ============================================================
+        self.dof_group = QGroupBox("Select Degrees of Freedom")
+        self.dof_group.setStyleSheet(self._box_style())
+        dof_layout = QVBoxLayout(self.dof_group)
+
+        dof_fields = [
+            ("Forces in X axis", Units.Boolean, "flight_dynamics.force_x"),
+            ("Moments about X axis", Units.Boolean, "flight_dynamics.moment_x"),
+            ("Forces in Y axis", Units.Boolean, "flight_dynamics.force_y"),
+            ("Moments about Y axis", Units.Boolean, "flight_dynamics.moment_y"),
+            ("Forces in Z axis", Units.Boolean, "flight_dynamics.force_z"),
+            ("Moments about Z axis", Units.Boolean, "flight_dynamics.moment_z"),
+        ]
 
         self.dof_entry_widget = DataEntryWidget(dof_fields)
-        self.dof_layout.addWidget(self.dof_entry_widget)
-        self.subsegment_layout.addLayout(self.dof_layout)
+        dof_layout.addWidget(self.dof_entry_widget)
+        self.segment_layout.addWidget(self.dof_group)
 
-        # Add the subsegment layout to the segments layout
-        self.segment_layout.addLayout(self.subsegment_layout)
+        # ============================================================
+        # GROUP 4 — Flight Controls
+        # ============================================================
+        self.fc_group = QGroupBox("Select Flight Controls")
+        self.fc_group.setStyleSheet(self._box_style())
+        fc_layout = QVBoxLayout(self.fc_group)
 
-        # Align subsegment layout to top
-        self.subsegment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        self.subsegment_layout.addWidget(
-            QLabel("<b>Select Flight Controls</b>"))
-        self.subsegment_layout.addWidget(create_line_bar())
-        
         self.flight_controls_widget = FlightControlsWidget()
-        self.subsegment_layout.addWidget(self.flight_controls_widget)
-        self.subsegment_layout.addWidget(create_line_bar())
+        fc_layout.addWidget(self.flight_controls_widget)
+        self.segment_layout.addWidget(self.fc_group)
 
-    def populate_nested_dropdown(self, index, nested_dropdown):
-        nested_dropdown.clear()
-        # options = ["Climb", "Cruise", "Descent", "Ground",
-        #            "Single_Point", "Transition", "Vertical Flight"]
-        nested_options = [segment_type.keys()
-                          for segment_type in segment_data_fields]
-        nested_dropdown.addItems(nested_options[index])
+        # SIGNALS
+        self.top_dropdown.currentIndexChanged.connect(self._on_top_dropdown_change)
+        self.nested_dropdown.currentIndexChanged.connect(self.update_subsegment_fields)
 
-    def create_nested_dropdown(self):
-        self.top_dropdown.addItems(["Climb", "Cruise", "Descent", "Ground",
-                                    "Single_Point", "Transition", "Vertical Flight"])
+    # ============================================================
+    def _box_style(self):
+        return """
+        QGroupBox {
+            color:#cfe0ff;
+            font-weight:600;
+            border:1px solid #2d3a4e;
+            border-radius:6px;
+            padding:6px;
+            margin-bottom:6px;
+        }
+        """
 
-        self.nested_dropdown = QComboBox()
+    # ============================================================
+    # DROPDOWN HANDLERS
+    # ============================================================
+    def _on_top_dropdown_change(self, idx):
+        self.populate_nested_dropdown(idx)
+        self.update_subsegment_fields()
 
-        # Call populate_nested_dropdown to populate the nested dropdown based on the initial index
-        self.populate_nested_dropdown(0, self.nested_dropdown)
+    def populate_nested_dropdown(self, index):
+        self.nested_dropdown.clear()
+        self.nested_dropdown.addItems(list(segment_data_fields[index].keys()))
 
-        # Add label for subsegment type
-        subsegment_type_label = QLabel('Sub Segment Type:')
+    # ============================================================
+    # UPDATE SUBSEGMENT FIELDS
+    # ============================================================
+    def update_subsegment_fields(self):
+        if self.subsegment_entry_widget:
+            self.subsegment_entry_widget.setParent(None)
+            self.subsegment_entry_widget = None
 
-        # Connect top dropdown index change to populate the nested dropdown
-        self.top_dropdown.currentIndexChanged.connect(
-            lambda index, nd=self.nested_dropdown: self.populate_nested_dropdown(index, nd))
+        top = self.top_dropdown.currentIndex()
+        sub = self.nested_dropdown.currentText()
 
-        # Connect nested dropdown index change to create subsegment layout
-        self.nested_dropdown.currentIndexChanged.connect(
-            lambda index, nd=self.nested_dropdown: self.create_subsegment_layout(nd.currentText()))
+        if sub == "":
+            return
 
-        layout = QHBoxLayout()
-        layout.addWidget(self.top_dropdown)
-        layout.addWidget(subsegment_type_label)
-        layout.addWidget(self.nested_dropdown)
+        # new dynamic fields
+        data_fields = segment_data_fields[top][sub]
+        self.subsegment_entry_widget = DataEntryWidget(data_fields)
+        self.details_layout.addWidget(self.subsegment_entry_widget)
 
-        return layout
-
-    def delete_widget(self):
-        self.deleteLater()
-
+    # ============================================================
+    # SAVE DATA
+    # ============================================================
     def get_data(self):
-        assert self.subsegment_entry_widget is not None and isinstance(
-            self.subsegment_entry_widget, DataEntryWidget)
-        
-        data = self.subsegment_entry_widget.get_values()
-        data["Segment Name"] = self.segment_name_input.text()
-        data["flight forces"] = self.dof_entry_widget.get_values()
-        data["flight controls"] = self.flight_controls_widget.get_data()
-        data["top dropdown"] = self.top_dropdown.currentIndex()
-        data["nested dropdown"] = self.nested_dropdown.currentText()
-        data["config"] = self.config_selector.currentIndex()
-                
-        rcaide_segment = self.create_rcaide_segment()
-        return data, rcaide_segment
-    
-    def load_data(self, data):
-        self.top_dropdown.setCurrentIndex(data["top dropdown"])
-        self.nested_dropdown.setCurrentText(data["nested dropdown"])
+        data = {
+            "Segment Name": self.segment_name_input.text(),
+            "top dropdown": self.top_dropdown.currentIndex(),
+            "nested dropdown": self.nested_dropdown.currentText(),
+            "config": self.config_selector.currentIndex(),
+            "Control Points": int(self.ctrl_points.text()),
+            "Solver": "root" if self.solver_root.isChecked() else "optimize",
+            "flight forces": self.dof_entry_widget.get_values(),
+            "flight controls": self.flight_controls_widget.get_data(),
+        }
 
-        assert self.subsegment_entry_widget is not None and isinstance(
-            self.subsegment_entry_widget, DataEntryWidget)
-        self.subsegment_entry_widget.load_data(data)
+        data.update(self.subsegment_entry_widget.get_values())
+        return data, self.create_rcaide_segment()
+
+    # ============================================================
+    # LOAD DATA
+    # ============================================================
+    def load_data(self, data):
         self.segment_name_input.setText(data["Segment Name"])
-        
-        assert self.dof_entry_widget is not None and isinstance(
-            self.dof_entry_widget, DataEntryWidget)
+        self.top_dropdown.setCurrentIndex(data["top dropdown"])
+        self.populate_nested_dropdown(data["top dropdown"])
+        self.nested_dropdown.setCurrentText(data["nested dropdown"])
+        self.config_selector.setCurrentIndex(data["config"])
+        self.ctrl_points.setText(str(data.get("Control Points", 2)))
+
+        if data.get("Solver", "root") == "root":
+            self.solver_root.setChecked(True)
+        else:
+            self.solver_opt.setChecked(True)
+
+        self.update_subsegment_fields()
+        self.subsegment_entry_widget.load_data(data)
         self.dof_entry_widget.load_data(data["flight forces"])
-        
         self.flight_controls_widget.load_data(data["flight controls"])
 
-    def update_configs(self):
-        clear_layout(self.config_layout)
-
-        config_names = [config["config name"]
-                        for config in values.config_data]
-        self.config_selector = QComboBox()
-        self.config_selector.addItems(config_names)
-        self.config_layout.addWidget(QLabel("Aircraft Configuration: "), 3)
-        self.config_layout.addWidget(self.config_selector, 7)
-
+    # ============================================================
+    # RCAIDE CREATION
+    # ============================================================
     def create_rcaide_segment(self):
-        segment = segment_rcaide_classes[self.top_dropdown.currentIndex(
-        )][self.nested_dropdown.currentText()]()
-        segment.tag = self.segment_name_input.text()
+        top = self.top_dropdown.currentIndex()
+        sub = self.nested_dropdown.currentText()
+        seg = segment_rcaide_classes[top][sub]()
+        seg.tag = self.segment_name_input.text()
 
-        assert self.subsegment_entry_widget is not None and isinstance(
-            self.subsegment_entry_widget, DataEntryWidget)
-        values_si = self.subsegment_entry_widget.get_values_si()
+        vals_si = self.subsegment_entry_widget.get_values_si()
+        for label, _, rcaide_label in self.subsegment_entry_widget.data_units_labels:
+            set_data(seg, rcaide_label, vals_si[label][0])
 
-        for data_unit_label in self.subsegment_entry_widget.data_units_labels:
-            rcaide_label = data_unit_label[-1]
-            user_label = data_unit_label[0]
-            set_data(segment, rcaide_label, values_si[user_label][0])
-        
-        assert self.dof_entry_widget is not None and isinstance(
-            self.dof_entry_widget, DataEntryWidget)
-        dof_values = self.dof_entry_widget.get_values()
-        
-        for data_unit_label in self.dof_entry_widget.data_units_labels:
-            rcaide_label = data_unit_label[-1]
-            user_label = data_unit_label[0]
-            set_data(segment, rcaide_label, dof_values[user_label][0])
-        
-        self.flight_controls_widget.set_control_variables(segment)
-        
-        config_tag = convert_name(self.config_selector.currentText())
-        analyses = values.rcaide_analyses[config_tag]
-        segment.analyses.extend(analyses)
-        
-        return segment
+        dof_vals = self.dof_entry_widget.get_values()
+        for label, _, rcaide_label in self.dof_entry_widget.data_units_labels:
+            set_data(seg, rcaide_label, dof_vals[label][0])
+
+        self.flight_controls_widget.set_control_variables(seg)
+
+        cfg = convert_name(self.config_selector.currentText())
+        analyses = values.rcaide_analyses.get(cfg)
+        if analyses is None:
+            analyses = RCAIDE.Framework.Analyses.Vehicle()
+            values.rcaide_analyses[cfg] = analyses
+
+        seg.analyses.extend(analyses)
+        seg.control_points = int(self.ctrl_points.text())
+        return seg

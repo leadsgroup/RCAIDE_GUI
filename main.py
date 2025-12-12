@@ -48,13 +48,14 @@ class App(QMainWindow):
 
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
-        self.widgets.append((geometry.get_widget(), "Geometry"))
-
-        self.widgets.append((visualize_geometry.get_widget(), "Visualize Geometry"))
+        self.widgets.append((geometry.get_widget(), "Geometry Parameterization")) 
+        self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
         self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
-        self.widgets.append((analysis.get_widget(), "Analysis"))
-        self.widgets.append((mission.get_widget(), "Mission"))
-        self.widgets.append((solve.get_widget(), "Solve"))
+        # make one shared analysis widget for both tabs
+        shared_analysis_widget = analysis.get_widget() 
+        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
+        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Specification")) 
+        self.widgets.append((solve.get_widget(), "Flight Simulation"))
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
@@ -62,18 +63,18 @@ class App(QMainWindow):
         self.setCentralWidget(self.tabs)
         self.resize(1280, 720)
 
-        name = "app_data/aircraft/737.json"
-        try:
-            file = open(name, 'r')
-        except FileNotFoundError:
-            print("Not found?")
+        # name = "app_data/aircraft/737.json"
+        # try:
+        #     file = open(name, 'r')
+        # except FileNotFoundError:
+        #     print("Not found?")
 
-        data_str = file.read()
-        file.close()
-        values.read_from_json(data_str)
-        for widget, name in self.widgets:
-            assert isinstance(widget, TabWidget)
-            widget.load_from_values()
+        # data_str = file.read()
+        # file.close()
+        # values.read_from_json(data_str)
+        # for widget, name in self.widgets:
+        #     assert isinstance(widget, TabWidget)
+        #     widget.load_from_values()
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()

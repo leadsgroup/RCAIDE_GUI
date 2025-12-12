@@ -72,8 +72,7 @@ class NoiseWidget(AnalysisDataWidget):
 
         settings.noise_hemisphere_theta_angle_bounds = [
             theta_lower_bound, theta_upper_bound]
-
-        noise.vehicle = vehicle
+ 
         return noise
     
     def get_values(self):

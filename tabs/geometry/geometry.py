@@ -61,6 +61,7 @@ class GeometryWidget(TabWidget):
         vehicle_item = QTreeWidgetItem(["Vehicle"])
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
+        self.tree.expandAll()
 
         # self.right_layout.addWidget(Color("blue"), 3)
         self.right_layout.addLayout(self.main_layout)
@@ -168,6 +169,7 @@ class GeometryWidget(TabWidget):
 
             if not values.geometry_data[tab_index] or top_item.childCount() < tab_index:
                 component_item = QTreeWidgetItem([self.tabs[tab_index]])
+                component_item.setExpanded(True)
                 top_item.insertChild(tree_index, component_item)
             if new:
                 if index == -1:
@@ -181,6 +183,7 @@ class GeometryWidget(TabWidget):
                 child = QTreeWidgetItem([data["name"]])
                 item = top_item.child(tree_index)
                 assert item is not None
+                item.setExpanded(True)
                 item.addChild(child)
                 index = item.indexOfChild(child)
             else:

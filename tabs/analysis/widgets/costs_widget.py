@@ -20,6 +20,5 @@ class CostsWidget(AnalysisDataWidget):
         self.setLayout(self.main_layout)
 
     def create_analysis(self, vehicle):
-        costs = RCAIDE.Framework.Analyses.Costs.Costs()
-        costs.vehicle = vehicle
+        costs = RCAIDE.Framework.Analyses.Costs.Costs() 
         return costs

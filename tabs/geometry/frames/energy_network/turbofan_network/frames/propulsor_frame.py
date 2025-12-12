@@ -24,6 +24,7 @@ class PropulsorFrame(QWidget):
 
         # Add propulsor_ Section Button
         add_section_button = QPushButton("Add Propulsor", self)
+        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         add_section_button.setMaximumWidth(200)
         add_section_button.clicked.connect(self.add_propulsor_section)
         header_layout.addWidget(add_section_button)
