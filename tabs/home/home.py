@@ -349,6 +349,77 @@ QPushButton:hover {
         scratch_container.addWidget(scratch_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         mission_layout.addLayout(scratch_container)
 
+                # === Navigation Handler [Anshrin PR 1] ===
+        def go_to_geometry_tab(selected_aircraft=None):
+            # Find the TabWidget that contains this HomeWidget
+            parent = self.window()
+            tabs = None
+            # Try possible parent-paths
+            if hasattr(parent, "tabs"):
+                tabs = parent.tabs
+            elif hasattr(parent, "tab_widget"):
+                tabs = parent.tab_widget
+            from PyQt6.QtWidgets import QTabWidget
+            if not tabs:
+                w = self
+                while w is not None:
+                    if isinstance(w, QTabWidget):
+                        tabs = w
+                        break
+                    w = w.parentWidget()
+            if not tabs:
+                print("[Home] No TabWidget found in parent chain.")
+                return
+
+            # Locate Geometry tab by attribute or title
+            idx = -1
+            if hasattr(tabs, "geometry_tab"):
+                try:
+                    idx = tabs.indexOf(tabs.geometry_tab)
+                except Exception:
+                    idx = -1
+            if idx == -1:
+                geometry_names = {"geometry", "geometry parameterization", "aircraft geometry"}
+                for i in range(tabs.count()):
+                    title = tabs.tabText(i).strip().lower()
+                    if any(name in title for name in geometry_names):
+                        idx = i
+                        break
+            if idx == -1:
+                print("[Home] Geometry tab not found.")
+                return
+
+            # Switch and initialize
+            tabs.setCurrentIndex(idx)
+            w = tabs.widget(idx)
+            if hasattr(w, "load_from_values"):
+                try:
+                    w.load_from_values()
+                except Exception as e:
+                    print(f"[Home] Geometry tab load error: {e}")
+
+        # --- Button Logic ---
+        def handle_load_click():
+            aircraft = aircraft_selector.currentText().strip()
+            if aircraft == "Select Aircraft":
+                print("[Home] No aircraft selected — staying on Home page.")
+                # Optional: show a small warning popup
+                from PyQt6.QtWidgets import QMessageBox
+                msg = QMessageBox()
+                msg.setWindowTitle("Select an Aircraft")
+                msg.setText("Please select an aircraft before loading mission data.")
+                msg.setIcon(QMessageBox.Icon.Warning)
+                msg.exec()
+                return
+            go_to_geometry_tab(selected_aircraft=aircraft)
+
+        def handle_scratch_click():
+            go_to_geometry_tab()
+
+        load_btn.clicked.connect(handle_load_click)
+        scratch_btn.clicked.connect(handle_scratch_click)
+
+
         # Sizes
         self._normal_flowchart_size = QSize(620, 320)
         self._normal_mission_size = QSize(550, 310)
