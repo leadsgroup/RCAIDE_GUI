@@ -1343,7 +1343,7 @@
             {
                 "energy network selected": "Turbofan",
                 "name": "network",
-                "energy_network": [
+                "powertrain": [
                     {
                         "name": "line_1",
                         "fuel tank data": [

@@ -16,13 +16,11 @@ class GeometryWidget(TabWidget):
         super(GeometryWidget, self).__init__()
 
         # Define actions based on the selected index
-        self.frames: list[Type[GeometryFrame]] = [VehicleFrame, FuselageFrame, WingsFrame, NacelleFrame,
-                                                  LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["", "Fuselages", "Wings", "Nacelles",
-                     "Landing Gear", "Energy Networks"]
+        self.frames: list[Type[GeometryFrame]] = [VehicleFrame, BoomFrame, CargoBayFrame, FuselageFrame, LandingGearFrame,  NacelleFrame, 
+                                                  PowertrainFrame , WingsFrame]
+        self.tabs = ["", "Booms", "Cargo Bars", "Fuselages",  "Landing Gear",  "Nacelles" , "Wings",  "Powertrain"]
 
-        options = ["Add Vehicle Compoment", "Add Fuselage", "Add Wing", "Add Nacelle", "Add Landing Gear",
-                   "Add Energy Network"]
+        options = ["Add Vehicle Compoment", "Add Boom", "Add Cargo Bay", "Add Fuselage", "Add Landing Gear" ,  "Add Nacelle", "Add Powertrain", "Add Wing"]
 
         values.geometry_data = []
         values.vehicle = RCAIDE.Vehicle()
@@ -39,7 +37,7 @@ class GeometryWidget(TabWidget):
             frame_widget = frame()
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index)
-            self.main_layout.addWidget(frame_widget)  # type: ignore
+            self.main_layout.addWidget(frame_widget) 
 
         vehicle_name_layout = QHBoxLayout()
         vehicle_name_layout.addWidget(QLabel("Vehicle Name:"))
@@ -62,8 +60,7 @@ class GeometryWidget(TabWidget):
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
         self.tree.expandAll()
-
-        # self.right_layout.addWidget(Color("blue"), 3)
+ 
         self.right_layout.addLayout(self.main_layout)
         base_layout.addLayout(self.tree_frame_layout, 1)
         base_layout.addLayout(self.right_layout, 4)
@@ -147,8 +144,7 @@ class GeometryWidget(TabWidget):
             vehicle_component: The vehicle component to be appended to the vehicle.
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
-        """
-        # print("Saving data:", data)
+        """ 
         if data is None:
             return
 
@@ -158,7 +154,7 @@ class GeometryWidget(TabWidget):
             values.vehicle.tag = data["name"]
             for data_unit_label in VehicleFrame.data_units_labels:
                 rcaide_label = data_unit_label[-1]
-                user_label = data_unit_label[0]
+                user_label   = data_unit_label[0]
                 set_data(values.vehicle, rcaide_label, data[user_label][0])
         else:
             top_item = self.tree.topLevelItem(0)

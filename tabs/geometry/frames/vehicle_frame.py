@@ -22,7 +22,7 @@ class VehicleFrame(GeometryFrame):
         ("Maximum Landing Weight", Units.Mass, "mass_properties.max_landing"),
         ("Landing Weight", Units.Mass, "mass_properties.landing"),
         ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
-        ("Center of Gravity", Units.Position, "origin"),
+        ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),
         ("Moment of Intertia", Units.Intertia, "mass_properties.moments_of_inertia.tensor"),
         ("Ultimate Load", Units.Unitless, "flight_envelope.ultimate_load"),
         ("Positive Limit Load", Units.Unitless, "flight_envelope.positive_limit_load"),
@@ -75,23 +75,11 @@ class VehicleFrame(GeometryFrame):
 
     def create_rcaide_structure(self):
         raise NotImplementedError("This method should not be called")
-        # vehicle = RCAIDE.Vehicle()
-        # vehicle.tag = data["name"]
-
-        # for data_unit_label in self.data_units_labels:
-        #     rcaide_label = data_unit_label[-1]
-        #     user_label = data_unit_label[0]
-        #     set_data(vehicle, rcaide_label, data[user_label][0])
-
+    
     def get_data_values(self):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
-        data["name"] = self.name_line_edit.text()
-
-        # si_data = self.data_entry_widget.get_values_si()
-        # si_data["name"] = data["name"]
-
-        # vehicle = self.create_rcaide_structure(si_data)
+        data["name"] = self.name_line_edit.text() 
         return data
 
     def update_layout(self): 

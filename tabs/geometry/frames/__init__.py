@@ -1,8 +1,16 @@
+# RCAIDE_GUI/tabs/geometry/frames/__init__.py
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+
 from tabs.geometry.frames.geometry_frame import GeometryFrame
-from tabs.geometry.frames.default_frame import DefaultFrame
-from tabs.geometry.frames.energy_network_frame import EnergyNetworkFrame
-from tabs.geometry.frames.fuselage_frame import FuselageFrame
-from tabs.geometry.frames.landing_gear_frame import LandingGearFrame
-from tabs.geometry.frames.nacelle_frame import NacelleFrame
-from tabs.geometry.frames.wings_frame import WingsFrame
+from tabs.geometry.frames.default_frame import DefaultFrame 
 from tabs.geometry.frames.vehicle_frame import VehicleFrame
+
+from tabs.geometry.frames.booms import * 
+from tabs.geometry.frames.cargo_bays import * 
+from tabs.geometry.frames.fuselages import * 
+from tabs.geometry.frames.landing_gears import * 
+from tabs.geometry.frames.nacelles import * 
+from tabs.geometry.frames.powertrain import * 
+from tabs.geometry.frames.wings import * 

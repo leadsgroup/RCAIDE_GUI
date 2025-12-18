@@ -94,8 +94,8 @@ class AircraftConfigsWidget(TabWidget):
                 control_surface["wing name"] = wing["name"]
                 self.control_surface_data.append(control_surface)
 
-        for energy_network in self.data[5]:
-            for fuel_line in energy_network["energy_network"]:
+        for powertrain in self.data[5]:
+            for fuel_line in powertrain["powertrain"]:
                 for propulsor in fuel_line["propulsor data"]:
                     propulsor["fuel line name"] = fuel_line["name"]
                     self.propulsor_data.append(propulsor)

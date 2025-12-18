@@ -20,7 +20,7 @@ class AircraftConfigsWidget(TabWidget):
 
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
-                                                  LandingGearFrame, EnergyNetworkFrame]
+                                                  LandingGearFrame, PowertrainFrame]
         self.tabs = ["", "Fuselages", "Wings", "Nacelles",
                      "Landing Gear", "Energy Networks"]
 
