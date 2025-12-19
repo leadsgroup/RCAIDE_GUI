@@ -2,4 +2,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from tabs.geometry.frames.powertrain.distributors.fuel_line_widget    import  FuelLineWidget
+from tabs.geometry.widgets.powertrain.distributors.distributor_widget    import DistributorWidget

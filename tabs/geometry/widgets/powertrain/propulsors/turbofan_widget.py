@@ -1,157 +1,201 @@
+from lib2to3.pytree import convert
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QTabWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          import design_turbofan 
 
-from tabs.geometry.widgets.powertrain              import PowertrainWidget
-from tabs.geometry.widgets.powertrain.distributors import FuelLineWidget 
-from tabs.geometry.widgets.powertrain.sources      import TankSelectorWidget
+from utilities import Units, convert_name
 from widgets import DataEntryWidget
+import values
 
 
-class TurbofanWidget(QWidget, PowertrainWidget):
-    def __init__(self):
+class TurbofanWidget(QWidget):
+    def __init__(self, index, on_delete, data_values=None):
+        """Create a frame for entering landing gear data."""
         super(TurbofanWidget, self).__init__()
 
-        self.save_function = None
-        self.data_entry_widget: DataEntryWidget | None = None
+        self.data_values = {}
+        self.index = index
+        self.on_delete = on_delete
 
-        self.fuellines_layout = QVBoxLayout()  # Define main_layout here
-        self.fuellines_layout.setContentsMargins(0, 0, 0, 0)
+        main_section_layout = QVBoxLayout()
 
-        self.tank_selector_data = None
+        # TODO: Change to duplicate turbofan
+        # TODO: Make sure 2 turbofans aren't at the same origin
 
-        # Header
-        header_layout = QHBoxLayout()
+        data_units_labels = [
+            # ("Turbofan", Units.Heading),
+            ("Origin", Units.Position),
+            ("Engine Length", Units.Length),
+            ("Bypass Ratio", Units.Unitless),
+            ("Design Altitude", Units.Length),
+            ("Design Mach Number", Units.Unitless),
+            ("Design Thrust", Units.Force),
+            ("Fan", Units.Heading),
+            ("Fan Polytropic Efficiency", Units.Unitless),
+            ("Fan Pressure Ratio", Units.Unitless),
+            ("Inlet Nozzle", Units.Heading),
+            ("IN Polytropic Efficiency", Units.Unitless),
+            ("IN Pressure Ratio", Units.Unitless),
+            ("Low Pressure Compressor", Units.Heading),
+            ("LPC Polytropic Efficiency", Units.Unitless),
+            ("LPC Pressure Ratio", Units.Unitless),
+            ("High Pressure Compressor", Units.Heading),
+            ("HPC Polytropic Efficiency", Units.Unitless),
+            ("HPC Pressure Ratio", Units.Unitless),
+            ("Low Pressure Turbine", Units.Heading),
+            ("LPT Mechanical Efficiency", Units.Unitless),
+            ("LPT Polytropic Efficiency", Units.Unitless),
+            ("High Pressure Turbine", Units.Heading),
+            ("HPT Mechanical Efficiency", Units.Unitless),
+            ("HPT Polytropic Efficiency", Units.Unitless),
+            ("Combustor", Units.Heading),
+            ("Combustor Efficiency", Units.Unitless),
+            ("Combustor Pressure Loss Coeff", Units.Unitless),
+            ("Combustor Turbine Inlet Temp", Units.Temperature),
+            ("Combustor Pressure Ratio", Units.Unitless),
+            ("Core Nozzle", Units.Heading),
+            ("CN Polytropic Efficiency", Units.Unitless),
+            ("CN Pressure Ratio", Units.Unitless),
+            ("Fan Nozzle", Units.Heading),
+            ("FN Polytropic Efficiency", Units.Unitless),
+            ("FN Pressure Ratio", Units.Unitless),
+        ]
 
-        layout = self.create_scroll_layout()
+        self.name_layout = QHBoxLayout()
+        self.section_name_edit = QLineEdit(self)
+        self.name_layout.addWidget(QLabel("Turbofan Name: "))
+        self.name_layout.addWidget(self.section_name_edit)
+        main_section_layout.addLayout(self.name_layout)
 
-        add_section_button = QPushButton("Add Fuel Line Section", self)
-        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        add_section_button.setMaximumWidth(200)
+        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        main_section_layout.addWidget(self.data_entry_widget)
+        
+        nacelle_data = values.geometry_data[3]
+        nacelle_tags = []
+        for nacelle in nacelle_data:
+            nacelle_tags.append(convert_name(nacelle["name"]))
+        self.nacelle_selector = QComboBox()
+        self.nacelle_selector.addItems(nacelle_tags)
 
-        add_section_button.clicked.connect(self.add_fuelline_section)
-        header_layout.addWidget(add_section_button)
+        # Adding delete button
+        delete_button = QPushButton("Delete Propulsor", self)
+        delete_button.clicked.connect(self.delete_button_pressed)
 
-        layout.addLayout(header_layout)
+        main_section_layout.addWidget(delete_button)
 
-        name_layout = QHBoxLayout()
-
-        layout.addLayout(name_layout)
-
-        # Add line above buttons
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         line_bar.setStyleSheet("background-color: light grey;")
 
-        layout.addWidget(line_bar)
-        layout.addLayout(self.fuellines_layout)
+        main_section_layout.addWidget(line_bar)
 
-        update_selector_button = QPushButton("Update Fuel Tank Selector")
-        update_selector_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        update_selector_button.clicked.connect(self.update_fuel_selector)
-        layout.addWidget(update_selector_button)
+        self.setLayout(main_section_layout)
 
-        self.fuel_tank_selector = QTabWidget()
-        self.fuel_tank_selector.setTabPosition(QTabWidget.TabPosition.North)
-        layout.addWidget(self.fuel_tank_selector)
+        if data_values:
+            self.load_data_values(data_values)
 
-    def add_fuelline_section(self):
-        self.fuellines_layout.addWidget(
-            FuelLineWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
+    def delete_button_pressed(self):
+        print("Delete button pressed")
 
-    def update_fuel_selector(self, data=None):
-        self.fuel_tank_selector.clear()
-        if data is None or isinstance(data, bool):
-            data, _ = self.get_data_values(just_data=True)
+        if self.on_delete is None:
+            print("on_delete is None")
+            return
 
-        self.tank_selector_data = data
-        for line_data in data:
-            for propulsor_data in line_data["propulsor data"]:
-                tank_names = [tank["Segment Name"]
-                              for tank in line_data["fuel tank data"]]
-                propulsor_name = propulsor_data["propulsor name"]
-                self.fuel_tank_selector.addTab(TankSelectorWidget(
-                    tank_names, propulsor_name), propulsor_name)
+        self.on_delete(self.index)
+
+    def create_rcaide_structure(self, data):
+        turbofan = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+        turbofan.tag = data["propulsor name"]
+        turbofan.origin = data["Origin"][0]
+        turbofan.engine_length = data["Engine Length"][0]
+        turbofan.bypass_ratio = data["Bypass Ratio"][0]
+        turbofan.design_altitude = data["Design Altitude"][0]
+        turbofan.design_mach_number = data["Design Mach Number"][0]
+        turbofan.design_thrust = data["Design Thrust"][0]
+
+        fan = RCAIDE.Library.Components.Powertrain.Converters.Fan()
+        fan.tag = "fan"
+        fan.polytropic_efficiency = data["Fan Polytropic Efficiency"][0]
+        fan.pressure_ratio = data["Fan Pressure Ratio"][0]
+        turbofan.fan = fan
+
+        turbofan.working_fluid = RCAIDE.Library.Attributes.Gases.Air()
+        ram = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+        ram.tag = "ram"
+        turbofan.ram = ram
+
+        inlet_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
+        inlet_nozzle.tag = "inlet nozzle"
+        inlet_nozzle.polytropic_efficiency = data["IN Polytropic Efficiency"][0]
+        inlet_nozzle.pressure_ratio = data["IN Pressure Ratio"][0]
+        turbofan.inlet_nozzle = inlet_nozzle
+
+        low_pressure_compressor = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
+        low_pressure_compressor.tag = "lpc"
+        low_pressure_compressor.polytropic_efficiency = data["LPC Polytropic Efficiency"][0]
+        low_pressure_compressor.pressure_ratio = data["LPC Pressure Ratio"][0]
+        turbofan.low_pressure_compressor = low_pressure_compressor
+
+        high_pressure_compressor = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
+        high_pressure_compressor.tag = "hpc"
+        high_pressure_compressor.polytropic_efficiency = data["HPC Polytropic Efficiency"][0]
+        high_pressure_compressor.pressure_ratio = data["HPC Pressure Ratio"][0]
+        turbofan.high_pressure_compressor = high_pressure_compressor
+
+        low_pressure_turbine = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
+        low_pressure_turbine.tag = "lpt"
+        low_pressure_turbine.mechanical_efficiency = data["LPT Mechanical Efficiency"][0]
+        low_pressure_turbine.polytropic_efficiency = data["LPT Polytropic Efficiency"][0]
+        turbofan.low_pressure_turbine = low_pressure_turbine
+
+        high_pressure_turbine = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
+        high_pressure_turbine.tag = "hpt"
+        high_pressure_turbine.mechanical_efficiency = data["HPT Mechanical Efficiency"][0]
+        high_pressure_turbine.polytropic_efficiency = data["HPT Polytropic Efficiency"][0]
+        turbofan.high_pressure_turbine = high_pressure_turbine
+
+        combustor = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
+        combustor.tag = "comb"
+        combustor.efficiency = data["Combustor Efficiency"][0]
+        combustor.alphac = data["Combustor Pressure Loss Coeff"][0]
+        combustor.turbine_inlet_temperature = data["Combustor Turbine Inlet Temp"][0]
+        combustor.pressure_ratio = data["Combustor Pressure Ratio"][0]
+        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+        turbofan.combustor = combustor
+
+        core_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
+        core_nozzle.tag = "core nozzle"
+        core_nozzle.polytropic_efficiency = data["CN Polytropic Efficiency"][0]
+        core_nozzle.pressure_ratio = data["CN Pressure Ratio"][0]
+        turbofan.core_nozzle = core_nozzle
+
+        fan_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
+        fan_nozzle.tag = "fan nozzle"
+        fan_nozzle.polytropic_efficiency = data["FN Polytropic Efficiency"][0]
+        fan_nozzle.pressure_ratio = data["FN Pressure Ratio"][0]
+        turbofan.fan_nozzle = fan_nozzle
+        
+        turbofan.nacelle = values.vehicle.nacelles[self.nacelle_selector.currentText()]
+
+        design_turbofan(turbofan)
+        return turbofan
 
     def load_data_values(self, data):
-        for i in reversed(range(self.fuellines_layout.count())):
-            widget_item = self.fuellines_layout.itemAt(i)
-            assert widget_item is not None
-            widget = widget_item.widget()
-            assert widget is not None
+        self.data_entry_widget.load_data(data)
+        self.section_name_edit.setText(data["propulsor name"])
+        self.nacelle_selector.setCurrentText(data["nacelle tag"])
 
-            self.fuellines_layout.removeWidget(widget)
-            widget.deleteLater()
+    def get_data_values(self):
+        title = self.section_name_edit.text()
+        data = self.data_entry_widget.get_values()
+        data["propulsor name"] = title
 
-        for index, section in enumerate(data):
-            self.fuellines_layout.addWidget(
-                FuelLineWidget(index, self.on_delete_button_pressed, section))
+        values.propulsor_names[0].append(convert_name(title))
+
+        data_si = self.data_entry_widget.get_values_si()
+        data_si["propulsor name"] = title
         
-        self.update_fuel_selector(self.get_data_values(just_data=True)[0])
+        data["nacelle tag"] = self.nacelle_selector.currentText()
 
-    def get_data_values(self, just_data=False):
-        # Collect data from fuel line widgets
-        data = []
-        lines = []
-        for index in range(self.fuellines_layout.count()):
-            item = self.fuellines_layout.itemAt(index)
-            assert item is not None
-            widget = item.widget()
-            assert widget is not None and isinstance(widget, FuelLineWidget)
-            fuelline_data, line, propulsors = widget.get_data_values()
-            assert isinstance(line, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
-
-            data.append(fuelline_data)
-            lines.append(line)
-
-        if just_data:
-            return data, [], []
-
-        if self.tank_selector_data != data:
-            print(self.tank_selector_data)
-            print(data)
-            print("Tank selector is not updated!")
-            return False, False
-
-        for line in lines:
-            for propulsor in propulsors:
-                assert isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan)
-
-                for index in range(self.fuel_tank_selector.count()):
-                    tank_selector = self.fuel_tank_selector.widget(index)
-                    assert isinstance(tank_selector, TankSelectorWidget)
-                    if tank_selector.name != propulsor.tag:
-                        continue
-
-                    propulsor.active_fuel_tanks = tank_selector.get_selected_tanks() 
-                    break
-
-        return data, lines, propulsors
-
-    def on_delete_button_pressed(self, index):
-        widget_item = self.fuellines_layout.itemAt(index)
-        if widget_item is not None:
-            widget = widget_item.widget()
-            self.fuellines_layout.removeWidget(widget)
-            self.fuellines_layout.update()
-            print("Deleted Fuel Line at Index:", index)
-
-            for i in range(index, self.fuellines_layout.count()):
-                widget_item = self.fuellines_layout.itemAt(i)
-                assert widget_item is not None
-                widget = widget_item.widget()
-                assert widget is not None and isinstance(
-                    widget, FuelLineWidget)
-
-                widget.index = i
-                print("Updated Index:", i)
-
-    def create_scroll_layout(self):
-        # Create a widget to contain the layout
-        scroll_content = QWidget()
-        # Set the main layout inside the scroll content
-        layout = QVBoxLayout(scroll_content)
-
-        # Set the main layout of the widget
-        self.setLayout(layout)
-        return layout
+        return data, self.create_rcaide_structure(data_si)

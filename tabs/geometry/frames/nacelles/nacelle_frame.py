@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
     QPushButton, QLineEdit, QComboBox
 
 from tabs.geometry.frames import GeometryFrame
-from tabs.geometry.widgets import NacelleSectionWidget
+from tabs.geometry.widgets.nacelles.nacelle_section_widget import NacelleSectionWidget
 from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 

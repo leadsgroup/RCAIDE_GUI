@@ -5,9 +5,9 @@ from tabs.geometry.frames import GeometryFrame
 from utilities import Units
 from widgets import DataEntryWidget
 
-class FuelTankWidget(GeometryFrame):
+class EnergySourceWidget(GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):
-        super(FuelTankWidget, self).__init__()
+        super(EnergySourceWidget, self).__init__()
 
         self.data_values = {}
         self.index = index
@@ -20,7 +20,7 @@ class FuelTankWidget(GeometryFrame):
             ("Fuel", Units.Heading),
             ("Fuel Origin", Units.Position),
             ("Center of Gravity", Units.Position),
-            # ("Fuel", Units.Unitless),
+            # ("Fuel", Units.Unitless), # make dropdown box
             ("Mass", Units.Mass),
             ("Internal Volume", Units.Volume),
         ]
@@ -75,15 +75,15 @@ class FuelTankWidget(GeometryFrame):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values_si()
         data["Segment Name"] = title
-        fuel_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
-        fuel_tank.tag = data["Segment Name"]
-        fuel_tank.origin = data["Fuel Tank Origin"][0]
+        fuel_tank            = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
+        fuel_tank.tag        = data["Segment Name"]
+        fuel_tank.origin     = data["Fuel Tank Origin"][0]
 
         fuel = RCAIDE.Library.Attributes.Propellants.Jet_A1()
         fuel.mass_properties.mass = data["Mass"][0]
-        fuel.origin = data["Fuel Origin"][0]
+        fuel.origin               = data["Fuel Origin"][0]
         fuel.mass_properties.center_of_gravity = data["Center of Gravity"][0]
-        fuel.internal_volume = data["Internal Volume"][0]
+        fuel.internal_volume   = data["Internal Volume"][0]
         fuel_tank.fuel = fuel
 
         return fuel_tank

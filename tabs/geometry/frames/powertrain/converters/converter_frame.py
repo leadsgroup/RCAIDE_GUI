@@ -1,33 +1,32 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.frames.powertrain.turbofan_network.widgets import FuelTankWidget
+from tabs.geometry.widgets.powertrain.distributors import DistributorWidget
 from widgets import DataEntryWidget
 
-
-class FuelTankFrame(QWidget):
+class DistributorFrame(QWidget):
     def __init__(self):
-        super(FuelTankFrame, self).__init__()
+        super(DistributorFrame, self).__init__()
 
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None
 
-        # List to store data values fueltank_ sections
-        self.fueltank_sections_layout = QVBoxLayout()
+        # List to store data values source_ sections
+        self.distributor_sections_layout = QVBoxLayout()
 
         # Create a horizontal layout for the label and buttons
         header_layout = QVBoxLayout()
-        # label = QLabel("<u><b>fueltank Frame</b></u>")
+        # label = QLabel("<u><b>source Frame</b></u>")
 
         layout = self.create_scroll_layout()
 
         # header_layout.addWidget(label)
 
-        # Add fueltank_ Section Button
-        add_section_button = QPushButton("Add Fuel Tank", self)
+        # Add source_ Section Button
+        add_section_button = QPushButton("Add Energy Source", self)
         add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         add_section_button.setMaximumWidth(200)
-        add_section_button.clicked.connect(self.add_fueltank_section)
+        add_section_button.clicked.connect(self.add_source_section)
 
         header_layout.addWidget(add_section_button)
 
@@ -42,8 +41,8 @@ class FuelTankFrame(QWidget):
         # Add the line bar to the main layout
         layout.addWidget(line_bar)
 
-        # Add the layout for additional fueltank_ sections to the main layout
-        layout.addLayout(self.fueltank_sections_layout)
+        # Add the layout for additional source_ sections to the main layout
+        layout.addLayout(self.distributor_sections_layout)
 
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
@@ -57,66 +56,64 @@ class FuelTankFrame(QWidget):
 
     def get_data_values(self):
         data = []
-        fuel_tanks = []
-        for index in range(self.fueltank_sections_layout.count()):
-            item = self.fueltank_sections_layout.itemAt(index)
+        sources = []
+        for index in range(self.distributor_sections_layout.count()):
+            item = self.distributor_sections_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, FuelTankWidget)
+            assert widget is not None and isinstance(widget, DistributorWidget)
 
-            fuel_tank_data, fuel_tank = widget.get_data_values()
-            data.append(fuel_tank_data)
-            fuel_tanks.append(fuel_tank)
+            source_data, fuel_tank = widget.get_data_values()
+            data.append(source_data)
+            sources.append(fuel_tank)
 
-        return data, fuel_tanks
+        return data, sources
 
     def load_data(self, data):
-        while self.fueltank_sections_layout.count():
-            widget_item = self.fueltank_sections_layout.itemAt(0)
+        while self.distributor_sections_layout.count():
+            widget_item = self.distributor_sections_layout.itemAt(0)
             assert widget_item is not None
             widget = widget_item.widget()
             assert widget is not None
 
-            self.fueltank_sections_layout.removeWidget(widget)
+            self.distributor_sections_layout.removeWidget(widget)
             widget.deleteLater()
 
         for section_data in data:
-            self.fueltank_sections_layout.addWidget(FuelTankWidget(
-                self.fueltank_sections_layout.count(), self.on_delete_button_pressed, section_data))
+            self.distributor_sections_layout.addWidget(DistributorWidget(
+                self.distributor_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
         # TODO Implement proper deletion of data
         pass
 
-    def add_fueltank_section(self):
-        self.fueltank_sections_layout.addWidget(
-            FuelTankWidget(self.fueltank_sections_layout.count(), self.on_delete_button_pressed))
+    def add_source_section(self):
+        self.distributor_sections_layout.addWidget(
+            DistributorWidget(self.distributor_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
-        tank = self.fueltank_sections_layout.itemAt(index)
-        if tank is None:
+        distributor = self.distributor_sections_layout.itemAt(index)
+        if distributor is None:
             return
 
-        widget = tank.widget()
+        widget = distributor.widget()
         if widget is None:
             return
 
         widget.deleteLater()
-        self.fueltank_sections_layout.removeWidget(widget)
-        self.fueltank_sections_layout.update()
-        print("Deleted fueltank_ at Index:", index)
+        self.distributor_sections_layout.removeWidget(widget)
+        self.distributor_sections_layout.update() 
 
-        for i in range(index, self.fueltank_sections_layout.count()):
-            tank = self.fueltank_sections_layout.itemAt(i)
-            if tank is None:
+        for i in range(index, self.distributor_sections_layout.count()):
+            distributor = self.distributor_sections_layout.itemAt(i)
+            if distributor is None:
                 continue
 
-            widget = tank.widget()
-            if widget is None or not isinstance(widget, FuelTankWidget):
+            widget = distributor.widget()
+            if widget is None or not isinstance(widget, DistributorWidget):
                 continue
 
-            widget.index = i
-            print("Updated Index:", i)
+            widget.index = i 
 
     def set_save_function(self, function):
         self.save_function = function
@@ -124,6 +121,7 @@ class FuelTankFrame(QWidget):
     def create_scroll_layout(self):
         # Create a widget to contain the layout
         scroll_content = QWidget()
+        
         # Set the main layout inside the scroll content
         layout = QVBoxLayout(scroll_content)
 

@@ -4,9 +4,9 @@ from utilities import Units
 from widgets import DataEntryWidget
 
 
-class TankSelectorWidget(QWidget):
+class EnergySourceSelectorWidget(QWidget):
     def __init__(self, fuel_tank_names, name):
-        super(TankSelectorWidget, self).__init__()
+        super(EnergySourceSelectorWidget, self).__init__()
         data_units_labels = []
         for fuel_tank_name in fuel_tank_names:
             data_units_labels.append((fuel_tank_name, Units.Boolean))

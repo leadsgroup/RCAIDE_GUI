@@ -2,5 +2,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from tabs.geometry.widgets.powertrain.propulsors.propulsor_widget    import  PropulsorWidget
-from tabs.geometry.widgets.powertrain.propulsors.turbofan_widget     import  TurbofanWidget
+from tabs.geometry.widgets.powertrain.propulsors.turbofan_widget    import  TurbofanWidget 

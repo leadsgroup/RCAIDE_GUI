@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.frames.powertrain.turbofan_network.widgets import PropulsorWidget
+from tabs.geometry.widgets.powertrain.propulsors.propulsor_widget import TurbofanWidget
 from widgets import DataEntryWidget
 import values
 
@@ -63,7 +63,7 @@ class PropulsorFrame(QWidget):
             item = self.propulsor_sections_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, PropulsorWidget)
+            assert widget is not None and isinstance(widget, TurbofanWidget)
 
             propulsor_data, propulsor = widget.get_data_values()
             data.append(propulsor_data)
@@ -82,7 +82,7 @@ class PropulsorFrame(QWidget):
             widget.deleteLater()
 
         for propulsor_data in data:
-            self.propulsor_sections_layout.addWidget(PropulsorWidget(
+            self.propulsor_sections_layout.addWidget(TurbofanWidget(
                 self.propulsor_sections_layout.count(), self.on_delete_button_pressed, propulsor_data))
 
     def delete_data(self):
@@ -91,7 +91,7 @@ class PropulsorFrame(QWidget):
 
     def add_propulsor_section(self):
         self.propulsor_sections_layout.addWidget(
-            PropulsorWidget(self.propulsor_sections_layout.count(), self.on_delete_button_pressed))
+            TurbofanWidget(self.propulsor_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
         propulsor = self.propulsor_sections_layout.itemAt(index)
@@ -113,7 +113,7 @@ class PropulsorFrame(QWidget):
                 continue
 
             widget = propulsor.widget()
-            if widget is None or not isinstance(widget, PropulsorWidget):
+            if widget is None or not isinstance(widget, TurbofanWidget):
                 continue
 
             widget.index = i
