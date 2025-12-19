@@ -1,5 +1,5 @@
-# RCAIDE_GUI/tabs/geometry/frames/powertrain/modulators/__init__.py
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/distributors/__init__.py
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from tabs.geometry.frames.powertrain.modulators.modulator_frame    import  ModulatorFrame 
+from tabs.geometry.frames.powertrain.distributors.distributor_frame    import  DistributorFrame 

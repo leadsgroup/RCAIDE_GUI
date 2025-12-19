@@ -1,18 +1,18 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.widgets.powertrain.distributors import DistributorWidget
+from tabs.geometry.widgets.powertrain.converter import ConverterWidget
 from widgets import DataEntryWidget
 
-class DistributorFrame(QWidget):
+class ConverterFrame(QWidget):
     def __init__(self):
-        super(DistributorFrame, self).__init__()
+        super(ConverterFrame, self).__init__()
 
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None
 
         # List to store data values source_ sections
-        self.distributor_sections_layout = QVBoxLayout()
+        self.converter_sections_layout = QVBoxLayout()
 
         # Create a horizontal layout for the label and buttons
         header_layout = QVBoxLayout()
@@ -42,7 +42,7 @@ class DistributorFrame(QWidget):
         layout.addWidget(line_bar)
 
         # Add the layout for additional source_ sections to the main layout
-        layout.addLayout(self.distributor_sections_layout)
+        layout.addLayout(self.converter_sections_layout)
 
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
@@ -57,11 +57,11 @@ class DistributorFrame(QWidget):
     def get_data_values(self):
         data = []
         sources = []
-        for index in range(self.distributor_sections_layout.count()):
-            item = self.distributor_sections_layout.itemAt(index)
+        for index in range(self.converter_sections_layout.count()):
+            item = self.converter_sections_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, DistributorWidget)
+            assert widget is not None and isinstance(widget, ConverterWidget)
 
             source_data, fuel_tank = widget.get_data_values()
             data.append(source_data)
@@ -70,29 +70,29 @@ class DistributorFrame(QWidget):
         return data, sources
 
     def load_data(self, data):
-        while self.distributor_sections_layout.count():
-            widget_item = self.distributor_sections_layout.itemAt(0)
+        while self.converter_sections_layout.count():
+            widget_item = self.converter_sections_layout.itemAt(0)
             assert widget_item is not None
             widget = widget_item.widget()
             assert widget is not None
 
-            self.distributor_sections_layout.removeWidget(widget)
+            self.converter_sections_layout.removeWidget(widget)
             widget.deleteLater()
 
         for section_data in data:
-            self.distributor_sections_layout.addWidget(DistributorWidget(
-                self.distributor_sections_layout.count(), self.on_delete_button_pressed, section_data))
+            self.converter_sections_layout.addWidget(ConverterWidget(
+                self.converter_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
         # TODO Implement proper deletion of data
         pass
 
     def add_source_section(self):
-        self.distributor_sections_layout.addWidget(
-            DistributorWidget(self.distributor_sections_layout.count(), self.on_delete_button_pressed))
+        self.converter_sections_layout.addWidget(
+            ConverterWidget(self.converter_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
-        distributor = self.distributor_sections_layout.itemAt(index)
+        distributor = self.converter_sections_layout.itemAt(index)
         if distributor is None:
             return
 
@@ -101,16 +101,16 @@ class DistributorFrame(QWidget):
             return
 
         widget.deleteLater()
-        self.distributor_sections_layout.removeWidget(widget)
-        self.distributor_sections_layout.update() 
+        self.converter_sections_layout.removeWidget(widget)
+        self.converter_sections_layout.update() 
 
-        for i in range(index, self.distributor_sections_layout.count()):
-            distributor = self.distributor_sections_layout.itemAt(i)
+        for i in range(index, self.converter_sections_layout.count()):
+            distributor = self.converter_sections_layout.itemAt(i)
             if distributor is None:
                 continue
 
             widget = distributor.widget()
-            if widget is None or not isinstance(widget, DistributorWidget):
+            if widget is None or not isinstance(widget, ConverterWidget):
                 continue
 
             widget.index = i 
