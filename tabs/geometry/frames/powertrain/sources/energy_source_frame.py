@@ -10,7 +10,7 @@ import RCAIDE
 
 # PyQT Imports
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+    QSpacerItem, QSizePolicy, QScrollArea, QFrame
 
 # RCAIDE GUI imports  
 from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget import FuelTankWidget
