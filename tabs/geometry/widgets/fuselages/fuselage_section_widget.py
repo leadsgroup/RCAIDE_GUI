@@ -1,12 +1,23 @@
-import RCAIDE
-from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
-                             QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget, QFrame)
+# RCAIDE_GUI/tabs/geometry/widgets/fuselages/fuselage_section_widget.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports   
+import RCAIDE
+
+# RCAIDE GUI imports
 from utilities import Units
 from widgets import DataEntryWidget
 
+# PyQT imports  
+from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame
 
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Fuselage Section Widget 
+# ---------------------------------------------------------------------------------------------------------------------- 
 class FuselageSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
         super(FuselageSectionWidget, self).__init__()
@@ -30,6 +41,19 @@ class FuselageSectionWidget(QWidget):
         self.name_layout.addWidget(QLabel("Segment Name: "))
         self.name_layout.addWidget(QLineEdit(self))
         self.name_layout.addItem(spacer_right)
+
+        ## Energy Network
+        #energy_label = QLabel("Segment Type:")
+        #energy_label.setFixedWidth(100)  # Adjust width of label
+        #name_layout.addWidget(energy_label) 
+        #self.fusleage_segment_combo = QComboBox()
+        #self.fusleage_segment_combo.addItems(["Circle Segment", "Ellipse Segment", "Rounded Rectangle Segment", "Super Ellipse Segment" , "Segment"])
+        #self.fusleage_segment_combo.setFixedWidth(400)  # Fix width of combo box
+        #name_layout.addWidget(self.fusleage_segment_combo,  alignment=Qt.AlignmentFlag.AlignLeft)
+
+        # Connect signal
+        self.fusleage_segment_combo.currentIndexChanged.connect(self.display_selected_segment)
+        
 
         main_layout.addLayout(self.name_layout)
 
@@ -67,14 +91,54 @@ class FuselageSectionWidget(QWidget):
 
         self.setLayout(main_layout)
 
-    def create_rcaide_structure(self, data):
-        segment = RCAIDE.Library.Components.Fuselages.Segments.Ellipse_Segment()
+    def create_rcaide_structure(self, data): 
 
-        segment.percent_x_location = data["Percent X Location"][0]
-        segment.percent_z_location = data["Percent Z Location"][0]
-        segment.height = data["Height"][0]
-        segment.width = data["Width"][0]
-        segment.tag = data["Segment Name"]
+        selected_segment = self.fusleage_segment_combo.currentText()
+
+        #if selected_segment == "Ellipse Segment":
+            #item = self.powertrain_layout.itemAt(0)
+            #assert item is not None
+            #widget = item.widget()
+            #assert widget is not None and isinstance(widget, PowertrainWidget)
+            #_, lines, propulsors,converters = widget.get_data_values()        
+           
+        if selected_segment == "Circle Segment":
+            segment = RCAIDE.Library.Components.Fuselages.Segments.Circle_Segment()
+            segment.percent_x_location = data["Percent X Location"][0]
+            segment.percent_z_location = data["Percent Z Location"][0]
+            segment.height             = data["Height"][0]
+            segment.width              = data["Width"][0]
+            segment.tag                = data["Segment Name"]
+        if selected_segment == "Ellipse Segment":
+            segment = RCAIDE.Library.Components.Fuselages.Segments.Ellipse_Segment()
+            segment.percent_x_location = data["Percent X Location"][0]
+            segment.percent_z_location = data["Percent Z Location"][0]
+            segment.height             = data["Height"][0]
+            segment.width              = data["Width"][0]
+            segment.tag                = data["Segment Name"]
+        if selected_segment == "Rounded Rectangle Segment":
+            segment = RCAIDE.Library.Components.Fuselages.Segments.Rounded_Rectangle_Segment()
+            segment.percent_x_location = data["Percent X Location"][0]
+            segment.percent_z_location = data["Percent Z Location"][0]
+            segment.height             = data["Height"][0]
+            segment.width              = data["Width"][0]
+            segment.tag                = data["Segment Name"]
+        if selected_segment == "Super Ellipse Segment":
+            segment = RCAIDE.Library.Components.Fuselages.Segments.Super_Ellipse_Segment()
+            segment.percent_x_location = data["Percent X Location"][0]
+            segment.percent_z_location = data["Percent Z Location"][0]
+            segment.height             = data["Height"][0]
+            segment.width              = data["Width"][0]
+            segment.tag                = data["Segment Name"]
+        if selected_segment == "Segment":
+            segment.percent_x_location = data["Percent X Location"][0]
+            segment.percent_z_location = data["Percent Z Location"][0]
+            segment.height             = data["Height"][0]
+            segment.width              = data["Width"][0]
+            segment.tag                = data["Segment Name"]
+        else:
+            segment = None
+        
 
         return segment
 
@@ -97,3 +161,19 @@ class FuselageSectionWidget(QWidget):
             return
 
         self.on_delete(self.index)
+        
+
+    def display_selected_segment(self, index):
+        selected_fuselage_segmemt = self.fusleage_segment_combo.currentText()
+        # Clear the layout first
+        clear_layout(self.powertrain_layout)
+
+        if selected_fuselage_segmemt == "Fuel":
+            self.main_powertrain_widget = PowertrainWidget()
+            self.powertrain_layout.addWidget(self.main_powertrain_widget)
+        elif selected_fuselage_segmemt == "None Selected":
+            # Do nothing or add blank widget
+            pass
+        else:
+            # Handle other energy network options here
+            pass        

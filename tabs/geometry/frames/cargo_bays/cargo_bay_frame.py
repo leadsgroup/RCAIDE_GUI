@@ -1,12 +1,25 @@
+# RCAIDE_GUI/tabs/geometry/frames/cargo_bays/cargo_bay_frame.py
+# 
+# Created:  Dec 2025, M. Clarke 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports   
 import RCAIDE
+
+# PyQT imports  
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
+# RCAIDE GUI imports  
 from tabs.geometry.frames        import GeometryFrame 
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
-
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Cargo Bay Frame 
+# ----------------------------------------------------------------------------------------------------------------------
 class CargoBayFrame(GeometryFrame):
     # List of data labels
     data_units_labels = [

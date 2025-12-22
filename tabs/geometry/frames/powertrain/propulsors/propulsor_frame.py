@@ -1,11 +1,26 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
-    QSizePolicy, QSpacerItem
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/sources/energy_source_frame.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports   
+import RCAIDE
+
+# PyQT Imports
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea
+
+# RCAIDE GUI imports  
 from tabs.geometry.widgets.powertrain.propulsors.turbofan_widget import TurbofanWidget
 from widgets import DataEntryWidget
+from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
 import values
 
-
+# --------------------------------------------------------------------------------------------------------------------- 
+#  Propulsor Frame 
+# ----------------------------------------------------------------------------------------------------------------------
 class PropulsorFrame(QWidget):
     def __init__(self):
         super(PropulsorFrame, self).__init__()

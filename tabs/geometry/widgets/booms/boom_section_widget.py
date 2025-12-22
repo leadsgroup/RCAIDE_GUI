@@ -1,11 +1,23 @@
-import RCAIDE
-from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
-                             QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                             QVBoxLayout, QWidget, QFrame)
+# RCAIDE_GUI/tabs/geometry/widgets/booms/boom_section_widget.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports   
+import RCAIDE
+
+# RCAIDE GUI imports
 from utilities import Units
 from widgets import DataEntryWidget
 
+# PyQT imports  
+from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame
+
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Boom Section Widget 
+# ----------------------------------------------------------------------------------------------------------------------
 class BoomSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
         super(BoomSectionWidget, self).__init__()

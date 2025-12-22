@@ -202,7 +202,7 @@ class PowertrainFrame(GeometryFrame):
             item = self.powertrain_layout.itemAt(0)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, PowertrainWidget)
+            assert widget is not None and isinstance(widget, tabs.geometry.widgets.powertrain.powertrain_widget.PowertrainWidget)
             data_values, _, __ = widget.get_data_values()
 
             if isinstance(data_values, bool):
@@ -220,20 +220,19 @@ class PowertrainFrame(GeometryFrame):
             item = self.powertrain_layout.itemAt(0)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, PowertrainWidget)
+            assert widget is not None and isinstance(widget, tabs.geometry.widgets.powertrain.powertrain_widget.PowertrainWidget)
             _, lines, propulsors,converters = widget.get_data_values()
-        
-        if selected_network == "Select Network Type":
-            net = None
-            
-        if selected_network == "Fuel":
+         
+        elif selected_network == "Fuel":
             net = RCAIDE.Framework.Networks.Fuel()
-        if selected_network == "Electric":
+        elif selected_network == "Electric":
             net = RCAIDE.Framework.Networks.Electric()
-        if selected_network == "Hybrid":
+        elif selected_network == "Hybrid":
             net = RCAIDE.Framework.Networks.Hybrid()
-        if selected_network == "Hydrogen":
+        elif selected_network == "Hydrogen":
             net = RCAIDE.Framework.Networks.Hydrogen()
+        else:
+            net = None
             
         if net != None: 
             for line in lines:

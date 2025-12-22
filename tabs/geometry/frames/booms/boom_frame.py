@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/booms.py
+# RCAIDE_GUI/tabs/geometry/frames/booms/boom_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 
