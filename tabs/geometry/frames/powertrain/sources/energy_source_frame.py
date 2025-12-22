@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.widgets.powertrain.sources import EnergySourceWidget
+from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget import FuelTankWidget
 from widgets import DataEntryWidget
 
 class EnergySourceFrame(QWidget):
@@ -23,12 +23,12 @@ class EnergySourceFrame(QWidget):
         # header_layout.addWidget(label)
 
         # Add source_ Section Button
-        add_section_button = QPushButton("Add Energy Source", self)
-        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        add_section_button.setMaximumWidth(200)
-        add_section_button.clicked.connect(self.add_source_section)
+        add_fuel_tank_button = QPushButton("Add Fuel Tank", self)
+        add_fuel_tank_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        add_fuel_tank_button.setMaximumWidth(200)
+        add_fuel_tank_button.clicked.connect(self.add_fuel_tank)
 
-        header_layout.addWidget(add_section_button)
+        header_layout.addWidget(add_fuel_tank_button)
 
         layout.addLayout(header_layout)
 
@@ -61,7 +61,7 @@ class EnergySourceFrame(QWidget):
             item = self.source_sections_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, EnergySourceWidget)
+            assert widget is not None and isinstance(widget, FuelTankWidget)
 
             source_data, fuel_tank = widget.get_data_values()
             data.append(source_data)
@@ -80,16 +80,16 @@ class EnergySourceFrame(QWidget):
             widget.deleteLater()
 
         for section_data in data:
-            self.source_sections_layout.addWidget(EnergySourceWidget(
+            self.source_sections_layout.addWidget(FuelTankWidget(
                 self.source_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
         # TODO Implement proper deletion of data
         pass
 
-    def add_source_section(self):
+    def add_fuel_tank(self):
         self.source_sections_layout.addWidget(
-            EnergySourceWidget(self.source_sections_layout.count(), self.on_delete_button_pressed))
+            FuelTankWidget(self.source_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
         tank = self.source_sections_layout.itemAt(index)
@@ -110,7 +110,7 @@ class EnergySourceFrame(QWidget):
                 continue
 
             widget = tank.widget()
-            if widget is None or not isinstance(widget, EnergySourceWidget):
+            if widget is None or not isinstance(widget, FuelTankWidget):
                 continue
 
             widget.index = i 

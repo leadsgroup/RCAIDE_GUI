@@ -109,7 +109,7 @@ class AircraftConfigsWidget(TabWidget):
             )
 
         for propulsor in self.propulsor_data:
-            field_name = propulsor["propulsor name"] + " Enabled"
+            field_name = propulsor["Propulsor Tag"] + " Enabled"
             propulsor_labels.append((field_name, Units.Boolean))
             propulsor_data[field_name] = True, 0
 

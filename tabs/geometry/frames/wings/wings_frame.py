@@ -1,14 +1,27 @@
-import RCAIDE
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+# RCAIDE_GUI/tabs/geometry/frames/wings.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+ # RCAIDE imports 
+import RCAIDE
+
+# PyQT Imports 
+from PyQt6.QtCore import Qt 
+from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxLayout,\
+  QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QComboBox
+ 
+# RCAIDE GUI imports 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import WingCSWidget, WingSectionWidget
 from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data, clear_layout
 from widgets import DataEntryWidget
 
-
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Wing Frame 
+# ----------------------------------------------------------------------------------------------------------------------
 class WingsFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering wing data."""
@@ -20,10 +33,9 @@ class WingsFrame(GeometryFrame):
         assert self.main_layout is not None
         self.main_layout.addWidget(QLabel("<b>Wings</b>"))
         self.main_layout.addWidget(create_line_bar())
-
-        # TODO Add extra flags
-
+ 
         self.add_name_layout()
+        self.add_wing_type()        
 
         # List of data labels
         self.data_units_labels = [
@@ -88,13 +100,32 @@ class WingsFrame(GeometryFrame):
         name_layout.addWidget(self.name_line_edit)
         name_layout.addItem(spacer_right)
         self.main_layout.addLayout(name_layout)
+        
+
+    def add_wing_type(self):
+        landing_gear_type_label = QLabel("Wing Type: ")
+        wing_type_layout = QHBoxLayout()
+        spacer_left = QSpacerItem(
+            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacer_right = QSpacerItem(
+            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        wing_type_layout.addItem(spacer_left)
+        wing_type_layout.addWidget(landing_gear_type_label)
+        self.wing_type_combo = QComboBox()
+        self.wing_type_combo.addItems(["Select Wing Type", "All Moving Surface", "Blended Wing Body", "Horizontal Tail", "Main Wing", "Stabilator", "Vertical Tail","Vertical Tail All Moving",  "Wing"])
+        self.wing_type_combo.setFixedWidth(600)
+        wing_type_layout.addWidget(self.wing_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
+        wing_type_layout.addItem(spacer_right)
+
+        assert self.main_layout is not None
+        self.main_layout.addLayout(wing_type_layout)        
 
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
-        new_section_button = QPushButton("New Wing Segment", self)
+        new_section_button = QPushButton("Add Wing Segment", self)
         new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        new_cs_button = QPushButton("New Control Surface", self)
+        new_cs_button = QPushButton("Add Control Surface", self)
         new_cs_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
         save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
@@ -216,12 +247,30 @@ class WingsFrame(GeometryFrame):
     def create_rcaide_structure(self):
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
-        data["name"] = self.name_line_edit.text()
+        data["name"] = self.name_line_edit.text() 
 
-        wing = RCAIDE.Library.Components.Wings.Main_Wing()
+        selected_wing_type = self.wing_type_combo.currentText()
+        if selected_wing_type == "All Moving Surface": 
+            wing = RCAIDE.Library.Components.Wings.All_Moving_Surface()
+        elif selected_wing_type ==  "Blended Wing Body": 
+            wing = RCAIDE.Library.Components.Wings.Blended_Wing_Body()
+        elif selected_wing_type == "Horizontal Tail": 
+            wing = RCAIDE.Library.Components.Wings.Horizontal_Tail()
+        elif selected_wing_type == "Main Wing": 
+            wing = RCAIDE.Library.Components.Wings.Main_Wing()
+        elif selected_wing_type == "Stabilator": 
+            wing = RCAIDE.Library.Components.Wings.Stabilator()
+        elif selected_wing_type == "Vertical Tail": 
+            wing = RCAIDE.Library.Components.Wings.Vertical_Tail()
+        elif selected_wing_type == "Vertical Tail All Moving": 
+            wing = RCAIDE.Library.Components.Wings.Vertical_Tail_All_Moving()
+        elif selected_wing_type == "Wing": 
+            wing = RCAIDE.Library.Components.Wings.Wing() 
 
+        # assign wing name 
         wing.tag = data["name"]
-
+        
+        # assign wing properties 
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
@@ -248,8 +297,7 @@ class WingsFrame(GeometryFrame):
             if widget is not None and isinstance(widget, WingCSWidget):
                 _, cs = widget.get_data_values()
                 wing.append_control_surface(cs)
-
-        wing = wing_planform(wing)
+ 
         return wing
 
     def get_data_values(self):

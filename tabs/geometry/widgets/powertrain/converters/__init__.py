@@ -1,5 +1,5 @@
-# RCAIDE_GUI/tabs/geometry/widgets/powertrain/distributors/__init__.py
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/converters/__init__.py
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from tabs.geometry.widgets.powertrain.distributors.fuel_line_widget    import FuelLineWidget
+from tabs.geometry.widgets.powertrain.converters.turboelectric_generator_widget    import TurboelectricGeneratorWidget

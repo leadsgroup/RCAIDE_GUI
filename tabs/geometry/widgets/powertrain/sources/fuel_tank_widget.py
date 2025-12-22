@@ -5,9 +5,9 @@ from tabs.geometry.frames import GeometryFrame
 from utilities import Units
 from widgets import DataEntryWidget
 
-class EnergySourceWidget(GeometryFrame):
+class FuelTankWidget(GeometryFrame):
     def __init__(self, index, on_delete, data_values=None):
-        super(EnergySourceWidget, self).__init__()
+        super(FuelTankWidget, self).__init__()
 
         self.data_values = {}
         self.index = index
@@ -51,9 +51,7 @@ class EnergySourceWidget(GeometryFrame):
         if data_values:
             self.load_data_values(data_values)
 
-    def delete_button_pressed(self):
-        print("Delete button pressed")
-
+    def delete_button_pressed(self): 
         if self.on_delete is None:
             print("on_delete is None")
             return

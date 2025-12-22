@@ -32,7 +32,7 @@ class FuselageFrame(GeometryFrame):
     ]
 
     def __init__(self):
-        """Create a frame for entering nacelle data."""
+        """Create a frame for entering fuselage data."""
         super(FuselageFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
@@ -78,7 +78,7 @@ class FuselageFrame(GeometryFrame):
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
-        new_section_button = QPushButton("New Fuselage Section", self)
+        new_section_button = QPushButton("Add Fuselage Segment", self)
         new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
         save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
@@ -146,13 +146,13 @@ class FuselageFrame(GeometryFrame):
         pass
 
     def create_new_structure(self):
-        """Create a new nacelle structure."""
+        """Create a new fuselage structure."""
         # Clear the main data values
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
 
-        # Clear the nacelle sections
+        # Clear the fuselage sections
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
             assert item is not None

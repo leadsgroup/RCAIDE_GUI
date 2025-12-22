@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.widgets.powertrain.converter import ConverterWidget
+from tabs.geometry.widgets.powertrain.converters import TurboelectricGeneratorWidget
 from widgets import DataEntryWidget
 
 class ConverterFrame(QWidget):
@@ -23,12 +23,11 @@ class ConverterFrame(QWidget):
         # header_layout.addWidget(label)
 
         # Add source_ Section Button
-        add_section_button = QPushButton("Add Energy Source", self)
-        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        add_section_button.setMaximumWidth(200)
-        add_section_button.clicked.connect(self.add_source_section)
-
-        header_layout.addWidget(add_section_button)
+        add_turboelectric_generator_button = QPushButton("Add Turboelectric Generator", self)
+        add_turboelectric_generator_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        add_turboelectric_generator_button.setMaximumWidth(200)
+        add_turboelectric_generator_button.clicked.connect(self.add_turboelectric_generator) 
+        header_layout.addWidget(add_turboelectric_generator_button)
 
         layout.addLayout(header_layout)
 
@@ -61,7 +60,7 @@ class ConverterFrame(QWidget):
             item = self.converter_sections_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, ConverterWidget)
+            assert widget is not None and isinstance(widget, TurboelectricGeneratorWidget)
 
             source_data, fuel_tank = widget.get_data_values()
             data.append(source_data)
@@ -80,16 +79,16 @@ class ConverterFrame(QWidget):
             widget.deleteLater()
 
         for section_data in data:
-            self.converter_sections_layout.addWidget(ConverterWidget(
+            self.converter_sections_layout.addWidget(TurboelectricGeneratorWidget(
                 self.converter_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
         # TODO Implement proper deletion of data
         pass
 
-    def add_source_section(self):
+    def add_turboelectric_generator(self):
         self.converter_sections_layout.addWidget(
-            ConverterWidget(self.converter_sections_layout.count(), self.on_delete_button_pressed))
+            TurboelectricGeneratorWidget(self.converter_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
         distributor = self.converter_sections_layout.itemAt(index)
@@ -110,7 +109,7 @@ class ConverterFrame(QWidget):
                 continue
 
             widget = distributor.widget()
-            if widget is None or not isinstance(widget, ConverterWidget):
+            if widget is None or not isinstance(widget, TurboelectricGeneratorWidget):
                 continue
 
             widget.index = i 

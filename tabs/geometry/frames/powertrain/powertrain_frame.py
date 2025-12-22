@@ -31,7 +31,7 @@ class PowertrainFrame(GeometryFrame):
 
         # Create a horizontal layout for the label and buttons
         header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("<b>Energy Network Frame</b>"))
+        header_layout.addWidget(QLabel("<b>Powertrain</b>"))
 
         layout.addLayout(header_layout)
         # Create a horizontal line
@@ -68,14 +68,14 @@ class PowertrainFrame(GeometryFrame):
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         # define buttons 
-        propulsor_button = QPushButton("Add Propulsor", self)
-        propulsor_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        distributor_button = QPushButton("Add Distributor", self)
-        distributor_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        converter_button = QPushButton("Add Converter", self)
-        converter_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        source_button = QPushButton("Add Energy Source", self)
-        source_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;") 
+        #propulsor_button = QPushButton("Add Propulsor", self)
+        #propulsor_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        #distributor_button = QPushButton("Add Distributor", self)
+        #distributor_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        #converter_button = QPushButton("Add Converter", self)
+        #converter_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        #source_button = QPushButton("Add Fuel Tank", self)
+        #source_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;") 
         save_button = QPushButton("Save Energy Network Data", self)
         save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button = QPushButton("Clear Energy Network", self)
@@ -91,10 +91,10 @@ class PowertrainFrame(GeometryFrame):
 
         # Create a QHBoxLayout to contain the buttons
         buttons_layout = QHBoxLayout() 
-        buttons_layout.addWidget(distributor_button) 
-        buttons_layout.addWidget(propulsor_button) 
-        buttons_layout.addWidget(converter_button)
-        buttons_layout.addWidget(source_button)
+        #buttons_layout.addWidget(distributor_button) 
+        #buttons_layout.addWidget(propulsor_button) 
+        #buttons_layout.addWidget(converter_button)
+        #buttons_layout.addWidget(source_button)
         buttons_layout.addWidget(save_button) 
         buttons_layout.addWidget(delete_button)  
 
@@ -123,17 +123,16 @@ class PowertrainFrame(GeometryFrame):
         name_layout.addItem(spacer_right)
 
         # Energy Network
-        energy_label = QLabel("Energy Network:")
+        energy_label = QLabel("Energy Network Type:")
         energy_label.setFixedWidth(100)  # Adjust width of label
         name_layout.addWidget(energy_label) 
         self.powertrain_combo = QComboBox()
-        self.powertrain_combo.addItems(["None Selected", "Fuel", "Electric", "Hydrogen", "Hybrid"])
+        self.powertrain_combo.addItems(["Select Network Type", "Fuel", "Electric", "Hybrid" , "Hydrogen"])
         self.powertrain_combo.setFixedWidth(400)  # Fix width of combo box
         name_layout.addWidget(self.powertrain_combo,  alignment=Qt.AlignmentFlag.AlignLeft)
 
         # Connect signal
-        self.powertrain_combo.currentIndexChanged.connect(
-            self.display_selected_network)
+        self.powertrain_combo.currentIndexChanged.connect(self.display_selected_network)
 
         main_layout.addLayout(name_layout)
 
@@ -141,14 +140,14 @@ class PowertrainFrame(GeometryFrame):
         return main_powertrain_widget
  
     #def add_energy_source(self):
-        #self.energy_sources_layout.addWidget(EnergySourceWidget(
+        #self.energy_sources_layout.addWidget(FuelTankWidget(
             #self.energy_sources_layout.count(), self.delete_energy_source))
 
     #def delete_energy_source(self, index):
         #item = self.energy_sources_layout.itemAt(index)
         #assert item is not None
         #widget = item.widget()
-        #assert widget is not None and isinstance(widget, EnergySourceWidget)
+        #assert widget is not None and isinstance(widget, FuelTankWidget)
 
         #widget.deleteLater()
         #self.energy_sources_layout.removeWidget(widget)
@@ -160,7 +159,7 @@ class PowertrainFrame(GeometryFrame):
                 #continue
 
             #widget = item.widget()
-            #if widget is not None and isinstance(widget, EnergySourceWidget):
+            #if widget is not None and isinstance(widget, FuelTankWidget):
                 #widget.index = i        
         
     def set_save_function(self, function):
@@ -184,7 +183,7 @@ class PowertrainFrame(GeometryFrame):
             #assert item is not None
 
             #widget = item.widget()
-            #assert widget is not None and isinstance(widget, DistributorWidget)
+            #assert widget is not None and isinstance(widget, FuelLineWidget)
 
             #widget.index = i
             #print("Updated Index:", i)
@@ -222,18 +221,31 @@ class PowertrainFrame(GeometryFrame):
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, PowertrainWidget)
-            _, lines, propulsors = widget.get_data_values()
-
+            _, lines, propulsors,converters = widget.get_data_values()
+        
+        if selected_network == "Select Network Type":
+            net = None
+            
         if selected_network == "Fuel":
             net = RCAIDE.Framework.Networks.Fuel()
+        if selected_network == "Electric":
+            net = RCAIDE.Framework.Networks.Electric()
+        if selected_network == "Hybrid":
+            net = RCAIDE.Framework.Networks.Hybrid()
+        if selected_network == "Hydrogen":
+            net = RCAIDE.Framework.Networks.Hydrogen()
+            
+        if net != None: 
             for line in lines:
                 net.fuel_lines.append(line)
             
             for propulsor in propulsors:
                 net.propulsors.append(propulsor)
-            return net
-
-        return None
+        
+            for converter in converters:
+                net.converters.append(converter)  
+            
+        return net 
 
     def save_data(self):
         """Call the save function and pass the entered data to it."""

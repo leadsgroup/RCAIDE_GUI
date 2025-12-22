@@ -1,17 +1,30 @@
-from turtle import clear
-import RCAIDE
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea, QComboBox, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
-    QPushButton, QLineEdit, QComboBox
+# RCAIDE_GUI/tabs/geometry/frames/nacelles/nacelle_frame.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports 
+import RCAIDE
+
+# PyQT imports 
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxLayout,\
+     QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QComboBox
+
+# RCAIDE GUI imports 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets.nacelles.nacelle_section_widget import NacelleSectionWidget
 from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
+# python imports 
+from turtle import clear
 
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Nacelle Frame 
+# ----------------------------------------------------------------------------------------------------------------------
 class NacelleFrame(GeometryFrame):
     def __init__(self):
         """Create a frame for entering nacelle data."""
@@ -78,7 +91,7 @@ class NacelleFrame(GeometryFrame):
         nacelle_type_layout.addItem(spacer_left)
         nacelle_type_layout.addWidget(nacelle_type_label)
         self.nacelle_combo = QComboBox()
-        self.nacelle_combo.addItems(["Generic Nacelle", "Body of Revolution", "Stack Nacelle"])
+        self.nacelle_combo.addItems(["Select Nacelle Type","Generic Nacelle", "Body of Revolution", "Stack Nacelle"])
         self.nacelle_combo.setFixedWidth(600)
         nacelle_type_layout.addWidget(self.nacelle_combo, alignment=Qt.AlignmentFlag.AlignCenter)
         nacelle_type_layout.addItem(spacer_right)
@@ -180,15 +193,30 @@ class NacelleFrame(GeometryFrame):
         """Create a nacelle structure from the given data."""
         data = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
-        nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
+        
+
+        self.nacelle_combo.addItems(["Select Nacelle Type","Generic Nacelle", "Body of Revolution", "Stack Nacelle"])
+        selected_nacelle_type = self.wing_type_combo.currentText()
+        if selected_nacelle_type == "Generic Nacelle":  
+            nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
+        if selected_nacelle_type == "Body of Revolution":  
+            nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()     
+        if selected_nacelle_type == "Stack Nacelle":  
+            nacelle = RCAIDE.Library.Components.Nacelles.Stack_Nacelle() 
+        
+        # assign nacelle name 
+        nacelle.tag = data["name"]
+        
+        # assign nacelle properties 
         for data_unit_label in self.data_units_labels:
             user_label = data_unit_label[0]
             rcaide_label = data_unit_label[-1]
             set_data(nacelle, rcaide_label, data[user_label][0])
-                
-        nacelle_airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-        nacelle_airfoil.NACA_4_Series_code = '2410'
-        nacelle.append_airfoil(nacelle_airfoil)
+        
+        if selected_nacelle_type == "Body of Revolution":          
+            nacelle_airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+            nacelle_airfoil.NACA_4_Series_code = '2410' # UPDATE
+            nacelle.append_airfoil(nacelle_airfoil)
 
         for i in range(self.nacelle_sections_layout.count()):
             item = self.nacelle_sections_layout.itemAt(i)
@@ -200,7 +228,6 @@ class NacelleFrame(GeometryFrame):
                 _, segment = widget.get_data_values()
                 nacelle.append_segment(segment)
 
-        nacelle.tag = data["name"]
         return nacelle
 
     def get_data_values(self):

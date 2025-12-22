@@ -1,37 +1,48 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
-    QSizePolicy, QSpacerItem
+# RCAIDE_GUI/tabs/geometry/frames/nacelles/nacelle_sections_layout.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
-from tabs.geometry.widgets.powertrain.distributors import DistributorWidget
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+ # RCAIDE imports 
+import RCAIDE
+
+# PyQT imports 
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxLayout,\
+     QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QComboBox
+
+from tabs.geometry.widgets.powertrain.distributors import FuelLineWidget
+from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Distributor Frame 
+# ----------------------------------------------------------------------------------------------------------------------
 class DistributorFrame(QWidget):
     def __init__(self):
         super(DistributorFrame, self).__init__()
 
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None
-
-        # List to store data values source_ sections
+  
+        # List to store data values distributor_ sections
         self.distributor_sections_layout = QVBoxLayout()
 
-        # Create a horizontal layout for the label and buttons
-        header_layout = QVBoxLayout()
-        # label = QLabel("<u><b>source Frame</b></u>")
+        # Create a horizontal layout for the label and buttons`
+        header_layout = QVBoxLayout() 
 
         layout = self.create_scroll_layout()
 
-        # header_layout.addWidget(label)
-
-        # Add source_ Section Button
-        add_section_button = QPushButton("Add Energy Source", self)
-        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        add_section_button.setMaximumWidth(200)
-        add_section_button.clicked.connect(self.add_source_section)
-
-        header_layout.addWidget(add_section_button)
-
-        layout.addLayout(header_layout)
-
+        # Add distributor_ Section Button
+        add_fuel_line_button = QPushButton("Add Fuel Line", self)
+        add_fuel_line_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        add_fuel_line_button.setMaximumWidth(200)
+        add_fuel_line_button.clicked.connect(self.add_fuel_line) 
+        header_layout.addWidget(add_fuel_line_button) 
+        layout.addLayout(header_layout) 
+        
         # Create a horizontal line
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
@@ -41,14 +52,14 @@ class DistributorFrame(QWidget):
         # Add the line bar to the main layout
         layout.addWidget(line_bar)
 
-        # Add the layout for additional source_ sections to the main layout
+        # Add the layout for additional distributor_ sections to the main layout
         layout.addLayout(self.distributor_sections_layout)
 
         # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
 
         # Add the button layout to the main layout
-        layout.addLayout(button_layout)
+        layout.addLayout(button_layout) 
 
         # Adds scroll function
         layout.addItem(QSpacerItem(
@@ -56,18 +67,18 @@ class DistributorFrame(QWidget):
 
     def get_data_values(self):
         data = []
-        sources = []
+        distributors = []
         for index in range(self.distributor_sections_layout.count()):
             item = self.distributor_sections_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, DistributorWidget)
+            assert widget is not None and isinstance(widget, FuelLineWidget)
 
-            source_data, fuel_tank = widget.get_data_values()
-            data.append(source_data)
-            sources.append(fuel_tank)
+            #distributor  = widget.get_data_values()
+            #data.append(distributor_data)
+            #distributors.append(distributor)
 
-        return data, sources
+        return data, distributors
 
     def load_data(self, data):
         while self.distributor_sections_layout.count():
@@ -80,16 +91,16 @@ class DistributorFrame(QWidget):
             widget.deleteLater()
 
         for section_data in data:
-            self.distributor_sections_layout.addWidget(DistributorWidget(
+            self.distributor_sections_layout.addWidget(FuelLineWidget(
                 self.distributor_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
         # TODO Implement proper deletion of data
         pass
 
-    def add_source_section(self):
+    def add_fuel_line(self):
         self.distributor_sections_layout.addWidget(
-            DistributorWidget(self.distributor_sections_layout.count(), self.on_delete_button_pressed))
+            FuelLineWidget(self.distributor_sections_layout.count(), self.on_delete_button_pressed))
 
     def on_delete_button_pressed(self, index):
         distributor = self.distributor_sections_layout.itemAt(index)
@@ -110,7 +121,7 @@ class DistributorFrame(QWidget):
                 continue
 
             widget = distributor.widget()
-            if widget is None or not isinstance(widget, DistributorWidget):
+            if widget is None or not isinstance(widget, FuelLineWidget):
                 continue
 
             widget.index = i 

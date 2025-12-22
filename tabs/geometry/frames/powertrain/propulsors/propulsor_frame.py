@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
-from tabs.geometry.widgets.powertrain.propulsors.propulsor_widget import TurbofanWidget
+from tabs.geometry.widgets.powertrain.propulsors.turbofan_widget import TurbofanWidget
 from widgets import DataEntryWidget
 import values
 
@@ -23,11 +23,11 @@ class PropulsorFrame(QWidget):
         # header_layout.addWidget(label)
 
         # Add propulsor_ Section Button
-        add_section_button = QPushButton("Add Propulsor", self)
-        add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        add_section_button.setMaximumWidth(200)
-        add_section_button.clicked.connect(self.add_propulsor_section)
-        header_layout.addWidget(add_section_button)
+        add_turbofan_button = QPushButton("Add Turbofan", self)
+        add_turbofan_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        add_turbofan_button.setMaximumWidth(200)
+        add_turbofan_button.clicked.connect(self.add_turbofan)
+        header_layout.addWidget(add_turbofan_button)
 
         layout.addLayout(header_layout)
 
@@ -89,7 +89,7 @@ class PropulsorFrame(QWidget):
         """Delete the entered data or perform any other action."""
         # TODO: Implement proper deletion of data
 
-    def add_propulsor_section(self):
+    def add_turbofan(self):
         self.propulsor_sections_layout.addWidget(
             TurbofanWidget(self.propulsor_sections_layout.count(), self.on_delete_button_pressed))
 
@@ -104,8 +104,7 @@ class PropulsorFrame(QWidget):
 
         widget.deleteLater()
         self.propulsor_sections_layout.removeWidget(widget)
-        self.propulsor_sections_layout.update()
-        print("Deleted propulsor_ at Index:", index)
+        self.propulsor_sections_layout.update() 
 
         for i in range(index, self.propulsor_sections_layout.count()):
             propulsor = self.propulsor_sections_layout.itemAt(i)
@@ -116,8 +115,7 @@ class PropulsorFrame(QWidget):
             if widget is None or not isinstance(widget, TurbofanWidget):
                 continue
 
-            widget.index = i
-            print("Updated Index:", i)
+            widget.index = i 
 
     def update_units(self, line_edit, unit_combobox):
         pass

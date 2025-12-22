@@ -1,13 +1,26 @@
-import RCAIDE
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea
+# RCAIDE_GUI/tabs/geometry/frames/booms.py
+# 
+# Created:  Dec 2025, M. Clarke 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports   
+import RCAIDE
+
+# RCAIDE GUI imports  
 from tabs.geometry.frames        import GeometryFrame
 from tabs.geometry.widgets.booms import BoomSectionWidget
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
+# PyQT imports  
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QScrollArea
 
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Boom Frame 
+# ---------------------------------------------------------------------------------------------------------------------- 
 class BoomFrame(GeometryFrame):
     # List of data labels
     data_units_labels = [
@@ -29,7 +42,7 @@ class BoomFrame(GeometryFrame):
     ]
 
     def __init__(self):
-        """Create a frame for entering nacelle data."""
+        """Create a frame for entering boom data."""
         super(BoomFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
@@ -143,13 +156,13 @@ class BoomFrame(GeometryFrame):
         pass
 
     def create_new_structure(self):
-        """Create a new nacelle structure."""
+        """Create a new boom structure."""
         # Clear the main data values
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
 
-        # Clear the nacelle sections
+        # Clear the boom sections
         for i in range(self.boom_sections_layout.count()):
             item = self.boom_sections_layout.itemAt(i)
             assert item is not None

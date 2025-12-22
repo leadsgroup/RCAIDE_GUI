@@ -92,9 +92,7 @@ class NacelleSectionWidget(QWidget):
         segment = self.create_rcaide_structure(data_si)
         return data, segment
 
-    def delete_button_pressed(self):
-        print("Delete button pressed")
-
+    def delete_button_pressed(self): 
         if self.on_delete is None:
             print("on_delete is None")
             return

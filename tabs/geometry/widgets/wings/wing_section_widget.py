@@ -263,9 +263,7 @@ class WingSectionWidget(QWidget):
 
         self._update_airfoil_ui_state()
 
-    def delete_button_pressed(self):
-        print("Delete button pressed")
-
+    def delete_button_pressed(self): 
         if self.on_delete is None:
             print("on_delete is None")
             return

@@ -165,9 +165,7 @@ class WingCSWidget(QWidget):
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["CS name"])
 
-    def delete_button_pressed(self):
-        print("Delete button pressed")
-
+    def delete_button_pressed(self): 
         if self.on_delete is None:
             print("on_delete is None")
             return

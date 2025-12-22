@@ -1,14 +1,26 @@
+# RCAIDE_GUI/tabs/geometry/frames/landing_gears/landing_gear_frame.py
+# 
+# Created:  Dec 2025, M. Clarke 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports 
 import RCAIDE
+
+# PyQT imports 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea, QComboBox, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
-    QPushButton, QLineEdit, QComboBox
+from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxLayout,\
+     QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QComboBox
 
-from tabs.geometry.frames import GeometryFrame
-from utilities import show_popup, create_line_bar, create_scroll_area, set_data, Units
+# RCAIDE GUI imports 
+from tabs.geometry.frames import GeometryFrame 
+from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
-
-
+ 
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Landing Gear Frame 
+# ----------------------------------------------------------------------------------------------------------------------
 class LandingGearFrame(GeometryFrame):
 
     # List of data labels
@@ -73,7 +85,7 @@ class LandingGearFrame(GeometryFrame):
         gear_type_layout.addItem(spacer_left)
         gear_type_layout.addWidget(landing_gear_type_label)
         self.landing_gear_type_combo = QComboBox()
-        self.landing_gear_type_combo.addItems(["Nose Gear", "Main Gear"])
+        self.landing_gear_type_combo.addItems(["General Gear","Nose Gear", "Main Gear"])
         self.landing_gear_type_combo.setFixedWidth(600)
         gear_type_layout.addWidget(self.landing_gear_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
         gear_type_layout.addItem(spacer_right)
@@ -132,14 +144,19 @@ class LandingGearFrame(GeometryFrame):
 
     def create_rcaide_structure(self):
         data = self.data_entry_widget.get_values_si()
-        data["name"] = self.name_line_edit.text()
-        landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
+        data["name"] = self.name_line_edit.text() 
+        selected_landing_gear_type = self.landing_gear_type_combo.currentText()
+        if selected_landing_gear_type == "General Gear": 
+            landing_gear = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
+        elif selected_landing_gear_type == "Nose Gear": 
+            landing_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+        elif selected_landing_gear_type == "Main Gear": 
+            landing_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
         landing_gear.tag = data["name"]
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
-            set_data(landing_gear, rcaide_label, data[user_label][0])
-
+            set_data(landing_gear, rcaide_label, data[user_label][0]) 
         return landing_gear
 
     def get_data_values(self):

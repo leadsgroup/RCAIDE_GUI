@@ -21,7 +21,7 @@ class CargoBayFrame(GeometryFrame):
     ]
  
     def __init__(self):
-        """Create a frame for entering nacelle data."""
+        """Create a frame for entering cargo bay data."""
         super(CargoBayFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
@@ -104,7 +104,7 @@ class CargoBayFrame(GeometryFrame):
         pass
 
     def create_new_structure(self):
-        """Create a new nacelle structure."""
+        """Create a new cargo bay structure."""
         # Clear the main data values
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()

@@ -1,16 +1,30 @@
+# RCAIDE_GUI/tabs/geometry/frames/nacelles/nacelle_frame.py
+# 
+# Created:  Dec 2025, M. Clarke 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports 
 import RCAIDE
+
+# PyQT imports 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QTabWidget
  
-from tabs.geometry.widgets.powertrain.distributors   import DistributorWidget 
+# RCAIDE GUI Imports 
+from tabs.geometry.widgets.powertrain.distributors.fuel_line_widget  import FuelLineWidget 
 from tabs.geometry.widgets.powertrain.sources        import EnergySourceSelectorWidget
+
 from tabs.geometry.frames.powertrain.sources         import EnergySourceFrame 
 from tabs.geometry.frames.powertrain.distributors    import DistributorFrame 
-from tabs.geometry.frames.powertrain.modulators      import ModulatorFrame
 from tabs.geometry.frames.powertrain.converters      import ConverterFrame
 from tabs.geometry.frames.powertrain.propulsors      import PropulsorFrame
 from widgets import DataEntryWidget
 
-
+ 
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Powertrain Widget
+# ---------------------------------------------------------------------------------------------------------------------
 class PowertrainWidget(QWidget):
     def __init__(self):
         super(PowertrainWidget, self).__init__()
@@ -59,16 +73,12 @@ class PowertrainWidget(QWidget):
         self.tab_widget.addTab(self.propulsor_frame, "Propulsors") 
           
         self.converter_frame = ConverterFrame()
-        self.tab_widget.addTab(self.converter_frame, "Converters")
-        
-        self.modulator_frame = ModulatorFrame()
-        self.tab_widget.addTab(self.modulator_frame, "Modulators")
-        
+        self.tab_widget.addTab(self.converter_frame, "Converters") 
 
         layout.addWidget(line_bar)
         layout.addLayout(self.fuellines_layout)
 
-        update_selector_button = QPushButton("Update Fuel Tank Selector")
+        update_selector_button = QPushButton("Update Propulsor-Source Connectivity")
         update_selector_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         update_selector_button.clicked.connect(self.update_fuel_selector)
         layout.addWidget(update_selector_button)
@@ -79,7 +89,7 @@ class PowertrainWidget(QWidget):
 
     def add_fuelline_section(self):
         self.fuellines_layout.addWidget(
-            DistributorWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
+            FuelLineWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
 
     def update_fuel_selector(self, data=None):
         self.fuel_tank_selector.clear()
@@ -91,7 +101,7 @@ class PowertrainWidget(QWidget):
             for propulsor_data in line_data["propulsor data"]:
                 tank_names = [tank["Segment Name"]
                               for tank in line_data["fuel tank data"]]
-                propulsor_name = propulsor_data["propulsor name"]
+                propulsor_name = propulsor_data["Propulsor Tag"]
                 self.fuel_tank_selector.addTab(EnergySourceSelectorWidget(
                     tank_names, propulsor_name), propulsor_name)
 
@@ -107,7 +117,7 @@ class PowertrainWidget(QWidget):
 
         for index, section in enumerate(data):
             self.fuellines_layout.addWidget(
-                DistributorWidget(index, self.on_delete_button_pressed, section))
+                FuelLineWidget(index, self.on_delete_button_pressed, section))
         
         self.update_fuel_selector(self.get_data_values(just_data=True)[0])
 
@@ -119,7 +129,7 @@ class PowertrainWidget(QWidget):
             item = self.fuellines_layout.itemAt(index)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget, DistributorWidget)
+            assert widget is not None and isinstance(widget, FuelLineWidget)
             fuelline_data, line, propulsors = widget.get_data_values()
             assert isinstance(line, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
 
@@ -163,12 +173,12 @@ class PowertrainWidget(QWidget):
                 assert widget_item is not None
                 widget = widget_item.widget()
                 assert widget is not None and isinstance(
-                    widget, DistributorWidget)
+                    widget, FuelLineWidget)
 
                 widget.index = i
                 print("Updated Index:", i)
 
-    def create_rcaide_structure(self, distributors, sources, propulsors,converters, modulators):
+    def create_rcaide_structure(self, distributors, sources, propulsors,converters):
         
         for distributor in distributors:
             
@@ -181,20 +191,20 @@ class PowertrainWidget(QWidget):
                 distributor.assigned_propulsors[0].append(propulsor.tag)
         
             for source in sources:
-                distributor.fuel_tanks.append(source)
+                distributor.fuel_tanks.append(source) # NEED TO CHANGE
 
-        return distributor, propulsors
+        return distributors, sources, propulsors,converters
 
     def get_data_values(self):
         """Retrieve the entered data values from both SourceFrame and PropulsorFrame."""
         data = {}
 
-        # Get the name of the fuel line
-        fuel_line_name = self.section_name_edit.text()
-        data["name"] = fuel_line_name
+        ## Get the name of the fuel line
+        #fuel_line_name = self.section_name_edit.text()
+        #data["name"] = fuel_line_name
 
         # Get data values from Distributos tab
-        distributor_data = self.fuel_tank_frame.get_data_values()
+        distributor_data = self.distributor_frame.get_data_values()
         data["distributor data"], distributors = distributor_data
         
         # Get data values from Sources tab
@@ -208,19 +218,16 @@ class PowertrainWidget(QWidget):
         # Get data values from Converters tab
         converter_data = self.converter_frame.get_data_values()
         data["converter data"], converters = converter_data
+     
 
-        # Get data values from Modulator tab
-        modulator_data = self.modulator_frame.get_data_values()
-        data["modulator data"], modulators = modulator_data        
-
-        fuel_line, propulsors = self.create_rcaide_structure( distributors, sources, propulsors,converters, modulators)
-        return data, fuel_line, propulsors
+        distributors, sources, propulsors,converters = self.create_rcaide_structure( distributors, sources, propulsors,converters)
+        return data, distributors, sources, propulsors,converters
 
     def load_data_values(self, data, index):
         self.index = index
 
-        fuel_line_name = data["name"]
-        self.section_name_edit.setText(fuel_line_name)
+        #fuel_line_name = data["name"]
+        #self.section_name_edit.setText(fuel_line_name)
         
         distributor_data = data["distributor data"]
         self.distributor_frame.load_data(distributor_data)
@@ -232,11 +239,7 @@ class PowertrainWidget(QWidget):
         self.propulsor_frame.load_data(propulsor_data) 
 
         converter_data = data["converter data"]
-        self.converter_frame.load_data(converter_data)
-
-        modulator_data = data["modulator data"]
-        self.modulator_frame.load_data(modulator_data)        
-
+        self.converter_frame.load_data(converter_data) 
                 
 
     def create_scroll_layout(self):

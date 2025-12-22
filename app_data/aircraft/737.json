@@ -1429,43 +1429,43 @@
                                     1.7,
                                     0
                                 ],
-                                "IN Polytropic Efficiency": [
+                                "Inlet Nozzle Polytropic Efficiency": [
                                     0.98,
                                     0
                                 ],
-                                "IN Pressure Ratio": [
+                                "Inlet Nozzle Pressure Ratio": [
                                     0.98,
                                     0
                                 ],
-                                "LPC Polytropic Efficiency": [
+                                "Low Pressure Compressor Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "LPC Pressure Ratio": [
+                                "Low Pressure Compressor Pressure Ratio": [
                                     1.9,
                                     0
                                 ],
-                                "HPC Polytropic Efficiency": [
+                                "High Pressure Compressor Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "HPC Pressure Ratio": [
+                                "High Pressure Compressor Pressure Ratio": [
                                     10.0,
                                     0
                                 ],
-                                "LPT Mechanical Efficiency": [
+                                "Low Pressure Turbine Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "LPT Polytropic Efficiency": [
+                                "Low Pressure Turbine Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
-                                "HPT Mechanical Efficiency": [
+                                "High Pressure Turbine Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "HPT Polytropic Efficiency": [
+                                "High Pressure Turbine Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
@@ -1485,25 +1485,25 @@
                                     0.95,
                                     0
                                 ],
-                                "CN Polytropic Efficiency": [
+                                "Core Nozzle Polytropic Efficiency": [
                                     0.95,
                                     0
                                 ],
-                                "CN Pressure Ratio": [
+                                "Core Nozzle Pressure Ratio": [
                                     0.99,
                                     0
                                 ],
-                                "FN Polytropic Efficiency": [
+                                "Fan Nozzle Polytropic Efficiency": [
                                     0.95,
                                     0
                                 ],
-                                "FN Pressure Ratio": [
+                                "Fan Nozzle Pressure Ratio": [
                                     0.99,
                                     0
                                 ],
-                                "propulsor name": "starboard_propulsor",
+                                "Propulsor Tag": "starboard_propulsor",
                                 "fuel line name": "line_1",
-                                "nacelle tag": "nacelle_1"
+                                "Nacelle Tag": "nacelle_1"
                             },
                             {
                                 "Origin": [
@@ -1544,43 +1544,43 @@
                                     1.7,
                                     0
                                 ],
-                                "IN Polytropic Efficiency": [
+                                "Inlet Nozzle Polytropic Efficiency": [
                                     0.98,
                                     0
                                 ],
-                                "IN Pressure Ratio": [
+                                "Inlet Nozzle Pressure Ratio": [
                                     0.98,
                                     0
                                 ],
-                                "LPC Polytropic Efficiency": [
+                                "Low Pressure Compressor Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "LPC Pressure Ratio": [
+                                "Low Pressure Compressor Pressure Ratio": [
                                     1.9,
                                     0
                                 ],
-                                "HPC Polytropic Efficiency": [
+                                "High Pressure Compressor Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "HPC Pressure Ratio": [
+                                "High Pressure Compressor Pressure Ratio": [
                                     10.0,
                                     0
                                 ],
-                                "LPT Mechanical Efficiency": [
+                                "Low Pressure Turbine Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "LPT Polytropic Efficiency": [
+                                "Low Pressure Turbine Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
-                                "HPT Mechanical Efficiency": [
+                                "High Pressure Turbine Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "HPT Polytropic Efficiency": [
+                                "High Pressure Turbine Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
@@ -1600,25 +1600,25 @@
                                     0.95,
                                     0
                                 ],
-                                "CN Polytropic Efficiency": [
+                                "Core Nozzle Polytropic Efficiency": [
                                     0.95,
                                     0
                                 ],
-                                "CN Pressure Ratio": [
+                                "Core Nozzle Pressure Ratio": [
                                     0.99,
                                     0
                                 ],
-                                "FN Polytropic Efficiency": [
+                                "Fan Nozzle Polytropic Efficiency": [
                                     0.95,
                                     0
                                 ],
-                                "FN Pressure Ratio": [
+                                "Fan Nozzle Pressure Ratio": [
                                     0.99,
                                     0
                                 ],
-                                "propulsor name": "port_propulsor",
+                                "Propulsor Tag": "port_propulsor",
                                 "fuel line name": "line_1",
-                                "nacelle tag": "nacelle_2"
+                                "Nacelle Tag": "nacelle_2"
                             }
                         ]
                     }
