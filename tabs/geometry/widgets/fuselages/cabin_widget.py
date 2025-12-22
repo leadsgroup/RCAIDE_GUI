@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
 
 from utilities import Units, clear_layout
 from widgets import DataEntryWidget
-from tabs.geometry.widgets.cabin_class_widget import CabinClassWidget
+from tabs.geometry.widgets.fuselages.cabin_class_widget import CabinClassWidget
 
 
 class CabinWidget(QWidget):

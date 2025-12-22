@@ -4,3 +4,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from tabs.geometry.widgets.fuselages.fuselage_section_widget import FuselageSectionWidget 
+from tabs.geometry.widgets.fuselages.cabin_widget            import CabinWidget 
+from tabs.geometry.widgets.fuselages.cabin_class_widget      import CabinClassWidget 
