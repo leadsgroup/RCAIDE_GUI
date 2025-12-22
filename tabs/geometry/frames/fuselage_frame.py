@@ -161,18 +161,19 @@ class FuselageFrame(GeometryFrame):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
+        clear_layout(self.cabins_layout)
+        clear_layout(self.fuselage_sections_layout)
+        # # Clear the nacelle sections
+        # for i in range(self.fuselage_sections_layout.count()):
+        #     item = self.fuselage_sections_layout.itemAt(i)
+        #     assert item is not None
 
-        # Clear the nacelle sections
-        for i in range(self.fuselage_sections_layout.count()):
-            item = self.fuselage_sections_layout.itemAt(i)
-            assert item is not None
+        #     widget = item.widget()
+        #     assert widget is not None
 
-            widget = item.widget()
-            assert widget is not None
+        #     widget.deleteLater()
 
-            widget.deleteLater()
-
-        self.fuselage_sections_layout.update()
+        # self.fuselage_sections_layout.update()
         self.index = -1
 
     def create_rcaide_structure(self):
@@ -198,7 +199,7 @@ class FuselageFrame(GeometryFrame):
     
     def add_cabin(self):
         self.cabins_layout.addWidget(CabinWidget(
-            self.cabins_layout.count(), self.delete_cabin))
+            self.cabins_layout.count(), self.delete_cabin, cabin_type="Regular"))
         
     def delete_cabin(self, index):
         item = self.cabins_layout.itemAt(index)

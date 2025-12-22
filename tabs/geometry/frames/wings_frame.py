@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
     QSpacerItem, QSizePolicy, QScrollArea
 
 from tabs.geometry.frames import GeometryFrame
-from tabs.geometry.widgets import WingCSWidget, WingSectionWidget
+from tabs.geometry.widgets import WingCSWidget, WingSectionWidget, CabinWidget
 from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data, clear_layout
 from widgets import DataEntryWidget
 
@@ -14,6 +14,9 @@ class WingsFrame(GeometryFrame):
         """Create a frame for entering wing data."""
         super(WingsFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
+
+        self.cabin_widgets = []
+        self.side_cabin_widgets = []
 
         create_scroll_area(self)
 
@@ -68,6 +71,14 @@ class WingsFrame(GeometryFrame):
         # self.main_layout.addWidget(QLabel("Control Surfaces"))
         self.main_layout.addLayout(self.wing_cs_layout)
 
+        self.cabins_layout = QVBoxLayout()
+        self.main_layout.addLayout(self.cabins_layout)
+
+        self.side_cabins_layout = QVBoxLayout()
+        self.main_layout.addLayout(self.side_cabins_layout)
+
+        self.main_layout.addWidget(create_line_bar())
+
         self.add_buttons_layout()
 
         # Adds scroll function
@@ -96,6 +107,10 @@ class WingsFrame(GeometryFrame):
         new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         new_cs_button = QPushButton("New Control Surface", self)
         new_cs_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        new_cabin_button = QPushButton("Add Cabin", self)
+        new_cabin_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        new_side_cabin_button = QPushButton("Add Side Cabin", self)
+        new_side_cabin_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
         save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button = QPushButton("Delete Data", self)
@@ -105,6 +120,8 @@ class WingsFrame(GeometryFrame):
 
         new_section_button.clicked.connect(self.add_wing_section)
         new_cs_button.clicked.connect(self.add_control_surface)
+        new_cabin_button.clicked.connect(self.add_regular_cabin)
+        new_side_cabin_button.clicked.connect(self.add_side_cabin)
         save_button.clicked.connect(self.save_data)
         delete_button.clicked.connect(self.delete_data)
         new_button.clicked.connect(self.create_new_structure)
@@ -112,6 +129,8 @@ class WingsFrame(GeometryFrame):
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(new_section_button)
         buttons_layout.addWidget(new_cs_button)
+        buttons_layout.addWidget(new_cabin_button)
+        buttons_layout.addWidget(new_side_cabin_button)
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
@@ -180,36 +199,71 @@ class WingsFrame(GeometryFrame):
             if widget is not None and isinstance(widget, WingCSWidget):
                 widget.index = i
 
+    def add_regular_cabin(self, data=None):
+        widget = CabinWidget(len(self.cabin_widgets), self.delete_regular_cabin, data, cabin_type="Regular")
+        self.cabin_widgets.append(widget)
+        self.cabins_layout.addWidget(widget)
+    
+    def delete_regular_cabin(self, index):
+        if 0 <= index < len(self.cabin_widgets):
+            widget = self.cabin_widgets[index]
+            self.cabins_layout.removeWidget(widget)
+            widget.deleteLater()
+            self.cabin_widgets.pop(index)
+            for i in range(index, len(self.cabin_widgets)):
+                self.cabin_widgets[i].index = i
+
+    def add_side_cabin(self, data=None):
+        widget = CabinWidget(len(self.side_cabin_widgets), self.delete_side_cabin, data, cabin_type="Side")
+        self.side_cabin_widgets.append(widget)
+        self.side_cabins_layout.addWidget(widget)
+
+    def delete_side_cabin(self, index):
+        if 0 <= index < len(self.side_cabin_widgets):
+            widget = self.side_cabin_widgets[index]
+            self.side_cabins_layout.removeWidget(widget)
+            widget.deleteLater()
+            self.side_cabin_widgets.pop(index)
+            for i in range(index, len(self.side_cabin_widgets)):
+                self.side_cabin_widgets[i].index = i
+
     # TODO: Implement proper deletion of data
     def delete_data(self):
         pass
 
     def create_new_structure(self):
         """Create a new wing structure."""
-        # Clear the main data values
-        assert self.data_entry_widget is not None and self.name_line_edit is not None
+        # # Clear the main data values
+        # assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
+        clear_layout(self.wing_sections_layout)
+        clear_layout(self.wing_cs_layout)
+        clear_layout(self.cabins_layout)
+        self.cabin_widgets.clear()
+        clear_layout(self.side_cabins_layout)
+        self.side_cabin_widgets.clear()
 
-        # Clear the wing sections
-        for i in range(self.wing_sections_layout.count()):
-            item = self.wing_sections_layout.itemAt(i)
-            assert item is not None
-            widget = item.widget()
-            assert widget is not None and isinstance(widget, WingSectionWidget)
-            widget.deleteLater()
+        # # Clear the wing sections
+        # for i in range(self.wing_sections_layout.count()):
+        #     item = self.wing_sections_layout.itemAt(i)
+        #     assert item is not None
+        #     widget = item.widget()
+        #     assert widget is not None and isinstance(widget, WingSectionWidget)
+        #     widget.deleteLater()
 
-        self.wing_sections_layout.update()
+        # self.wing_sections_layout.update()
 
-        # Clear the control surfaces
-        for i in range(self.wing_cs_layout.count()):
-            item = self.wing_cs_layout.itemAt(i)
-            assert item is not None
-            widget = item.widget()
-            assert widget is not None and isinstance(widget, WingCSWidget)
+        # # Clear the control surfaces
+        # for i in range(self.wing_cs_layout.count()):
+        #     item = self.wing_cs_layout.itemAt(i)
+        #     assert item is not None
+        #     widget = item.widget()
+        #     assert widget is not None and isinstance(widget, WingCSWidget)
 
-            widget.deleteLater()
-        self.wing_cs_layout.update()
+        #     widget.deleteLater()
+        # self.wing_cs_layout.update()
+
 
         self.index = -1
 
@@ -282,6 +336,23 @@ class WingsFrame(GeometryFrame):
                 cs_data, cs = widget.get_data_values()
                 wing.append_control_surface(cs)
                 data["control_surfaces"].append(cs_data)
+        
+        data["cabins"] = []
+        if not hasattr(wing, "cabins"):
+            wing.cabins = RCAIDE.Library.Components.Fuselages.Cabins.Cabin.Container()
+        for widget in self.cabin_widgets:
+            cabin_data, cabin_object = widget.get_data_values()
+            data["cabins"].append(cabin_data)
+            wing.cabins.append_cabin(cabin_object)
+        
+        data["side_cabins"] = []
+        if not hasattr(wing, "side_cabins"):
+            wing.side_cabins = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin.Container()
+        for widget in self.side_cabin_widgets:
+            cabin_data, cabin_object = widget.get_data_values()
+            data["side_cabins"].append(cabin_data)
+            wing.side_cabins.append_side_cabin(cabin_object)
+            
 
         return data, wing
 
@@ -297,6 +368,8 @@ class WingsFrame(GeometryFrame):
 
         clear_layout(self.wing_sections_layout)
         clear_layout(self.wing_cs_layout)
+        clear_layout(self.cabins_layout)
+        clear_layout(self.side_cabins_layout)
         
         for section in data["sections"]:
             self.wing_sections_layout.addWidget(WingSectionWidget(
@@ -305,6 +378,14 @@ class WingsFrame(GeometryFrame):
         for section in data["control_surfaces"]:
             self.wing_cs_layout.addWidget(WingCSWidget(
                 self.wing_cs_layout.count(), self.delete_control_surface, section))
+            
+        if "cabins" in data:
+            for cabin_data in data["cabins"]:
+                self.add_regular_cabin(cabin_data)
+        
+        if "side_cabins" in data:
+            for cabin_data in data["side_cabins"]:
+                self.add_side_cabin(cabin_data)
 
         self.name_line_edit.setText(data["name"])
         self.index = index

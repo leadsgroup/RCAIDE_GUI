@@ -43,7 +43,7 @@ class CabinClassWidget(QWidget):
             ("Seat Arm Rest Width", Units.Length),
             ("Seat Length", Units.Length),
             ("Seat Pitch", Units.Length),
-            ("Aisle Width", Units.Boolean)
+            ("Aisle Width", Units.Length)
         ]
 
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)

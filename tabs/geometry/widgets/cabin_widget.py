@@ -9,10 +9,11 @@ from tabs.geometry.widgets.cabin_class_widget import CabinClassWidget
 
 
 class CabinWidget(QWidget):
-    def __init__(self, index, on_delete, section_data=None):
+    def __init__(self, index, on_delete, section_data=None, cabin_type="Regular"):
         super(CabinWidget, self).__init__()
         self.index = index
         self.on_delete = on_delete
+        self.cabin_type = cabin_type
         self.data_entry_widget: DataEntryWidget | None = None
         self.name_layout = QHBoxLayout()
         self.classes_layout = QVBoxLayout()
@@ -21,6 +22,8 @@ class CabinWidget(QWidget):
     # noinspection DuplicatedCode
     def init_ui(self, section_data):
         main_layout = QVBoxLayout()
+        type_label = QLabel(f"<b>Type: {self.cabin_type} Cabin</b>")
+        main_layout.addWidget(type_label)
         # add spacing
         spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -94,7 +97,11 @@ class CabinWidget(QWidget):
                 item.widget().index = i
 
     def create_rcaide_structure(self, data):
-        cabin = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+        if self.cabin_type == "Side":
+            cabin = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin()
+            
+        else:
+            cabin = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
 
         cabin.tag = data["Cabin Name"]
         cabin.number_of_passengers = int(data["Number of Passengers"][0])
@@ -113,6 +120,7 @@ class CabinWidget(QWidget):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["Cabin Name"] = self.name_layout.itemAt(2).widget().text()
+        data["cabin_type"] = self.cabin_type
         data_si["Cabin Name"] = self.name_layout.itemAt(2).widget().text()
         cabin_object = self.create_rcaide_structure(data_si)
 
@@ -123,13 +131,19 @@ class CabinWidget(QWidget):
                 class_widget = item.widget()
                 class_data, class_object = class_widget.get_data_values()
                 data["classes"].append(class_data)
-                cabin_object.classes.append(class_object)
+                if hasattr(cabin_object, "append_cabin_class"):
+                    cabin_object.append_cabin_class(class_object)
+                else:
+                    cabin_object.classes.append(class_object)
 
         return data, cabin_object
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["Cabin Name"])
+        if "cabin_type" in section_data:
+            self.cabin_type = section_data["cabin_type"]
+            self.layout().itemAt(0).widget().setText(f"<b>Type: {self.cabin_type} Cabin</b>")
         clear_layout(self.classes_layout)
         if "classes" in section_data:   
             for class_data in section_data["classes"]:
