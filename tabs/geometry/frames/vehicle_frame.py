@@ -8,7 +8,7 @@ import values
 
 
 class VehicleFrame(GeometryFrame):
-    data_units_labels = [
+    general_data_units_labels = [
         ("Reference Area", Units.Area, "reference_area"),
         ("Passengers", Units.Count, "number_of_passengers"),
         ("Max Takeoff Weight", Units.Mass, "mass_properties.max_takeoff"),
@@ -20,13 +20,17 @@ class VehicleFrame(GeometryFrame):
         ("Maximum Payload Weight", Units.Mass, "mass_properties.max_payload"),
         ("Payload Weight", Units.Mass, "mass_properties.payload"),
         ("Maximum Landing Weight", Units.Mass, "mass_properties.max_landing"),
-        ("Landing Weight", Units.Mass, "mass_properties.landing"),
+        ("Landing Weight", Units.Mass, "mass_properties.landing")
+    ]
+    flight_envelope_data_units_labels = [
         ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
         ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),
         ("Moment of Intertia", Units.Intertia, "mass_properties.moments_of_inertia.tensor"),
         ("Ultimate Load", Units.Unitless, "flight_envelope.ultimate_load"),
         ("Positive Limit Load", Units.Unitless, "flight_envelope.positive_limit_load"),
         ("Negative Limit Load", Units.Unitless, "flight_envelope.negative_limit_load"),
+    ]
+    systems_data_units_labels = [
         ("Design Cruise Altitude", Units.Length, "flight_envelope.design_cruise_altitude"),
         ("Design Range", Units.Length, "flight_envelope.design_range"),
         ("Aircraft Category", Units.Unitless, "flight_envelope.category"),
@@ -45,15 +49,24 @@ class VehicleFrame(GeometryFrame):
         self.main_layout.addWidget(QLabel("<b>Vehicle</b>"))
         self.main_layout.addWidget(create_line_bar())
 
-        self.name_layout = QHBoxLayout()
-        self.name_layout.addWidget(QLabel("Name:"), 3)
-        self.name_line_edit = QLineEdit()
-        self.name_layout.addWidget(self.name_line_edit, 7)
+        # self.name_line_edit = QLineEdit()
+        # self.main_layout.addWidget(self.name_line_edit, 7)
 
         # self.main_layout.addLayout(self.name_layout)
+        general_label = QLabel("<b>General</b>")
+        self.main_layout.addWidget(general_label)
+        self.general_data_entry_widget = DataEntryWidget(self.general_data_units_labels)
+        self.main_layout.addWidget(self.general_data_entry_widget)
 
-        self.data_entry_widget = DataEntryWidget(self.data_units_labels)
-        self.main_layout.addWidget(self.data_entry_widget)
+        flight_envelope_label = QLabel("<b>Flight Envelope</b>")
+        self.main_layout.addWidget(flight_envelope_label)
+        self.flight_envelope_data_entry_widget = DataEntryWidget(self.flight_envelope_data_units_labels)
+        self.main_layout.addWidget(self.flight_envelope_data_entry_widget)
+
+        systems_label = QLabel("<b>Systems</b>")
+        self.main_layout.addWidget(systems_label)
+        self.systems_data_entry_widget = DataEntryWidget(self.systems_data_units_labels)
+        self.main_layout.addWidget(self.systems_data_entry_widget)
 
         # button_layout = QHBoxLayout()
         save_button = QPushButton("Save")

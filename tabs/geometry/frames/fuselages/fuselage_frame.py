@@ -1,26 +1,14 @@
-# RCAIDE_GUI/tabs/geometry/frames/fuselages/fuselage_frame.py
-# 
-# Created:  Dec 2025, M. Clarke 
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports   
 import RCAIDE
-
-# PyQT Imports
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy, QScrollArea
 
-# RCAIDE GUI imports  
 from tabs.geometry.frames import GeometryFrame
-from tabs.geometry.widgets import FuselageSectionWidget
+from tabs.geometry.widgets import FuselageSectionWidget, CabinWidget, CabinClassWidget
+
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
 from widgets import DataEntryWidget
 
-# --------------------------------------------------------------------------------------------------------------------- 
-#  Fuselage Frame 
-# ----------------------------------------------------------------------------------------------------------------------
+
 class FuselageFrame(GeometryFrame):
     # List of data labels
     data_units_labels = [
@@ -45,7 +33,7 @@ class FuselageFrame(GeometryFrame):
     ]
 
     def __init__(self):
-        """Create a frame for entering fuselage data."""
+        """Create a frame for entering nacelle data."""
         super(FuselageFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
@@ -66,6 +54,10 @@ class FuselageFrame(GeometryFrame):
         # Add the sections layout to the main layout
         self.fuselage_sections_layout = QVBoxLayout()
         self.main_layout.addLayout(self.fuselage_sections_layout)
+
+        self.main_layout.addWidget(QLabel("<b>Cabins</b>"))
+        self.cabins_layout = QVBoxLayout()
+        self.main_layout.addLayout(self.cabins_layout)
 
         self.add_buttons_layout()
 
@@ -91,7 +83,7 @@ class FuselageFrame(GeometryFrame):
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
-        new_section_button = QPushButton("Add Fuselage Segment", self)
+        new_section_button = QPushButton("New Fuselage Section", self)
         new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
         save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
@@ -105,8 +97,13 @@ class FuselageFrame(GeometryFrame):
         delete_button.clicked.connect(self.delete_data)
         new_button.clicked.connect(self.create_new_structure)
 
+        new_cabin_button = QPushButton("Add Cabin", self)
+        new_cabin_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        new_cabin_button.clicked.connect(self.add_cabin)
+
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(new_section_button)
+        buttons_layout.addWidget(new_cabin_button)
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(delete_button)
         buttons_layout.addWidget(new_button)
@@ -159,23 +156,24 @@ class FuselageFrame(GeometryFrame):
         pass
 
     def create_new_structure(self):
-        """Create a new fuselage structure."""
+        """Create a new nacelle structure."""
         # Clear the main data values
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
+        clear_layout(self.cabins_layout)
+        clear_layout(self.fuselage_sections_layout)
+        # # Clear the nacelle sections
+        # for i in range(self.fuselage_sections_layout.count()):
+        #     item = self.fuselage_sections_layout.itemAt(i)
+        #     assert item is not None
 
-        # Clear the fuselage sections
-        for i in range(self.fuselage_sections_layout.count()):
-            item = self.fuselage_sections_layout.itemAt(i)
-            assert item is not None
+        #     widget = item.widget()
+        #     assert widget is not None
 
-            widget = item.widget()
-            assert widget is not None
+        #     widget.deleteLater()
 
-            widget.deleteLater()
-
-        self.fuselage_sections_layout.update()
+        # self.fuselage_sections_layout.update()
         self.index = -1
 
     def create_rcaide_structure(self):
@@ -198,6 +196,29 @@ class FuselageFrame(GeometryFrame):
                 fuselage.segments.append(segment)
 
         return fuselage
+    
+    def add_cabin(self):
+        self.cabins_layout.addWidget(CabinWidget(
+            self.cabins_layout.count(), self.delete_cabin, cabin_type="Regular"))
+        
+    def delete_cabin(self, index):
+        item = self.cabins_layout.itemAt(index)
+        assert item is not None
+        widget = item.widget()
+        assert widget is not None
+
+        widget.deleteLater()
+        self.cabins_layout.removeWidget(widget)
+        self.cabins_layout.update()
+
+        for i in range(index, self.cabins_layout.count()):
+            item = self.cabins_layout.itemAt(i)
+            if item is None:
+                continue
+
+            widget = item.widget()
+            if widget is not None and isinstance(widget, CabinWidget):
+                widget.index = i
 
     def get_data_values(self):
         """Retrieve the entered data values from the text fields."""
@@ -219,6 +240,18 @@ class FuselageFrame(GeometryFrame):
 
         assert self.name_line_edit is not None
         data["name"] = self.name_line_edit.text()
+
+        data["cabins"] = []
+        for i in range(self.cabins_layout.count()):
+            item = self.cabins_layout.itemAt(i)
+            if item is None:
+                continue
+
+            cabin_widget = item.widget()
+            if cabin_widget is not None and isinstance(cabin_widget, CabinWidget):
+                cabin_data, cabin = cabin_widget.get_data_values()
+                data["cabins"].append(cabin_data)
+                fuselage.cabins.append(cabin)
         return data, fuselage
 
     def load_data(self, data, index):
@@ -237,6 +270,12 @@ class FuselageFrame(GeometryFrame):
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
 
+        clear_layout(self.cabins_layout)
+        if "cabins" in data:
+            for cabin in data["cabins"]:
+                self.cabins_layout.addWidget(CabinWidget(
+                    self.cabins_layout.count(), self.delete_cabin, cabin))
+        
         assert self.name_line_edit is not None
         self.name_line_edit.setText(data["name"])
         self.index = index
