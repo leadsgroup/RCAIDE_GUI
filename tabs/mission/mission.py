@@ -3,7 +3,7 @@ from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QPainterPath
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QGroupBox, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QScrollArea, QFrame,
-    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox, QFormLayout, QGridLayout, QRadioButton
+    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox
 )
 
 from tabs.mission.widgets import MissionSegmentWidget
@@ -465,7 +465,8 @@ class MissionWidget(TabWidget):
     def __init__(self, shared_analysis_widget=None):
         super().__init__()
 
-        # Use shared analysis widget if provided, otherwise create a new one
+        # Mission-level analysis widget intentionally owned by the Mission tab
+        # future analysis views will use separate widgets
         if shared_analysis_widget is not None:
             self.analysis_widget = shared_analysis_widget
         else:
@@ -560,111 +561,7 @@ class MissionWidget(TabWidget):
 
         # Storage for active mission segment widgets
         self.segment_widgets = []
-       
-    # ============================================================
-    #  Segment Handlers
-    # ============================================================
-    def add_segment(self):
-        # Create a new mission segment widget
-        seg = MissionSegmentWidget()
-
-        # Attempt to retrieve the segment’s main layout (supports multiple layout names)
-        seg_layout = getattr(seg, "main_layout", None) or getattr(seg, "layout", lambda: None)()
-
-        # --- Compact UI ---
-        # Reduce spacing and margins to keep the segment panel tight
-        try:
-            seg_layout.setSpacing(2)
-            seg_layout.setContentsMargins(4, 0, 4, 0)
-        except:
-            # If layout access fails, continue without breaking
-            pass
-
-        # --- Style fixes ---
-        # Apply consistent styling to labels, text inputs, and dropdowns
-        for widget in seg.findChildren((QLabel, QLineEdit, QComboBox)):
-
-            # Style labels
-            if isinstance(widget, QLabel):
-                widget.setStyleSheet(
-                    "QLabel { color:#dbe7ff; margin:0; padding:0; }"
-                )
-            # Style text input fields
-            elif isinstance(widget, QLineEdit):
-                widget.setFixedHeight(22)
-                widget.setStyleSheet("""
-                    QLineEdit {
-                        background-color:#2b3038;
-                        border:1px solid #3a475a;
-                        border-radius:3px;
-                        padding:1px 3px;
-                        color:#e5f0ff;
-                        font-size:11px;
-                    }
-                """)
-            # Style combo box dropdowns
-            elif isinstance(widget, QComboBox):
-                widget.setFixedHeight(22)
-                widget.setStyleSheet("""
-                    QComboBox {
-                        background-color:#2b3038;
-                        border:1px solid #3a475a;
-                        border-radius:3px;
-                        padding:1px 3px;
-                        color:#e5f0ff;
-                        font-size:11px;
-                    }
-                    QComboBox::drop-down { width:14px; border:none; }
-                """)
         
-        # ============================================================
-        #  Panel Wrapper
-        # ============================================================
-        # Determine panel title from segment default name or fallback numbering
-        title = seg.get_default_name().title() if hasattr(
-            seg, "get_default_name"
-        ) else f"Segment {len(self.segment_widgets)+1}"
-
-        # Wrap the segment widget inside a collapsible panel
-        panel = CollapsiblePanel(title, seg)
-        panel.setObjectName("segmentPanel")
-
-        # Force consistent panel width for alignment
-        panel.setMaximumWidth(900)
-        panel.setMinimumWidth(900)
-
-        # Apply visual styling to the panel container
-        panel.setStyleSheet("""
-            #segmentPanel {
-                background:#141b29;
-                border:1px solid #2d3a4e;
-                border-radius:6px;
-                padding:6px;
-                margin:4px 0;
-            }
-        """)
-        # Track the segment widget internally
-        self.segment_widgets.append(seg)
-
-        # Add the panel to the scrollable details layout
-        self.details_layout.addWidget(panel)
-
-        # --- Divider between panels ---
-        line = QFrame()
-        line.setFrameShape(QFrame.Shape.HLine)
-        line.setStyleSheet("color:#2b3648; margin:2px 0;")
-        self.details_layout.addWidget(line)
-
-        # --- Tree view update ---
-        # Add segment entry to the mission segment tree
-        self.tree.addTopLevelItem(QTreeWidgetItem([title]))
-
-        # Refresh mission profile visualization
-        self._update_profile()
-
-        # Refresh mission summary table
-        self.summary_table.update_table()
-
     # ============================================================
     # Profile Update
     # ============================================================
@@ -807,32 +704,6 @@ class MissionWidget(TabWidget):
         # Refresh profile and summary table
         self._update_profile()
         self.summary_table.update_table()
-
-    # ============================================================
-    # Remove Duplicate Configuration
-    # ============================================================
-    def _remove_fake_config_from(self, details_layout, seg):
-        try:
-            # Iterate through layout items to locate the fake selector
-            for i in range(details_layout.count()):
-                item = details_layout.itemAt(i)
-                w = item.widget()
-
-                if w is seg.config_selector:
-                    # Remove label preceding the selector if present
-                    if i - 1 >= 0:
-                        prev = details_layout.itemAt(i - 1).widget()
-                        if isinstance(prev, QLabel) and "Aircraft Configuration" in prev.text():
-                            prev.setParent(None)
-                            details_layout.removeWidget(prev)
-
-                    # Remove the selector itself
-                    w.setParent(None)
-                    details_layout.removeWidget(w)
-                    break
-        except:
-            # Fail silently if layout structure differs
-            pass
 
     # ============================================================
     # Add Segment
