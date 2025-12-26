@@ -537,7 +537,7 @@ class MissionWidget(TabWidget):
         right_v.addWidget(self.summary_table)
 
         # Segment detail panels (scrollable)
-        details_box = QGroupBox("Segment Handlers")
+        details_box = QGroupBox("Segment")
         details_v = QVBoxLayout(details_box)
         self.details_scroll = QScrollArea()
         self.details_scroll.setWidgetResizable(True)
