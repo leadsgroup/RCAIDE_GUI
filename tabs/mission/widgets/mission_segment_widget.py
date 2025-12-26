@@ -45,7 +45,7 @@ class MissionSegmentWidget(QWidget):
         # Input for number of control points used by the solver
         cp_row = QHBoxLayout()
         cp_row.addWidget(QLabel("Number of Control Points:"))
-        self.ctrl_points = QLineEdit("2")
+        self.ctrl_points = QLineEdit("16")
         self.ctrl_points.setFixedWidth(70)
         self.ctrl_points.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cp_row.addWidget(self.ctrl_points)
@@ -273,8 +273,8 @@ class MissionSegmentWidget(QWidget):
         # Restore aircraft configuration selection
         self.config_selector.setCurrentIndex(data["config"])
 
-        # Restore control points (default to 2 if missing)
-        self.ctrl_points.setText(str(data.get("Control Points", 2)))
+        # Restore control points (default to 16 if missing)
+        self.ctrl_points.setText(str(data.get("Control Points", 16)))
 
         # Restore solver selection
         if data.get("Solver", "root") == "root":
