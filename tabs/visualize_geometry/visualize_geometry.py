@@ -43,7 +43,6 @@ class CustomInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
         self.GetInteractor().GetRenderWindow().Render()  # Render the changes
 
-
 class ColorBar(QWidget):
     def __init__(self, parts_dict, color_changed):
         super().__init__()
@@ -182,7 +181,6 @@ class CustomPanInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
         interactor.GetRenderWindow().Render()  
 
-
 class VisualizeGeometryWidget(TabWidget):
     def __init__(self):
         super(VisualizeGeometryWidget, self).__init__()
@@ -241,8 +239,6 @@ class VisualizeGeometryWidget(TabWidget):
         # Store selected option
         self.selected_option = None
         
-
-    
     def colorbar(self):
         self.part_actors = {
             "Fuselages": self.fuselage_actors,
@@ -390,9 +386,7 @@ class VisualizeGeometryWidget(TabWidget):
         item.setSelected(True)
         self.selected_option = item.text(0)       
      
-
     def run_solve(self):
-
         wing_color                  = 'grey'  
         fuselage_color              = 'grey'  
         nacelle_color               = 'grey' 
@@ -418,14 +412,13 @@ class VisualizeGeometryWidget(TabWidget):
         rotor_rgb_color             = mcolors.to_rgb(rotor_color)
         boom_rgb_color              = mcolors.to_rgb(boom_color)
         
-        
         self.renderer = vtk.vtkRenderer()
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
         self.render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
 
         # Number of points for airfoil
         geometry =  deepcopy(values.vehicle)
-        
+
         # -------------------------------------------------------------------------
         # Run Geoemtry Analysis Functions
         # -------------------------------------------------------------------------   
@@ -444,7 +437,6 @@ class VisualizeGeometryWidget(TabWidget):
         # -------------------------------------------------------------------------  
         # Plot wings
         # -------------------------------------------------------------------------
-    
         for wing in geometry.wings:
             n_segments = len(wing.segments)
             dim        = n_segments if n_segments > 0 else 2
@@ -620,8 +612,6 @@ class VisualizeGeometryWidget(TabWidget):
             "Concorde",
         ],
     }
-
-
 def get_widget() -> QWidget:
     return VisualizeGeometryWidget()
 
@@ -675,75 +665,130 @@ def make_actuator_disc(renderer, inner_radius, outer_radius, origin, rot_x,rot_y
     renderer.AddActor(actor)
     return
 
+# =====================================
+# RENDER SAFETY + CAMERA VIEW STABILITY
+# =====================================
+import functools
+import types
+import vtk
 
-# ==========================
-# ===== PATCHES ADDED BELOW (no edits above) =====
-# ==========================
+_DEFAULT_BOUNDS = (-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
+# --- helpers: unwrap / window / interactor ---
+def _unwrap(func):
+    # Walk through __wrapped__ to get the original function (prevents wrapper stacking confusion)
+    f = func
+    seen = set()
+    while hasattr(f, "__wrapped__") and f not in seen:
+        seen.add(f)
+        f = f.__wrapped__
+    return f
 
-# Safe bounds helper (prevents NoneType/empty-scene crashes)
-def _safe_bounds(self):
-    if self.renderer is None:
-        return (-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
+def _rw(self):
+    # Get the VTK RenderWindow safely (can be missing during tab rebuilds)
     try:
-        if self.renderer.VisibleActorCount() > 0:
-            return self.renderer.ComputeVisiblePropBounds()
+        return self.vtkWidget.GetRenderWindow()
+    except Exception:
+        return None
+
+def _iren(self):
+    # Get the RenderWindowInteractor safely
+    rw = _rw(self)
+    try:
+        return rw.GetInteractor() if rw is not None else None
+    except Exception:
+        return None
+
+# --- helpers: bounds + camera focusing ---
+def _safe_bounds(self):
+    # Return scene bounds if there are visible actors; otherwise return a stable default bounds box
+    r = getattr(self, "renderer", None)
+    if r is None:
+        return _DEFAULT_BOUNDS
+    try:
+        if r.VisibleActorCount() > 0:
+            b = r.ComputeVisiblePropBounds()
+            if b and len(b) == 6:
+                return b
     except Exception:
         pass
-    return (-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
+    return _DEFAULT_BOUNDS
 
-# Safer camera center
 def _reset_camera_focus_to_center_safe(self):
-    if self.renderer is None:
+    # Move camera focal point to the center of visible bounds (prevents “orbiting off into space”)
+    r = getattr(self, "renderer", None)
+    if r is None:
         return
     b = self._safe_bounds()
-    cx = (b[0] + b[1]) / 2.0
-    cy = (b[2] + b[3]) / 2.0
-    cz = (b[4] + b[5]) / 2.0
-    cam = self.renderer.GetActiveCamera()
-    if cam:
+    cx = (b[0] + b[1]) * 0.5
+    cy = (b[2] + b[3]) * 0.5
+    cz = (b[4] + b[5]) * 0.5
+    cam = r.GetActiveCamera()
+    if cam is not None:
         cam.SetFocalPoint(cx, cy, cz)
 
-# Safer view setter
 def _set_view_function_safe(self, Position, Viewup):
-    if self.renderer is None:
+    # Set camera position + up-vector safely, then reset camera and re-center focus
+    r = getattr(self, "renderer", None)
+    if r is None:
         return
-    if self.get_camera is None:
-        self.get_camera = self.renderer.GetActiveCamera()
-        if self.get_camera is None:
-            return
-    self.get_camera.SetFocalPoint(0, 0, 0)
-    self.get_camera.SetPosition(*Position)
-    self.get_camera.SetViewUp(*Viewup)
-    self.renderer.ResetCamera()
-    self.get_camera.Zoom(1.5)
-    self.reset_camera_focus_to_center()
-    self.vtkWidget.GetRenderWindow().Render()
 
+    cam = getattr(self, "get_camera", None) or r.GetActiveCamera()
+    self.get_camera = cam
+    if cam is None:
+        return
+    
+    cam.SetFocalPoint(0, 0, 0)
+    cam.SetPosition(*Position)
+    cam.SetViewUp(*Viewup)
+
+    try:
+        r.ResetCamera()
+        cam.Zoom(1.5)
+    except Exception:
+        pass
+
+    try:
+        self.reset_camera_focus_to_center()
+    except Exception:
+        pass
+
+    rw = _rw(self)
+    if rw is not None:
+        try:
+            rw.Render()
+        except Exception:
+            pass
+
+# --- safe camera view commands (use bounds-based offsets) ---
 def _front_function_safe(self):
-    if self.renderer is None:
+    # Front view: offset along -X by half the model width
+    if getattr(self, "renderer", None) is None:
         return
     b = self._safe_bounds()
-    self.set_view_function((-(b[1]-b[0])/2.0, 0, 0), (0, 0, 1))
+    self.set_view_function((-(b[1] - b[0]) * 0.5, 0, 0), (0, 0, 1))
 
 def _side_function_safe(self):
-    if self.renderer is None:
+    # Side view: offset along -Y by full model height
+    if getattr(self, "renderer", None) is None:
         return
     b = self._safe_bounds()
-    self.set_view_function((0, -(b[3]-b[2]), 0), (0, 0, 1))
+    self.set_view_function((0, -(b[3] - b[2]), 0), (0, 0, 1))
 
 def _top_function_safe(self):
-    if self.renderer is None:
+    # Top view: offset along +Z by full model height; set Y-up
+    if getattr(self, "renderer", None) is None:
         return
     b = self._safe_bounds()
-    self.set_view_function((0, 0, (b[3]-b[2])), (0, 1, 0))
+    self.set_view_function((0, 0, (b[3] - b[2])), (0, 1, 0))
 
 def _isometric_function_safe(self):
-    if self.renderer is None:
+    # Isometric view: offset equally in -X/-Y/+Z based on depth bounds
+    if getattr(self, "renderer", None) is None:
         return
     b = self._safe_bounds()
     self.set_view_function((-b[5], -b[5], b[5]), (0, 0, 1))
 
-# Replace the methods on the class (without touching the original definitions above)
+# --- attach safe methods onto the widget (overrides are intentional) ---
 VisualizeGeometryWidget._safe_bounds = _safe_bounds
 VisualizeGeometryWidget.reset_camera_focus_to_center = _reset_camera_focus_to_center_safe
 VisualizeGeometryWidget.set_view_function = _set_view_function_safe
@@ -752,341 +797,259 @@ VisualizeGeometryWidget.side_function = _side_function_safe
 VisualizeGeometryWidget.top_function = _top_function_safe
 VisualizeGeometryWidget.isometric_function = _isometric_function_safe
 
-# Patched run_solve: identical flow, but non-blocking and dark background.
-# (We re-implement only the tail section after actors are added.)
-_orig_run_solve = VisualizeGeometryWidget.run_solve
+# --- RUN_SOLVE NON-BLOCKING (PREVENT GUI LOCK)---
+if not getattr(VisualizeGeometryWidget, "_run_solve_nonblocking_patched", False):
+    # Grab the original run_solve (even if it has already been wrapped elsewhere)
+    _base_run_solve = _unwrap(VisualizeGeometryWidget.run_solve)
 
-def _run_solve_dark(self):
-    # ---- Run the original up to (but not including) the blocking/white-bg tail ----
-    # We basically re-execute your method body, but with a corrected ending.
-    # For clarity and stability, we copy your logic with minimal changes.
-    wing_color                  = 'grey'  
-    fuselage_color              = 'grey'  
-    nacelle_color               = 'grey' 
-    boom_color                  = 'grey' 
-    fuel_tank_color             = 'orange'  
-    rotor_color                 = 'black'      
-    wing_opacity                = 0.5  
-    fuselage_opacity            = 0.5 
-    nacelle_opacity             = 1.0 
-    fuel_tank_opacity           = 0.5 
-    rotor_opacity               = 1.0  
-    number_of_airfoil_points    = 101 
-    tessellation                = 96 
-    boom_opacity                = 1.0
-    camera_eye_x  = -1 
-    camera_eye_y  = -1 
-    camera_eye_z  = 0.35  
-    
-    fuel_tank_rgb_color         = mcolors.to_rgb(fuel_tank_color)     
-    wing_rgb_color              = mcolors.to_rgb(wing_color)
-    fuselage_rgb_color          = mcolors.to_rgb(fuselage_color) 
-    nacelle_rgb_color           = mcolors.to_rgb(nacelle_color) 
-    rotor_rgb_color             = mcolors.to_rgb(rotor_color)
-    boom_rgb_color              = mcolors.to_rgb(boom_color)
+    @functools.wraps(_base_run_solve)
+    def _run_solve_nonblocking(self, *args, **kwargs):
+        iren = _iren(self)
+        old_start = None
 
-    # fresh renderer every time
-    self.renderer = vtk.vtkRenderer()
-    self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
-    # Recommended on some GPUs to avoid flicker/blank
-    try:
-        self.vtkWidget.GetRenderWindow().SetMultiSamples(0)
-    except Exception:
-        pass
+        # Temporarily disable iren.Start() so VTK does not take over the event loop
+        if iren is not None:
+            try:
+                old_start = iren.Start
 
-    self.render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
+                def _noop_start(_self_iren):
+                    return None
 
-    geometry = deepcopy(values.vehicle)
+                iren.Start = types.MethodType(_noop_start, iren)
+            except Exception:
+                old_start = None
 
-    # Geometry setup
-    for wing in geometry.wings:  
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-            bwb_wing_planform(wing) 
-        else: 
-            wing_planform(wing)  
-    compute_fuel_volume(geometry)
-    for fuselage in geometry.fuselages:
-        compute_layout_of_passenger_accommodations(fuselage)
-        fuselage_planform(fuselage)
+        try:
+            _base_run_solve(self, *args, **kwargs)
+        finally:
+            # Restore iren.Start() no matter what happens inside run_solve
+            if iren is not None and old_start is not None:
+                try:
+                    iren.Start = old_start
+                except Exception:
+                    pass
 
-    # Wings
-    for wing in geometry.wings:
-        n_segments = len(wing.segments)
-        dim        = n_segments if n_segments > 0 else 2
-        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
-        make_object(self.renderer, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
-        if wing.yz_plane_symmetric:
-            GEOM.PTS[:, :, 0] = -GEOM.PTS[:, :, 0]
-            make_object(self.renderer, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
-        if wing.xz_plane_symmetric:
-            GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-            make_object(self.renderer, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
-        if wing.xy_plane_symmetric:
-            GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
-            make_object(self.renderer, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
+        # Re-apply expected background styling and force a redraw
+        try:
+            r = getattr(self, "renderer", None)
+            if r is not None:
+                r.SetBackground(0.05, 0.09, 0.15)
+                r.SetBackground2(0.12, 0.18, 0.28)
+                r.GradientBackgroundOn()
+            rw = _rw(self)
+            if rw is not None:
+                rw.Render()
+        except Exception:
+            pass
 
-    # Fuselages
-    for fuselage in geometry.fuselages:
-        GEOM = generate_3d_fuselage_points(fuselage, tessellation)
-        make_object(self.renderer, self.fuselage_actors, GEOM, fuselage_rgb_color, fuselage_opacity)
+        # Keep toolbar visible after solve
+        try:
+            self.toolbar.raise_()
+        except Exception:
+            pass
 
-    # Booms
-    for boom in geometry.booms:
-        GEOM = generate_3d_fuselage_points(boom, tessellation)
-        make_object(self.renderer, self.boom_actors, GEOM, boom_rgb_color, boom_opacity)
-
-    # Nacelles/Rotors/Propellers/Fuel tanks
-    for network in geometry.networks:
-        for propulsor in network.propulsors:
-            if 'nacelle' in propulsor:
-                if propulsor.nacelle is not None:
-                    if type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle:
-                        GEOM = generate_3d_stack_nacelle_points(propulsor.nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-                    elif type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle:
-                        GEOM = generate_3d_BOR_nacelle_points(propulsor.nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-                    else:
-                        GEOM = generate_3d_basic_nacelle_points(propulsor.nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-                    make_object(self.renderer, self.nacelle_actors, GEOM, nacelle_rgb_color, nacelle_opacity)
-
-            if 'rotor' in propulsor:
-                rot   = propulsor.rotor
-                rot_x = rot.orientation_euler_angles[0]
-                rot_y = rot.orientation_euler_angles[1]
-                rot_z = rot.orientation_euler_angles[2]
-                num_B = int(rot.number_of_blades)
-                if rot.radius_distribution is None:
-                    make_actuator_disc(self.renderer, rot.hub_radius, rot.tip_radius, rot.origin, rot_x, rot_y, rot_z, rotor_rgb_color, rotor_opacity)
-                else:
-                    dim = len(rot.radius_distribution)
-                    for i in range(num_B):
-                        GEOM = generate_3d_blade_points(rot, number_of_airfoil_points, dim, i)
-                        make_object(self.renderer, self.rotor_actors, GEOM, rotor_rgb_color, rotor_opacity)
-
-            if 'propeller' in propulsor:
-                prop  = propulsor.propeller
-                rot_x = prop.orientation_euler_angles[0]
-                rot_y = np.pi / 2 + prop.orientation_euler_angles[1]
-                rot_z = prop.orientation_euler_angles[2]
-                num_B = int(prop.number_of_blades)
-                if prop.radius_distribution is None:
-                    make_actuator_disc(self.renderer, prop.hub_radius, prop.tip_radius, prop.origin, rot_x, rot_y, rot_z, rotor_rgb_color, rotor_opacity)
-                else:
-                    dim = len(prop.radius_distribution)
-                    for i in range(num_B):
-                        GEOM = generate_3d_blade_points(prop, number_of_airfoil_points, dim, i)
-                        make_object(self.renderer, self.rotor_actors, GEOM, rotor_rgb_color, rotor_opacity)
-
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                if fuel_tank.wing_tag is not None:
-                    wing = geometry.wings[fuel_tank.wing_tag]
-                    if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
-                        make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                        if wing.xz_plane_symmetric:
-                            GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                            make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
-                        segment_list = []
-                        segment_tags = list(wing.segments.keys())
-                        for i in range(len(wing.segments)-1):
-                            seg = wing.segments[segment_tags[i]]
-                            next_seg = wing.segments[segment_tags[i+1]]
-                            if seg.has_fuel_tank:
-                                if seg.tag not in segment_list:
-                                    segment_list.append(seg.tag)
-                                if next_seg.tag not in segment_list:
-                                    segment_list.append(next_seg.tag)
-                        dim = len(segment_list) if len(wing.segments) > 0 else 2
-                        if len(segment_list) == 0 and len(wing.segments) > 0:
-                            raise AttributeError('Fuel tank defined on segmented wing but no segments have "tank" attribute = True')
-                        else:
-                            GEOM = generate_integral_wing_tank_points(wing, 5, dim, segment_list)
-                            make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                            if wing.xz_plane_symmetric:
-                                GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                                make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                elif fuel_tank.fuselage_tag is not None:
-                    fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
-                        segment_list = []
-                        segment_tags = list(fuselage.segments.keys())
-                        for i in range(len(fuselage.segments)-1):
-                            seg = fuselage.segments[segment_tags[i]]
-                            next_seg = fuselage.segments[segment_tags[i+1]]
-                            if seg.has_fuel_tank:
-                                segment_list.append(seg.tag)
-                                if next_seg.tag not in segment_list:
-                                    segment_list.append(next_seg.tag)
-                        GEOM = generate_integral_fuel_tank_points(fuselage, fuel_tank, segment_list, tessellation)
-                        make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                    GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
-                    make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                    try:
-                        if wing.xz_plane_symmetric:
-                            GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                            make_object(self.renderer, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                    except Exception:
-                        pass  # wing may not be defined in this branch
-
-    # ---- Patched tail: dark background + non-blocking render ----
-    camera = vtk.vtkCamera()
-    camera.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)
-    camera.SetFocalPoint(0, 0, 0)
-    camera.SetViewUp(0, 0, 1)
-
-    self.renderer.SetActiveCamera(camera)
-    self.renderer.ResetCamera()
-
-    # Dark gradient background (was white)
-    self.renderer.SetBackground(0.05, 0.09, 0.15)
-    self.renderer.SetBackground2(0.12, 0.18, 0.28)
-    try:
-        self.renderer.GradientBackgroundOn()
-        self.renderer.UseFXAAOn()
-    except Exception:
-        pass
-
-    custom_style = CustomInteractorStyle()
-    self.render_window_interactor.SetInteractorStyle(custom_style)
-
-    self.render_window_interactor.Initialize()
-    # IMPORTANT: Do NOT call .Start(); it blocks the Qt loop (causing “stuck previous tab”)
-    self.vtkWidget.GetRenderWindow().Render()
-
-    self.get_camera = self.renderer.GetActiveCamera()
-    self.update_toolbar()
-    try:
-        if values.vehicle.wings:
-            self.colorbar_widget.update_parts(self.part_actors)
-    except Exception:
-        pass
-
-    # Safe isometric only if we have something to show
-    if self.renderer and self.renderer.VisibleActorCount() > 0:
-        self.isometric_function()
-
-# Override the original run_solve with the patched, non-blocking dark version
-VisualizeGeometryWidget.run_solve = _run_solve_dark
+    # Preserve reference to the original function for future unwrap() calls
+    _run_solve_nonblocking.__wrapped__ = _base_run_solve
+    VisualizeGeometryWidget.run_solve = _run_solve_nonblocking
+    VisualizeGeometryWidget._run_solve_nonblocking_patched = True
 
 # =================================
 # BACKGROUND MENU (with checkmarks)
 # =================================
-from PyQt6.QtWidgets import QPushButton, QMenu, QColorDialog, QCheckBox
+# UI widgets used to build the small background mode menu
+from PyQt6.QtWidgets import QPushButton, QMenu, QColorDialog
 from PyQt6.QtGui import QAction, QColor
-import vtk
 
 class BackgroundManager:
-    """Controls the renderer background and updates checkmarks."""
+    """Manage background mode and menu checkmarks (dark / light / custom)."""
     def __init__(self, widget):
+        # keep a reference to the widget so we can access renderer & window
         self.widget = widget
-        self.renderer = widget.renderer
-        self.window = widget.vtkWidget.GetRenderWindow()
-        self.current_mode = None  # "dark", "light", or "custom"
+        self.current_mode = "dark"  # default
 
-    def _update_checkmarks(self, selected):
-        """Update all checkmarks when user switches background mode."""
-        for mode, action in self.widget._bg_actions.items():
-            action.setCheckable(True)
-            action.setChecked(mode == selected)
-        self.current_mode = selected
+    @property
+    def renderer(self):
+        # return the renderer if it exists, else None
+        return getattr(self.widget, "renderer", None)
+
+    @property
+    def window(self):
+        # return the render window so we can call Render()
+        try:
+            return self.widget.vtkWidget.GetRenderWindow()
+        except Exception:
+            return None
+
+    def _set_mode(self, mode: str):
+        """Set renderer background and update menu checkmarks."""
+        r = self.renderer
+        w = self.window
+        if r is None or w is None:
+            return
+
+        if mode == "dark":
+            r.GradientBackgroundOn()
+            r.SetBackground(0.05, 0.08, 0.15)
+            r.SetBackground2(0.12, 0.18, 0.28)
+
+        elif mode == "light":
+            r.GradientBackgroundOn()
+            r.SetBackground(0.85, 0.90, 0.98)
+            r.SetBackground2(1.0, 1.0, 1.0)
+
+        elif mode == "custom":
+            # Custom color is handled by set_custom_color() which calls _set_mode("custom")
+            pass
+
+        # update menu checkmarks if actions exist
+        actions = getattr(self.widget, "_bg_actions", None) or {}
+        for m, act in actions.items():
+            act.setCheckable(True)
+            act.setChecked(m == mode)
+
+        # remember mode and force a redraw
+        self.current_mode = mode
+        w.Render()
 
     def set_dark_mode(self):
-        self.renderer.GradientBackgroundOn()
-        self.renderer.SetBackground(0.05, 0.08, 0.15)
-        self.renderer.SetBackground2(0.12, 0.18, 0.28)
-        self.window.Render()
-        self._update_checkmarks("dark")
+        # switch to dark mode
+        self._set_mode("dark")
 
     def set_light_mode(self):
-        self.renderer.GradientBackgroundOn()
-        self.renderer.SetBackground(0.85, 0.90, 0.98)
-        self.renderer.SetBackground2(1.0, 1.0, 1.0)
-        self.window.Render()
-        self._update_checkmarks("light")
+        # switch to light mode
+        self._set_mode("light")
 
     def set_custom_color(self):
+        # set a single custom background color chosen by the user
+        r = self.renderer
+        w = self.window
+        if r is None or w is None:
+            return
+
+        # ask user for a color (default is dark)
         color = QColorDialog.getColor(QColor(20, 20, 20), self.widget, "Choose Background Color")
         if not color.isValid():
             return
-        self.renderer.GradientBackgroundOff()
-        self.renderer.SetBackground(color.redF(), color.greenF(), color.blueF())
-        self.window.Render()
-        self._update_checkmarks("custom")
 
+        # turn off gradient and apply the chosen color
+        r.GradientBackgroundOff()
+        r.SetBackground(color.redF(), color.greenF(), color.blueF())
+
+        # mark "custom" in the menu and redraw
+        actions = getattr(self.widget, "_bg_actions", None) or {}
+        for m, act in actions.items():
+            act.setCheckable(True)
+            act.setChecked(m == "custom")
+
+        self.current_mode = "custom"
+        w.Render()
 
 def _add_background_menu(self):
-    """Adds background color dropdown with checkmarks."""
+    """Add Background menu once to the toolbar."""
+    # require toolbar
+    if not hasattr(self, "toolbar") or self.toolbar is None:
+        return
+
+    # Prevent duplicates
     if getattr(self, "_background_menu_added", False):
         return
     self._background_menu_added = True
 
+    # create or reuse a small helper that talks to the renderer
+    if not hasattr(self, "bg_manager") or self.bg_manager is None:
+        self.bg_manager = BackgroundManager(self)
+
+    # add a simple button to the toolbar
     btn = QPushButton("🌄 Background")
     self.toolbar.addSeparator()
     self.toolbar.addWidget(btn)
 
-    # Initialize manager and menu
-    self.bg_manager = BackgroundManager(self)
+    # create a menu to hold actions
     menu = QMenu(btn)
-    self._bg_actions = {}
 
-    # Actions with checkmarks
-    act_dark = QAction("Dark Mode", menu, triggered=self.bg_manager.set_dark_mode)
-    act_light = QAction("Light Mode", menu, triggered=self.bg_manager.set_light_mode)
-    act_custom = QAction("Custom Color…", menu, triggered=self.bg_manager.set_custom_color)
+    # actions for each mode
+    act_dark = QAction("Dark Mode", menu)   # dark gradient
+    act_light = QAction("Light Mode", menu) # light gradient
+    act_custom = QAction("Custom Color…", menu) # pick solid color
 
+    # wire actions to the manager
+    act_dark.triggered.connect(self.bg_manager.set_dark_mode)
+    act_light.triggered.connect(self.bg_manager.set_light_mode)
+    act_custom.triggered.connect(self.bg_manager.set_custom_color)
+
+    # keep actions on the widget so we can update checkmarks later
+    # stored under `self._bg_actions` for easy access from the manager
     self._bg_actions = {"dark": act_dark, "light": act_light, "custom": act_custom}
+
+    # make each action checkable and add it to the menu
     for act in self._bg_actions.values():
         act.setCheckable(True)
         menu.addAction(act)
 
-    # Set default to dark mode
-    self.bg_manager._update_checkmarks("dark")
-    self.bg_manager.set_dark_mode()
-
+    # attach the menu to the toolbar button
     btn.setMenu(menu)
 
+    # set default mode now so the UI matches renderer
+    self.bg_manager.set_dark_mode()
 
-def _patch_background_menu():
-    """Attach background menu to VisualizeGeometryWidget.run_solve."""
-    if getattr(VisualizeGeometryWidget, "_background_menu_patched", False):
+# Activate Patch
+def _patch_update_toolbar_for_background_menu():
+    """Wrap update_toolbar once so the background menu is added."""
+    # don't apply more than once
+    if getattr(VisualizeGeometryWidget, "_bg_update_toolbar_patched", False):
         return
-    old = VisualizeGeometryWidget.run_solve
 
-    def wrapped(self):
-        old(self)
-        _add_background_menu(self)
+    old_update_toolbar = VisualizeGeometryWidget.update_toolbar
 
-    VisualizeGeometryWidget.run_solve = wrapped
-    VisualizeGeometryWidget._background_menu_patched = True
+    def wrapped_update_toolbar(self, *args, **kwargs):
+        # keep original toolbar behavior
+        old_update_toolbar(self, *args, **kwargs)
+        # then ensure the background menu is attached (won't duplicate)
+        _add_background_menu(self)  # idempotent
 
-_patch_background_menu()
+    VisualizeGeometryWidget.update_toolbar = wrapped_update_toolbar
+    VisualizeGeometryWidget._bg_update_toolbar_patched = True
+
+_patch_update_toolbar_for_background_menu()
+# patch applied above so the background menu is ready when toolbars are built
 
 # ===================================
-# FULLSCREEN GRIDLINE OVERLAY SYSTEM 
+# Gridline Overlay Toggle
 # ===================================
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QCheckBox
-from PyQt6.QtCore import Qt
+# Simple grid overlay system:
+
 from PyQt6.QtWidgets import QCheckBox
 import vtk
 
-def add_fullscreen_grid(renderer, theme="dark", divisions=12):
-    """Draw a fullscreen 2D grid overlay matching the current theme."""
-    if not renderer or not renderer.GetRenderWindow():
+def add_fullscreen_grid(renderer, divisions=12):
+    """Create a layer-1 overlay renderer that draws a 2D grid across the window.
+
+    Returns the overlay renderer or None.
+    """
+    # If renderer or window isn't available, do nothing
+    if renderer is None or not hasattr(renderer, "GetRenderWindow"):
         return None
     win = renderer.GetRenderWindow()
-    w, h = win.GetActualSize()
-    if w == 0 or h == 0:
+    if win is None:
         return None
 
-    # Grid color and opacity based on background theme
-    color, opacity = ((0.6, 0.7, 0.9), 0.25) if theme == "dark" else ((0.25, 0.25, 0.25), 0.35)
-    step = min(w, h) / divisions
+    # Get window size; if zero, don't draw
+    w, h = win.GetActualSize()
+    if not w or not h:
+        return None
 
-    pts, lines = vtk.vtkPoints(), vtk.vtkCellArray()
+    # Simple grid color and opacity
+    color, opacity = (0.6, 0.7, 0.9), 0.25
+
+    # Determine spacing between grid lines
+    step = max(1.0, min(w, h) / float(max(1, divisions)))
+
+    # Build points and line cells for the grid
+    pts = vtk.vtkPoints()
+    lines = vtk.vtkCellArray()
     pid = 0
 
+    # Add vertical grid lines
     for i in range(int(w / step) + 1):
         x = i * step
         pts.InsertNextPoint(x, 0, 0)
@@ -1096,6 +1059,7 @@ def add_fullscreen_grid(renderer, theme="dark", divisions=12):
         lines.InsertCellPoint(pid + 1)
         pid += 2
 
+    # Add horizontal grid lines
     for j in range(int(h / step) + 1):
         y = j * step
         pts.InsertNextPoint(0, y, 0)
@@ -1105,439 +1069,1008 @@ def add_fullscreen_grid(renderer, theme="dark", divisions=12):
         lines.InsertCellPoint(pid + 1)
         pid += 2
 
+    # Make polydata and a 2D mapper/actor
     grid = vtk.vtkPolyData()
     grid.SetPoints(pts)
     grid.SetLines(lines)
+
     mapper = vtk.vtkPolyDataMapper2D()
     mapper.SetInputData(grid)
+
     actor = vtk.vtkActor2D()
     actor.SetMapper(mapper)
     actor.GetProperty().SetColor(color)
     actor.GetProperty().SetOpacity(opacity)
 
+    # Overlay renderer (non-interactive)
     overlay = vtk.vtkRenderer()
     overlay.SetLayer(1)
     overlay.InteractiveOff()
     overlay.AddActor(actor)
     overlay.SetBackgroundAlpha(0.0)
-    win.SetNumberOfLayers(2)
+
+    # Ensure base layer + overlay layer
+    try:
+        win.SetNumberOfLayers(2)
+    except Exception:
+        pass
+
     win.AddRenderer(overlay)
-    win.Render()
     return overlay
 
+def _remove_grid_overlay(self):
+    """Remove overlay renderer if present."""
+    r = getattr(self, "renderer", None)
+    if r is None or not hasattr(r, "GetRenderWindow"):
+        self.overlay_grid = None
+        return
 
-_old_run_solve = VisualizeGeometryWidget.run_solve
+    win = r.GetRenderWindow()
+    overlay = getattr(self, "overlay_grid", None)
+    if overlay is None or win is None:
+        self.overlay_grid = None
+        return
 
-def _run_solve_with_gridlines(self):
-    """Adds gridline overlay toggle to the toolbar."""
-    _old_run_solve(self)
-    win = self.renderer.GetRenderWindow()
-    self.current_theme = getattr(self, "current_theme", "dark")
+    try:
+        win.RemoveRenderer(overlay)
+    except Exception:
+        pass
 
-    # --- GRID TOGGLE ---
-    if not hasattr(self, "grid_checkbox"):
-        self.grid_checkbox = QCheckBox("Show Gridlines")
-        self.grid_checkbox.setChecked(False)
-        self.grid_checkbox.setStyleSheet("color:white;font-size:10pt;")
-        self.toolbar.addSeparator()
-        self.toolbar.addWidget(self.grid_checkbox)
+    self.overlay_grid = None
 
-        def toggle_grid(state):
-            # Remove existing grid if toggled off
-            if hasattr(self, "overlay_grid") and self.overlay_grid:
-                win.RemoveRenderer(self.overlay_grid)
-                self.overlay_grid = None
-            # Add new grid overlay if toggled on
-            if state == 2:
-                self.overlay_grid = add_fullscreen_grid(self.renderer, theme=self.current_theme)
-            win.Render()
+def _rebuild_grid_overlay_if_enabled(self):
+    """Toggle/rebuild grid overlay based on checkbox state."""
+    r = getattr(self, "renderer", None)
+    if r is None:
+        return
 
-        self.grid_checkbox.stateChanged.connect(toggle_grid)
+    cb = getattr(self, "grid_checkbox", None)
+    if cb is None:
+        return
 
-        # Auto-resize grid when window size changes
-        def on_resize(obj, event):
-            if getattr(self, "overlay_grid", None) and self.grid_checkbox.isChecked():
-                win.RemoveRenderer(self.overlay_grid)
-                self.overlay_grid = add_fullscreen_grid(self.renderer, theme=self.current_theme)
-        win.AddObserver("WindowResizeEvent", on_resize)
+    # Remove if disabled
+    if not cb.isChecked():
+        _remove_grid_overlay(self)
+        try:
+            r.GetRenderWindow().Render()
+        except Exception:
+            pass
+        return
 
-    win.Render()
+    # Rebuild (remake to match current window size)
+    _remove_grid_overlay(self)
+    self.overlay_grid = add_fullscreen_grid(r, divisions=12)
 
-VisualizeGeometryWidget.run_solve = _run_solve_with_gridlines
+    try:
+        r.GetRenderWindow().Render()
+    except Exception:
+        pass
 
+def _add_gridline_toggle(self):
+    """Add the gridlines checkbox once; safe to call repeatedly."""
+    if not hasattr(self, "toolbar") or self.toolbar is None:
+        return
+    if getattr(self, "_gridline_toggle_added", False):
+        return
+    if getattr(self, "renderer", None) is None:
+        return
+
+    self._gridline_toggle_added = True
+
+    # Checkbox UI
+    self.grid_checkbox = QCheckBox("Show Gridlines")
+    self.grid_checkbox.setChecked(False)
+    self.grid_checkbox.setStyleSheet("color:white;font-size:10pt;")
+
+    self.toolbar.addSeparator()
+    self.toolbar.addWidget(self.grid_checkbox)
+
+    # Toggle behavior
+    self.grid_checkbox.stateChanged.connect(lambda _s: _rebuild_grid_overlay_if_enabled(self))
+
+    # Resize observer (install once)
+    if not getattr(self, "_grid_resize_observer_added", False):
+        self._grid_resize_observer_added = True
+        try:
+            win = self.renderer.GetRenderWindow()
+
+            def on_resize(_o, _e):
+                _rebuild_grid_overlay_if_enabled(self)
+
+            win.AddObserver("WindowResizeEvent", on_resize)
+        except Exception:
+            pass
+
+# Activate Patch
+def _patch_update_toolbar_for_gridlines():
+    """Patch update_toolbar once (no run_solve wrapper stacking)."""
+    if getattr(VisualizeGeometryWidget, "_grid_update_toolbar_patched", False):
+        return
+
+    old_update_toolbar = VisualizeGeometryWidget.update_toolbar
+
+    def wrapped_update_toolbar(self, *args, **kwargs):
+        old_update_toolbar(self, *args, **kwargs)
+        _add_gridline_toggle(self)
+
+    VisualizeGeometryWidget.update_toolbar = wrapped_update_toolbar
+    VisualizeGeometryWidget._grid_update_toolbar_patched = True
+
+_patch_update_toolbar_for_gridlines()
 
 # =====================================
-# AXES GIZMO (with Transparent Border)
+# AXES GIZMO
 # =====================================
 import vtk
 
-def add_orientation_gizmo(renderer, render_window):
+def _bind_gizmo_renderer(widget, renderer):
+    # VTK uses different method names depending on the version
     try:
+        widget.SetCurrentRenderer(renderer)
+    except Exception:
+        try:
+            widget.SetDefaultRenderer(renderer)
+        except Exception:
+            pass
+
+def add_orientation_gizmo(self):
+    # Need renderer + render window + interactor
+    r = getattr(self, "renderer", None)
+    if r is None:
+        return
+    try:
+        rw = self.vtkWidget.GetRenderWindow()
+    except Exception:
+        return
+    if rw is None:
+        return
+    iren = rw.GetInteractor()
+    if iren is None:
+        return
+
+    # Reuse existing widget so we don’t create duplicates
+    widget = getattr(self, "_axes_widget", None) or getattr(iren, "_axes_widget", None)
+
+    if widget is None:
+        # Axes + label styling
         axes = vtk.vtkAxesActor()
-        for a in [
+        for cap in (
             axes.GetXAxisCaptionActor2D(),
             axes.GetYAxisCaptionActor2D(),
             axes.GetZAxisCaptionActor2D(),
-        ]:
-            a.GetTextActor().GetTextProperty().SetFontSize(14)
-            a.GetTextActor().GetTextProperty().SetColor(1, 1, 1)
+        ):
+            tp = cap.GetTextActor().GetTextProperty()
+            tp.SetFontSize(14)
+            tp.SetColor(1.0, 1.0, 1.0)
 
-        # make a simple transparent square border
+        # Light wireframe border around the gizmo
         border = vtk.vtkCubeSource()
         border.SetXLength(1.2)
         border.SetYLength(1.2)
         border.SetZLength(1.2)
+
         border_mapper = vtk.vtkPolyDataMapper()
         border_mapper.SetInputConnection(border.GetOutputPort())
+
         border_actor = vtk.vtkActor()
         border_actor.SetMapper(border_mapper)
-        border_actor.GetProperty().SetColor(0.8, 0.8, 0.8)
-        border_actor.GetProperty().SetOpacity(0.1)
-        border_actor.GetProperty().SetRepresentationToWireframe()
+        p = border_actor.GetProperty()
+        p.SetColor(0.8, 0.8, 0.8)
+        p.SetOpacity(0.1)
+        p.SetRepresentationToWireframe()
+        p.LightingOff()
 
+        # Combine axes + border into one marker
         assembly = vtk.vtkPropAssembly()
         assembly.AddPart(border_actor)
         assembly.AddPart(axes)
 
+        # Small overlay widget in the corner
         widget = vtk.vtkOrientationMarkerWidget()
-        interactor = render_window.GetInteractor()
         widget.SetOrientationMarker(assembly)
         widget.SetViewport(0.0, 0.0, 0.18, 0.28)
-        widget.SetInteractor(interactor)
-        if not interactor.GetInitialized():
-            interactor.Initialize()
-        widget.EnabledOn()
-        widget.InteractiveOff()
-        render_window.Render()
+        widget.SetInteractor(iren)
 
-        renderer._axes_widget = widget
+    # Attach to the current renderer (important if renderer was rebuilt)
+    _bind_gizmo_renderer(widget, r)
+
+    # Some VTK builds need this before enabling the widget
+    try:
+        if not iren.GetInitialized():
+            iren.Initialize()
     except Exception:
         pass
 
+    # Keep it visible but not clickable
+    widget.EnabledOn()
+    widget.InteractiveOff()
 
-if not hasattr(VisualizeGeometryWidget, "_gizmo_patched"):
-    _orig_run_solve = VisualizeGeometryWidget.run_solve
+    # Store in both places so it survives tab switches
+    self._axes_widget = widget
+    iren._axes_widget = widget
 
-    def _run_solve_with_gizmo(self):
-        _orig_run_solve(self)
-        add_orientation_gizmo(self.renderer, self.vtkWidget.GetRenderWindow())
+    # Redraw now
+    try:
+        rw.Render()
+    except Exception:
+        pass
 
-    VisualizeGeometryWidget.run_solve = _run_solve_with_gizmo
-    VisualizeGeometryWidget._gizmo_patched = True
+def _rebind_axes_gizmo_on_show(self):
+    # Tab switching can recreate the renderer/interactor, so we reattach the gizmo
+    r = getattr(self, "renderer", None)
+    if r is None:
+        return
+    try:
+        rw = self.vtkWidget.GetRenderWindow()
+    except Exception:
+        return
+    if rw is None:
+        return
+    iren = rw.GetInteractor()
+    if iren is None:
+        return
 
-# ======================================= 
-# AUTO-ROTATE CAMERA (360° Orbit, Faster)
+    # Find existing gizmo widget
+    w = getattr(self, "_axes_widget", None) or getattr(iren, "_axes_widget", None)
+    if w is None:
+        return
+
+    # Reattach to the current interactor/renderer
+    try:
+        w.SetInteractor(iren)
+    except Exception:
+        pass
+    _bind_gizmo_renderer(w, r)
+
+    # Turn it back on and redraw
+    try:
+        w.EnabledOn()
+        w.InteractiveOff()
+        rw.Render()
+    except Exception:
+        pass
+
+# Activate Patch
+def _patch_run_solve_for_axes_gizmo():
+    # After run_solve builds the scene, make sure the gizmo exists
+    if getattr(VisualizeGeometryWidget, "_axes_gizmo_patched", False):
+        return
+    base = VisualizeGeometryWidget.run_solve
+
+    def wrapped(self, *args, **kwargs):
+        base(self, *args, **kwargs)
+        add_orientation_gizmo(self)
+
+    VisualizeGeometryWidget.run_solve = wrapped
+    VisualizeGeometryWidget._axes_gizmo_patched = True
+
+# Activate Patch
+def _patch_showEvent_for_axes_gizmo_rebind():
+    # When the widget becomes visible again, rebind the gizmo
+    if getattr(VisualizeGeometryWidget, "_axes_showevent_patched", False):
+        return
+    old = getattr(VisualizeGeometryWidget, "showEvent", None)
+
+    def wrapped(self, event):
+        if old is not None:
+            try:
+                old(self, event)
+            except Exception:
+                pass
+        _rebind_axes_gizmo_on_show(self)
+
+    VisualizeGeometryWidget.showEvent = wrapped
+    VisualizeGeometryWidget._axes_showevent_patched = True
+
+_patch_run_solve_for_axes_gizmo()
+_patch_showEvent_for_axes_gizmo_rebind()
+
 # =======================================
-import math, vtk
+# AUTO-ROTATE CAMERA (360° ORBIT)
+# =======================================
+# Toolbar toggle that orbits the camera around its current focal point.
+
+import math
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QPushButton
 
 def add_360_view(self):
-    if hasattr(self, "view360_button"):
+    # Requires toolbar + renderer + VTK widget
+    if not getattr(self, "toolbar", None) or getattr(self, "renderer", None) is None:
+        return
+    if not getattr(self, "vtkWidget", None):
+        return
+
+    # Don’t add twice (update_toolbar can be called multiple times)
+    if getattr(self, "view360_button", None) is not None:
         return
 
     btn = QPushButton("360° View")
     btn.setCheckable(True)
     self.toolbar.addSeparator()
     self.toolbar.addWidget(btn)
+    self.view360_button = btn
 
-    timer = QTimer()
-    timer.setInterval(25)   # faster refresh (~40 FPS)
-    angle = {"a": 0}
-    state = {"center": None, "dist": None}
+    # Timer drives the orbit animation
+    timer = QTimer(self)
+    timer.setInterval(25)
+    self._view360_timer = timer
 
-    def init_camera():
-        b = self.renderer.ComputeVisiblePropBounds()
-        if not b or b[0] == b[1]:
+    # Orbit state (center, distance, up vector, angle, basis directions)
+    state = {"c": None, "d": None, "up": None, "theta": 0.0, "dir0": None, "t": None}
+
+    def _norm(x, y, z):
+        # Normalize a vector and return (unit_vector, magnitude)
+        n = (x*x + y*y + z*z) ** 0.5
+        if n <= 1e-12:
+            return (0.0, 0.0, 0.0), 0.0
+        return (x/n, y/n, z/n), n
+
+    def _cross(ax, ay, az, bx, by, bz):
+        # Cross product a × b
+        return (ay*bz - az*by, az*bx - ax*bz, ax*by - ay*bx)
+
+    def init_orbit():
+        # Capture focal point / camera position and build orbit basis
+        r = getattr(self, "renderer", None)
+        if r is None:
             return
-        c = [(b[0] + b[1]) / 2, (b[2] + b[3]) / 2, (b[4] + b[5]) / 2]
-        size = max(b[1]-b[0], b[3]-b[2], b[5]-b[4])
-        d = size * 3.5
-        cam = self.renderer.GetActiveCamera()
-        pos = cam.GetPosition()
-        if not state["center"]:
-            cam.SetPosition(c[0] + d, c[1], c[2])
-            cam.SetFocalPoint(*c)
-            cam.SetViewUp(0, 0, 1)
-            cam.SetClippingRange(0.1, d * 10)
+        cam = r.GetActiveCamera()
+        if cam is None:
+            return
+
+        c = cam.GetFocalPoint()
+        p = cam.GetPosition()
+
+        # dir0 is the direction from focal point to camera, dist is the radius
+        (dir0, dist) = _norm(p[0] - c[0], p[1] - c[1], p[2] - c[2])
+
+        # If the camera is sitting on the focal point, estimate a usable distance
+        if dist <= 1e-6:
+            b = r.ComputeVisiblePropBounds()
+            if b and len(b) == 6 and b[1] != b[0]:
+                size = max(b[1] - b[0], b[3] - b[2], b[5] - b[4])
+                dist = max(1e-3, size * 3.5)
+                dir0 = (1.0, 0.0, 0.0)
+            else:
+                return
+
+        # Normalize up vector (fallback to Z-up if invalid)
+        up_raw = cam.GetViewUp()
+        (up, upn) = _norm(up_raw[0], up_raw[1], up_raw[2])
+        if upn <= 1e-12:
+            up = (0.0, 0.0, 1.0)
+
+        # Build a tangent direction for rotation: t = up × dir0
+        tx, ty, tz = _cross(up[0], up[1], up[2], dir0[0], dir0[1], dir0[2])
+        (t, tn) = _norm(tx, ty, tz)
+
+        # Fallback if up is parallel to dir0
+        if tn <= 1e-12:
+            tx, ty, tz = _cross(up[0], up[1], up[2], 1.0, 0.0, 0.0)
+            (t, tn) = _norm(tx, ty, tz)
+            if tn <= 1e-12:
+                tx, ty, tz = _cross(up[0], up[1], up[2], 0.0, 1.0, 0.0)
+                (t, _) = _norm(tx, ty, tz)
+
+        # Save orbit basis
+        state["c"] = (c[0], c[1], c[2])
+        state["d"] = dist
+        state["up"] = up
+        state["dir0"] = dir0
+        state["t"] = t
+        state["theta"] = 0.0
+
+        # Render once so the first orbit frame looks correct
+        try:
+            r.ResetCameraClippingRange()
             self.vtkWidget.GetRenderWindow().Render()
-            state["center"], state["dist"] = c, d
-            angle["a"] = 0
-        else:
-            state["center"], state["dist"] = c, state["dist"] or d
+        except Exception:
+            pass
 
-    def update():
-        if not state["center"]:
+    def tick():
+        # Move camera along the orbit and redraw
+        r = getattr(self, "renderer", None)
+        if r is None:
             return
-        cam = self.renderer.GetActiveCamera()
-        c, d = state["center"], state["dist"]
-        angle["a"] += 1.5  # ⚡ rotate faster (~5 sec per full revolution)
-        if angle["a"] >= 360:
-            angle["a"] = 0
-        r = math.radians(angle["a"])
-        cam.SetPosition(c[0] + d * math.cos(r), c[1] - d * math.sin(r), c[2])
-        cam.SetFocalPoint(*c)
-        cam.SetViewUp(0, 0, 1)
-        cam.SetClippingRange(0.1, d * 10)
-        self.vtkWidget.GetRenderWindow().Render()
+        cam = r.GetActiveCamera()
+        if cam is None or state["c"] is None:
+            return
 
-    timer.timeout.connect(update)
-    btn.toggled.connect(lambda checked: (init_camera(), timer.start()) if checked else timer.stop())
+        # Step the angle (1.5° per tick)
+        state["theta"] += math.radians(1.5)
+        if state["theta"] >= 2.0 * math.pi:
+            state["theta"] -= 2.0 * math.pi
 
-if not hasattr(VisualizeGeometryWidget, "_view360_patched"):
-    old = VisualizeGeometryWidget.run_solve
-    def _run_solve(self):
-        old(self)
+        ct = math.cos(state["theta"])
+        st = math.sin(state["theta"])
+
+        # dir_new = dir0*cos(theta) + t*sin(theta)
+        dir0 = state["dir0"]
+        t = state["t"]
+        dir_new = (
+            dir0[0] * ct + t[0] * st,
+            dir0[1] * ct + t[1] * st,
+            dir0[2] * ct + t[2] * st,
+        )
+
+        # Position = center + dir_new * radius
+        c = state["c"]
+        d = state["d"]
+        pos = (c[0] + dir_new[0] * d, c[1] + dir_new[1] * d, c[2] + dir_new[2] * d)
+
+        cam.SetPosition(pos[0], pos[1], pos[2])
+        cam.SetFocalPoint(c[0], c[1], c[2])
+        cam.SetViewUp(state["up"][0], state["up"][1], state["up"][2])
+
+        try:
+            r.ResetCameraClippingRange()
+            self.vtkWidget.GetRenderWindow().Render()
+        except Exception:
+            pass
+
+    # Timer callback for orbit animation
+    timer.timeout.connect(tick)
+
+    def on_toggle(checked):
+        # Start/stop orbit
+        if checked:
+            init_orbit()
+            timer.start()
+        else:
+            timer.stop()
+
+    btn.toggled.connect(on_toggle)
+
+# Activate Patch
+def _patch_update_toolbar_for_360_view():
+    # Patch update_toolbar once to add the 360° button
+    if getattr(VisualizeGeometryWidget, "_view360_update_toolbar_patched", False):
+        return
+
+    old_update_toolbar = VisualizeGeometryWidget.update_toolbar
+
+    def wrapped_update_toolbar(self, *args, **kwargs):
+        old_update_toolbar(self, *args, **kwargs)
         add_360_view(self)
-    VisualizeGeometryWidget.run_solve = _run_solve
-    VisualizeGeometryWidget._view360_patched = True
+
+    VisualizeGeometryWidget.update_toolbar = wrapped_update_toolbar
+    VisualizeGeometryWidget._view360_update_toolbar_patched = True
+
+_patch_update_toolbar_for_360_view()
 
 # ===========================
-#  MEASUREMENT TOOL SECTION 
+# MEASUREMENT TOOL SECTION
 # ===========================
-import vtk, math
+# Purpose:
+# - Adds a lightweight "distance measurement" tool to the VG toolbar.
+# - User workflow:
+#   1) Toggle 📏 Measure ON
+#   2) Click two points in the scene
+#   3) A line + endpoint markers + distance label are created
+#   4) Use ↩ Undo to remove the most recent measurement, 🧹 Clear to remove all
+
+# Design notes:
+# - Uses a vtkCellPicker to pick world-space points on visible geometry.
+# - Stores all state on `self._measure_state` so the tool is resilient across toolbar rebuilds.
+# - Patch wraps VisualizeGeometryWidget.update_toolbar() so the buttons are re-added whenever
+#   the toolbar is rebuilt/refreshed (without editing code above this patch section).
+
+import math
+import vtk
 from PyQt6.QtWidgets import QPushButton
 
+
 def add_measure_tool(self):
-    if getattr(self, "_measure_tool_loaded", False):
+    """
+    Injects Measure / Undo / Clear controls into the existing toolbar and wires
+    VTK click-picking to create measurement annotations.
+
+    Safe to call repeatedly; will not duplicate buttons for a live widget instance.
+    """
+    # --- Preconditions ---
+    # Need a toolbar (to add buttons), a renderer (to place VTK actors), and a VTK widget (render window/interactor).
+    if not getattr(self, "toolbar", None) or getattr(self, "renderer", None) is None:
         return
-    self._measure_tool_loaded = True
+    if not getattr(self, "vtkWidget", None):
+        return
 
-    # --- Toolbar Buttons ---
-    btn = QPushButton("📏 Measure"); btn.setCheckable(True)
-    undo = QPushButton("↩ Undo")
-    clr  = QPushButton("🧹 Clear")
+    # --- Idempotency guard ---
+    # update_toolbar can be called multiple times; if buttons already exist and are valid, do nothing.
+    btn_existing = getattr(self, "measure_button", None)
+    if btn_existing is not None:
+        try:
+            _ = btn_existing.isChecked()  # if this works, button is still alive
+            return
+        except Exception:
+            # Button object was destroyed (e.g., UI rebuild); drop refs so we recreate below.
+            self.measure_button = None
+
+    # --- UI controls ---
+    btn = QPushButton("📏 Measure")
+    btn.setCheckable(True)  # toggle on/off click observer
+
+    undo = QPushButton("↩ Undo")   # remove last completed measurement
+    clr = QPushButton("🧹 Clear")  # remove all measurements
+
+    # Add them to the existing toolbar
     self.toolbar.addSeparator()
-    for w in (btn, undo, clr):
-        self.toolbar.addWidget(w)
+    self.toolbar.addWidget(btn)
+    self.toolbar.addWidget(undo)
+    self.toolbar.addWidget(clr)
 
-    picker = vtk.vtkCellPicker()
-    picker.SetTolerance(0.0005)
-    pts, temp_dots, measures = [], [], []
-    self._measure_obs = None
+    # Keep references on the widget so we can detect duplicates and wire events once.
+    self.measure_button = btn
+    self.measure_undo_button = undo
+    self.measure_clear_button = clr
 
-    def scene_diag():
-        b = self.renderer.ComputeVisiblePropBounds()
-        return max(b[1]-b[0], b[3]-b[2], b[5]-b[4]) or 1.0
+    # --- Persistent tool state ---
+    # State is stored on the widget instance, not in globals, so multiple VG widgets won't conflict.
+    if not hasattr(self, "_measure_state") or self._measure_state is None:
+        self._measure_state = {
+            "picker": vtk.vtkCellPicker(),  # screen -> world pick
+            "pts": [],                      # in-progress points: [(p, dot_actor), ...]
+            "temp_dots": [],                # actors created before a measurement is finalized
+            "measures": [],                 # completed measurements: [{"line":..., "txt":..., "d1":..., "d2":...}, ...]
+            "obs": None,                    # VTK observer id for LeftButtonPressEvent
+        }
+        self._measure_state["picker"].SetTolerance(0.0005)
 
-    # --- Dots ---
-    def make_dot(p, color):
-        r = 0.0075 * scene_diag()
-        s = vtk.vtkSphereSource(); s.SetRadius(r)
-        m = vtk.vtkPolyDataMapper(); m.SetInputConnection(s.GetOutputPort())
-        a = vtk.vtkActor(); a.SetMapper(m); a.SetPosition(*p)
-        a.GetProperty().SetColor(*color)
-        a.GetProperty().SetLighting(False)
+    st = self._measure_state
+
+    # --- Small helpers (render window / interactor) ---
+    def _rw():
+        """Safely get the RenderWindow."""
+        try:
+            return self.vtkWidget.GetRenderWindow()
+        except Exception:
+            return None
+
+    def _iren():
+        """
+        Safely get the interactor.
+        Prefer an existing attribute if your widget sets it; otherwise pull from RenderWindow.
+        """
+        iren = getattr(self, "render_window_interactor", None)
+        if iren is not None:
+            return iren
+        rw = _rw()
+        return rw.GetInteractor() if rw is not None else None
+
+    # --- Scale helpers (dot radius relative to scene size) ---
+    def _scene_diag():
+        """
+        Estimate a characteristic scene size so dot radius scales with the model.
+        Falls back to 1.0 if bounds are missing/invalid.
+        """
+        try:
+            b = self.renderer.ComputeVisiblePropBounds()
+        except Exception:
+            b = None
+
+        if not b or len(b) != 6:
+            return 1.0
+
+        dx = (b[1] - b[0])
+        dy = (b[3] - b[2])
+        dz = (b[5] - b[4])
+        s = max(dx, dy, dz)
+        return s if s > 0 else 1.0
+
+    # --- VTK actor constructors ---
+    def _make_dot(p, color):
+        """Create a small sphere marker at world point p."""
+        r = 0.0075 * _scene_diag()
+
+        s = vtk.vtkSphereSource()
+        s.SetRadius(r)
+
+        m = vtk.vtkPolyDataMapper()
+        m.SetInputConnection(s.GetOutputPort())
+
+        a = vtk.vtkActor()
+        a.SetMapper(m)
+        a.SetPosition(p[0], p[1], p[2])
+        a.GetProperty().SetColor(color[0], color[1], color[2])
+        a.GetProperty().LightingOff()
+
         self.renderer.AddActor(a)
         return a
 
-    # --- Yellow lines ---
-    def make_line(p1, p2):
-        l = vtk.vtkLineSource(); l.SetPoint1(p1); l.SetPoint2(p2)
-        m = vtk.vtkPolyDataMapper(); m.SetInputConnection(l.GetOutputPort())
-        a = vtk.vtkActor(); a.SetMapper(m)
+    def _make_line(p1, p2):
+        """Create a line actor between p1 and p2."""
+        l = vtk.vtkLineSource()
+        l.SetPoint1(p1)
+        l.SetPoint2(p2)
+
+        m = vtk.vtkPolyDataMapper()
+        m.SetInputConnection(l.GetOutputPort())
+
+        a = vtk.vtkActor()
+        a.SetMapper(m)
+
         prop = a.GetProperty()
         prop.SetColor(1.0, 1.0, 0.0)
         prop.SetLineWidth(3.5)
-        prop.SetDiffuse(0.0)
-        prop.SetAmbient(1.0)
-        prop.SetSpecular(0.0)
-        prop.SetLighting(False)
+        prop.LightingOff()
+
         self.renderer.AddActor(a)
         return a
 
-    # --- Perfectly visible overlay label ---
-    def make_label(p1, p2, L):
-        """2D overlay cyan label that stays visible no matter what."""
+    def _make_label(p1, p2, L):
+        """Create a 2D text label anchored in world-space at the midpoint."""
         mid = (
-            (p1[0] + p2[0]) / 2,
-            (p1[1] + p2[1]) / 2,
-            (p1[2] + p2[2]) / 2,
+            (p1[0] + p2[0]) * 0.5,
+            (p1[1] + p2[1]) * 0.5,
+            (p1[2] + p2[2]) * 0.5,
         )
         txt = f"{L:.3f} m"
 
         coord = vtk.vtkCoordinate()
         coord.SetCoordinateSystemToWorld()
-        coord.SetValue(*mid)
+        coord.SetValue(mid[0], mid[1], mid[2])
 
-        text_actor = vtk.vtkTextActor()
-        text_actor.SetInput(txt)
-        tp = text_actor.GetTextProperty()
+        t = vtk.vtkTextActor()
+        t.SetInput(txt)
+
+        tp = t.GetTextProperty()
         tp.SetFontSize(26)
         tp.SetBold(True)
-        tp.SetColor(0.4, 1.0, 1.0)  # glowing sky cyan (readable on grey)
-        tp.SetOpacity(1.0)
+        tp.SetColor(0.4, 1.0, 1.0)
         tp.SetShadow(True)
         tp.SetShadowOffset(2, -2)
         tp.SetJustificationToCentered()
         tp.SetVerticalJustificationToCentered()
-        text_actor.GetPositionCoordinate().SetReferenceCoordinate(coord)
-        text_actor.GetPositionCoordinate().SetCoordinateSystemToWorld()
-        self.renderer.AddActor2D(text_actor)
-        return text_actor
 
-    # --- On click ---
-    def on_click(_obj, _evt):
+        # Anchor the 2D text actor to a world coordinate
+        t.GetPositionCoordinate().SetReferenceCoordinate(coord)
+        t.GetPositionCoordinate().SetCoordinateSystemToWorld()
+
+        self.renderer.AddActor2D(t)
+        return t
+
+    # --- Render + cleanup helpers ---
+    def _render():
+        """Request a render, safely."""
+        rw = _rw()
+        if rw is None:
+            return
+        try:
+            rw.Render()
+        except Exception:
+            pass
+
+    def _remove_temp():
+        """
+        Remove any in-progress markers (first click / partial measurement)
+        and reset the in-progress points list.
+        """
+        for d in st["temp_dots"]:
+            try:
+                self.renderer.RemoveActor(d)
+            except Exception:
+                pass
+        st["temp_dots"].clear()
+        st["pts"].clear()
+
+    # --- Main click handler ---
+    def _on_click(_obj, _evt):
+        """
+        If Measure is enabled:
+        - pick a world point
+        - drop a dot
+        - after 2 points: create line + label and commit as a measurement
+        """
         if not btn.isChecked():
             return
-        x, y = self.render_window_interactor.GetEventPosition()
-        if not picker.Pick(x, y, 0, self.renderer):
-            return
-        p = picker.GetPickPosition()
-        color = (0, 0.7, 1) if len(pts) == 0 else (1, 0.2, 0.2)
-        dot = make_dot(p, color)
-        pts.append((p, dot))
-        temp_dots.append(dot)
 
-        if len(pts) == 2:
-            (p1, d1), (p2, d2) = pts
+        iren = _iren()
+        if iren is None:
+            return
+
+        x, y = iren.GetEventPosition()
+
+        # vtkCellPicker.Pick returns truthy when it hits something in the renderer
+        if not st["picker"].Pick(x, y, 0, self.renderer):
+            return
+
+        p = st["picker"].GetPickPosition()
+
+        # Color convention: first point cyan-ish, second point red-ish
+        color = (0.0, 0.7, 1.0) if len(st["pts"]) == 0 else (1.0, 0.2, 0.2)
+        dot = _make_dot(p, color)
+
+        st["pts"].append(((p[0], p[1], p[2]), dot))
+        st["temp_dots"].append(dot)
+
+        # If we have two points, finalize measurement
+        if len(st["pts"]) == 2:
+            (p1, d1), (p2, d2) = st["pts"]
+
             L = math.dist(p1, p2)
-            line = make_line(p1, p2)
-            txt = make_label(p1, p2, L)
-            measures.append({'line': line, 'txt': txt, 'd1': d1, 'd2': d2})
-            pts.clear(); temp_dots.clear()
-            self.vtkWidget.GetRenderWindow().Render()
+            line = _make_line(p1, p2)
+            label = _make_label(p1, p2, L)
 
-    # --- Toggle ---
-    def toggle(on):
-        rw = self.vtkWidget.GetRenderWindow()
-        if on:
-            if self._measure_obs is None:
-                self._measure_obs = self.render_window_interactor.AddObserver(
-                    "LeftButtonPressEvent", on_click, 1.0)
-        else:
-            if self._measure_obs is not None:
-                self.render_window_interactor.RemoveObserver(self._measure_obs)
-                self._measure_obs = None
-        rw.Render()
+            st["measures"].append({"line": line, "txt": label, "d1": d1, "d2": d2})
 
-    # --- Clear / Undo ---
-    def do_clear():
-        for m in measures:
-            for key in ('line', 'txt', 'd1', 'd2'):
-                self.renderer.RemoveActor(m[key])
-        for d in temp_dots:
-            self.renderer.RemoveActor(d)
-        measures.clear(); temp_dots.clear(); pts.clear()
-        self.vtkWidget.GetRenderWindow().Render()
+            # Reset in-progress state so next pair starts fresh
+            st["pts"].clear()
+            st["temp_dots"].clear()
+            _render()
 
-    def do_undo():
-        if not measures:
+    # --- Toggle wiring (observer attach/detach) ---
+    def _toggle(on: bool):
+        """
+        Turn measurement mode on/off by adding/removing a VTK observer.
+        Also cleans up partial state when turning off.
+        """
+        iren = _iren()
+        if iren is None:
+            btn.setChecked(False)
             return
-        m = measures.pop()
-        for key in ('line', 'txt', 'd1', 'd2'):
-            self.renderer.RemoveActor(m[key])
-        self.vtkWidget.GetRenderWindow().Render()
 
-    btn.toggled.connect(toggle)
-    clr.clicked.connect(do_clear)
-    undo.clicked.connect(do_undo)
+        if on:
+            # Add observer once; keep id so we can remove it later
+            if st["obs"] is None:
+                st["obs"] = iren.AddObserver("LeftButtonPressEvent", _on_click, 1.0)
+        else:
+            # Remove observer and clear any partial click state
+            if st["obs"] is not None:
+                try:
+                    iren.RemoveObserver(st["obs"])
+                except Exception:
+                    pass
+                st["obs"] = None
+            _remove_temp()
 
+        _render()
 
-def _patch_measure():
-    if getattr(VisualizeGeometryWidget, "_measure_patched", False):
+    # --- Clear/Undo actions ---
+    def _do_clear():
+        """Remove all measurements + any in-progress markers."""
+        _remove_temp()
+
+        for m in st["measures"]:
+            # Line
+            try:
+                self.renderer.RemoveActor(m["line"])
+            except Exception:
+                pass
+
+            # Endpoints
+            try:
+                self.renderer.RemoveActor(m["d1"])
+                self.renderer.RemoveActor(m["d2"])
+            except Exception:
+                pass
+
+            # Label (Actor2D)
+            try:
+                self.renderer.RemoveActor2D(m["txt"])
+            except Exception:
+                # Fallback if someone added it as a 3D actor in other variants
+                try:
+                    self.renderer.RemoveActor(m["txt"])
+                except Exception:
+                    pass
+
+        st["measures"].clear()
+        _render()
+
+    def _do_undo():
+        """Remove the most recent completed measurement."""
+        _remove_temp()
+
+        if not st["measures"]:
+            return
+
+        m = st["measures"].pop()
+
+        try:
+            self.renderer.RemoveActor(m["line"])
+        except Exception:
+            pass
+
+        try:
+            self.renderer.RemoveActor(m["d1"])
+            self.renderer.RemoveActor(m["d2"])
+        except Exception:
+            pass
+
+        try:
+            self.renderer.RemoveActor2D(m["txt"])
+        except Exception:
+            try:
+                self.renderer.RemoveActor(m["txt"])
+            except Exception:
+                pass
+
+        _render()
+
+    # --- Qt signal hookups ---
+    btn.toggled.connect(_toggle)
+    clr.clicked.connect(_do_clear)
+    undo.clicked.connect(_do_undo)
+
+# Activate Patch
+def _patch_update_toolbar_for_measure_tool():
+    """
+    - Wrap VisualizeGeometryWidget.update_toolbar so the measure tool is injected
+      after the toolbar is created/refreshed.
+    - Does not touch run_solve or any other global patches.
+    """
+    # Guard so we only patch the class once per process
+    if getattr(VisualizeGeometryWidget, "_measure_update_toolbar_patched", False):
         return
-    old = VisualizeGeometryWidget.run_solve
-    def wrapped(self):
-        old(self)
+
+    old_update_toolbar = VisualizeGeometryWidget.update_toolbar
+
+    def wrapped_update_toolbar(self, *args, **kwargs):
+        # 1) Build the toolbar using the original implementation
+        old_update_toolbar(self, *args, **kwargs)
+        # 2) Add measurement controls (idempotent per widget instance)
         add_measure_tool(self)
-    VisualizeGeometryWidget.run_solve = wrapped
-    VisualizeGeometryWidget._measure_patched = True
 
-_patch_measure()
+    VisualizeGeometryWidget.update_toolbar = wrapped_update_toolbar
+    VisualizeGeometryWidget._measure_update_toolbar_patched = True
 
-# ==========================
-# SCREENSHOT EXPORT SECTION (with Save Dialog)
-# ==========================
-import vtk, datetime
+# Activate patch at import time so any subsequently created VG widget gets the tool.
+_patch_update_toolbar_for_measure_tool()
+
+# ===========================
+# SCREENSHOT EXPORT SECTION
+# ===========================
+# Adds "📷 Export View" to the toolbar and saves the current VTK view to PNG/JPG.
+
+import datetime
+import vtk
 from PyQt6.QtWidgets import QPushButton, QFileDialog, QMessageBox
 
 def add_screenshot_button(self):
-    if getattr(self, "_screenshot_loaded", False):
+    # --- need toolbar + vtkWidget ---
+    if not getattr(self, "toolbar", None) or not getattr(self, "vtkWidget", None):
         return
-    self._screenshot_loaded = True
 
+    # --- prevents adding the button twice ---
+    if getattr(self, "screenshot_button", None) is not None:
+        return
+
+    # --- add button to toolbar ---
     btn = QPushButton("📷 Export View")
     self.toolbar.addSeparator()
     self.toolbar.addWidget(btn)
+    self.screenshot_button = btn
 
     def save_screenshot():
-        # --- Open save dialog ---
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        default_name = f"screenshot_{timestamp}.png"
-        filepath, _ = QFileDialog.getSaveFileName(
+        # --- choose filename (default timestamp) ---
+        ts = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        default_name = f"screenshot_{ts}.png"
+
+        path, selected_filter = QFileDialog.getSaveFileName(
             self,
             "Save Screenshot As",
             default_name,
-            "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*)"
+            "PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;All Files (*)",
         )
-        if not filepath:
-            return  # user canceled
+        if not path:
+            return
 
-        # --- Capture VTK render window ---
+        # --- add extension if missing ---
+        lower = path.lower()
+        if not (lower.endswith(".png") or lower.endswith(".jpg") or lower.endswith(".jpeg")):
+            path += ".jpg" if "JPEG" in selected_filter else ".png"
+
+        # --- grab current render window image ---
+        rw = self.vtkWidget.GetRenderWindow()
         w2i = vtk.vtkWindowToImageFilter()
-        w2i.SetInput(self.vtkWidget.GetRenderWindow())
+        w2i.SetInput(rw)
+        w2i.ReadFrontBufferOff()
+        w2i.SetInputBufferTypeToRGBA()
         w2i.Update()
 
-        # --- Choose writer based on extension ---
-        ext = filepath.split('.')[-1].lower()
-        if ext == "jpg" or ext == "jpeg":
+        # --- pick writer based on extension ---
+        if path.lower().endswith((".jpg", ".jpeg")):
             writer = vtk.vtkJPEGWriter()
         else:
             writer = vtk.vtkPNGWriter()
 
-        writer.SetFileName(filepath)
+        # --- write file ---
+        writer.SetFileName(path)
         writer.SetInputConnection(w2i.GetOutputPort())
-        writer.Write()
 
-        # --- Confirmation popup ---
-        msg = QMessageBox()
-        msg.setWindowTitle("Export Successful")
-        msg.setText(f"✅ Screenshot saved as:\n{filepath}")
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.exec()
+        try:
+            writer.Write()
+        except Exception as e:
+            QMessageBox.critical(self, "Export Failed", f"Could not save screenshot:\n{e}")
+            return
 
+        QMessageBox.information(self, "Export Successful", f"Saved:\n{path}")
+
+    # --- connect click ---
     btn.clicked.connect(save_screenshot)
 
-
-def _patch_screenshot():
-    if getattr(VisualizeGeometryWidget, "_screenshot_patched", False):
+# Activate Patch
+def _patch_update_toolbar_for_screenshot():
+    # --- patch update_toolbar to add screenshot button ---
+    if getattr(VisualizeGeometryWidget, "_screenshot_update_toolbar_patched", False):
         return
-    old = VisualizeGeometryWidget.run_solve
 
-    def wrapped(self):
-        old(self)
+    old_update_toolbar = VisualizeGeometryWidget.update_toolbar
+
+    def wrapped_update_toolbar(self, *args, **kwargs):
+        old_update_toolbar(self, *args, **kwargs)
         add_screenshot_button(self)
 
-    VisualizeGeometryWidget.run_solve = wrapped
-    VisualizeGeometryWidget._screenshot_patched = True
+    VisualizeGeometryWidget.update_toolbar = wrapped_update_toolbar
+    VisualizeGeometryWidget._screenshot_update_toolbar_patched = True
 
-_patch_screenshot()
+_patch_update_toolbar_for_screenshot()
 
-# =======================
+# ==========================
 # BLUEPRINT UPLOAD SYSTEM
-# =======================
+# ==========================
+# Loads 2D blueprint images (top/side/front) as textured planes around the model.
+# Click a blueprint to select it (highlights with an outline).
 
 from PyQt6.QtWidgets import QPushButton, QFileDialog, QMenu
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import QTimer
 import vtk, os
 
-
 class BlueprintManager:
+    # Manages blueprint images (load, show, click-to-select).
     def __init__(self, widget):
+        # parent widget (VisualizeGeometryWidget)
         self.widget = widget
-        self.renderer = widget.renderer
+
+        # vtk renderer (may change after solve)
+        self.renderer = getattr(widget, "renderer", None)
+
+        # blueprint actors by view key: "top" / "side" / "front"
         self.actors = {}
+
+        # outline actors (only one should be visible at a time)
         self.outlines = {}
+
+        # currently selected view key
         self.selected_view = None
+
+        # current settings (sliders can change these)
         self.opacity = 0.5
         self.scale = 1.0
+
+        # per-view transform objects (used for scaling)
         self.base_transforms = {}
+
+        # picker for selecting actors by clicking
         self.picker = vtk.vtkPropPicker()
 
-    # --- Preserve camera state ---
+        # observer id so we only attach click handling once
+        self._pick_obs_id = None
+
+    def _rw(self):
+        # get render window
+        try:
+            return self.widget.vtkWidget.GetRenderWindow()
+        except Exception:
+            return None
+
+    def _iren(self):
+        # get interactor (mouse events)
+        rw = self._rw()
+        try:
+            return rw.GetInteractor() if rw is not None else None
+        except Exception:
+            return None
+
     def _store_camera(self):
+        # save camera so loading blueprints doesn't change the view
+        if self.renderer is None:
+            return None
+
         cam = self.renderer.GetActiveCamera()
+        if cam is None:
+            return None
+
         return {
             "pos": cam.GetPosition(),
             "focal": cam.GetFocalPoint(),
@@ -1546,236 +2079,445 @@ class BlueprintManager:
         }
 
     def _restore_camera(self, state):
-        if not state:
+        # restore camera after adding actor
+        if self.renderer is None or not state:
             return
+
         cam = self.renderer.GetActiveCamera()
+        if cam is None:
+            return
+
         cam.SetPosition(*state["pos"])
         cam.SetFocalPoint(*state["focal"])
         cam.SetViewUp(*state["viewup"])
         cam.SetClippingRange(*state["clipping"])
-        self.renderer.ResetCameraClippingRange()
 
-    # --- Read texture ---
+        try:
+            self.renderer.ResetCameraClippingRange()
+        except Exception:
+            pass
+
     def _read_image_as_texture(self, file_name):
+        # choose png vs jpeg reader
         ext = os.path.splitext(file_name)[1].lower()
         reader = vtk.vtkJPEGReader() if ext in [".jpg", ".jpeg"] else vtk.vtkPNGReader()
+
+        # read image
         reader.SetFileName(file_name)
         reader.Update()
+
+        # make texture
         texture = vtk.vtkTexture()
         texture.SetInputConnection(reader.GetOutputPort())
+
+        # texture options for nicer display
         texture.InterpolateOn()
         texture.RepeatOff()
         texture.EdgeClampOn()
+
         return texture, reader.GetOutput()
 
-    # --- Model bounds ---
     def _model_bounds(self):
-        b = self.renderer.ComputeVisiblePropBounds()
-        cx, cy, cz = (b[0] + b[1]) / 2, (b[2] + b[3]) / 2, (b[4] + b[5]) / 2
-        sx, sy, sz = (b[1] - b[0]) or 1, (b[3] - b[2]) or 1, (b[5] - b[4]) or 1
-        return b, (cx, cy, cz), (sx, sy, sz), max(sx, sy, sz)
+        # compute visible bounds (fallback if empty scene)
+        if self.renderer is None:
+            b = (-1, 1, -1, 1, -1, 1)
+        else:
+            b = self.renderer.ComputeVisiblePropBounds() or (-1, 1, -1, 1, -1, 1)
 
-    # --- Outline (wireframe cube) ---
+        # center of model bounds
+        cx = (b[0] + b[1]) / 2
+        cy = (b[2] + b[3]) / 2
+        cz = (b[4] + b[5]) / 2
+
+        # sizes of bounds (avoid zeros)
+        sx = (b[1] - b[0]) or 1
+        sy = (b[3] - b[2]) or 1
+        sz = (b[5] - b[4]) or 1
+
+        # base scale for spacing
+        base = max(sx, sy, sz)
+
+        return b, (cx, cy, cz), (sx, sy, sz), base
+
     def _make_outline(self, actor):
-        bounds = actor.GetBounds()
+        # build a wireframe cube around actor bounds
         cube = vtk.vtkCubeSource()
-        cube.SetBounds(bounds)
+        cube.SetBounds(actor.GetBounds())
+
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputConnection(cube.GetOutputPort())
 
         outline = vtk.vtkActor()
         outline.SetMapper(mapper)
+
+        # outline styling
         outline.GetProperty().SetColor(0.2, 0.6, 1.0)
         outline.GetProperty().SetLineWidth(3)
         outline.GetProperty().LightingOff()
         outline.GetProperty().SetRepresentationToWireframe()
+
         return outline
 
     def _update_outline(self, view):
+        # keep outline matching the actor after transform changes
         if view not in self.actors or view not in self.outlines:
             return
+
         actor = self.actors[view]
         outline = self.outlines[view]
-        bounds = actor.GetBounds()
-        cube = outline.GetMapper().GetInputConnection(0, 0).GetProducer()
-        cube.SetBounds(bounds)
 
-    # --- Highlight selected ---
+        try:
+            cube = outline.GetMapper().GetInputConnection(0, 0).GetProducer()
+            cube.SetBounds(actor.GetBounds())
+        except Exception:
+            pass
+
     def _highlight_selected(self, view):
+        # renderer required
+        if self.renderer is None:
+            return
+
+        # remove all existing outlines
         for o in list(self.outlines.values()):
-            if o:
+            try:
                 self.renderer.RemoveActor(o)
+            except Exception:
+                pass
+
+        # add outline for selected blueprint
         if view in self.actors:
             outline = self._make_outline(self.actors[view])
             self.renderer.AddActor(outline)
             self.outlines[view] = outline
-        self.widget.vtkWidget.GetRenderWindow().Render()
 
-    # --- Load blueprint ---
+        # render now
+        rw = self._rw()
+        if rw is not None:
+            try:
+                rw.Render()
+            except Exception:
+                pass
+
+    def enable_picking(self):
+        # refresh renderer reference
+        self.renderer = getattr(self.widget, "renderer", None)
+
+        # need interactor
+        iren = self._iren()
+        if iren is None:
+            return
+
+        # only attach once
+        if self._pick_obs_id is not None:
+            return
+
+        # attach click handler
+        try:
+            self._pick_obs_id = iren.AddObserver("LeftButtonPressEvent", self._on_click, 1.0)
+        except Exception:
+            self._pick_obs_id = None
+
+    def _on_click(self, obj, event):
+        # refresh renderer reference
+        self.renderer = getattr(self.widget, "renderer", None)
+        if self.renderer is None:
+            return
+
+        # get mouse position
+        try:
+            x, y = obj.GetEventPosition()
+        except Exception:
+            return
+
+        # pick an actor
+        try:
+            self.picker.Pick(x, y, 0, self.renderer)
+            picked = self.picker.GetActor()
+        except Exception:
+            return
+
+        # ignore empty clicks
+        if not picked:
+            return
+
+        # match picked actor to a blueprint view
+        for v, a in self.actors.items():
+            if a == picked:
+                self.selected_view = v
+                self._highlight_selected(v)
+
+                # let widget sync sliders if it has helper
+                if hasattr(self.widget, "_reset_blueprint_sliders"):
+                    try:
+                        self.widget._reset_blueprint_sliders()
+                    except Exception:
+                        pass
+                break
+
     def load_image(self, view):
+        # refresh renderer reference
+        self.renderer = getattr(self.widget, "renderer", None)
+        if self.renderer is None:
+            return
+
+        # ask user for file
         file_name, _ = QFileDialog.getOpenFileName(
-            self.widget, f"Select {view.capitalize()} Blueprint", "",
+            self.widget,
+            f"Select {view.capitalize()} Blueprint",
+            "",
             "Image Files (*.png *.jpg *.jpeg)"
         )
         if not file_name:
             return
 
+        # keep camera stable
         cam_state = self._store_camera()
+
+        # load texture + image data
         texture, img_data = self._read_image_as_texture(file_name)
+
+        # get image size
         iw, ih, _ = img_data.GetDimensions()
         if iw == 0 or ih == 0:
             return
+
+        # preserve aspect ratio
         aspect = iw / ih
 
+        # get model placement info
         b, (cx, cy, cz), (sx, sy, sz), base = self._model_bounds()
+
+        # place blueprint a bit outside the model
         spacing = 0.25 * base
+
+        # choose blueprint plane size
         bp_width = 0.9 * sx
         bp_height = bp_width / aspect
 
+        # build plane geometry
         plane = vtk.vtkPlaneSource()
+
+        # place plane for "top"
         if view == "top":
             z = b[4] - spacing
             plane.SetOrigin(cx - bp_width / 2, cy - bp_height / 2, z)
             plane.SetPoint1(cx + bp_width / 2, cy - bp_height / 2, z)
             plane.SetPoint2(cx - bp_width / 2, cy + bp_height / 2, z)
+
+        # place plane for "side"
         elif view == "side":
             y = b[3] + spacing
             plane.SetOrigin(cx - bp_width / 2, y, cz - bp_height / 2)
             plane.SetPoint1(cx + bp_width / 2, y, cz - bp_height / 2)
             plane.SetPoint2(cx - bp_width / 2, y, cz + bp_height / 2)
+
+        # place plane for "front"
         elif view == "front":
             x = b[1] + spacing
             plane.SetOrigin(x, cy - bp_width / 2, cz - bp_height / 2)
             plane.SetPoint1(x, cy + bp_width / 2, cz - bp_height / 2)
             plane.SetPoint2(x, cy - bp_width / 2, cz + bp_height / 2)
 
+        # unknown view key
+        else:
+            return
+
+        # map plane geometry
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputConnection(plane.GetOutputPort())
 
+        # create actor
         actor = vtk.vtkActor()
         actor.SetMapper(mapper)
         actor.SetTexture(texture)
+
+        # basic styling
         actor.GetProperty().SetOpacity(self.opacity)
         actor.GetProperty().LightingOff()
         actor.SetPickable(True)
 
-        # Remove old view actor
+        # remove existing actor for this view
         if view in self.actors:
-            self.renderer.RemoveActor(self.actors[view])
+            try:
+                self.renderer.RemoveActor(self.actors[view])
+            except Exception:
+                pass
+
+        # add actor to scene
         self.renderer.AddActor(actor)
         self.actors[view] = actor
+
+        # create stored transform (used by scale slider)
         self.base_transforms[view] = vtk.vtkTransform()
         actor.SetUserTransform(self.base_transforms[view])
 
+        # select this view
         self.selected_view = view
         self._highlight_selected(view)
+
+        # restore camera
         self._restore_camera(cam_state)
 
+        # let widget sync sliders if it has helper
         if hasattr(self.widget, "_reset_blueprint_sliders"):
-            self.widget._reset_blueprint_sliders()
+            try:
+                self.widget._reset_blueprint_sliders()
+            except Exception:
+                pass
 
-        self.widget.vtkWidget.GetRenderWindow().Render()
+        # render now
+        rw = self._rw()
+        if rw is not None:
+            try:
+                rw.Render()
+            except Exception:
+                pass
 
-    # --- Picking ---
-    def enable_picking(self):
-        interactor = self.widget.vtkWidget.GetRenderWindow().GetInteractor()
-        interactor.AddObserver("LeftButtonPressEvent", self._on_click)
-
-    def _on_click(self, obj, event):
-        x, y = obj.GetEventPosition()
-        self.picker.Pick(x, y, 0, self.renderer)
-        picked = self.picker.GetActor()
-        if not picked:
-            return
-        for v, a in self.actors.items():
-            if a == picked:
-                self.selected_view = v
-                self._highlight_selected(v)
-                if hasattr(self.widget, "_reset_blueprint_sliders"):
-                    self.widget._reset_blueprint_sliders()
-                break
-
-    # --- Transparency ---
     def update_opacity(self, value):
+        # slider gives 0..100, convert to 0..1
         self.opacity = value / 100.0
-        if self.selected_view in self.actors:
-            self.actors[self.selected_view].GetProperty().SetOpacity(self.opacity)
-            self.widget.vtkWidget.GetRenderWindow().Render()
 
-    # --- Scale (no camera shift) ---
+        # update selected actor only
+        if self.selected_view in self.actors:
+            try:
+                self.actors[self.selected_view].GetProperty().SetOpacity(self.opacity)
+                self._rw().Render()
+            except Exception:
+                pass
+
     def update_scale(self, value):
+        # slider gives 0..100, convert to 0..1
         self.scale = value / 100.0
-        if self.selected_view in self.actors:
-            actor = self.actors[self.selected_view]
-            transform = self.base_transforms[self.selected_view]
-            transform.Identity()
-            transform.Scale(self.scale, self.scale, self.scale)
-            actor.SetUserTransform(transform)
-            self._update_outline(self.selected_view)
-            self.widget.vtkWidget.GetRenderWindow().Render()
 
-    # --- Clear ---
+        # update selected actor only
+        if self.selected_view in self.actors:
+            try:
+                transform = self.base_transforms[self.selected_view]
+                transform.Identity()
+                transform.Scale(self.scale, self.scale, self.scale)
+
+                self.actors[self.selected_view].SetUserTransform(transform)
+                self._update_outline(self.selected_view)
+
+                self._rw().Render()
+            except Exception:
+                pass
+
     def clear_all(self):
-        for a in self.actors.values():
-            self.renderer.RemoveActor(a)
-        for o in self.outlines.values():
-            self.renderer.RemoveActor(o)
+        # nothing to clear if renderer missing
+        if self.renderer is None:
+            return
+
+        # remove blueprint actors
+        for a in list(self.actors.values()):
+            try:
+                self.renderer.RemoveActor(a)
+            except Exception:
+                pass
+
+        # remove outlines
+        for o in list(self.outlines.values()):
+            try:
+                self.renderer.RemoveActor(o)
+            except Exception:
+                pass
+
+        # reset state
         self.actors.clear()
         self.outlines.clear()
         self.selected_view = None
-        self.widget.vtkWidget.GetRenderWindow().Render()
 
+        # render now
+        rw = self._rw()
+        if rw is not None:
+            try:
+                rw.Render()
+            except Exception:
+                pass
 
-# --- Toolbar Integration ---
 def add_blueprint_menu(self):
+    # don’t add twice
     if getattr(self, "_blueprint_menu_loaded", False):
         return
     self._blueprint_menu_loaded = True
+
+    # create the manager (stores state on the widget)
     self.blueprint_manager = BlueprintManager(self)
 
     def _add_menu():
+        # toolbar must exist
+        if not getattr(self, "toolbar", None):
+            return
+
+        # button + menu
         btn = QPushButton("📐 Blueprint")
         menu = QMenu(btn)
+
+        # load actions
         menu.addAction("Load Top View", lambda: self.blueprint_manager.load_image("top"))
         menu.addAction("Load Side View", lambda: self.blueprint_manager.load_image("side"))
         menu.addAction("Load Front View", lambda: self.blueprint_manager.load_image("front"))
+
+        # clear action
         menu.addSeparator()
         menu.addAction("🧹 Clear All Blueprints", lambda: self.blueprint_manager.clear_all())
+
+        # attach menu to button
         btn.setMenu(menu)
         self.toolbar.addWidget(btn)
+
+        # enable click selection
         self.blueprint_manager.enable_picking()
-        self.toolbar.raise_()
 
-    QTimer.singleShot(500, _add_menu)
+        # keep toolbar visible on top
+        try:
+            self.toolbar.raise_()
+        except Exception:
+            pass
 
+    # add the menu after Qt finishes building the toolbar
+    QTimer.singleShot(0, _add_menu)
 
-if not hasattr(VisualizeGeometryWidget, "_blueprint_patched"):
-    old_run = VisualizeGeometryWidget.run_solve
+# Activate Patch
+def _patch_run_solve_for_blueprints():
+    # patch run_solve to add blueprint menu after solve
+    if getattr(VisualizeGeometryWidget, "_blueprint_patched", False):
+        return
 
-    def wrapped_run(self):
-        old_run(self)
+    base = VisualizeGeometryWidget.run_solve
+
+    def wrapped(self, *args, **kwargs):
+        base(self, *args, **kwargs)
         add_blueprint_menu(self)
 
-    VisualizeGeometryWidget.run_solve = wrapped_run
+    VisualizeGeometryWidget.run_solve = wrapped
     VisualizeGeometryWidget._blueprint_patched = True
 
-# ===========================
-# BLUEPRINT ADJUSTOR DROPDOWN 
-# ===========================
+_patch_run_solve_for_blueprints()
 
-from PyQt6.QtWidgets import QPushButton, QWidget, QMenu, QLabel, QSlider, QVBoxLayout, QWidgetAction
+# ===========================
+# BLUEPRINT ADJUSTOR DROPDOWN
+# ===========================
+# Adds an "Adjustor" button to the toolbar that opens a dropdown menu
+# with sliders to adjust the opacity and size of the selected blueprint.
+
+from PyQt6.QtWidgets import (
+    QPushButton, QWidget, QMenu, QLabel,
+    QSlider, QVBoxLayout, QWidgetAction
+)
 from PyQt6.QtCore import Qt, QTimer
 
-
 def add_blueprint_adjustor_dropdown(self):
-    """Adds 'Adjustor ▼' after '📐 Blueprint', synced with per-blueprint slider states."""
+    # don’t add this twice
     if getattr(self, "_blueprint_adjustor_loaded", False):
         return
     self._blueprint_adjustor_loaded = True
 
-    # --- Adjustor button setup ---
+    # create the button that opens the dropdown
     adjustor_btn = QPushButton("Adjustor")
     adjustor_btn.setFlat(True)
+
+    # style the button to match the toolbar
     adjustor_btn.setStyleSheet("""
         QPushButton {
             color: #a8c7ff;
@@ -1795,9 +2537,10 @@ def add_blueprint_adjustor_dropdown(self):
             color: #d9e9ff;
         }
     """)
-
-    # === Dropdown menu ===
+    # menu that shows when you click the button
     menu = QMenu(adjustor_btn)
+
+    # menu styling
     menu.setStyleSheet("""
         QMenu {
             background-color: #2b2e35;
@@ -1807,242 +2550,364 @@ def add_blueprint_adjustor_dropdown(self):
         }
     """)
 
-    # === Dropdown content ===
+    # widget that holds the sliders inside the menu
     content = QWidget()
+
+    # vertical layout for title + sliders
     layout = QVBoxLayout(content)
     layout.setContentsMargins(10, 12, 10, 10)
     layout.setSpacing(10)
 
-    # --- Title (centered one-line label) ---
+    # shows which blueprint is currently selected
     title = QLabel("Active Blueprint: None")
     title.setAlignment(Qt.AlignmentFlag.AlignCenter)
     title.setWordWrap(False)
+
+    # title styling
     title.setStyleSheet("""
-        font-weight:bold;
-        color:#b7dcff;
-        font-size:13px;
+        font-weight: bold;
+        color: #b7dcff;
+        font-size: 13px;
         padding: 4px 2px 6px 2px;
     """)
     layout.addWidget(title)
 
-    # Transparency slider
+    # transparency header
     t_label = QLabel("Transparency")
     t_label.setStyleSheet("font-weight:bold;color:#b7dcff;font-size:12px;")
     layout.addWidget(t_label)
+
+    # transparency slider (0..100)
     t_slider = QSlider(Qt.Orientation.Horizontal)
     t_slider.setRange(0, 100)
     t_slider.setValue(50)
     layout.addWidget(t_slider)
 
-    # Size slider
+    # size header
     s_label = QLabel("Size")
     s_label.setStyleSheet("font-weight:bold;color:#b7dcff;font-size:12px;")
     layout.addWidget(s_label)
+
+    # size slider (50..200)
     s_slider = QSlider(Qt.Orientation.Horizontal)
     s_slider.setRange(50, 200)
     s_slider.setValue(100)
     layout.addWidget(s_slider)
 
-    # --- Bind sliders + per-blueprint state tracking ---
     def bind_blueprint_manager():
+        # BlueprintManager is created later, so retry until it exists
         if not hasattr(self, "blueprint_manager"):
             QTimer.singleShot(300, bind_blueprint_manager)
             return
 
         bm = self.blueprint_manager
-        bm._view_states = {}  # {view: {"opacity": val, "scale": val}}
+
+        # store slider values per view ("top"/"side"/"front")
+        bm._view_states = {}
 
         def refresh_label():
+            # update the “Active Blueprint” label
             active = getattr(bm, "selected_view", None) or "None"
             title.setText(f"Active Blueprint: {active.capitalize()}")
 
-        # --- When sliders move, update both blueprint and stored state ---
         def on_opacity_change(val):
+            # if a blueprint is selected, apply opacity and save the slider value
             if bm.selected_view:
                 bm.update_opacity(val)
                 bm._view_states.setdefault(bm.selected_view, {})["opacity"] = val
 
         def on_scale_change(val):
+            # if a blueprint is selected, apply scale and save the slider value
             if bm.selected_view:
                 bm.update_scale(val)
                 bm._view_states.setdefault(bm.selected_view, {})["scale"] = val
 
+        # slider -> blueprint updates
         t_slider.valueChanged.connect(on_opacity_change)
         s_slider.valueChanged.connect(on_scale_change)
 
-        # --- Update sliders when switching or loading new blueprints ---
+        # when you load a blueprint, update label + restore stored slider values
         old_load = bm.load_image
+
         def wrapped_load_image(view):
             old_load(view)
             bm.selected_view = view
             refresh_label()
-            # restore or set default
-            state = bm._view_states.get(view, {"opacity": 50, "scale": 100})
-            t_slider.setValue(state.get("opacity", 50))
-            s_slider.setValue(state.get("scale", 100))
-        bm.load_image = wrapped_load_image
 
-        # --- Update label and sliders when blueprint clicked ---
+            state = bm._view_states.get(view, {"opacity": 50, "scale": 100})
+            t_slider.setValue(state["opacity"])
+            s_slider.setValue(state["scale"])
+
+        bm.load_image = wrapped_load_image
+        # when you click a blueprint, update label + restore stored slider values
         old_click = bm._on_click
+
         def wrapped_click(obj, event):
             old_click(obj, event)
             refresh_label()
+
             if bm.selected_view:
                 state = bm._view_states.get(bm.selected_view, {"opacity": 50, "scale": 100})
-                t_slider.setValue(state.get("opacity", 50))
-                s_slider.setValue(state.get("scale", 100))
+                t_slider.setValue(state["opacity"])
+                s_slider.setValue(state["scale"])
+
         bm._on_click = wrapped_click
 
         refresh_label()
 
+    # start binding (will retry until blueprint_manager exists)
     bind_blueprint_manager()
 
-    # --- Embed content ---
+    # put the content widget inside the menu
     widget_action = QWidgetAction(menu)
     widget_action.setDefaultWidget(content)
     menu.addAction(widget_action)
+
+    # attach the menu to the button
     adjustor_btn.setMenu(menu)
 
-    # --- Toolbar insertion ---
     def insert_adjustor_button():
+        # put Adjustor next to the "📐 Blueprint" button in the toolbar
         for act in self.toolbar.actions():
             w = self.toolbar.widgetForAction(act)
             if hasattr(w, "text") and "Blueprint" in w.text():
                 idx = self.toolbar.actions().index(act)
+
                 if idx < len(self.toolbar.actions()) - 1:
                     self.toolbar.insertWidget(self.toolbar.actions()[idx + 1], adjustor_btn)
                 else:
                     self.toolbar.addWidget(adjustor_btn)
                 return
+
+        # retry if toolbar isn’t ready yet
         QTimer.singleShot(500, insert_adjustor_button)
 
     insert_adjustor_button()
 
-
-# --- Patch VisualizeGeometryWidget for Adjustor ---
+# patch run_solve once so adjustor gets added after solve builds UI
 if not hasattr(VisualizeGeometryWidget, "_blueprint_adjustor_patched"):
-    _base_run_solve = getattr(VisualizeGeometryWidget, "run_solve", None)
+    base_run = VisualizeGeometryWidget.run_solve
 
-    def safe_wrapped_run(self):
-        if hasattr(VisualizeGeometryWidget, "_original_run_solve"):
-            VisualizeGeometryWidget._original_run_solve(self)
-        else:
-            _base_run_solve(self)
+    def wrapped_run(self):
+        base_run(self)
         add_blueprint_adjustor_dropdown(self)
 
-    if not hasattr(VisualizeGeometryWidget, "_original_run_solve"):
-        VisualizeGeometryWidget._original_run_solve = _base_run_solve
-
-    VisualizeGeometryWidget.run_solve = safe_wrapped_run
+    VisualizeGeometryWidget.run_solve = wrapped_run
     VisualizeGeometryWidget._blueprint_adjustor_patched = True
 
 # =========================================
-# AIRCRAFT DRAG SECTION (Move Entire Model)
+# AIRCRAFT DRAG (Move Entire Model)
 # =========================================
+# Adds a "✈️ Drag Aircraft" toggle button to the toolbar.
+# When enabled, lets the user click and drag to move the entire aircraft model.
 import vtk
 from PyQt6.QtWidgets import QPushButton
 
 class DragAircraftInteractor(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self, widget, actors):
         super().__init__()
+
+        # widget gives us access to renderer + vtkWidget
         self.widget = widget
+
+        # actors is a dict of lists (group name -> [vtkActor, ...])
         self.actors = actors
+
+        # drag state
         self.is_dragging = False
         self.last_pos = None
+
+        # depth lock (keeps drag from jumping in/out of screen)
+        self._drag_dz = None
+
+        # picker lets us lock drag depth at the clicked point
+        self._picker = vtk.vtkCellPicker()
+        self._picker.SetTolerance(0.0005)
+
+        # hook mouse events
         self.AddObserver("LeftButtonPressEvent", self.left_down)
         self.AddObserver("LeftButtonReleaseEvent", self.left_up)
         self.AddObserver("MouseMoveEvent", self.mouse_move)
 
     def left_down(self, obj, event):
+        # start dragging
         self.is_dragging = True
-        self.last_pos = self.GetInteractor().GetEventPosition()
-        self.OnLeftButtonDown()
+
+        # record starting mouse position
+        iren = self.GetInteractor()
+        self.last_pos = iren.GetEventPosition()
+
+        # choose a fixed screen-depth for the drag (dz)
+        r = self.widget.renderer
+        x, y = self.last_pos
+
+        # if we clicked the model, use that picked point for depth
+        if self._picker.Pick(x, y, 0, r):
+            p = self._picker.GetPickPosition()
+
+            r.SetWorldPoint(p[0], p[1], p[2], 1.0)
+            r.WorldToDisplay()
+            self._drag_dz = r.GetDisplayPoint()[2]
+
+        # otherwise use camera focal point for depth
+        else:
+            cam = r.GetActiveCamera()
+            fp = cam.GetFocalPoint()
+
+            r.SetWorldPoint(fp[0], fp[1], fp[2], 1.0)
+            r.WorldToDisplay()
+            self._drag_dz = r.GetDisplayPoint()[2]
 
     def left_up(self, obj, event):
+        # stop dragging
         self.is_dragging = False
-        self.OnLeftButtonUp()
+        self.last_pos = None
+        self._drag_dz = None
 
     def mouse_move(self, obj, event):
-        if not self.is_dragging or not self.last_pos:
+        # only drag when active
+        if not self.is_dragging or self.last_pos is None or self._drag_dz is None:
             return
-        interactor = self.GetInteractor()
-        x, y = interactor.GetEventPosition()
+
+        # current mouse position
+        iren = self.GetInteractor()
+        x, y = iren.GetEventPosition()
+
+        # pixel delta since last frame
         dx = x - self.last_pos[0]
         dy = y - self.last_pos[1]
         self.last_pos = (x, y)
 
-        camera = self.widget.renderer.GetActiveCamera()
-        fp = camera.GetFocalPoint()
-        pos = camera.GetPosition()
-        renderer = self.widget.renderer
-        renderer.SetWorldPoint(fp[0], fp[1], fp[2], 1.0)
-        renderer.WorldToDisplay()
-        d_z = renderer.GetDisplayPoint()[2]
+        r = self.widget.renderer
+        dz = self._drag_dz
 
-        # Convert pixel delta to world delta
-        renderer.SetDisplayPoint(x, y, d_z)
-        renderer.DisplayToWorld()
-        world_pt = renderer.GetWorldPoint()
-        wx, wy, wz, _ = world_pt
-        renderer.SetDisplayPoint(x - dx, y - dy, d_z)
-        renderer.DisplayToWorld()
-        world_pt2 = renderer.GetWorldPoint()
-        wx2, wy2, wz2, _ = world_pt2
+        # screen -> world for current mouse position
+        r.SetDisplayPoint(x, y, dz)
+        r.DisplayToWorld()
+        wx, wy, wz, _ = r.GetWorldPoint()
 
-        # Compute translation delta
-        delta = (wx - wx2, wy - wy2, wz - wz2)
+        # screen -> world for previous mouse position
+        r.SetDisplayPoint(x - dx, y - dy, dz)
+        r.DisplayToWorld()
+        wx2, wy2, wz2, _ = r.GetWorldPoint()
+
+        # world delta to apply to every actor
+        ddx, ddy, ddz = (wx - wx2, wy - wy2, wz - wz2)
+
+        # move every actor by the same world delta
         for group in self.actors.values():
             for actor in group:
                 ax, ay, az = actor.GetPosition()
-                actor.SetPosition(ax + delta[0], ay + delta[1], az + delta[2])
+                actor.SetPosition(ax + ddx, ay + ddy, az + ddz)
 
-        interactor.GetRenderWindow().Render()
+        # redraw
+        iren.GetRenderWindow().Render()
 
 
 def add_drag_button(self):
+    # need toolbar + renderer
+    if not getattr(self, "toolbar", None) or getattr(self, "renderer", None) is None:
+        return
+
+    # don’t add the button twice
     if getattr(self, "_drag_button_loaded", False):
         return
     self._drag_button_loaded = True
 
+    # toolbar toggle button
     btn = QPushButton("✈️ Drag Aircraft")
     btn.setCheckable(True)
+
     self.toolbar.addSeparator()
     self.toolbar.addWidget(btn)
 
-    normal_style = CustomInteractorStyle()
-    drag_style = None
+    # interactor (where we swap interaction styles)
+    iren = self.render_window_interactor
 
+    # keep references so they don’t get garbage collected
+    self._drag_style = None
+    self._drag_prev_style = None
+
+    def _flatten(container, out):
+        # accept dicts, lists, and single actor objects
+        if container is None:
+            return
+
+        if isinstance(container, dict):
+            for v in container.values():
+                _flatten(v, out)
+            return
+
+        if isinstance(container, (list, tuple, set)):
+            for v in container:
+                _flatten(v, out)
+            return
+
+        # actor-like object
+        if hasattr(container, "GetPosition"):
+            out.append(container)
+
+    def _collect_aircraft_actors():
+        # grab actor containers from the widget (whatever exists)
+        groups = {
+            "Fuselages": getattr(self, "fuselage_actors", None),
+            "Wings": getattr(self, "wing_actors", None),
+            "Nacelles": getattr(self, "nacelle_actors", None),
+            "Rotors": getattr(self, "rotor_actors", None),
+            "Booms": getattr(self, "boom_actors", None),
+            "Fuel Tanks": getattr(self, "fuel_tank_actors", None),
+        }
+
+        # flatten each container into a simple list
+        flat = {}
+        for name, container in groups.items():
+            lst = []
+            _flatten(container, lst)
+            flat[name] = lst
+
+        return flat
+    
     def toggle_drag(active):
-        nonlocal drag_style
         if active:
-            all_actors = {
-                "Fuselages": self.fuselage_actors,
-                "Wings": self.wing_actors,
-                "Nacelles": self.nacelle_actors,
-                "Rotors": self.rotor_actors,
-                "Booms": self.boom_actors,
-                "Fuel Tanks": self.fuel_tank_actors,
-            }
-            drag_style = DragAircraftInteractor(self, all_actors)
-            drag_style.SetDefaultRenderer(self.renderer)
-            self.render_window_interactor.SetInteractorStyle(drag_style)
+            # save current interaction style
+            self._drag_prev_style = iren.GetInteractorStyle()
+
+            # create style once, then reuse it
+            if self._drag_style is None:
+                self._drag_style = DragAircraftInteractor(self, _collect_aircraft_actors())
+            else:
+                self._drag_style.actors = _collect_aircraft_actors()
+
+            # make sure the style knows which renderer to use
+            self._drag_style.SetDefaultRenderer(self.renderer)
+
+            # enable drag style
+            iren.SetInteractorStyle(self._drag_style)
+
         else:
-            self.render_window_interactor.SetInteractorStyle(normal_style)
+            # restore previous style
+            if self._drag_prev_style is not None:
+                iren.SetInteractorStyle(self._drag_prev_style)
+        # redraw
         self.vtkWidget.GetRenderWindow().Render()
 
+    # toggle on/off from toolbar
     btn.toggled.connect(toggle_drag)
 
-
+# patch run_solve to add drag button after solve
 def _patch_drag():
+    # patch once
     if getattr(VisualizeGeometryWidget, "_drag_patched", False):
         return
+
     old = VisualizeGeometryWidget.run_solve
 
-    def wrapped(self):
-        old(self)
+    def wrapped(self, *args, **kwargs):
+        old(self, *args, **kwargs)
         add_drag_button(self)
 
     VisualizeGeometryWidget.run_solve = wrapped
     VisualizeGeometryWidget._drag_patched = True
 
+# Activate Patch
 _patch_drag()
