@@ -8,7 +8,8 @@ import values
 
 
 class VehicleFrame(GeometryFrame):
-    general_data_units_labels = [
+    data_units_labels = [
+        ("General", Units.Heading),
         ("Reference Area", Units.Area, "reference_area"),
         ("Passengers", Units.Count, "number_of_passengers"),
         ("Max Takeoff Weight", Units.Mass, "mass_properties.max_takeoff"),
@@ -20,23 +21,26 @@ class VehicleFrame(GeometryFrame):
         ("Maximum Payload Weight", Units.Mass, "mass_properties.max_payload"),
         ("Payload Weight", Units.Mass, "mass_properties.payload"),
         ("Maximum Landing Weight", Units.Mass, "mass_properties.max_landing"),
-        ("Landing Weight", Units.Mass, "mass_properties.landing")
-    ]
-    flight_envelope_data_units_labels = [
+        ("Landing Weight", Units.Mass, "mass_properties.landing"),
+        ("Flight Envelope", Units.Heading),
         ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
         ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),
-        ("Moment of Intertia", Units.Intertia, "mass_properties.moments_of_inertia.tensor"),
+        ("Moment of Intertia", Units.Intertia,
+         "mass_properties.moments_of_inertia.tensor"),
         ("Ultimate Load", Units.Unitless, "flight_envelope.ultimate_load"),
-        ("Positive Limit Load", Units.Unitless, "flight_envelope.positive_limit_load"),
-        ("Negative Limit Load", Units.Unitless, "flight_envelope.negative_limit_load"),
-    ]
-    systems_data_units_labels = [
-        ("Design Cruise Altitude", Units.Length, "flight_envelope.design_cruise_altitude"),
+        ("Positive Limit Load", Units.Unitless,
+         "flight_envelope.positive_limit_load"),
+        ("Negative Limit Load", Units.Unitless,
+         "flight_envelope.negative_limit_load"),
+        ("Systems", Units.Heading),
+        ("Design Cruise Altitude", Units.Length,
+         "flight_envelope.design_cruise_altitude"),
         ("Design Range", Units.Length, "flight_envelope.design_range"),
         ("Aircraft Category", Units.Unitless, "flight_envelope.category"),
-        ("FAR Part Classification Number", Units.Unitless, "flight_envelope.FAR_part_number"),
-        ("Control Systems", Units.Area, "systems.control"), # should be drop down 
-        ("Accessories", Units.Count, "systems.accessories"), # should be dropdown
+        ("FAR Part Classification Number", Units.Unitless,
+         "flight_envelope.FAR_part_number"),
+        ("Control Systems", Units.Area, "systems.control"),  # should be drop down
+        ("Accessories", Units.Count, "systems.accessories"),  # should be dropdown
     ]
 
     def __init__(self):
@@ -49,26 +53,10 @@ class VehicleFrame(GeometryFrame):
         self.main_layout.addWidget(QLabel("<b>Vehicle</b>"))
         self.main_layout.addWidget(create_line_bar())
 
-        # self.name_line_edit = QLineEdit()
-        # self.main_layout.addWidget(self.name_line_edit, 7)
-
-        # self.main_layout.addLayout(self.name_layout)
-        general_label = QLabel("<b>General</b>")
-        self.main_layout.addWidget(general_label)
-        self.general_data_entry_widget = DataEntryWidget(self.general_data_units_labels)
+        self.general_data_entry_widget = DataEntryWidget(
+            self.data_units_labels)
         self.main_layout.addWidget(self.general_data_entry_widget)
 
-        flight_envelope_label = QLabel("<b>Flight Envelope</b>")
-        self.main_layout.addWidget(flight_envelope_label)
-        self.flight_envelope_data_entry_widget = DataEntryWidget(self.flight_envelope_data_units_labels)
-        self.main_layout.addWidget(self.flight_envelope_data_entry_widget)
-
-        systems_label = QLabel("<b>Systems</b>")
-        self.main_layout.addWidget(systems_label)
-        self.systems_data_entry_widget = DataEntryWidget(self.systems_data_units_labels)
-        self.main_layout.addWidget(self.systems_data_entry_widget)
-
-        # button_layout = QHBoxLayout()
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_data)
         self.main_layout.addWidget(save_button)
@@ -88,17 +76,17 @@ class VehicleFrame(GeometryFrame):
 
     def create_rcaide_structure(self):
         raise NotImplementedError("This method should not be called")
-    
+
     def get_data_values(self):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
-        data["name"] = self.name_line_edit.text() 
+        data["name"] = self.name_line_edit.text()
         return data
 
-    def update_layout(self): 
+    def update_layout(self):
         assert self.data_entry_widget is not None and isinstance(
             self.data_entry_widget, DataEntryWidget)
-        
+
         if values.geometry_data[0]:
             self.data_entry_widget.load_data(values.geometry_data[0])
 
