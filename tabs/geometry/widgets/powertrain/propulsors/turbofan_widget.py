@@ -21,6 +21,7 @@ class TurbofanWidget(QWidget):
 
         # TODO: Change to duplicate turbofan
         # TODO: Make sure 2 turbofans aren't at the same origin
+        # TODO: Update to new data assignment style
 
         data_units_labels = [
             # ("Turbofan", Units.Heading),
@@ -37,17 +38,17 @@ class TurbofanWidget(QWidget):
             ("Inlet Nozzle Polytropic Efficiency", Units.Unitless),
             ("Inlet Nozzle Pressure Ratio", Units.Unitless),
             ("Low Pressure Compressor", Units.Heading),
-            ("Low Pressure Compressor Polytropic Efficiency", Units.Unitless),
-            ("Low Pressure Compressor Pressure Ratio", Units.Unitless),
+            ("LPC Polytropic Efficiency", Units.Unitless),
+            ("LPC Pressure Ratio", Units.Unitless),
             ("High Pressure Compressor", Units.Heading),
-            ("High Pressure Compressor Polytropic Efficiency", Units.Unitless),
-            ("High Pressure Compressor Pressure Ratio", Units.Unitless),
+            ("HPC Polytropic Efficiency", Units.Unitless),
+            ("HPC Pressure Ratio", Units.Unitless),
             ("Low Pressure Turbine", Units.Heading),
-            ("Low Pressure Turbine Mechanical Efficiency", Units.Unitless),
-            ("Low Pressure Turbine Polytropic Efficiency", Units.Unitless),
+            ("LPT Mechanical Efficiency", Units.Unitless),
+            ("LPT Polytropic Efficiency", Units.Unitless),
             ("High Pressure Turbine", Units.Heading),
-            ("High Pressure Turbine Mechanical Efficiency", Units.Unitless),
-            ("High Pressure Turbine Polytropic Efficiency", Units.Unitless),
+            ("HPT Mechanical Efficiency", Units.Unitless),
+            ("HPT Polytropic Efficiency", Units.Unitless),
             ("Combustor", Units.Heading),
             ("Combustor Efficiency", Units.Unitless),
             ("Combustor Pressure Loss Coeff", Units.Unitless),
@@ -77,6 +78,7 @@ class TurbofanWidget(QWidget):
             nacelle_tags.append(convert_name(nacelle["name"]))
         self.nacelle_selector = QComboBox()
         self.nacelle_selector.addItems(nacelle_tags)
+        main_section_layout.addWidget(self.nacelle_selector)
 
         # Adding delete button
         delete_button = QPushButton("Delete Turbofan", self)
@@ -131,26 +133,26 @@ class TurbofanWidget(QWidget):
 
         low_pressure_compressor                        = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
         low_pressure_compressor.tag                    = "lpc"
-        low_pressure_compressor.polytropic_efficiency  = data["Low Pressure Compressor Polytropic Efficiency"][0]
-        low_pressure_compressor.pressure_ratio         = data["Low Pressure Compressor Pressure Ratio"][0]
+        low_pressure_compressor.polytropic_efficiency  = data["LPC Polytropic Efficiency"][0]
+        low_pressure_compressor.pressure_ratio         = data["LPC Pressure Ratio"][0]
         turbofan.low_pressure_compressor               = low_pressure_compressor
 
         high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
         high_pressure_compressor.tag                   = "hpc"
-        high_pressure_compressor.polytropic_efficiency = data["High Pressure Compressor Polytropic Efficiency"][0]
-        high_pressure_compressor.pressure_ratio        = data["High Pressure Compressor Pressure Ratio"][0]
+        high_pressure_compressor.polytropic_efficiency = data["HPC Polytropic Efficiency"][0]
+        high_pressure_compressor.pressure_ratio        = data["HPC Pressure Ratio"][0]
         turbofan.high_pressure_compressor              = high_pressure_compressor
 
         low_pressure_turbine                           = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
         low_pressure_turbine.tag                       = "lpt"
-        low_pressure_turbine.mechanical_efficiency     = data["Low Pressure Turbine Mechanical Efficiency"][0]
-        low_pressure_turbine.polytropic_efficiency     = data["Low Pressure Turbine Polytropic Efficiency"][0]
+        low_pressure_turbine.mechanical_efficiency     = data["LPT Mechanical Efficiency"][0]
+        low_pressure_turbine.polytropic_efficiency     = data["LPT Polytropic Efficiency"][0]
         turbofan.low_pressure_turbine                  = low_pressure_turbine
 
         high_pressure_turbine                          = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
         high_pressure_turbine.tag                      = "hpt"
-        high_pressure_turbine.mechanical_efficiency    = data["High Pressure Turbine Mechanical Efficiency"][0]
-        high_pressure_turbine.polytropic_efficiency    = data["High Pressure Turbine Polytropic Efficiency"][0]
+        high_pressure_turbine.mechanical_efficiency    = data["HPT Mechanical Efficiency"][0]
+        high_pressure_turbine.polytropic_efficiency    = data["HPT Polytropic Efficiency"][0]
         turbofan.high_pressure_turbine                 = high_pressure_turbine
 
         combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
@@ -176,7 +178,8 @@ class TurbofanWidget(QWidget):
         fan_nozzle.pressure_ratio                      = data["Fan Nozzle Pressure Ratio"][0]
         turbofan.fan_nozzle                            = fan_nozzle
         
-        turbofan.nacelle = values.vehicle.nacelles[self.nacelle_selector.currentText()]
+        if len(values.vehicle.nacelles):
+            turbofan.nacelle = values.vehicle.nacelles[self.nacelle_selector.currentText()]
 
         design_turbofan(turbofan)
         return turbofan
