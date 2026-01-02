@@ -8,10 +8,11 @@ class GeometryDataWidget(QWidget):
     def create_rcaide_structure(self, data):
         pass
 
+    # Should return the data array AND the RCAIDE structure for the widget
     def get_data_values(self):
         pass
 
-    def load_data_values(self):
+    def load_data_values(self, data):
         pass
 
     def delete_button_pressed(self):

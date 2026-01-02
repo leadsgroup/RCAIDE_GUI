@@ -8,17 +8,20 @@
 # RCAIDE imports   
 import RCAIDE
 
+from tabs.geometry.widgets import GeometryDataWidget
 # RCAIDE GUI imports
 from utilities import Units
 from widgets import DataEntryWidget
 
 # PyQT imports  
-from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget, \
+    QFrame
 
-# ---------------------------------------------------------------------------------------------------------------------- 
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  Nacelle Section Widget 
 # ---------------------------------------------------------------------------------------------------------------------- 
-class NacelleSectionWidget(QWidget):
+class NacelleSectionWidget(GeometryDataWidget):
     def __init__(self, index, on_delete, section_data=None):
         super(NacelleSectionWidget, self).__init__()
 
@@ -84,7 +87,7 @@ class NacelleSectionWidget(QWidget):
         self.setLayout(main_layout)
 
     def create_rcaide_structure(self, data):
-        segment = RCAIDE.Library.Components.Nacelles.Segments.Segment() 
+        segment = RCAIDE.Library.Components.Nacelles.Segments.Segment()
         segment.percent_x_location = data["Percent X Location"][0]
         segment.percent_z_location = data["Percent Z Location"][0]
         segment.height = data["Height"][0]
@@ -102,7 +105,10 @@ class NacelleSectionWidget(QWidget):
         segment = self.create_rcaide_structure(data_si)
         return data, segment
 
-    def delete_button_pressed(self): 
+    def load_data_values(self, data):
+        pass
+
+    def delete_button_pressed(self):
         if self.on_delete is None:
             print("on_delete is None")
             return

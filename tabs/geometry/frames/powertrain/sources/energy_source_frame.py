@@ -5,17 +5,17 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports   
+# RCAIDE imports
 import RCAIDE
 
 # PyQT Imports
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QScrollArea, QFrame
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, \
+    QSpacerItem, QSizePolicy, QFrame
 
-# RCAIDE GUI imports  
+# RCAIDE GUI imports
 from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget import FuelTankWidget
 from widgets import DataEntryWidget
-from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout 
+
 
 # --------------------------------------------------------------------------------------------------------------------- 
 #  Energy Source Frame 
@@ -118,7 +118,7 @@ class EnergySourceFrame(QWidget):
 
         widget.deleteLater()
         self.source_sections_layout.removeWidget(widget)
-        self.source_sections_layout.update() 
+        self.source_sections_layout.update()
 
         for i in range(index, self.source_sections_layout.count()):
             tank = self.source_sections_layout.itemAt(i)
@@ -129,7 +129,7 @@ class EnergySourceFrame(QWidget):
             if widget is None or not isinstance(widget, FuelTankWidget):
                 continue
 
-            widget.index = i 
+            widget.index = i
 
     def set_save_function(self, function):
         self.save_function = function
@@ -137,7 +137,7 @@ class EnergySourceFrame(QWidget):
     def create_scroll_layout(self):
         # Create a widget to contain the layout
         scroll_content = QWidget()
-        
+
         # Set the main layout inside the scroll content
         layout = QVBoxLayout(scroll_content)
 

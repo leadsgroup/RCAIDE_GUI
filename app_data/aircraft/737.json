@@ -1437,35 +1437,35 @@
                                     0.98,
                                     0
                                 ],
-                                "Low Pressure Compressor Polytropic Efficiency": [
+                                "LPC Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "Low Pressure Compressor Pressure Ratio": [
+                                "LPC Pressure Ratio": [
                                     1.9,
                                     0
                                 ],
-                                "High Pressure Compressor Polytropic Efficiency": [
+                                "HPC Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "High Pressure Compressor Pressure Ratio": [
+                                "HPC Pressure Ratio": [
                                     10.0,
                                     0
                                 ],
-                                "Low Pressure Turbine Mechanical Efficiency": [
+                                "LPT Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "Low Pressure Turbine Polytropic Efficiency": [
+                                "LPT Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
-                                "High Pressure Turbine Mechanical Efficiency": [
+                                "HPT Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "High Pressure Turbine Polytropic Efficiency": [
+                                "HPT Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
@@ -1552,35 +1552,35 @@
                                     0.98,
                                     0
                                 ],
-                                "Low Pressure Compressor Polytropic Efficiency": [
+                                "LPC Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "Low Pressure Compressor Pressure Ratio": [
+                                "LPC Pressure Ratio": [
                                     1.9,
                                     0
                                 ],
-                                "High Pressure Compressor Polytropic Efficiency": [
+                                "HPC Polytropic Efficiency": [
                                     0.91,
                                     0
                                 ],
-                                "High Pressure Compressor Pressure Ratio": [
+                                "HPC Pressure Ratio": [
                                     10.0,
                                     0
                                 ],
-                                "Low Pressure Turbine Mechanical Efficiency": [
+                                "LPT Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "Low Pressure Turbine Polytropic Efficiency": [
+                                "LPT Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],
-                                "High Pressure Turbine Mechanical Efficiency": [
+                                "HPT Mechanical Efficiency": [
                                     0.99,
                                     0
                                 ],
-                                "High Pressure Turbine Polytropic Efficiency": [
+                                "HPT Polytropic Efficiency": [
                                     0.93,
                                     0
                                 ],

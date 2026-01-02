@@ -46,13 +46,13 @@ class FuselageSectionWidget(QWidget):
         #energy_label = QLabel("Segment Type:")
         #energy_label.setFixedWidth(100)  # Adjust width of label
         #name_layout.addWidget(energy_label) 
-        #self.fusleage_segment_combo = QComboBox()
-        #self.fusleage_segment_combo.addItems(["Circle Segment", "Ellipse Segment", "Rounded Rectangle Segment", "Super Ellipse Segment" , "Segment"])
-        #self.fusleage_segment_combo.setFixedWidth(400)  # Fix width of combo box
-        #name_layout.addWidget(self.fusleage_segment_combo,  alignment=Qt.AlignmentFlag.AlignLeft)
+        #self.fuselage_segment_combo = QComboBox()
+        #self.fuselage_segment_combo.addItems(["Circle Segment", "Ellipse Segment", "Rounded Rectangle Segment", "Super Ellipse Segment" , "Segment"])
+        #self.fuselage_segment_combo.setFixedWidth(400)  # Fix width of combo box
+        #name_layout.addWidget(self.fuselage_segment_combo,  alignment=Qt.AlignmentFlag.AlignLeft)
 
         # Connect signal
-        self.fusleage_segment_combo.currentIndexChanged.connect(self.display_selected_segment)
+        self.fuselage_segment_combo.currentIndexChanged.connect(self.display_selected_segment)
         
 
         main_layout.addLayout(self.name_layout)
@@ -93,7 +93,7 @@ class FuselageSectionWidget(QWidget):
 
     def create_rcaide_structure(self, data): 
 
-        selected_segment = self.fusleage_segment_combo.currentText()
+        selected_segment = self.fuselage_segment_combo.currentText()
 
         #if selected_segment == "Ellipse Segment":
             #item = self.powertrain_layout.itemAt(0)
@@ -164,7 +164,7 @@ class FuselageSectionWidget(QWidget):
         
 
     def display_selected_segment(self, index):
-        selected_fuselage_segmemt = self.fusleage_segment_combo.currentText()
+        selected_fuselage_segmemt = self.fuselage_segment_combo.currentText()
         # Clear the layout first
         clear_layout(self.powertrain_layout)
 
