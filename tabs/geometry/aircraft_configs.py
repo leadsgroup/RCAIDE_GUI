@@ -25,7 +25,7 @@ class AircraftConfigsWidget(TabWidget):
         self.tabs = ["", "Booms", "Cargo Bars", "Fuselages",
                      "Landing Gear",  "Nacelles" , "Wings",  "Powertrain"]
 
-        options = ["Add Vehicle Compoment", "Add Boom", "Add Cargo Bay", "Add Fuselage",
+        options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
                    "Add Landing Gear" ,  "Add Nacelle", "Add Powertrain", "Add Wing"]
         
         self.selected_config_index = 0
