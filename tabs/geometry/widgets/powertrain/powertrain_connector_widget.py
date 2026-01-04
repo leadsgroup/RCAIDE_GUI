@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QCheckBox
 
 
-class TankSelectorWidget(QWidget):
+class PowertrainConnectorWidget(QWidget):
     def __init__(self):
-        super(TankSelectorWidget, self).__init__()
+        super(PowertrainConnectorWidget, self).__init__()
 
         self.main_layout = QHBoxLayout()
         self.tab_widget = QTabWidget()

@@ -19,7 +19,7 @@ from tabs.geometry.frames.powertrain.sources import EnergySourceFrame
 from tabs.geometry.frames.powertrain.distributors import DistributorFrame
 from tabs.geometry.frames.powertrain.converters import ConverterFrame
 from tabs.geometry.frames.powertrain.propulsors import PropulsorFrame
-from tabs.geometry.widgets.powertrain.tank_selector_widget import TankSelectorWidget
+from tabs.geometry.widgets.powertrain.powertrain_connector_widget import PowertrainConnectorWidget
 from widgets import DataEntryWidget
 
 
@@ -87,7 +87,7 @@ class PowertrainWidget(QWidget):
         update_selector_button.clicked.connect(self.update_fuel_selector)
         layout.addWidget(update_selector_button)
 
-        self.fuel_tank_selector = TankSelectorWidget()
+        self.fuel_tank_selector = PowertrainConnectorWidget()
         # self.fuel_tank_selector.setTabPosition(QTabWidget.TabPosition.North)
         layout.addWidget(self.fuel_tank_selector)
 
