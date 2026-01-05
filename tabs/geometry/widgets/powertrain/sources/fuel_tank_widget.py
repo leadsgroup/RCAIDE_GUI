@@ -60,7 +60,7 @@ class FuelTankWidget(GeometryFrame):
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.section_name_edit.setText(section_data["Segment Name"])
+        self.section_name_edit.setText(section_data["Source Name"])
 
     def get_data_values(self):
         title = self.section_name_edit.text()

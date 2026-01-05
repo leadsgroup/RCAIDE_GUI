@@ -21,7 +21,7 @@ class GeometryWidget(TabWidget):
         self.tabs = ["", "Booms", "Cargo Bars", "Fuselages",
                      "Landing Gear" , "Wings",  "Powertrain"]
 
-        options = ["Add Vehicle Compoment", "Add Boom", "Add Cargo Bay", "Add Fuselage",
+        options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
                    "Add Landing Gear" , "Add Powertrain", "Add Wing"]
 
         values.geometry_data = []

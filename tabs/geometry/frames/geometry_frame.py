@@ -49,7 +49,7 @@ class GeometryFrame(QWidget):
     
     def get_data_values(self):
         """Get the data values from the frame's widgets and return it."""
-        return ({}, RCAIDE.Library.Components.Component())
+        return {}, RCAIDE.Library.Components.Component()
     
     def save_data(self):
         """Save the data from the frame into geometry.py, which subsequently saves it in values."""
@@ -58,5 +58,4 @@ class GeometryFrame(QWidget):
     def update_layout(self):
         """Update the layout of the frame. Called when the frame is shown."""
         pass
-    
-    
+
