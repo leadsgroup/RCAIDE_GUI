@@ -87,19 +87,18 @@ class PowertrainWidget(QWidget):
         update_selector_button.clicked.connect(self.update_fuel_selector)
         layout.addWidget(update_selector_button)
 
-        self.fuel_tank_selector = PowertrainConnectorWidget()
+        self.powertrain_connection_selector = PowertrainConnectorWidget()
         # self.fuel_tank_selector.setTabPosition(QTabWidget.TabPosition.North)
-        layout.addWidget(self.fuel_tank_selector)
+        layout.addWidget(self.powertrain_connection_selector)
 
     def add_fuelline_section(self):
         self.fuellines_layout.addWidget(
             FuelLineWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
 
     def update_fuel_selector(self):
-        self.fuel_tank_selector.clear()
+        self.powertrain_connection_selector.clear()
         data = self.get_data_values(just_data=True)
-
-        self.fuel_tank_selector.update_selector(data)
+        self.powertrain_connection_selector.update_selector(data)
 
     def on_delete_button_pressed(self, index):
         widget_item = self.fuellines_layout.itemAt(index)
@@ -119,20 +118,27 @@ class PowertrainWidget(QWidget):
                 widget.index = i
                 print("Updated Index:", i)
 
-    def create_rcaide_structure(self, distributors, sources, propulsors, converters):
-        for distributor in distributors:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
-            distributor.tag = self.section_name_edit.text()
+    def create_rcaide_structure(self, data):
+        data, connections, distributors, sources, propulsors, converters = data
+        net = RCAIDE.Framework.Networks.Fuel()
 
-            # propulsor_group = propulsors
-            distributor.assigned_propulsors = [[]]
-            for propulsor in propulsors:
-                distributor.assigned_propulsors[0].append(propulsor.tag)
+        propulsor_connections = connections[0]
+        source_connections = connections[2]
+        for i, distributor in enumerate(distributors):
+            assigned_propulsors = [[]]
+            for j, propulsor in enumerate(propulsors):
+                if propulsor_connections[i][j]:
+                    assigned_propulsors[0].append(propulsor.tag)
 
-            for source in sources:
-                distributor.fuel_tanks.append(source)  # NEED TO CHANGE
+            for j, source in enumerate(sources):
+                if source_connections[i][j]:
+                    distributor.fuel_tanks.append(source)
 
-        return distributors, sources, propulsors, converters
+            distributor.assigned_propulsors = assigned_propulsors
+            net.fuel_lines.append(distributor)
+            source_names = [x.tag for x in distributor.fuel_tanks]
+
+        return net
 
     def get_data_values(self, just_data=False):
         """Retrieve the entered data values from both SourceFrame and PropulsorFrame."""
@@ -161,9 +167,11 @@ class PowertrainWidget(QWidget):
         if just_data:
             return data
 
-        distributors, sources, propulsors, converters = self.create_rcaide_structure(
-            distributors, sources, propulsors, converters)
-        return data, distributors, sources, propulsors, converters
+        connections = self.powertrain_connection_selector.get_connections(data)
+
+        net = self.create_rcaide_structure(
+            (data, connections, distributors, sources, propulsors, converters))
+        return data, net
 
     def load_data_values(self, data, index=0):
         distributor_data = data["distributor data"]
