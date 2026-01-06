@@ -267,6 +267,7 @@ cython_debug/
 
 # Data files
 data/*
+*.pkl
 
 meeting_notes.txt
 pyrightconfig.json
