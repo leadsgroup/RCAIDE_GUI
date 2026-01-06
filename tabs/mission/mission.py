@@ -3,7 +3,7 @@ from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QPainterPath
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QGroupBox, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QScrollArea, QFrame,
-    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox
+    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox, QCheckBox
 )
 
 from tabs.mission.widgets import MissionSegmentWidget
@@ -16,6 +16,10 @@ import RCAIDE
 #  Collapsible Panel wrapper
 # ============================================================
 class CollapsiblePanel(QWidget):
+    """A small panel with a header button that toggles visibility of content.
+    - title: display title for the header button
+    - content_widget: the QWidget that will be shown/hidden when toggled
+    """
     def __init__(self, title: str, content_widget: QWidget):
         super().__init__()
 
@@ -34,6 +38,7 @@ class CollapsiblePanel(QWidget):
         self.toggle_btn.clicked.connect(self.toggle)
 
         # Visual styling for the header button
+        # (kept as a raw stylesheet string to preserve look-and-feel)
         self.toggle_btn.setStyleSheet("""
             QPushButton {
                 background-color: #0d1522;
@@ -55,444 +60,80 @@ class CollapsiblePanel(QWidget):
         layout.addWidget(self.content)
 
     def toggle(self):
+        """Flip the panel open/closed and update the header arrow."""
         # Toggle open/closed state
         self.is_open = not self.is_open
 
         # Show or hide the content widget
         self.content.setVisible(self.is_open)
 
-        # Update arrow icon in the header text
+        # Update arrow icon in the header text (preserve the existing title)
         self.toggle_btn.setText(
             f"{'▼' if self.is_open else '►'}  {self.toggle_btn.text()[2:]}"
         )
-
-# ============================================================
-#  Mission Profile (line Diagram)
-# ============================================================
-class MissionProfileWidget(QWidget):
-    def __init__(self, parent=None):
-        # Initialize the base QWidget
-        super().__init__(parent)
-
-        # Set minimum and maximum height for consistent layout
-        self.setMinimumHeight(140)
-        self.setMaximumHeight(180)
-
-        # List of mission phase names (e.g., takeoff, climb, cruise)
-        self.phases: list[str] = []
-
-        # Normalized animation progress value (0.0 → 1.0)
-        self._progress = 0.0
-
-        # Timer to drive the animated progress indicator
-        self._timer = QTimer(self)
-        self._timer.timeout.connect(self._advance_animation)
-        self._timer.start(40)
-
-        # Disable automatic background fill (custom painting is used)
-        self.setAutoFillBackground(False)
-
-    def set_phases(self, names: list[str]) -> None:
-        # Store phase names in title case for display
-        self.phases = [n.title() for n in names] if names else []
-
-        # Trigger a repaint when phases change
-        self.update()
-
-    def _advance_animation(self):
-        # Skip animation if there are not enough phases
-        if not self.phases or len(self.phases) < 2:
-            return
-
-        # Advance animation progress
-        self._progress += 0.005
-
-        # Loop animation once it reaches the end
-        if self._progress > 1.0:
-            self._progress = 0.0
-    
-        # Request a repaint for the next frame
-        self.update()
-
-    @staticmethod
-    def _phase_type(name: str) -> str:
-        # Determine phase type based on keywords in the phase name
-        n = name.lower()
-        if "takeoff" in n or "taxi" in n:
-            return "takeoff"
-        if "climb" in n:
-            return "climb"
-        if "cruise" in n:
-            return "cruise"
-        if "descent" in n or "des" in n:
-            return "descent"
-        if "landing" in n or "land" in n:
-            return "landing"
-
-        # Default fallback for unrecognized phase names
-        return "other"
-
-    def _phase_color(self, ptype: str) -> QColor:
-        # Color mapping for each mission phase type
-        colors = {
-            "takeoff": "#4caf50",
-            "climb": "#81c784",
-            "cruise": "#64b5f6",
-            "descent": "#ffb74d",
-            "landing": "#e57373",
-        }
-        # Return mapped color or default color if type is unknown
-        return QColor(colors.get(ptype, "#b0bec5"))
-
-    def _phase_icon(self, ptype: str) -> str:
-        # Icon mapping for each mission phase type
-        icons = {
-            "takeoff": "🛫",
-            "climb": "↗",
-            "cruise": "☁",
-            "descent": "↘",
-            "landing": "🛬",
-        }
-
-        # Return icon for phase type, or a default bullet
-        return icons.get(ptype, "•")
-
-    def paintEvent(self, event):
-        # Create painter for custom drawing
-        painter = QPainter(self)
-
-        # Enable smoother rendering
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-
-        # Define drawing area with margins
-        rect = self.rect().adjusted(18, 16, -18, -28)
-
-        # Fill widget background
-        painter.fillRect(self.rect(), QColor("#050a12"))
-
-        # Draw light horizontal gridlines
-        painter.setPen(QPen(QColor("#1f2933"), 1, Qt.PenStyle.DotLine))
-        for i in range(1, 4):
-            y = rect.top() + i * rect.height() / 4
-            painter.drawLine(int(rect.left()), int(y), int(rect.right()), int(y))
-
-        # If no mission phases exist, show placeholder text
-        if not self.phases:
-            painter.setPen(QColor("#8c9aa8"))
-            painter.setFont(QFont("Segoe UI", 10))
-            painter.drawText(
-                self.rect(),
-                Qt.AlignmentFlag.AlignCenter,
-                "Mission profile will appear here once you add segments."
-            )
-            return
-
-        # Number of mission phases
-        n = len(self.phases)
-
-        # Build normalized altitude profile
-        alt = []
-        cur = 0.15
-        for name in self.phases:
-            ptype = self._phase_type(name)
-
-            # Adjust altitude based on phase type
-            if ptype in ("takeoff", "climb"):
-                cur += 0.18
-            elif ptype == "cruise":
-                cur += 0.0
-            elif ptype in ("descent", "landing"):
-                cur -= 0.18
-            else:
-                cur += 0.05
-
-            # Clamp altitude to visible bounds
-            cur = max(0.08, min(0.85, cur))
-            alt.append(cur)
-
-        # Insert starting altitude
-        alt.insert(0, 0.08)
-
-        # Compute x positions for each segment boundary
-        dx = rect.width() / n
-        xs = [rect.left() + i * dx for i in range(n + 1)]
-
-        # Set font for phase labels
-        painter.setFont(QFont("Segoe UI", 9))
-
-        # Draw each mission segment
-        for i, name in enumerate(self.phases):
-            ptype = self._phase_type(name)
-            color = self._phase_color(ptype)
-
-            # Segment endpoints
-            x1, x2 = xs[i], xs[i + 1]
-            y1 = rect.bottom() - alt[i] * rect.height()
-            y2 = rect.bottom() - alt[i + 1] * rect.height()
-
-            # Draw segment line
-            seg_path = QPainterPath()
-            seg_path.moveTo(x1, y1)
-            seg_path.lineTo(x2, y2)
-            painter.setPen(QPen(color, 2.0))
-            painter.drawPath(seg_path)
-
-            # Compute label position
-            cx = 0.5 * (x1 + x2)
-            label_y = min(y1, y2) - 16
-            label_y = max(label_y, rect.top() + 4)
-
-            # Build label text with icon
-            icon = self._phase_icon(ptype)
-            label = f"{icon}  {name}"
-
-            # Draw phase label
-            painter.setPen(QColor("#e8f2ff"))
-            painter.drawText(
-                int(cx - 50),
-                int(label_y),
-                100,
-                18,
-                Qt.AlignmentFlag.AlignCenter,
-                label
-            )
-        # Draw baseline (ground reference)
-        painter.setPen(QPen(QColor("#3f5670"), 1.2))
-        painter.drawLine(
-            int(rect.left()),
-            int(rect.bottom()),
-            int(rect.right()),
-            int(rect.bottom())
-        )
-        # --- Draw animated progress marker ---
-        # Convert progress to segment index and interpolation fraction
-        total_segments = n
-        t = self._progress * total_segments
-        idx = int(t)
-        frac = t - idx
-
-        # Clamp animation at the final segment
-        if idx >= total_segments:
-            idx = total_segments - 1
-            frac = 1.0
-
-        # Interpolate position along current segment
-        x1, x2 = xs[idx], xs[idx + 1]
-        y1 = rect.bottom() - alt[idx] * rect.height()
-        y2 = rect.bottom() - alt[idx + 1] * rect.height()
-        mx = x1 + (x2 - x1) * frac
-        my = y1 + (y2 - y1) * frac
-
-        # Draw inner marker dot
-        painter.setBrush(QBrush(QColor("#ffffff")))
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawEllipse(QPointF(mx, my), 4, 4)
-
-        # Draw outer marker ring
-        painter.setPen(QPen(QColor("#64b5f6"), 1.2))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.drawEllipse(QPointF(mx, my), 7, 7)
-
-# =======================================
-#  Mission Summary Table
-# =======================================
-class MissionSummaryTable(QTableWidget):
-    def __init__(self, mission_widget):
-        # Initialize table with 0 rows and 5 columns
-        super().__init__(0, 5)
-
-        # Reference to the parent mission widget
-        self.mission_widget = mission_widget
-
-        # Set a minimum width for each column
-        self.horizontalHeader().setMinimumSectionSize(80)
-
-        # Allow table to expand horizontally but keep fixed height
-        self.setSizePolicy(
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Fixed
-        )
-        # Define column headers
-        self.setHorizontalHeaderLabels([
-            "Segment Name",
-            "Subsegment Type",
-            "Ctrl Pts",
-            "Unknowns",
-            "Residuals"
-        ])
-        # Stretch columns to fill available width
-        self.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Stretch
-        )
-        # Hide vertical row numbers
-        self.verticalHeader().setVisible(False)
-
-        # Enable full-row selection behavior
-        self.setSelectionBehavior(
-            QTableWidget.SelectionBehavior.SelectRows
-        )
-        # Disable direct cell editing
-        self.setEditTriggers(
-            QTableWidget.EditTrigger.NoEditTriggers
-        )
-        # Apply dark theme styling for table and headers
-        self.setStyleSheet("""
-            QTableWidget {
-                background-color:#060b13;
-                color:#e5f0ff;
-                border:1px solid #2d3a4e;
-                font-size:13px;
-                gridline-color:#23334b;
-            }
-            QHeaderView::section {
-                background-color:#111b2d;
-                color:#a8c6ff;
-                font-weight:600;
-                padding:5px;
-            }
-            QTableWidget::item:selected {
-                background-color:#1b2a44;
-            }
-        """)
-        # Handle clicks on table rows
-        self.cellClicked.connect(self._row_clicked)
-
-    # ========================================================
-    # Update summary table (fixed subsegment type)
-    # ========================================================
-    def update_table(self):
-        # Retrieve all mission segment widgets
-        segs = self.mission_widget.segment_widgets
-
-        # If no segments exist, show placeholder message
-        if not segs:
-            self.clearContents()
-            self.setRowCount(1)
-
-            # Single centered message spanning all columns
-            item = QTableWidgetItem("No segments added yet.")
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.setItem(0, 0, item)
-            self.setSpan(0, 0, 1, 5)
-            return
-
-        # Temporary storage for row data
-        rows = []
-
-        # Collect data from each mission segment
-        for seg in segs:
-            data, _ = seg.get_data()
-
-            # Segment display name
-            name = data.get("Segment Name", "")
-
-            # Subsegment type from the actual dropdown (authoritative source)
-            subsegment = seg.nested_dropdown.currentText()
-
-            # Control points (default to "2" if widget does not exist)
-            cp = seg.ctrl_points.text() if hasattr(seg, "ctrl_points") else "2"
-
-            # Count unknowns and residuals
-            unknowns = len(data.get("Degrees of Freedom", []))
-            residuals = len(data.get("Residuals", []))
-
-            # Store lowercase name for sorting, plus display values
-            rows.append((name.lower(), name, subsegment, cp, unknowns, residuals))
-
-        # Sort rows so that "takeoff" appears first
-        rows.sort(key=lambda r: (r[0] != "takeoff"))
-
-        # Apply rows to the table
-        self.clearContents()
-        self.setRowCount(len(rows))
-
-        # Populate table cells
-        for r, (_, name, subsegment, cp, un, re) in enumerate(rows):
-            vals = [name, subsegment, cp, un, re]
-            for c, v in enumerate(vals):
-                item = QTableWidgetItem(str(v))
-                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.setItem(r, c, item)
-        # --- Auto-adjust table height to fit all rows ---
-        total_height = (
-            self.horizontalHeader().height() +
-            (self.rowHeight(0) * len(rows)) +
-            4
-        )
-        self.setFixedHeight(total_height)
-
-    # ============================================================
-    # Clicking a row scrolls to its details panel
-    # ============================================================
-    def _row_clicked(self, row, col):
-        # Get the segment name from the first column of the clicked row
-        seg_name = self.item(row, 0).text().lower()
-
-        # Find the matching segment widget index
-        target_index = None
-        for i, seg in enumerate(self.mission_widget.segment_widgets):
-            data, _ = seg.get_data()
-            if data.get("Segment Name", "").lower() == seg_name:
-                target_index = i
-                break
-
-        # Exit if no matching segment was found
-        if target_index is None:
-            return
-
-        # Each segment corresponds to a collapsible panel + spacer,
-        # so the panel index is doubled
-        panel_index = target_index * 2
-
-        # Reference the layout that holds the segment detail panels
-        layout = self.mission_widget.details_layout
-
-        # Ensure the target panel exists in the layout
-        if panel_index < layout.count():
-            widget = layout.itemAt(panel_index).widget()
-
-            # Expand the panel if it is currently collapsed
-            if hasattr(widget, "toggle") and not widget.is_open:
-                widget.toggle()
-
-            # Scroll the details area so the panel becomes visible
-            self.mission_widget.details_scroll.ensureWidgetVisible(widget)
-
-# ============================================================
-#  Mission Widget (Main)
-# ============================================================
+        
+# ===================================
+#  Mission Widget (Main Tab)
+# ===================================
 class MissionWidget(TabWidget):
+    """Main mission tab widget used in the application's tab view.
+    Includes:
+    - Allowing the user to create and manage mission segments
+    - Displaying segment details in collapsible panels
+    - Saving/loading mission data to/from the global `values` object
+    - Interacting with RCAIDE mission objects when saving
+    """
     def __init__(self, shared_analysis_widget=None):
         super().__init__()
 
-        # Mission-level analysis widget intentionally owned by the Mission tab
-        # future analysis views will use separate widgets
-        if shared_analysis_widget is not None:
-            self.analysis_widget = shared_analysis_widget
-        else:
-            self.analysis_widget = MissionAnalysisWidget()
+        # Optional shared analysis widget (reused UI component)
+        self.analysis_widget = shared_analysis_widget or MissionAnalysisWidget()
+        # List of MissionSegmentWidget instances currently in the mission
+        self.segment_widgets = []
+        # Indices of segments that have been disabled by the user
+        self.disabled_segments = set()
 
-        # Root horizontal splitter separating left and right columns
+        # --- Root splitter ---
         root = QSplitter(Qt.Orientation.Horizontal)
         root.setHandleWidth(2)
         root.setChildrenCollapsible(False)
 
-        # --- Left column ---
+        # --- Left column: analyses setup (keeps analysis widgets) ---
         left_col = QWidget()
         left_v = QVBoxLayout(left_col)
         left_v.setContentsMargins(10, 10, 10, 10)
 
-        # Mission analyses section
-        analyses_box = QGroupBox("Mission Analyses")
+        analyses_box = QGroupBox("Analyses Setup (RCAIDE)")
         analyses_v = QVBoxLayout(analyses_box)
         analyses_v.addWidget(MissionAnalysisWidget())
-        left_v.addWidget(analyses_box, 3)
+        left_v.addWidget(analyses_box)
 
-        # Mission segments section
-        segs_box = QGroupBox("Mission Segments")
-        segs_v = QVBoxLayout(segs_box)
+        # --- Right column: mission configuration and segment details ---
+        right_col = QWidget()
+        right_v = QVBoxLayout(right_col)
+        right_v.setContentsMargins(10, 10, 10, 10)
 
-        # Mission name input row
+        # =======================================================
+        # Mission Setup area (includes segment list and controls)
+        # =======================================================
+        segments_box = QGroupBox("Mission Setup")
+        segments_v = QVBoxLayout(segments_box)
+
+        # Small notice label 
+        self.segment_notice = QLabel("")
+        self.segment_notice.setVisible(False)
+        self.segment_notice.setStyleSheet("""
+            QLabel {
+                color:#8fd3ff;
+                background:#0d223a;
+                border:1px solid #1f6feb;
+                border-radius:4px;
+                padding:4px 8px;
+            }
+        """)
+        segments_v.addWidget(self.segment_notice)
+
+        # Row: mission name input
         name_row = QHBoxLayout()
         name_label = QLabel("Mission Name:")
         name_label.setStyleSheet("color:#dbe7ff;")
@@ -500,259 +141,269 @@ class MissionWidget(TabWidget):
         self.mission_name_input.setPlaceholderText("Enter mission name...")
         name_row.addWidget(name_label)
         name_row.addWidget(self.mission_name_input)
-        segs_v.addLayout(name_row)
+        segments_v.addLayout(name_row)
 
-        # Action buttons row
+        # Row: action buttons (add segment, save data)
         btn_row = QHBoxLayout()
         self.add_segment_btn = QPushButton("➕ Add Segment")
         self.save_btn = QPushButton("💾 Save All Data")
         for b in (self.add_segment_btn, self.save_btn):
             b.setStyleSheet("background-color:#141b29; color:#e5f0ff;")
+
+        # Wire button clicks to handler methods (no logic change)
         self.add_segment_btn.clicked.connect(self.add_segment)
         self.save_btn.clicked.connect(self.save_all_data)
+
         btn_row.addWidget(self.add_segment_btn)
         btn_row.addWidget(self.save_btn)
-        segs_v.addLayout(btn_row)
+        segments_v.addLayout(btn_row)
 
-        # Tree view listing mission segments
+        # Tree widget to list mission segments and provide checkboxes
         self.tree = QTreeWidget()
         self.tree.setHeaderLabels(["Mission Segments"])
-        segs_v.addWidget(self.tree)
-        left_v.addWidget(segs_box, 2)
+        self.tree.setRootIsDecorated(False)
+        segments_v.addWidget(self.tree)
 
-        # --- Right column ---
-        right_col = QWidget()
-        right_v = QVBoxLayout(right_col)
-        right_v.setContentsMargins(10, 10, 10, 10)
+        # Action row: disable/enable segments and clear selected
+        action_row = QHBoxLayout()
+        self.disable_btn = QPushButton("Disable / Enable")
+        self.clear_btn = QPushButton("🗑 Clear Selected")
+        self.clear_btn.setStyleSheet(
+            "background:#2a1e1e; color:#ffb4b4; border:1px solid #5c2b2b;"
+        )
 
-        # Mission profile visualization
-        profile_box = QGroupBox("Mission Profile")
-        profile_v = QVBoxLayout(profile_box)
-        self.profile_widget = MissionProfileWidget()
-        profile_v.addWidget(self.profile_widget)
-        right_v.addWidget(profile_box)
+        action_row.addWidget(self.disable_btn)
+        action_row.addStretch()
+        action_row.addWidget(self.clear_btn)
+        segments_v.addLayout(action_row)
 
-        # Mission summary table
-        self.summary_table = MissionSummaryTable(self)
-        right_v.addWidget(self.summary_table)
+        right_v.addWidget(segments_box)
 
-        # Segment detail panels (scrollable)
-        details_box = QGroupBox("Segment")
+        # ==============================================
+        # Segment Details (Area with collapsible panels)
+        # ==============================================
+        details_box = QGroupBox("Segment Details")
         details_v = QVBoxLayout(details_box)
+
+        # Scroll area that contains a vertical layout of panels
         self.details_scroll = QScrollArea()
         self.details_scroll.setWidgetResizable(True)
         details_container = QWidget()
         self.details_layout = QVBoxLayout(details_container)
         self.details_scroll.setWidget(details_container)
+
         details_v.addWidget(self.details_scroll)
         right_v.addWidget(details_box, 1)
 
-        # Add left and right columns to the root splitter
+        # Put left and right columns into the splitter
         root.addWidget(left_col)
         root.addWidget(right_col)
 
-        # --- Main Layout ---
         layout = QVBoxLayout(self)
         layout.addWidget(root)
 
-        # Auto-center splitter sizes after initial layout
-        from PyQt6.QtCore import QTimer
+        # Ensure reasonable initial sizes after layout has been set
         QTimer.singleShot(0, lambda: root.setSizes([1000, 1000]))
 
-        # Storage for active mission segment widgets
-        self.segment_widgets = []
-        
-    # ============================================================
-    # Profile Update
-    # ============================================================
-    def _update_profile(self):
-        # Collect segment names for the mission profile
-        names = []
+        # Connect segment control buttons to their handlers
+        self.disable_btn.clicked.connect(self.disable_enable_selected)
+        self.clear_btn.clicked.connect(self.clear_selected_segments)
 
-        # Loop through all segment widgets
-        for seg in self.segment_widgets:
-            try:
-                # Retrieve segment data and extract the segment name
-                data, _ = seg.get_data()
-                names.append(data.get("Segment Name", "Segment"))
-            except:
-                # Fallback if data retrieval fails
-                names.append("Segment")
+    # ====================================================
+    # Utilities
+    # ====================================================
+    def _notify(self, text):
+        """Briefly display a message in the segment notice label"""
+        self.segment_notice.setText(text)
+        self.segment_notice.setVisible(True)
+        QTimer.singleShot(2000, lambda: self.segment_notice.setVisible(False))
 
-        # Update the mission profile diagram with new phase names
-        self.profile_widget.set_phases(names)
+    def _checked_indices(self):
+        """Return a list of indices of checked (selected) segments in the tree."""
+        return [
+            i for i in range(self.tree.topLevelItemCount())
+            if self.tree.topLevelItem(i).checkState(0) == Qt.CheckState.Checked
+        ]
 
-        # Refresh the mission summary table to stay in sync
-        self.summary_table.update_table()
-
-    # ============================================================
-    # Save Mission Data
-    # ============================================================
-    def save_all_data(self):
-        # Clear existing tree entries
-        self.tree.clear()
-
-        # Reset stored mission data
-        values.mission_data = []
-
-        # Create a new RCAIDE sequential mission container
-        values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
-        values.rcaide_mission.tag = self.mission_name_input.text()
-
-        # Loop through all segment widgets and extract their data
-        for idx, seg in enumerate(self.segment_widgets, start=1):
-            data, rseg = seg.get_data()
-
-            # --- Control points ---
-            # Parse control points from UI, fallback to 2 if invalid
-            try:
-                cp = int(seg.ctrl_points.text())
-            except:
-                cp = 2
-            data["Control Points"] = cp
-            rseg.control_points = cp
-
-            # --- Solver selection ---
-            # Root solver if checked, otherwise optimize
-            data["Solver"] = "root" if seg.solver_root.isChecked() else "optimize"
-
-            # Store mission data and append RCAIDE segment
-            values.mission_data.append(data)
-            values.rcaide_mission.append_segment(rseg)
-
-            # Update tree view with segment name
-            seg_name = data.get("Segment Name", f"Segment {idx}")
-            self.tree.addTopLevelItem(QTreeWidgetItem([seg_name.title()]))
-
-        # Refresh mission profile and summary table
-        self._update_profile()
-        self.summary_table.update_table()
-
-    # ============================================================
-    # Load Mission Data
-    # ============================================================
-    def load_from_values(self):
-        # Clear tree view
-        self.tree.clear()
-
-        # --- Clear existing segment detail UI ---
-        for i in reversed(range(self.details_layout.count())):
-            w = self.details_layout.itemAt(i).widget()
-            if w:
-                w.deleteLater()
-
-        # Reset internal segment storage
-        self.segment_widgets = []
-
-        # Recreate RCAIDE mission container
-        values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
-        values.rcaide_mission.tag = self.mission_name_input.text()
-
-        # Rebuild UI and mission from stored values
-        for seg_data in values.mission_data:
-            seg = MissionSegmentWidget()
-            seg.load_data(seg_data)
-
-            # Attempt to retrieve segment layout
-            seg_layout = getattr(seg, "main_layout", None) or getattr(
-                seg, "layout", lambda: None
-            )()
-
-            # Compact layout styling
-            try:
-                seg_layout.setSpacing(2)
-                seg_layout.setContentsMargins(4, 0, 4, 0)
-            except:
-                pass
-
-            # ============================================================
-            # Panel Wrapper (Segment)
-            # ============================================================
-            # Use saved segment name as panel title
-            title = seg_data.get("Segment Name", "Segment").title()
-
-            panel = CollapsiblePanel(title, seg)
-            panel.setObjectName("segmentPanel")
-            panel.setStyleSheet("""
-                #segmentPanel {
-                    background:#0d1522;
-                    border:1px solid #2d3a4e;
-                    border-radius:6px;
-                    padding:6px;
-                    margin:4px 0;
-                }
-            """)
-
-            # Track segment and add to UI
-            self.segment_widgets.append(seg)
-            self.details_layout.addWidget(panel)
-
-            # --- RCAIDE segment reconstruction ---
-            rseg = seg.create_rcaide_segment()
-            rseg.control_points = seg_data.get("Control Points", 2)
-            values.rcaide_mission.append_segment(rseg)
-
-            # Update tree view
-            self.tree.addTopLevelItem(QTreeWidgetItem([title]))
-
-            # Divider between panels
-            line = QFrame()
-            line.setFrameShape(QFrame.Shape.HLine)
-            line.setStyleSheet("color:#2b3648; margin:2px 0;")
-            self.details_layout.addWidget(line)
-
-        # Refresh profile and summary table
-        self._update_profile()
-        self.summary_table.update_table()
-
-    # ============================================================
-    # Add Segment
-    # ============================================================
-    def add_segment(self):
-        # Create a new mission segment widget
-        seg = MissionSegmentWidget()
-
-        # Retrieve the segment's main layout
-        seg_layout = getattr(seg, "segment_layout", None)
-        if seg_layout is None:
-            seg_layout = seg.layout()
-
-        # Clean and compact UI layout
-        try:
-            seg_layout.setSpacing(3)
-            seg_layout.setContentsMargins(4, 2, 4, 2)
-        except:
-            pass
-
-        # Create collapsible panel for the segment
-        title = seg.segment_name_input.text() or f"Segment {len(self.segment_widgets)+1}"
-        panel = CollapsiblePanel(title, seg)
-        panel.setObjectName("segmentPanel")
-        panel.setStyleSheet("""
-            #segmentPanel {
-                background:#141b29;
+    def _panel_style(self, disabled):
+        """Return stylesheet string for a segment panel; visually indicates disabled state."""
+        return f"""
+            #segmentPanel {{
+                background:{'#1a1f2a' if disabled else '#141b29'};
                 border:1px solid #2d3a4e;
                 border-radius:6px;
                 padding:6px;
                 margin:4px 0;
-            }
-        """)
+                opacity:{'0.45' if disabled else '1.0'};
+            }}
+        """
+    # ====================================================
+    # Disable / Enable
+    # ====================================================
+    def disable_enable_selected(self):
+        """Toggle enabled/disabled state for all checked segments."""
+        indices = self._checked_indices()
+        # If user selects nothing, show a warning and return
+        if not indices:
+            self._notify("⚠ No segments selected")
+            return
 
-        # Add panel to UI and track segment
+        messages = []
+
+        for idx in indices:
+            seg = self.segment_widgets[idx]
+            item = self.tree.topLevelItem(idx)
+            name = item.text(0)
+            # Each segment has a corresponding panel + separator line; panel is at idx*2
+            panel = self.details_layout.itemAt(idx * 2).widget()
+
+            if idx in self.disabled_segments:
+                # Enable
+                seg.setDisabled(False)
+                self.disabled_segments.remove(idx)
+                panel.setStyleSheet(self._panel_style(False))
+                messages.append(f"✅ '{name}' enabled")
+            else:
+                # Disable
+                seg.setDisabled(True)
+                self.disabled_segments.add(idx)
+                panel.setStyleSheet(self._panel_style(True))
+                messages.append(f"⛔ '{name}' disabled")
+
+        # Show last action message (enable/disable)
+        self._notify(messages[-1])
+
+    # ===============================
+    # Clear Selected Segments
+    # ===============================
+    def clear_selected_segments(self):
+        """Remove checked segments from UI and internal lists."""
+        # Remove from highest index to avoid reindex issues
+        indices = sorted(self._checked_indices(), reverse=True)
+        if not indices:
+            self._notify("⚠ No segments selected")
+            return
+
+        messages = []
+
+        for idx in indices:
+            item = self.tree.topLevelItem(idx)
+            name = item.text(0)
+
+            # Remove from tree and internal segment list
+            self.tree.takeTopLevelItem(idx)
+            self.segment_widgets.pop(idx)
+            self.disabled_segments.discard(idx)
+
+            # Each segment consists of a panel and a horizontal line => remove both
+            for _ in range(2):
+                it = self.details_layout.takeAt(idx * 2)
+                if it and it.widget():
+                    it.widget().deleteLater()
+
+            messages.append(f"🗑 '{name}' cleared")
+
+        # Show last cleared segment
+        self._notify(messages[-1])
+
+    # ====================================================
+    # Add Segment
+    # ====================================================
+    def add_segment(self):
+        """Create a new MissionSegmentWidget and add it to the UI and internal state."""
+        seg = MissionSegmentWidget()
         self.segment_widgets.append(seg)
+
+        # If user provided a mission name in the input, use it; otherwise fall back
+        name = self.mission_name_input.text().strip()
+        if not name:
+            name = f"Segment {len(self.segment_widgets)}"
+
+        # Wrap the segment in a collapsible panel and add to details layout
+        panel = CollapsiblePanel(name.title(), seg)
+        panel.setObjectName("segmentPanel")
+        panel.setStyleSheet(self._panel_style(False))
         self.details_layout.addWidget(panel)
 
-        # Divider between segments
+        # Add a visually separating horizontal line
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
         line.setStyleSheet("color:#2b3648; margin:2px 0;")
         self.details_layout.addWidget(line)
 
-        # Update tree, mission profile, and summary table
-        self.tree.addTopLevelItem(QTreeWidgetItem([title]))
-        self._update_profile()
-        self.summary_table.update_table()
+        # Add the segment to the list tree (with an unchecked checkbox)
+        item = QTreeWidgetItem([name.title()])
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        item.setCheckState(0, Qt.CheckState.Unchecked)
+        self.tree.addTopLevelItem(item)
+
+        # Clear the input and notify the user
+        self.mission_name_input.clear()
+        self._notify(f"✓ Added '{name.title()}'")
+
+    # ====================================================
+    # Save Mission
+    # ====================================================
+    def save_all_data(self):
+        """Saves all segment data into the global `values` module and build
+        an RCAIDE mission object for use by the analysis backend.
+        """
+        # Reset stored mission data (overwrites previous)
+        values.mission_data = []
+        values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        values.rcaide_mission.tag = self.mission_name_input.text()
+
+        # Collect data from each enabled segment and append to values
+        for idx, seg in enumerate(self.segment_widgets):
+            if idx in self.disabled_segments:
+                continue
+
+            data, rseg = seg.get_data()
+            data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
+            values.mission_data.append(data)
+            values.rcaide_mission.append_segment(rseg)
+
+        # Notify user of successful save
+        self._notify("💾 Mission data saved")
+
+    # ====================================================
+    # Load Mission
+    # ====================================================
+    def load_from_values(self):
+        """Populate the UI from `values.mission_data` previously saved."""
+        # Reset UI and internal lists
+        self.tree.clear()
+        self.segment_widgets = []
+        self.disabled_segments.clear()
+
+        # Clear existing widgets in the details layout
+        for i in reversed(range(self.details_layout.count())):
+            w = self.details_layout.itemAt(i).widget()
+            if w:
+                w.deleteLater()
+
+        # Recreate segments from saved data
+        for seg_data in values.mission_data:
+            seg = MissionSegmentWidget()
+            seg.load_data(seg_data)
+            self.segment_widgets.append(seg)
+
+            name = seg_data.get("Segment Name", "Segment")
+            panel = CollapsiblePanel(name.title(), seg)
+            panel.setObjectName("segmentPanel")
+            panel.setStyleSheet(self._panel_style(False))
+            self.details_layout.addWidget(panel)
+
+            line = QFrame()
+            line.setFrameShape(QFrame.Shape.HLine)
+            line.setStyleSheet("color:#2b3648; margin:2px 0;")
+            self.details_layout.addWidget(line)
+
+            item = QTreeWidgetItem([name.title()])
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(0, Qt.CheckState.Unchecked)
+            self.tree.addTopLevelItem(item)
 
 def get_widget(shared_analysis_widget=None) -> QWidget:
-    # Factory function for MissionWidget
+    """Factory helper used to create a MissionWidget instance for the tab system."""
     return MissionWidget(shared_analysis_widget)
