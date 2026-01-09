@@ -1,6 +1,6 @@
 # RCAIDE_GUI/tabs/solve/solve.py
 # 
-# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
+# Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainabiltiy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -163,8 +163,6 @@ class SolveWidget(TabWidget):
         results = mission.evaluate()
         print("Completed Mission Simulation")
         
-        
-        
         # WE NEED TO MAKE THESE OPTIONS  
         plot_parameters                  = Data()      
         plot_parameters.line_width       = 5 
@@ -187,7 +185,6 @@ class SolveWidget(TabWidget):
         plot_aircraft_velocities_flag = True 
         if plot_aircraft_velocities_flag == True:
             plot_aircraft_velocities(self, results, plot_parameters)
-         
 
     plot_options = {
         "Aerodynamics": [
@@ -218,9 +215,9 @@ class SolveWidget(TabWidget):
         ],
     }
     
-# ------------------------------------
+# ---------------------------------------
 # SolveWidget Theming and Layout Polish
-# ------------------------------------
+# ---------------------------------------
 # --- Apply dark theme to SolveWidget ---
 def _apply_solve_theme(self):
     self.setStyleSheet("""
@@ -627,6 +624,50 @@ def save_current_plot(self):
     # Save the captured image to disk
     pixmap.save(file_path, "PNG")
 
+# --------------------------------------------------------------------------------------------------
+#  Plot Visibility Toggle (Tree)
+# --------------------------------------------------------------------------------------------------
+def toggle_plot_visibility(self, item, column):
+
+    # Ignore category items; only act on leaf (actual plot) items
+    if item.childCount() > 0:
+        return
+
+    # Determine whether the plot should be visible based on the checkbox
+    visible = item.checkState(1) == Qt.CheckState.Checked
+
+    # Convert the tree item text into a key used to match plot widget names
+    plot_key = item.text(0).lower().replace(" ", "_")
+
+    # Toggle visibility for matching PlotWidget instances
+    for name in dir(self):
+        widget = getattr(self, name)
+        if isinstance(widget, pg.PlotWidget) and plot_key in name.lower():
+            widget.setVisible(visible)
+
+def init_plot_options_panel(self):
+    # Create the container widget for plot options
+    panel = QWidget()
+
+    # Vertical layout for the panel
+    layout = QVBoxLayout(panel)
+    layout.setContentsMargins(8, 8, 8, 8)
+    layout.setSpacing(8)
+
+    # Panel title
+    title = QLabel("Plot Options")
+    title.setStyleSheet("font-weight: bold; color: white;")
+    layout.addWidget(title)
+
+    # Add the plot visibility tree if it exists
+    if hasattr(self, "tree"):
+        layout.addWidget(self.tree)
+
+    # Push content to the top
+    layout.addStretch()
+
+    return panel
+
 #------------------------------------------------
 # Patch SolveWidget to integrate new features 
 #------------------------------------------------
@@ -653,8 +694,27 @@ if not getattr(SolveWidget, "_LEADS_PATCHED", False):
         if layout is not None:
             layout.addWidget(self.settings_panel)
 
+            # Reorder columns so: [settings_panel | plots | plot_options(tree)]
+            if layout.count() >= 3:
+                left_item   = layout.takeAt(0)  # tree
+                center_item = layout.takeAt(0)  # graphs
+                right_item  = layout.takeAt(0)  # settings
+
+                layout.addItem(right_item)      # settings on left
+                layout.addItem(center_item)     # graphs in middle
+                layout.addItem(left_item)       # plot options tree on right
+
+                # Middle expands; sides stay compact
+                layout.setStretch(0, 1)
+                layout.setStretch(1, 4)
+                layout.setStretch(2, 2)
+
         # Build the settings UI into the panel
         init_plot_settings_panel(self)
+
+        # Wire the tree checkbox to visibility toggles
+        if hasattr(self, "tree"):
+            self.tree.itemChanged.connect(self.toggle_plot_visibility)
 
     # Replace SolveWidget.__init__ with the extended version
     SolveWidget.__init__ = _solvewidget_init
@@ -662,8 +722,10 @@ if not getattr(SolveWidget, "_LEADS_PATCHED", False):
     # Attach helper methods to SolveWidget 
     SolveWidget.apply_plot_settings      = apply_plot_settings
     SolveWidget.save_current_plot        = save_current_plot
+    SolveWidget.toggle_plot_visibility   = toggle_plot_visibility
     SolveWidget.select_line_color        = select_line_color
     SolveWidget.select_grid_color        = select_grid_color
+    SolveWidget.init_plot_options_panel  = init_plot_options_panel  # optional utility
 
 def get_widget() -> QWidget:
     # Factory used by the tab system to construct the SolveWidget
