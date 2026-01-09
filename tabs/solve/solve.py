@@ -316,6 +316,38 @@ def _polish_solve_layout(self):
         if right:
             right.setSpacing(12)
 
+# --------------------------------------------------------------------------------------------------
+# Graph Coloring and Styling
+# --------------------------------------------------------------------------------------------------
+def _apply_solve_graph_skin(self):
+    """
+    Apply a dark theme and styling to all pyqtgraph PlotWidgets within the SolveWidget.
+    This includes background color, grid lines, axis colors, and frame styling.
+    """
+
+    for attr_name in dir(self):
+        widget = getattr(self, attr_name)
+
+        # Only affect graph containers (not plot logic or data)
+        if not isinstance(widget, pg.PlotWidget):
+            continue
+
+        # Dark graph canvas
+        widget.setBackground("#0e141b")
+        plot_item = widget.getPlotItem()
+
+        # Subtle grid for readability
+        plot_item.showGrid(x=True, y=True, alpha=0.15)
+
+        # Axis line + label coloring
+        for axis_name in ("left", "bottom"):
+            axis = plot_item.getAxis(axis_name)
+            axis.setPen(pg.mkPen("#4da3ff"))
+            axis.setTextPen(pg.mkPen("#9fb8ff"))
+
+        # Frame around the graph viewport
+        plot_item.getViewBox().setBorder(pg.mkPen("#1f2a36"))
+
 # ==================================================================================================
 # Plot Settings (Appearance, Save, Visibility)
 # ==================================================================================================
@@ -607,6 +639,11 @@ if not getattr(SolveWidget, "_LEADS_PATCHED", False):
         # Run the original SolveWidget initialization
         _SOLVEWIDGET_BASE_INIT(self, *args, **kwargs)
 
+        # Apply Solve tab UI theme + spacing + plot skin
+        _apply_solve_theme(self)
+        _polish_solve_layout(self)
+        _apply_solve_graph_skin(self)
+
         # Create the plot settings panel (fixed width)
         self.settings_panel = QWidget()
         self.settings_panel.setFixedWidth(280)
@@ -616,7 +653,7 @@ if not getattr(SolveWidget, "_LEADS_PATCHED", False):
         if layout is not None:
             layout.addWidget(self.settings_panel)
 
-        # Build the settings UI into the panel 
+        # Build the settings UI into the panel
         init_plot_settings_panel(self)
 
     # Replace SolveWidget.__init__ with the extended version
