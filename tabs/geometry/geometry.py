@@ -17,9 +17,9 @@ class GeometryWidget(TabWidget):
 
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [VehicleFrame, BoomFrame, CargoBayFrame, FuselageFrame, LandingGearFrame,
-                                                  PowertrainFrame , WingsFrame]
+                                                  PowertrainFrame, NacelleFrame, WingsFrame]
         self.tabs = ["", "Booms", "Cargo Bays", "Fuselages",
-                     "Landing Gear" , "Powertrain",  "Wings"]
+                     "Landing Gear" , "Powertrain", "Nacelles", "Wings"]
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
                    "Add Landing Gear" , "Add Powertrain", "Add Wing"]
