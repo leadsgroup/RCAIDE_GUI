@@ -196,7 +196,8 @@ class NacelleFrame(GeometryFrame):
         
 
         self.nacelle_combo.addItems(["Select Nacelle Type","Generic Nacelle", "Body of Revolution", "Stack Nacelle"])
-        selected_nacelle_type = self.wing_type_combo.currentText()
+        selected_nacelle_type = self.nacelle_combo.currentText()
+        nacelle = RCAIDE.Library.Components.Nacelles.Nacelle() #set to default
         if selected_nacelle_type == "Generic Nacelle":  
             nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
         if selected_nacelle_type == "Body of Revolution":  
