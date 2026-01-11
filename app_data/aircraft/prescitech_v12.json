@@ -805,6 +805,120 @@
                             ],
                             "Propulsor Tag": "propulsor_1",
                             "Nacelle Tag": "main_fuselage"
+                        },
+                        {
+                            "Origin": [
+                                [
+                                    [
+                                        13.72,
+                                        -4.38,
+                                        -1.1
+                                    ]
+                                ],
+                                0
+                            ],
+                            "Engine Length": [
+                                2.71,
+                                0
+                            ],
+                            "Bypass Ratio": [
+                                5.4,
+                                0
+                            ],
+                            "Design Altitude": [
+                                35000.0,
+                                4
+                            ],
+                            "Design Mach Number": [
+                                0.78,
+                                0
+                            ],
+                            "Design Thrust": [
+                                35000.0,
+                                0
+                            ],
+                            "Fan Polytropic Efficiency": [
+                                0.93,
+                                0
+                            ],
+                            "Fan Pressure Ratio": [
+                                1.7,
+                                0
+                            ],
+                            "Inlet Nozzle Polytropic Efficiency": [
+                                0.98,
+                                0
+                            ],
+                            "Inlet Nozzle Pressure Ratio": [
+                                0.98,
+                                0
+                            ],
+                            "LPC Polytropic Efficiency": [
+                                0.91,
+                                0
+                            ],
+                            "LPC Pressure Ratio": [
+                                1.9,
+                                0
+                            ],
+                            "HPC Polytropic Efficiency": [
+                                0.91,
+                                0
+                            ],
+                            "HPC Pressure Ratio": [
+                                10.0,
+                                0
+                            ],
+                            "LPT Mechanical Efficiency": [
+                                0.99,
+                                0
+                            ],
+                            "LPT Polytropic Efficiency": [
+                                0.93,
+                                0
+                            ],
+                            "HPT Mechanical Efficiency": [
+                                0.99,
+                                0
+                            ],
+                            "HPT Polytropic Efficiency": [
+                                0.93,
+                                0
+                            ],
+                            "Combustor Efficiency": [
+                                0.99,
+                                0
+                            ],
+                            "Combustor Pressure Loss Coeff": [
+                                1.0,
+                                0
+                            ],
+                            "Combustor Turbine Inlet Temp": [
+                                1600,
+                                0
+                            ],
+                            "Combustor Pressure Ratio": [
+                                0.95,
+                                0
+                            ],
+                            "Core Nozzle Polytropic Efficiency": [
+                                0.95,
+                                0
+                            ],
+                            "Core Nozzle Pressure Ratio": [
+                                0.99,
+                                0
+                            ],
+                            "Fan Nozzle Polytropic Efficiency": [
+                                0.95,
+                                0
+                            ],
+                            "Fan Nozzle Pressure Ratio": [
+                                0.99,
+                                0
+                            ],
+                            "Propulsor Tag": "propulsor_2",
+                            "Nacelle Tag": "main_fuselage"
                         }
                     ],
                     "converter data": [
@@ -849,6 +963,40 @@
                 ],
                 "sections": [],
                 "name": "nacelle_1"
+            },
+            {
+                "Length": [
+                    2.71,
+                    0
+                ],
+                "Inlet Diameter": [
+                    2.0,
+                    0
+                ],
+                "Diameter": [
+                    1.6,
+                    0
+                ],
+                "Origin": [
+                    [
+                        [
+                            13.5,
+                            -4.38,
+                            -1.5
+                        ]
+                    ],
+                    0
+                ],
+                "Wetted Area": [
+                    14.98414032,
+                    0
+                ],
+                "Flow Through": [
+                    false,
+                    0
+                ],
+                "sections": [],
+                "name": "nacelle_2"
             }
         ],
         [
