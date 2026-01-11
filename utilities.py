@@ -76,8 +76,9 @@ class Units:
         MILLIMETER = ("mm", lambda x: x * 0.001)
         INCH = ("in", lambda x: x * 0.0254)
         FOOT = ("ft", lambda x: x * 0.3048)
+        NAUTICAL_MILE = ("nmi", lambda x: x * 1852)
 
-        unit_list = [METER, CENTIMETER, MILLIMETER, INCH, FOOT]
+        unit_list = [METER, CENTIMETER, MILLIMETER, INCH, FOOT, NAUTICAL_MILE]
 
     class Area:
         SQUARE_METER = ("m²", lambda x: x)

@@ -18,8 +18,8 @@ class GeometryWidget(TabWidget):
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [VehicleFrame, BoomFrame, CargoBayFrame, FuselageFrame, LandingGearFrame,
                                                   PowertrainFrame , WingsFrame]
-        self.tabs = ["", "Booms", "Cargo Bars", "Fuselages",
-                     "Landing Gear" , "Wings",  "Powertrain"]
+        self.tabs = ["", "Booms", "Cargo Bays", "Fuselages",
+                     "Landing Gear" , "Powertrain",  "Wings"]
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
                    "Add Landing Gear" , "Add Powertrain", "Add Wing"]
@@ -111,6 +111,7 @@ class GeometryWidget(TabWidget):
 
         if depth == 0:
             self.main_layout.setCurrentIndex(0)
+            self.main_layout.currentWidget().update_layout()
             return
         if depth == 1:
             top_item = item.parent()
@@ -160,15 +161,23 @@ class GeometryWidget(TabWidget):
                 set_data(values.vehicle, rcaide_label, data[user_label][0])
         else:
             top_item = self.tree.topLevelItem(0)
-            if tree_index == -1:
-                tree_index = self.find_tree_index(tab_index)
-
             assert top_item is not None
-
-            if not values.geometry_data[tab_index] or top_item.childCount() < tab_index:
-                component_item = QTreeWidgetItem([self.tabs[tab_index]])
+            category_name = self.tabs[tab_index]
+            component_item = None
+            for i in range(top_item.childCount()):
+                child = top_item.child(i)
+                if child.text(0) == category_name:
+                    component_item = child #checking if the field like 'wings' or 'fuselages' already exists
+                    break
+            if component_item is None: #if the field doesnt exist, create it
+                component_item = QTreeWidgetItem([category_name])
                 component_item.setExpanded(True)
-                top_item.insertChild(tree_index, component_item)
+                insert_index = 0
+                for i in range(1, tab_index):
+                    if values.geometry_data[i]:
+                        insert_index += 1
+                top_item.insertChild(insert_index, component_item)
+                    
             if new:
                 if index == -1:
                     values.geometry_data[tab_index].append(data)
@@ -179,18 +188,16 @@ class GeometryWidget(TabWidget):
                     frame.deleteLater()
 
                 child = QTreeWidgetItem([data["name"]])
-                item = top_item.child(tree_index)
-                assert item is not None
-                item.setExpanded(True)
-                item.addChild(child)
-                index = item.indexOfChild(child)
+                component_item.addChild(child)
+                child.setSelected(True)
+                index = component_item.indexOfChild(child)
             else:
                 values.geometry_data[tab_index][index] = data
-                child = top_item.child(tree_index)
-                assert child is not None
-                child = child.child(index)
-                assert child is not None
-                child.setText(0, data["name"])
+                if tree_index == -1:
+                    tree_index = index
+                child = component_item.child(tree_index)
+                if child:
+                    child.setText(0, data["name"])
 
         if vehicle_component:
             # Check if it is an energy network being added
@@ -213,6 +220,7 @@ class GeometryWidget(TabWidget):
                 if tab_index == 0:
                     self.save_data(tab_index=tab_index, data=data_list,
                                    index=0, new=True)
+                    self.main_layout.widget(0).update_layout()
                     continue
 
                 for index, data in enumerate(data_list):

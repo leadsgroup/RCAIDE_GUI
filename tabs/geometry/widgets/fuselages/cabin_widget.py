@@ -74,10 +74,12 @@ class CabinWidget(QWidget):
         delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         main_layout.addLayout(delete_button_layout)
 
+        self.setLayout(main_layout)
+
         if section_data:
             self.load_data_values(section_data)
 
-        self.setLayout(main_layout)
+        
 
     def add_cabin_class(self):
         widget = CabinClassWidget(self.classes_layout.count(), self.delete_cabin_class)

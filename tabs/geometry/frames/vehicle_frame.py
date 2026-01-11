@@ -9,7 +9,7 @@ import values
 
 class VehicleFrame(GeometryFrame):
     data_units_labels = [
-        ("General", Units.Heading),
+        # ("General", Units.Heading),
         ("Reference Area", Units.Area, "reference_area"),
         ("Passengers", Units.Count, "number_of_passengers"),
         ("Max Takeoff Weight", Units.Mass, "mass_properties.max_takeoff"),
@@ -22,7 +22,7 @@ class VehicleFrame(GeometryFrame):
         ("Payload Weight", Units.Mass, "mass_properties.payload"),
         ("Maximum Landing Weight", Units.Mass, "mass_properties.max_landing"),
         ("Landing Weight", Units.Mass, "mass_properties.landing"),
-        ("Flight Envelope", Units.Heading),
+        # ("Flight Envelope", Units.Heading),
         ("Cargo Weight", Units.Mass, "mass_properties.cargo"),
         ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),
         ("Moment of Intertia", Units.Intertia,
@@ -32,7 +32,7 @@ class VehicleFrame(GeometryFrame):
          "flight_envelope.positive_limit_load"),
         ("Negative Limit Load", Units.Unitless,
          "flight_envelope.negative_limit_load"),
-        ("Systems", Units.Heading),
+        # ("Systems", Units.Heading),
         ("Design Cruise Altitude", Units.Length,
          "flight_envelope.design_cruise_altitude"),
         ("Design Range", Units.Length, "flight_envelope.design_range"),
@@ -50,12 +50,19 @@ class VehicleFrame(GeometryFrame):
         self.main_layout = QVBoxLayout()
         create_scroll_area(self)
 
+        self.name_line_edit = QLineEdit()
+
         self.main_layout.addWidget(QLabel("<b>Vehicle</b>"))
         self.main_layout.addWidget(create_line_bar())
 
-        self.general_data_entry_widget = DataEntryWidget(
+        name_layout = QHBoxLayout()
+        name_layout.addWidget(QLabel("Name:"))
+        name_layout.addWidget(self.name_line_edit)
+        self.main_layout.addLayout(name_layout)
+
+        self.data_entry_widget = DataEntryWidget(
             self.data_units_labels)
-        self.main_layout.addWidget(self.general_data_entry_widget)
+        self.main_layout.addWidget(self.data_entry_widget)
 
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_data)
@@ -88,9 +95,10 @@ class VehicleFrame(GeometryFrame):
             self.data_entry_widget, DataEntryWidget)
 
         if values.geometry_data[0]:
-            self.data_entry_widget.load_data(values.geometry_data[0])
+            self.load_data(values.geometry_data[0], 0)
 
     def save_data(self):
         assert self.save_function is not None
         self.save_function(self.tab_index, vehicle_component=None,
                            index=-1, data=self.get_data_values())
+        print(values.vehicle)

@@ -87,7 +87,7 @@ class PowertrainConnectorWidget(QWidget):
 
         current_names = [distributor_names, propulsor_names, converter_names, source_names]
         if self.names != current_names:
-            return None
+            self.update_selector(data)
 
         connections = []
         for tab in self.selector_layouts:

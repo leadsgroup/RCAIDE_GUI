@@ -13,8 +13,8 @@ from utilities import Units
 from widgets import DataEntryWidget
 
 # PyQT imports  
-from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame
-
+from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame, QComboBox
+from PyQt6.QtCore import Qt
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fuselage Section Widget 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -43,16 +43,15 @@ class FuselageSectionWidget(QWidget):
         self.name_layout.addItem(spacer_right)
 
         ## Energy Network
-        #energy_label = QLabel("Segment Type:")
-        #energy_label.setFixedWidth(100)  # Adjust width of label
-        #name_layout.addWidget(energy_label) 
-        #self.fuselage_segment_combo = QComboBox()
-        #self.fuselage_segment_combo.addItems(["Circle Segment", "Ellipse Segment", "Rounded Rectangle Segment", "Super Ellipse Segment" , "Segment"])
-        #self.fuselage_segment_combo.setFixedWidth(400)  # Fix width of combo box
-        #name_layout.addWidget(self.fuselage_segment_combo,  alignment=Qt.AlignmentFlag.AlignLeft)
-
+        segment_label = QLabel("Segment Type:")
+        segment_label.setFixedWidth(100)  # Adjust width of label
+        self.name_layout.addWidget(segment_label) 
+        self.fuselage_segment_combo = QComboBox()
+        self.fuselage_segment_combo.addItems(["Circle Segment", "Ellipse Segment", "Rounded Rectangle Segment", "Super Ellipse Segment" , "Segment"])
+        self.fuselage_segment_combo.setFixedWidth(400)  # Fix width of combo box
+        self.name_layout.addWidget(self.fuselage_segment_combo,  alignment=Qt.AlignmentFlag.AlignLeft)
         # Connect signal
-        self.fuselage_segment_combo.currentIndexChanged.connect(self.display_selected_segment)
+        # self.fuselage_segment_combo.currentIndexChanged.connect(self.display_selected_segment)
         
 
         main_layout.addLayout(self.name_layout)
@@ -86,14 +85,17 @@ class FuselageSectionWidget(QWidget):
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         main_layout.addWidget(line_bar)
 
+        self.setLayout(main_layout)
+
         if section_data:
             self.load_data_values(section_data)
 
-        self.setLayout(main_layout)
+        
 
     def create_rcaide_structure(self, data): 
 
         selected_segment = self.fuselage_segment_combo.currentText()
+        segment = None
 
         #if selected_segment == "Ellipse Segment":
             #item = self.powertrain_layout.itemAt(0)
@@ -109,28 +111,29 @@ class FuselageSectionWidget(QWidget):
             segment.height             = data["Height"][0]
             segment.width              = data["Width"][0]
             segment.tag                = data["Segment Name"]
-        if selected_segment == "Ellipse Segment":
+        elif selected_segment == "Ellipse Segment":
             segment = RCAIDE.Library.Components.Fuselages.Segments.Ellipse_Segment()
             segment.percent_x_location = data["Percent X Location"][0]
             segment.percent_z_location = data["Percent Z Location"][0]
             segment.height             = data["Height"][0]
             segment.width              = data["Width"][0]
             segment.tag                = data["Segment Name"]
-        if selected_segment == "Rounded Rectangle Segment":
+        elif selected_segment == "Rounded Rectangle Segment":
             segment = RCAIDE.Library.Components.Fuselages.Segments.Rounded_Rectangle_Segment()
             segment.percent_x_location = data["Percent X Location"][0]
             segment.percent_z_location = data["Percent Z Location"][0]
             segment.height             = data["Height"][0]
             segment.width              = data["Width"][0]
             segment.tag                = data["Segment Name"]
-        if selected_segment == "Super Ellipse Segment":
+        elif selected_segment == "Super Ellipse Segment":
             segment = RCAIDE.Library.Components.Fuselages.Segments.Super_Ellipse_Segment()
             segment.percent_x_location = data["Percent X Location"][0]
             segment.percent_z_location = data["Percent Z Location"][0]
             segment.height             = data["Height"][0]
             segment.width              = data["Width"][0]
             segment.tag                = data["Segment Name"]
-        if selected_segment == "Segment":
+        elif selected_segment == "Segment":
+            segment = RCAIDE.Library.Components.Fuselages.Segments.Segment()
             segment.percent_x_location = data["Percent X Location"][0]
             segment.percent_z_location = data["Percent Z Location"][0]
             segment.height             = data["Height"][0]
@@ -147,13 +150,20 @@ class FuselageSectionWidget(QWidget):
         data_si = self.data_entry_widget.get_values_si()
         data["Segment Name"] = self.name_layout.itemAt(2).widget().text()
         data_si["Segment Name"] = self.name_layout.itemAt(2).widget().text()
-
+        selected_type = self.fuselage_segment_combo.currentText()
+        data["segment_type"] = selected_type
+        data_si["segment_type"] = selected_type
         segment = self.create_rcaide_structure(data_si)
         return data, segment
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["Segment Name"])
+
+        if "segment_type" in section_data:
+            index = self.fuselage_segment_combo.findText(section_data["segment_type"])
+            if index>=0:
+                self.fuselage_segment_combo.setCurrentIndex(index)
 
     def delete_button_pressed(self): 
         if self.on_delete is None:

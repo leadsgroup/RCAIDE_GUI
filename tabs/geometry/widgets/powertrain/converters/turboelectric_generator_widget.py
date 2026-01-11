@@ -33,7 +33,7 @@ class TurboelectricGeneratorWidget(GeometryDataWidget):
         self.setLayout(layout)
 
         if data_values:
-            self.load_data_values(data_values, index)
+            self.load_data_values(data_values)
 
     def get_data_values(self):
         title = self.section_name_edit.text()

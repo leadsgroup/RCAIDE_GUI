@@ -177,7 +177,7 @@ class PowertrainWidget(QWidget):
         distributor_data = data["distributor data"]
         self.distributor_frame.load_data(distributor_data)
 
-        source_data = data["fuel tank data"]
+        source_data = data["source data"]
         self.energy_source_frame.load_data(source_data)
 
         propulsor_data = data["propulsor data"]

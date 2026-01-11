@@ -36,7 +36,7 @@ data_units_labels = [
     ]
 ]
 
-cs_types = ["Aileron", "Slat", "Flap", "Elevator", "Rudder"]
+cs_types = ["Aileron", "Slat", "Flap", "Elevator", "Rudder", "Spoiler"]
 
 
 class WingCSWidget(QWidget):

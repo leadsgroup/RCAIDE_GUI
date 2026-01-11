@@ -248,7 +248,7 @@ class PowertrainFrame(GeometryFrame):
         clear_layout(self.powertrain_layout)
 
         # Load sections based on the selected network
-        if selected_network == "Turbofan":
+        if selected_network == "Fuel":
             turbofan_widget = PowertrainWidget()
             turbofan_widget.load_data_values(data["powertrain"])
             self.powertrain_layout.addWidget(turbofan_widget)

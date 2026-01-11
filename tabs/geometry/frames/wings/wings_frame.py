@@ -320,8 +320,11 @@ class WingsFrame(GeometryFrame):
             wing = RCAIDE.Library.Components.Wings.Vertical_Tail_All_Moving()
         elif selected_wing_type == "Wing": 
             wing = RCAIDE.Library.Components.Wings.Wing() 
+        else:
+            wing = RCAIDE.Library.Components.Wings.Main_Wing()
 
         # assign wing name 
+
         wing.tag = data["name"]
         
         # assign wing properties 
@@ -359,6 +362,7 @@ class WingsFrame(GeometryFrame):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
+        data["wing_type"] = self.wing_type_combo.currentText()
         wing = self.create_rcaide_structure()
 
         data["sections"] = []
@@ -413,6 +417,11 @@ class WingsFrame(GeometryFrame):
         """
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
+        
+        if "wing_type" in data:
+            self.wing_type_combo.setCurrentText(data["wing_type"])
+        else:
+            self.wing_type_combo.setCurrentIndex(0)
 
         clear_layout(self.wing_sections_layout)
         clear_layout(self.wing_cs_layout)
