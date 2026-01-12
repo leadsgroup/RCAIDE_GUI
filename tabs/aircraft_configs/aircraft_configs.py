@@ -95,9 +95,10 @@ class AircraftConfigsWidget(TabWidget):
                 self.control_surface_data.append(control_surface)
 
         for powertrain in self.data[5]:
-            for fuel_line in powertrain["powertrain"]:
-                for propulsor in fuel_line["propulsor data"]:
-                    propulsor["fuel line name"] = fuel_line["name"]
+            pt_data = powertrain.get("powertrain")
+            if pt_data and isinstance(pt_data, dict) and "propulsor data" in pt_data:
+                for propulsor in pt_data["propulsor data"]:
+                    propulsor["fuel line name"] = powertrain.get("name", "Powertrain")
                     self.propulsor_data.append(propulsor)
 
         cs_deflections_labels = []

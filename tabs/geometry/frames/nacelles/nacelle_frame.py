@@ -262,7 +262,6 @@ class NacelleFrame(GeometryFrame):
             index: The index of the data in the list.
         """
         self.data_entry_widget.load_data(data)
-        
         while self.nacelle_sections_layout.count():
             item = self.nacelle_sections_layout.takeAt(0)
             assert item is not None
