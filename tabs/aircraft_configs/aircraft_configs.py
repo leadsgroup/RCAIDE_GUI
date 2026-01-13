@@ -2,7 +2,6 @@
 #
 # Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainability
 
-
 import RCAIDE
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import (
@@ -38,6 +37,7 @@ class AircraftConfigsWidget(TabWidget):
 
         self.root_item = QTreeWidgetItem(["Aircraft Configurations"])
         self.tree.addTopLevelItem(self.root_item)
+        self.tree.itemClicked.connect(self.on_tree_item_clicked)
 
         tree_layout.addWidget(self.tree)
 
@@ -65,9 +65,11 @@ class AircraftConfigsWidget(TabWidget):
 
         # Save / New buttons
         save_btn = QPushButton("Save Configuration")
+        save_btn.clicked.connect(self.save_data)
         self.main_layout.addWidget(save_btn)
 
         new_btn = QPushButton("New Configuration")
+        new_btn.clicked.connect(self.new_configuration)
         self.main_layout.addWidget(new_btn)
 
         # Put everything together
@@ -221,6 +223,47 @@ class AircraftConfigsWidget(TabWidget):
         )
 
         self.tree.expandAll()
+
+    def on_tree_item_clicked(self, item, _):
+        # Update selected config when clicking the tree
+        idx = self.root_item.indexOfChild(item)
+        if idx >= 0:
+            self.index = idx
+            self.name_line_edit.setText(
+                values.config_data[idx].get("config name", "")
+            )
+
+    def new_configuration(self):
+        # Add a new empty config
+        values.config_data.append({
+            "config name": "new_config",
+            "cs deflections": {},
+            "propulsors": {},
+            "gear down": False
+        })
+        self.index = len(values.config_data) - 1
+        self.update_layout()
+
+    def save_data(self):
+        # Save UI values back into the selected config
+        if self.index not in self._cfg_widgets:
+            return
+
+        w = self._cfg_widgets[self.index]
+        cfg = values.config_data[self.index]
+        
+        # Update name
+        cfg["config name"] = self.name_line_edit.text().strip() or cfg["config name"]
+
+        # Merge values so we don’t lose existing data
+        if w["cs"]:
+            cfg["cs deflections"].update(w["cs"].get_values())
+        if w["prop"]:
+            cfg["propulsors"].update(w["prop"].get_values())
+
+        # Save landing gear state
+        cfg["gear down"] = w["gear"].isChecked()
+        self.update_layout()
 
 def get_widget() -> QWidget:
     return AircraftConfigsWidget()
