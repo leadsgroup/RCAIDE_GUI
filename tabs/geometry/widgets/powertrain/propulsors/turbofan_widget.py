@@ -179,7 +179,13 @@ class TurbofanWidget(QWidget):
         turbofan.fan_nozzle                            = fan_nozzle
         
         if len(values.vehicle.nacelles):
-            turbofan.nacelle = values.vehicle.nacelles[self.nacelle_selector.currentText()]
+            selected_nacelle_name = self.nacelle_selector.currentText()
+            found_nacelle = None
+            for nacelle in values.vehicle.nacelles:
+                if nacelle.tag == selected_nacelle_name:
+                    found_nacelle = nacelle
+                    break
+            turbofan.nacelle = found_nacelle
 
         design_turbofan(turbofan)
         return turbofan

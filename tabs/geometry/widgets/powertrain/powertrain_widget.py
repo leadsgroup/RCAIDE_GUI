@@ -124,6 +124,7 @@ class PowertrainWidget(QWidget):
 
         propulsor_connections = connections[0]
         source_connections = connections[2]
+
         for i, distributor in enumerate(distributors):
             assigned_propulsors = [[]]
             for j, propulsor in enumerate(propulsors):
@@ -136,7 +137,7 @@ class PowertrainWidget(QWidget):
 
             distributor.assigned_propulsors = assigned_propulsors
             net.fuel_lines.append(distributor)
-            source_names = [x.tag for x in distributor.fuel_tanks]
+            # source_names = [x.tag for x in distributor.fuel_tanks]
 
         return net
 
@@ -168,6 +169,7 @@ class PowertrainWidget(QWidget):
             return data
 
         connections = self.powertrain_connection_selector.get_connections(data)
+        data["connections"] = connections
 
         net = self.create_rcaide_structure(
             (data, connections, distributors, sources, propulsors, converters))
@@ -185,6 +187,11 @@ class PowertrainWidget(QWidget):
 
         converter_data = data["converter data"]
         self.converter_frame.load_data(converter_data)
+
+        self.powertrain_connection_selector.update_selector(data)
+        if "connections" in data:
+            self.powertrain_connection_selector.load_connections(
+                data["connections"])
 
     def create_scroll_layout(self):
         # Create a widget to contain the layout

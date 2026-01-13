@@ -21,7 +21,7 @@ class PowertrainConnectorWidget(QWidget):
         pass
 
     def update_selector(self, data):
-        distributor_names = [x["name"] for x in data["distributor data"]]
+        distributor_names = [x["distributor name"] for x in data["distributor data"]]
         propulsor_names = [x["Propulsor Tag"] for x in data["propulsor data"]]
         converter_names = [x["Converter Name"] for x in data["converter data"]]
         source_names = [x["Source Name"] for x in data["source data"]]
@@ -80,7 +80,7 @@ class PowertrainConnectorWidget(QWidget):
         self.tab_widget.addTab(widget, "Sources")
     
     def get_connections(self, data):
-        distributor_names = [x["name"] for x in data["distributor data"]]
+        distributor_names = [x["distributor name"] for x in data["distributor data"]]
         propulsor_names = [x["Propulsor Tag"] for x in data["propulsor data"]]
         converter_names = [x["Converter Name"] for x in data["converter data"]]
         source_names = [x["Source Name"] for x in data["source data"]]
