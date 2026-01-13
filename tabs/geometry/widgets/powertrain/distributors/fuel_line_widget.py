@@ -37,8 +37,17 @@ class FuelLineWidget(GeometryDataWidget):
             self.load_data_values(data_values)
 
     def get_data_values(self):
-        data = {"name": self.section_name_edit.text()}
+        data = {"distributor name": self.section_name_edit.text()}
         return data, self.create_rcaide_structure(data)
+    
+    def load_data_values(self, data):
+        assert self.data_entry_widget is not None
+        self.data_entry_widget.load_data(data)
+        self.section_name_edit.setText(data["distributor name"])
+    
+    # def load_data_values(self, section_data):
+    #     self.data_entry_widget.load_data(section_data)
+    #     self.section_name_edit.setText(section_data["Source Name"])
 
     def create_rcaide_structure(self, data):
         line = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()

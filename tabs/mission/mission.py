@@ -1,13 +1,11 @@
-from PyQt6.QtCore import Qt, QTimer, QPointF
-from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QPainterPath
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QGroupBox, QLabel, QLineEdit,
-    QPushButton, QTreeWidget, QTreeWidgetItem, QScrollArea, QFrame,
-    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy, QComboBox, QCheckBox
+    QPushButton, QTreeWidget, QTreeWidgetItem, QScrollArea, QFrame
 )
 
 from tabs.mission.widgets import MissionSegmentWidget
-from tabs.mission.widgets import MissionAnalysisWidget as MissionAnalysisWidget
+from tabs.mission.widgets import MissionAnalysisWidget
 from tabs import TabWidget
 import values
 import RCAIDE
@@ -135,7 +133,7 @@ class MissionWidget(TabWidget):
 
         # Row: mission name input
         name_row = QHBoxLayout()
-        name_label = QLabel("Mission Name:")
+        name_label = QLabel("Segment Name:")
         name_label.setStyleSheet("color:#dbe7ff;")
         self.mission_name_input = QLineEdit()
         self.mission_name_input.setPlaceholderText("Enter mission name...")
@@ -352,6 +350,8 @@ class MissionWidget(TabWidget):
         values.mission_data = []
         values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
         values.rcaide_mission.tag = self.mission_name_input.text()
+        
+        self.analysis_widget.save_analyses()
 
         # Collect data from each enabled segment and append to values
         for idx, seg in enumerate(self.segment_widgets):
