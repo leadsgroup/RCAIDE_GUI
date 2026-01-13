@@ -194,16 +194,16 @@ class NacelleFrame(GeometryFrame):
         data = self.data_entry_widget.get_values_si()
         data["name"] = self.name_line_edit.text()
         
-
-        self.nacelle_combo.addItems(["Select Nacelle Type","Generic Nacelle", "Body of Revolution", "Stack Nacelle"])
-        selected_nacelle_type = self.nacelle_combo.currentText()
-        nacelle = RCAIDE.Library.Components.Nacelles.Nacelle() #set to default
-        if selected_nacelle_type == "Generic Nacelle":  
-            nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
-        if selected_nacelle_type == "Body of Revolution":  
-            nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()     
-        if selected_nacelle_type == "Stack Nacelle":  
-            nacelle = RCAIDE.Library.Components.Nacelles.Stack_Nacelle() 
+        # TODO: what is this line
+        # self.nacelle_combo.addItems(["Select Nacelle Type","Generic Nacelle", "Body of Revolution", "Stack Nacelle"])
+        # selected_nacelle_type = self.nacelle_combo.currentText()
+        # nacelle = RCAIDE.Library.Components.Nacelles.Nacelle() #set to default
+        # if selected_nacelle_type == "Generic Nacelle":  
+        #     nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
+        # if selected_nacelle_type == "Body of Revolution":  
+        nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()     
+        # if selected_nacelle_type == "Stack Nacelle":  
+        #     nacelle = RCAIDE.Library.Components.Nacelles.Stack_Nacelle() 
         
         # assign nacelle name 
         nacelle.tag = data["name"]
@@ -214,10 +214,9 @@ class NacelleFrame(GeometryFrame):
             rcaide_label = data_unit_label[-1]
             set_data(nacelle, rcaide_label, data[user_label][0])
         
-        if selected_nacelle_type == "Body of Revolution":          
-            nacelle_airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-            nacelle_airfoil.NACA_4_Series_code = '2410' # UPDATE
-            nacelle.append_airfoil(nacelle_airfoil)
+        nacelle_airfoil = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+        nacelle_airfoil.NACA_4_Series_code = '2410' # UPDATE
+        nacelle.append_airfoil(nacelle_airfoil)
 
         for i in range(self.nacelle_sections_layout.count()):
             item = self.nacelle_sections_layout.itemAt(i)
