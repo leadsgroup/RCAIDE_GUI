@@ -39,7 +39,9 @@ class FuselageSectionWidget(QWidget):
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
         self.name_layout.addWidget(QLabel("Segment Name: "))
-        self.name_layout.addWidget(QLineEdit(self))
+        self.segment_name_input = QLineEdit(self)
+        self.segment_name_input.setFixedWidth(200)
+        self.name_layout.addWidget(self.segment_name_input)
         self.name_layout.addItem(spacer_right)
 
         ## Energy Network

@@ -470,6 +470,17 @@ class VisualizeGeometryWidget(TabWidget):
         # Plot Nacelle, Rotors and Fuel Tanks 
         # ------------------------------------------------------------------------- 
         # print(geometry.networks)
+
+        #plotting top-level nacelles (not attached to propulsors)
+        for nacelle in geometry.nacelles:
+            if type(nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle: 
+                GEOM = generate_3d_stack_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            elif type(nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle: 
+                GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            else:
+                GEOM = generate_3d_basic_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            make_object(self.renderer, self.nacelle_actors, GEOM, nacelle_rgb_color, nacelle_opacity)
+        
         for network in geometry.networks:
             print(network.tag)     
             for propulsor in network.propulsors: 
