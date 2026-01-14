@@ -76,8 +76,6 @@ class CollapsiblePanel(QWidget):
 # ===================================
 #  Mission Widget (Main Tab)
 # ===================================
-
-
 class MissionWidget(TabWidget):
     """Main mission tab widget used in the application's tab view.
     Includes:
@@ -90,8 +88,13 @@ class MissionWidget(TabWidget):
     def __init__(self, shared_analysis_widget=None):
         super().__init__()
 
-        # Optional shared analysis widget (reused UI component)
-        self.analysis_widget = shared_analysis_widget or MissionAnalysisWidget()
+       # Use the provided analysis widget if it exists,
+       # otherwise create a new MissionAnalysisWidget
+        if isinstance(shared_analysis_widget, MissionAnalysisWidget):
+            self.analysis_widget = shared_analysis_widget
+        else:
+            self.analysis_widget = MissionAnalysisWidget()
+
         # List of MissionSegmentWidget instances currently in the mission
         self.segment_widgets = []
         # Indices of segments that have been disabled by the user
@@ -109,7 +112,11 @@ class MissionWidget(TabWidget):
 
         analyses_box = QGroupBox("Analyses Setup (RCAIDE)")
         analyses_v = QVBoxLayout(analyses_box)
-        analyses_v.addWidget(MissionAnalysisWidget())
+
+        # Add the shared analysis widget instance
+        # (Does notcreate a new MissionAnalysisWidget here)
+        analyses_v.addWidget(self.analysis_widget)
+
         left_v.addWidget(analyses_box)
 
         # --- Right column: mission configuration and segment details ---
