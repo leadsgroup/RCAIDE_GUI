@@ -47,8 +47,6 @@ class NacelleFrame(GeometryFrame):
             ("Origin", Units.Position, "origin"),
             ("Wetted Area", Units.Area, "areas.wetted"),
             ("Flow Through", Units.Boolean, "flow_through"),
-            # ("Airfoil Flag", Units.Boolean),
-            # ("Airfoil Coordinate File", Units.Unitless)
         ]
 
         # Add the data entry widget to the main layout
