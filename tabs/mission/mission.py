@@ -13,11 +13,14 @@ import RCAIDE
 # ============================================================
 #  Collapsible Panel wrapper
 # ============================================================
+
+
 class CollapsiblePanel(QWidget):
     """A small panel with a header button that toggles visibility of content.
     - title: display title for the header button
     - content_widget: the QWidget that will be shown/hidden when toggled
     """
+
     def __init__(self, title: str, content_widget: QWidget):
         super().__init__()
 
@@ -69,10 +72,12 @@ class CollapsiblePanel(QWidget):
         self.toggle_btn.setText(
             f"{'▼' if self.is_open else '►'}  {self.toggle_btn.text()[2:]}"
         )
-        
+
 # ===================================
 #  Mission Widget (Main Tab)
 # ===================================
+
+
 class MissionWidget(TabWidget):
     """Main mission tab widget used in the application's tab view.
     Includes:
@@ -81,6 +86,7 @@ class MissionWidget(TabWidget):
     - Saving/loading mission data to/from the global `values` object
     - Interacting with RCAIDE mission objects when saving
     """
+
     def __init__(self, shared_analysis_widget=None):
         super().__init__()
 
@@ -117,7 +123,7 @@ class MissionWidget(TabWidget):
         segments_box = QGroupBox("Mission Setup")
         segments_v = QVBoxLayout(segments_box)
 
-        # Small notice label 
+        # Small notice label
         self.segment_notice = QLabel("")
         self.segment_notice.setVisible(False)
         self.segment_notice.setStyleSheet("""
@@ -238,6 +244,7 @@ class MissionWidget(TabWidget):
     # ====================================================
     # Disable / Enable
     # ====================================================
+
     def disable_enable_selected(self):
         """Toggle enabled/disabled state for all checked segments."""
         indices = self._checked_indices()
@@ -348,9 +355,6 @@ class MissionWidget(TabWidget):
         """
         # Reset stored mission data (overwrites previous)
         values.mission_data = []
-        values.rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
-        values.rcaide_mission.tag = self.mission_name_input.text()
-        
         self.analysis_widget.save_analyses()
 
         # Collect data from each enabled segment and append to values
@@ -358,17 +362,30 @@ class MissionWidget(TabWidget):
             if idx in self.disabled_segments:
                 continue
 
-            data, rseg = seg.get_data()
-            data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
-            values.mission_data.append(data)
-            values.rcaide_mission.append_segment(rseg)
-
+            segment_data, _ = seg.get_data()
+            segment_data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
+            values.mission_data.append(segment_data)
+        
+        values.rcaide_mission = self.create_rcaide_mission()
         # Notify user of successful save
         self._notify("💾 Mission data saved")
+
+    def create_rcaide_mission(self):
+        rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
+        rcaide_mission.tag = self.mission_name_input.text()
+        for idx, seg in enumerate(self.segment_widgets):
+            if idx in self.disabled_segments:
+                continue
+
+            _, rcaide_segment = seg.get_data()
+            rcaide_mission.append_segment(rcaide_segment)
+        
+        return rcaide_mission
 
     # ====================================================
     # Load Mission
     # ====================================================
+
     def load_from_values(self):
         """Populate the UI from `values.mission_data` previously saved."""
         # Reset UI and internal lists
@@ -403,6 +420,9 @@ class MissionWidget(TabWidget):
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             item.setCheckState(0, Qt.CheckState.Unchecked)
             self.tree.addTopLevelItem(item)
+
+        values.rcaide_mission = self.create_rcaide_mission()
+
 
 def get_widget(shared_analysis_widget=None) -> QWidget:
     """Factory helper used to create a MissionWidget instance for the tab system."""
