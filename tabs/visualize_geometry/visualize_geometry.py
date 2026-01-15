@@ -1,5 +1,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Components.Airfoils import Airfoil
 from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
@@ -473,12 +474,12 @@ class VisualizeGeometryWidget(TabWidget):
 
         #plotting top-level nacelles (not attached to propulsors)
         for nacelle in geometry.nacelles:
-            if type(nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle: 
-                GEOM = generate_3d_stack_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-            elif type(nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle: 
-                GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-            else:
-                GEOM = generate_3d_basic_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            # if type(nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle:
+            #     GEOM = generate_3d_stack_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            # elif type(nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle:
+            GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            # else:
+            #     GEOM = generate_3d_basic_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
             make_object(self.renderer, self.nacelle_actors, GEOM, nacelle_rgb_color, nacelle_opacity)
         
         for network in geometry.networks:
@@ -601,6 +602,7 @@ class VisualizeGeometryWidget(TabWidget):
         custom_style = CustomInteractorStyle()
         self.render_window_interactor.SetInteractorStyle(custom_style)
 
+        # self.vtkWidget.show()
         # Start the VTK interactor
         self.render_window_interactor.Initialize()
         self.render_window_interactor.Start()
