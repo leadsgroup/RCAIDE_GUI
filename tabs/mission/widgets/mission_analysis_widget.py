@@ -105,58 +105,41 @@ class MissionAnalysisWidget(TabWidget):
         return top_level_item.checkState(1) == Qt.CheckState.Checked
 
     def save_analyses(self):
-
-        # --- Require aircraft configurations ---
-        # Analyses are built per aircraft config; without configs, RCAIDE will fail
-        if not values.rcaide_configs:
+        if not getattr(values, "config_data", None):
             raise RuntimeError(
-                "No aircraft configurations found. "
-                "Define an aircraft configuration before running a mission."
+                "No aircraft configuration data found. "
+                "Create a configuration in the Aircraft Configs tab."
             )
-
         values.analysis_data = []
         values.rcaide_analyses = {}
 
-        # --- Build analyses for each aircraft configuration ---
         for tag, config in values.rcaide_configs.items():
 
             analysis = RCAIDE.Framework.Analyses.Vehicle()
-
-            # Geometry must always be added to prevent RCAIDE geometry assertion errors
             geometry_added = False
 
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
 
-                # --- Geometry analysis (mandatory) ---
-                # Prevents "Geometry Analyses not defined" runtime errors
                 if widget.__class__.__name__ == "GeometryWidget":
-                    analysis.append(widget.create_analysis(config))
+                    geom = widget.create_analysis(config)
+                    geom.vehicle = config
+                    analysis.append(geom)
                     geometry_added = True
                     continue
 
-                # --- Optional analyses ---
                 if self.get_check_state(index):
                     analysis.append(widget.create_analysis(config))
 
-            # --- Safety check ---
-            # Hard stop instead of allowing a broken mission to run
             if not geometry_added:
                 raise RuntimeError(
                     "Geometry analysis was not added. "
                     "Mission cannot run without geometry."
                 )
 
-            # --- Energy analysis (always required) ---
-            # Required by RCAIDE mission solver
             energy = RCAIDE.Framework.Analyses.Energy.Energy()
             energy.vehicle = config
             analysis.append(energy)
 
             values.rcaide_analyses[tag] = analysis
-
-        # --- Persist UI state ---
-        for index, widget in enumerate(self.widgets):
-            data = widget.get_values()
-            data["enabled"] = self.get_check_state(index)
-            values.analysis_data.append(data)
+            values.analysis_data.append(analysis)

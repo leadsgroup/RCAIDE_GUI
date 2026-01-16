@@ -13,6 +13,9 @@ from tabs import TabWidget
 from utilities import Units
 from widgets import DataEntryWidget
 import values
+from RCAIDE.Framework.Core import Data
+import RCAIDE
+import values
 
 # Used if no configurations exist yet
 _DEFAULT_CONFIG_NAMES = ["base", "cruise", "takeoff", "cutback", "landing", "reverse_thrust"]
@@ -95,9 +98,8 @@ class AircraftConfigsWidget(TabWidget):
             } for n in _DEFAULT_CONFIG_NAMES]
 
     def _ensure_geometry(self):
-        # Make sure geometry_data exists
         if not isinstance(getattr(values, "geometry_data", None), list):
-            values.geometry_data = [[], [], [], [], [], []]
+            values.geometry_data = [None] * 8
 
     def _discover_from_geometry(self):
         # Find all control surfaces and propulsors in geometry_data
@@ -245,25 +247,41 @@ class AircraftConfigsWidget(TabWidget):
         self.update_layout()
 
     def save_data(self):
-        # Save UI values back into the selected config
         if self.index not in self._cfg_widgets:
             return
-
         w = self._cfg_widgets[self.index]
         cfg = values.config_data[self.index]
-        
+
         # Update name
         cfg["config name"] = self.name_line_edit.text().strip() or cfg["config name"]
 
-        # Merge values so we don’t lose existing data
+        # Control surfaces
         if w["cs"]:
             cfg["cs deflections"].update(w["cs"].get_values())
+
+        # Propulsors
         if w["prop"]:
             cfg["propulsors"].update(w["prop"].get_values())
 
-        # Save landing gear state
+        # Landing gear
         cfg["gear down"] = w["gear"].isChecked()
-        self.update_layout()
+        
+        # --- Build RCAIDE solver configs ---
+        try:
+            # Import the config builder that converts geometry
+            # into valid RCAIDE aircraft configuration objects
+            from tabs.aircraft_configs.aircraft_configs import (
+                build_rcaide_configs_from_geometry
+            )
+
+            # Build and store the aircraft configurations
+            values.rcaide_configs = build_rcaide_configs_from_geometry()
+            print("[OK] RCAIDE aircraft configs built")
+
+        except Exception as e:
+            # If config generation fails, continue execution
+            # and report the failure without crashing the solver
+            print("[WARN] Failed to build RCAIDE configs:", e)
 
 def get_widget() -> QWidget:
     return AircraftConfigsWidget()
