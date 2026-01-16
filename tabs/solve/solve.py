@@ -157,11 +157,30 @@ class SolveWidget(TabWidget):
                 category_item.addChild(option_item)
 
     def run_solve(self):
-        mission = values.rcaide_mission
+        import values
+
+        # Get the mission created by the user
+        mission = getattr(values, "rcaide_mission", None)
+        if mission is None:
+            raise RuntimeError("No mission defined.")
+
+        # Get the aircraft configurations saved from the Aircraft Configs tab
+        configs = getattr(values, "rcaide_configs", None)
+        if not isinstance(configs, dict) or not configs:
+            raise RuntimeError(
+                "No RCAIDE aircraft configs available.\n"
+                "Go to Aircraft Configurations tab and press 'Save Configuration'."
+            )
+
+        # Run the mission simulation
         print("Commencing Mission Simulation")
         results = mission.evaluate()
         print("Completed Mission Simulation")
-        
+
+        # Store results so other tabs can access them
+        values.rcaide_results = results
+        return results
+
         # WE NEED TO MAKE THESE OPTIONS  
         plot_parameters                  = Data()      
         plot_parameters.line_width       = 5 

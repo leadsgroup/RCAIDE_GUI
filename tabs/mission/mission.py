@@ -7,13 +7,13 @@ from PyQt6.QtWidgets import (
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs.mission.widgets import MissionAnalysisWidget
 from tabs import TabWidget
+from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
 import values
 import RCAIDE
 
 # ============================================================
 #  Collapsible Panel wrapper
 # ============================================================
-
 
 class CollapsiblePanel(QWidget):
     """A small panel with a header button that toggles visibility of content.
@@ -353,40 +353,57 @@ class MissionWidget(TabWidget):
         self.mission_name_input.clear()
         self._notify(f"✓ Added '{name.title()}'")
 
-    # ====================================================
-    # Save Mission
-    # ====================================================
     def save_all_data(self):
-        """Saves all segment data into the global `values` module and build
-        an RCAIDE mission object for use by the analysis backend.
         """
-        # Reset stored mission data (overwrites previous)
+        Save mission data and build the RCAIDE mission object.
+        This function must not build or modify aircraft configurations.
+        """
+        import values
+
+        # Reset stored mission data before saving
         values.mission_data = []
+
+        # Save analyses that were already defined by the user
         self.analysis_widget.save_analyses()
 
-        # Collect data from each enabled segment and append to values
+        # Collect data from each enabled mission segment
         for idx, seg in enumerate(self.segment_widgets):
             if idx in self.disabled_segments:
                 continue
 
-            segment_data, _ = seg.get_data()
-            segment_data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
-            values.mission_data.append(segment_data)
-        
+            seg_data, _ = seg.get_data()
+            seg_data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
+            values.mission_data.append(seg_data)
+
+        # Create the RCAIDE mission using existing data only
         values.rcaide_mission = self.create_rcaide_mission()
-        # Notify user of successful save
-        self._notify("💾 Mission data saved")
+
+        # Notify the user that the mission was saved
+        self._notify("Mission data saved")
+
 
     def create_rcaide_mission(self):
+        # Create an empty sequential mission container
         rcaide_mission = RCAIDE.Framework.Mission.Sequential_Segments()
         rcaide_mission.tag = self.mission_name_input.text()
+
+        # Add each enabled segment to the mission
         for idx, seg in enumerate(self.segment_widgets):
             if idx in self.disabled_segments:
                 continue
 
             _, rcaide_segment = seg.get_data()
+
+            # Ensure analyses exist before assigning them to a segment
+            if not values.rcaide_analyses:
+                raise RuntimeError("No RCAIDE analyses available")
+
+            # Assign the first available analysis set to the segment
+            rcaide_segment.analyses = next(iter(values.rcaide_analyses.values()))
+
+            # Append the segment to the mission sequence
             rcaide_mission.append_segment(rcaide_segment)
-        
+
         return rcaide_mission
 
     # ====================================================
