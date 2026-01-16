@@ -15,8 +15,7 @@ class MissionAnalysisWidget(TabWidget):
     def __init__(self):
         super(MissionAnalysisWidget, self).__init__()
 
-        options = ["Aerodynamics", "Atmospheric", "Planets", "Weights", "Geometry",
-                   "Propulsion", "Costs", "Noise", "Stability"]
+        options = ["Aerodynamics", "Atmospheric", "Planets", "Weights", "Geometry","Stability", "Noise"]
 
         self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
@@ -55,8 +54,7 @@ class MissionAnalysisWidget(TabWidget):
         assert self.main_layout is not None and isinstance(self.main_layout, QVBoxLayout)
 
         self.analysis_widgets = [
-            AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget, GeometryWidget,
-            PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget
+            AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget, GeometryWidget, StabilityWidget, NoiseWidget
         ]
         self.widgets = []
 
