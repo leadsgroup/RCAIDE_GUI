@@ -13,9 +13,6 @@ from tabs import TabWidget
 from utilities import Units
 from widgets import DataEntryWidget
 import values
-from RCAIDE.Framework.Core import Data
-import RCAIDE
-import values
 
 # Used if no configurations exist yet
 _DEFAULT_CONFIG_NAMES = ["base", "cruise", "takeoff", "cutback", "landing", "reverse_thrust"]
@@ -86,6 +83,8 @@ class AircraftConfigsWidget(TabWidget):
     def _ensure_config_data(self):
         # Make sure config_data exists
         if not isinstance(getattr(values, "config_data", None), list):
+            values.config_data = []
+        elif values.config_data and not all(isinstance(cfg, dict) for cfg in values.config_data):
             values.config_data = []
 
         # If empty, create default configs
@@ -247,41 +246,135 @@ class AircraftConfigsWidget(TabWidget):
         self.update_layout()
 
     def save_data(self):
-        if self.index not in self._cfg_widgets:
-            return
-        w = self._cfg_widgets[self.index]
-        cfg = values.config_data[self.index]
+        # If a specific config is selected, save its widget values
+        if self.index in self._cfg_widgets:
+            w = self._cfg_widgets[self.index]
+            cfg = values.config_data[self.index]
 
-        # Update name
-        cfg["config name"] = self.name_line_edit.text().strip() or cfg["config name"]
+            cfg["config name"] = self.name_line_edit.text().strip() or cfg["config name"]
 
-        # Control surfaces
-        if w["cs"]:
-            cfg["cs deflections"].update(w["cs"].get_values())
+            if w["cs"]:
+                cfg["cs deflections"].update(w["cs"].get_values())
 
-        # Propulsors
-        if w["prop"]:
-            cfg["propulsors"].update(w["prop"].get_values())
+            if w["prop"]:
+                cfg["propulsors"].update(w["prop"].get_values())
 
-        # Landing gear
-        cfg["gear down"] = w["gear"].isChecked()
-        
-        # --- Build RCAIDE solver configs ---
+            cfg["gear down"] = w["gear"].isChecked()
+
+        # Always build RCAIDE configs from current data
         try:
-            # Import the config builder that converts geometry
-            # into valid RCAIDE aircraft configuration objects
-            from tabs.aircraft_configs.aircraft_configs import (
-                build_rcaide_configs_from_geometry
-            )
-
-            # Build and store the aircraft configurations
             values.rcaide_configs = build_rcaide_configs_from_geometry()
             print("[OK] RCAIDE aircraft configs built")
+            print("[DEBUG] rcaide_configs keys:", values.rcaide_configs.keys())
 
         except Exception as e:
-            # If config generation fails, continue execution
-            # and report the failure without crashing the solver
             print("[WARN] Failed to build RCAIDE configs:", e)
+
+def build_rcaide_configs_from_geometry():
+    """
+    Build RCAIDE aircraft configuration objects from
+    values.geometry_data and values.config_data.
+    """
+    import values
+    from copy import deepcopy
+    import numpy as np
+
+    # Ensure geometry has been defined before building configs
+    if not values.geometry_data:
+        raise RuntimeError("No geometry data available")
+
+    # Use the already-built base RCAIDE vehicle as the template
+    base_vehicle = getattr(values, "vehicle", None)
+    if base_vehicle is None:
+        raise RuntimeError("No base vehicle found. Define geometry first.")
+
+    # Ensure at least one configuration exists
+    if not values.config_data:
+        raise RuntimeError("No aircraft configuration data available")
+
+    # Dictionary of finalized RCAIDE.Vehicle objects
+    rcaide_configs = {}
+
+    # Container used later to assign propulsors to control variables
+    values.propulsor_names = [[]]
+
+    # Normalize inertia tensors so RCAIDE always receives a 3x3 matrix
+    def _normalize_inertia_tensor(tensor):
+        if tensor is None:
+            return None
+        if isinstance(tensor, (int, float)):
+            return np.diag([float(tensor)] * 3)
+        arr = np.array(tensor, dtype=float)
+        if arr.shape == ():
+            return np.diag([float(arr)] * 3)
+        if arr.shape == (3,):
+            return np.diag(arr)
+        if arr.shape == (9,):
+            return arr.reshape(3, 3)
+        return arr
+
+    # Build one RCAIDE vehicle per user-defined configuration
+    for cfg in values.config_data:
+        # Config entries must be dictionaries
+        if not isinstance(cfg, dict):
+            raise RuntimeError("Aircraft configuration data has an unexpected format")
+
+        # Skip configs without a name
+        name = cfg.get("config name")
+        if not name:
+            continue
+
+        # Copy the base vehicle so each config is independent
+        vehicle = deepcopy(base_vehicle)
+        vehicle.tag = name
+
+        # Store raw geometry for use by other GUI tabs
+        vehicle.geometry = values.geometry_data
+
+        # Apply configuration-specific settings
+        vehicle.cs_deflections = cfg.get("cs deflections", {})
+        vehicle.propulsors = cfg.get("propulsors", {})
+        vehicle.gear_down = cfg.get("gear down", False)
+
+        # Ensure inertia tensor is in a valid RCAIDE format
+        mp = getattr(vehicle, "mass_properties", None)
+        if mp is not None and hasattr(mp, "moments_of_inertia"):
+            moi = mp.moments_of_inertia
+            tensor = getattr(moi, "tensor", None)
+            normalized = _normalize_inertia_tensor(tensor)
+            if normalized is not None:
+                moi.tensor = normalized
+
+        # Collect propulsor groups and clean empty assignments
+        for network in getattr(vehicle, "networks", []):
+            group = [propulsor.tag for propulsor in network.propulsors]
+
+            # Store propulsor group for mission control-variable assignment
+            if group:
+                values.propulsor_names[0] = group
+
+            # Remove empty propulsor references from fuel lines
+            for fuel_line in getattr(network, "fuel_lines", []):
+                if hasattr(fuel_line, "assigned_propulsors"):
+                    fuel_line.assigned_propulsors = [
+                        group for group in fuel_line.assigned_propulsors if group
+                    ]
+
+            # Remove empty propulsor references from electrical busses
+            for bus in getattr(network, "busses", []):
+                if hasattr(bus, "assigned_propulsors"):
+                    bus.assigned_propulsors = [
+                        group for group in bus.assigned_propulsors if group
+                    ]
+
+        # Register the completed vehicle configuration
+        rcaide_configs[name] = vehicle
+
+    # Ensure at least one valid configuration was created
+    if not rcaide_configs:
+        raise RuntimeError("No valid RCAIDE configs were created")
+
+    return rcaide_configs
 
 def get_widget() -> QWidget:
     return AircraftConfigsWidget()
