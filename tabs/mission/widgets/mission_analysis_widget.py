@@ -15,7 +15,16 @@ class MissionAnalysisWidget(TabWidget):
     def __init__(self):
         super(MissionAnalysisWidget, self).__init__()
 
-        options = ["Aerodynamics", "Atmospheric", "Planets", "Weights", "Geometry","Stability", "Noise"]
+        options = [
+            "Aerodynamics",
+            "Atmospheric",
+            "Planets",
+            "Weights",
+            "Propulsion",
+            "Costs",
+            "Noise",
+            "Stability",
+        ]
 
         self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
@@ -34,7 +43,7 @@ class MissionAnalysisWidget(TabWidget):
 
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
-            if index > 4:
+            if index > 3:
                 item.setCheckState(1, Qt.CheckState.Unchecked)
             else:
                 item.setData(1, Qt.ItemDataRole.CheckStateRole, Qt.CheckState.Checked)
@@ -54,7 +63,14 @@ class MissionAnalysisWidget(TabWidget):
         assert self.main_layout is not None and isinstance(self.main_layout, QVBoxLayout)
 
         self.analysis_widgets = [
-            AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget, GeometryWidget, StabilityWidget, NoiseWidget
+            AerodynamicsWidget,
+            AtmosphereWidget,
+            PlanetsWidget,
+            WeightsWidget,
+            PropulsionWidget,
+            CostsWidget,
+            NoiseWidget,
+            StabilityWidget,
         ]
         self.widgets = []
 
@@ -105,37 +121,37 @@ class MissionAnalysisWidget(TabWidget):
         return top_level_item.checkState(1) == Qt.CheckState.Checked
 
     def save_analyses(self):
-        if not getattr(values, "config_data", None):
+        if (not getattr(values, "config_data", None) and
+                not getattr(values, "rcaide_configs", None)):
             raise RuntimeError(
                 "No aircraft configuration data found. "
                 "Create a configuration in the Aircraft Configs tab."
             )
+        if (not getattr(values, "rcaide_configs", None) or
+                not values.rcaide_configs):
+            from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
+            try:
+                values.rcaide_configs = build_rcaide_configs_from_geometry()
+            except Exception as exc:
+                raise RuntimeError(
+                    "No RCAIDE configurations found. "
+                    "Save a configuration in the Aircraft Configs tab."
+                ) from exc
         values.analysis_data = []
         values.rcaide_analyses = {}
 
         for tag, config in values.rcaide_configs.items():
 
             analysis = RCAIDE.Framework.Analyses.Vehicle()
-            geometry_added = False
+            geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+            geometry.vehicle = config
+            analysis.append(geometry)
 
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
 
-                if widget.__class__.__name__ == "GeometryWidget":
-                    geom = widget.create_analysis(config)
-                    geom.vehicle = config
-                    analysis.append(geom)
-                    geometry_added = True
-                    continue
-
                 if self.get_check_state(index):
                     analysis.append(widget.create_analysis(config))
-
-            if not geometry_added:
-                raise RuntimeError(
-                    "Geometry analysis was not added. "
-                    "Mission cannot run without geometry."
-                )
 
             energy = RCAIDE.Framework.Analyses.Energy.Energy()
             energy.vehicle = config

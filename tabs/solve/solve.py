@@ -9,10 +9,15 @@ from RCAIDE.Framework.Core import Units,  Data
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
 from PyQt6.QtCore import Qt, QSize
 import pyqtgraph as pg
+import RCAIDE
 
 # numpy imports 
 import numpy as np
 import matplotlib.cm as cm
+import contextlib
+import io
+import sys
+import re
 
 # gui imports 
 from tabs import TabWidget
@@ -158,7 +163,8 @@ class SolveWidget(TabWidget):
 
     def run_solve(self):
         import values
-
+        from tabs.mission.widgets.mission_analysis_widget import MissionAnalysisWidget
+        from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
         # Get the mission created by the user
         mission = getattr(values, "rcaide_mission", None)
         if mission is None:
@@ -167,14 +173,80 @@ class SolveWidget(TabWidget):
         # Get the aircraft configurations saved from the Aircraft Configs tab
         configs = getattr(values, "rcaide_configs", None)
         if not isinstance(configs, dict) or not configs:
-            raise RuntimeError(
-                "No RCAIDE aircraft configs available.\n"
-                "Go to Aircraft Configurations tab and press 'Save Configuration'."
-            )
+            # Try to build aircraft configs automatically if they are missing
+            try:
+                from tabs.aircraft_configs.aircraft_configs import (
+                    build_rcaide_configs_from_geometry
+                )
+                # Build RCAIDE configs from current geometry + config data
+                values.rcaide_configs = build_rcaide_configs_from_geometry()
+                configs = values.rcaide_configs
+            except Exception as e:
+                # Stop execution if configs cannot be created
+                raise RuntimeError(
+                    "No RCAIDE aircraft configs available.\n"
+                    "Go to Aircraft Configurations tab and press 'Save Configuration'."
+                ) from e
 
-        # Run the mission simulation
+        # Rebuild mission if it has no segments but saved data exists
+        if not getattr(mission, "segments", []):
+            if values.mission_data:
+                if not getattr(values, "rcaide_analyses", None):
+                    MissionAnalysisWidget().save_analyses()
+                mission = RCAIDE.Framework.Mission.Sequential_Segments()
+                for seg_data in values.mission_data:
+                    seg = MissionSegmentWidget()
+                    seg.load_data(seg_data)
+                    _, rcaide_segment = seg.get_data()
+                    mission.append_segment(rcaide_segment)
+                values.rcaide_mission = mission
+            else:
+                raise RuntimeError(
+                    "No mission segments available. Save the mission first."
+                )
+
+        # Indicate mission execution has started
         print("Commencing Mission Simulation")
-        results = mission.evaluate()
+
+        # Capture all solver output for warning parsing
+        buffer = io.StringIO()
+
+        # Helper class to duplicate stdout/stderr while normalizing progress bars
+        class _Tee(io.StringIO):
+            def __init__(self, *writers):
+                super().__init__()
+                self._writers = writers
+
+            def write(self, s):
+                s = s.replace("#", "█")
+                for w in self._writers:
+                    w.write(s)
+                    w.flush()
+                return super().write(s)
+
+        # Create tee streams for stdout and stderr
+        tee_out = _Tee(sys.stdout)
+        tee_err = _Tee(sys.stderr)
+
+        # Run mission while capturing all printed output
+        with contextlib.redirect_stdout(tee_out), contextlib.redirect_stderr(tee_err):
+            results = mission.evaluate()
+
+        # Store captured output for analysis
+        buffer.write(tee_out.getvalue())
+        buffer.write(tee_err.getvalue())
+        output = buffer.getvalue()
+
+        # Extract solver warnings from output text
+        warnings = _summarize_solve_output(output)
+
+        # Print warnings only if they were not already shown by the solver
+        if warnings and not _warnings_already_reported(output):
+            print("Mission completed with solver warnings:")
+            for warning in warnings:
+                print(f"- {warning}")
+
+        # Indicate mission execution has finished
         print("Completed Mission Simulation")
 
         # Store results so other tabs can access them
@@ -232,6 +304,66 @@ class SolveWidget(TabWidget):
             "Plot Lateral Stability",
         ],
     }
+
+def _summarize_solve_output(output):
+    # Return empty list if solver produced no output
+    if not output:
+        return []
+
+    # Store extracted warning messages
+    warnings = []
+
+    # Split solver output into individual lines
+    lines = output.splitlines()
+    idx = 0
+
+    # Iterate through all output lines
+    while idx < len(lines):
+        line = lines[idx].strip()
+
+        # Capture non-converged segment warnings
+        if "Segment did not converge" in line:
+            warnings.append(line)
+            idx += 1
+            continue
+
+        # Capture multi-line error messages
+        if line.startswith("Error Message:"):
+            idx += 1
+            msg_lines = []
+
+            # Collect error message details until solver moves on
+            while idx < len(lines):
+                nxt = lines[idx].strip()
+                if not nxt or nxt.startswith("Solving"):
+                    break
+                msg_lines.append(nxt)
+                idx += 1
+
+            # Store the full error message as one warning
+            if msg_lines:
+                warnings.append("Error: " + " ".join(msg_lines))
+            continue
+
+        # Move to the next line
+        idx += 1
+
+    # Return all detected solver warnings
+    return warnings
+
+
+def _warnings_already_reported(output):
+    # Return False if there is no solver output
+    if not output:
+        return False
+
+    # Check if warnings already appeared in solver output
+    return (
+        "Segment did not converge" in output
+        or "Error Message:" in output
+        or "Error:" in output
+    )
+
     
 # ---------------------------------------
 # SolveWidget Theming and Layout Polish

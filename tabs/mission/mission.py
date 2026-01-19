@@ -324,6 +324,16 @@ class MissionWidget(TabWidget):
     def add_segment(self):
         """Create a new MissionSegmentWidget and add it to the UI and internal state."""
         seg = MissionSegmentWidget()
+        # Default to a simple cruise segment for quick GUI validation
+        try:
+            seg.top_dropdown.setCurrentIndex(1)  # Cruise
+            seg.populate_nested_dropdown(seg.top_dropdown.currentIndex())
+            seg.nested_dropdown.setCurrentText("Constant Speed/Constant Altitude")
+            seg.segment_name_input.setText("cruise")
+            if hasattr(seg, "_apply_defaults"):
+                seg._apply_defaults()
+        except Exception:
+            pass
         self.segment_widgets.append(seg)
 
         # If user provided a mission name in the input, use it; otherwise fall back
@@ -346,7 +356,7 @@ class MissionWidget(TabWidget):
         # Add the segment to the list tree (with an unchecked checkbox)
         item = QTreeWidgetItem([name.title()])
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-        item.setCheckState(0, Qt.CheckState.Unchecked)
+        item.setCheckState(0, Qt.CheckState.Checked)
         self.tree.addTopLevelItem(item)
 
         # Clear the input and notify the user
@@ -376,7 +386,7 @@ class MissionWidget(TabWidget):
             values.mission_data.append(seg_data)
 
         # Create the RCAIDE mission using existing data only
-        values.rcaide_mission = self.create_rcaide_mission()
+        # Defer mission build until analyses are saved
 
         # Notify the user that the mission was saved
         self._notify("Mission data saved")
@@ -398,8 +408,9 @@ class MissionWidget(TabWidget):
             if not values.rcaide_analyses:
                 raise RuntimeError("No RCAIDE analyses available")
 
-            # Assign the first available analysis set to the segment
-            rcaide_segment.analyses = next(iter(values.rcaide_analyses.values()))
+            # If the segment has no analyses (should be rare), assign a fallback
+            if not getattr(rcaide_segment, "analyses", None):
+                rcaide_segment.analyses = next(iter(values.rcaide_analyses.values()))
 
             # Append the segment to the mission sequence
             rcaide_mission.append_segment(rcaide_segment)
@@ -442,10 +453,10 @@ class MissionWidget(TabWidget):
 
             item = QTreeWidgetItem([name.title()])
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-            item.setCheckState(0, Qt.CheckState.Unchecked)
+            item.setCheckState(0, Qt.CheckState.Checked)
             self.tree.addTopLevelItem(item)
 
-        values.rcaide_mission = self.create_rcaide_mission()
+        # Defer mission build until analyses are saved to avoid load-time errors.
 
 
 def get_widget(shared_analysis_widget=None) -> QWidget:
