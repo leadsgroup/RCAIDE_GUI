@@ -124,7 +124,10 @@ class PowertrainWidget(QWidget):
 
         propulsor_connections = connections[0]
         source_connections = connections[2]
-
+        
+        for i, propulsor in enumerate(propulsors): 
+            net.propulsors.append(propulsor)
+        
         for i, distributor in enumerate(distributors):
             assigned_propulsors = [[]]
             for j, propulsor in enumerate(propulsors):

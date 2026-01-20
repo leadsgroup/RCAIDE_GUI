@@ -852,7 +852,7 @@
                                 0.99,
                                 0
                             ],
-                            "Propulsor Tag": "propulsor_1",
+                            "Propulsor Tag": "starboard_propulsor",
                             "Nacelle Tag": "main_fuselage",
                             "fuel line name": "powertrain"
                         },
@@ -967,7 +967,7 @@
                                 0.99,
                                 0
                             ],
-                            "Propulsor Tag": "propulsor_2",
+                            "Propulsor Tag": "port_propulsor",
                             "Nacelle Tag": "main_fuselage",
                             "fuel line name": "powertrain"
                         }
@@ -2824,8 +2824,8 @@
     ],
     "propulsor_names": [
         [
-            "propulsor_1",
-            "propulsor_2"
+            "starboard_propulsor",
+            "port_propulsor"
         ]
     ]
 }

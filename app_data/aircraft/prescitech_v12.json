@@ -803,7 +803,7 @@
                                 0.99,
                                 0
                             ],
-                            "Propulsor Tag": "propulsor_1",
+                            "Propulsor Tag": "starboard_propulsor",
                             "Nacelle Tag": "main_fuselage"
                         },
                         {
@@ -917,7 +917,7 @@
                                 0.99,
                                 0
                             ],
-                            "Propulsor Tag": "propulsor_2",
+                            "Propulsor Tag": "port_propulsor",
                             "Nacelle Tag": "main_fuselage"
                         }
                     ],
@@ -1806,7 +1806,7 @@
     "mission_data": [],
     "propulsor_names": [
         [
-            "propulsor_1"
+            "starboard_propulsor"
         ]
     ]
 }

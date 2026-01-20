@@ -249,9 +249,9 @@ class PowertrainFrame(GeometryFrame):
 
         # Load sections based on the selected network
         if selected_network == "Fuel":
-            turbofan_widget = PowertrainWidget()
-            turbofan_widget.load_data_values(data["powertrain"])
-            self.powertrain_layout.addWidget(turbofan_widget)
+            powertrain_widget = PowertrainWidget()
+            powertrain_widget.load_data_values(data["powertrain"])
+            self.powertrain_layout.addWidget(powertrain_widget)
 
     def create_new_structure(self):
         """Create a new powertrain structure."""
