@@ -17,12 +17,12 @@ class GeometryWidget(TabWidget):
 
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [VehicleFrame, BoomFrame, CargoBayFrame, FuselageFrame, LandingGearFrame,
-                                                  PowertrainFrame, NacelleFrame, WingsFrame]
+                                                  PowertrainFrame, WingsFrame]
         self.tabs = ["", "Booms", "Cargo Bays", "Fuselages",
-                     "Landing Gear" , "Powertrain", "Nacelles", "Wings"]
+                     "Landing Gear" , "Powertrain", "Wings"]
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
-                   "Add Landing Gear" , "Add Powertrain", "Add Nacelles", "Add Wing"]
+                   "Add Landing Gear" , "Add Powertrain", "Add Wing"]
 
         values.geometry_data = []
         values.vehicle = RCAIDE.Vehicle()
