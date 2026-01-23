@@ -104,3 +104,27 @@ class PowertrainConnectorWidget(QWidget):
 
             connections.append(tab_connections)
         return connections
+    
+    def load_connections(self, connections):
+        """Restores the checked state of boxes from saved data."""
+        if not connections or len(connections) != len(self.selector_layouts):
+            return
+
+        for tab_idx, tab_connections in enumerate(connections):
+            
+            layout_rows = self.selector_layouts[tab_idx]
+            
+            for row_idx, row_data in enumerate(tab_connections):
+                if row_idx >= len(layout_rows): break
+                
+                layout = layout_rows[row_idx]
+                checkbox_index = 0
+
+                for i in range(1, layout.count()):
+                    item = layout.itemAt(i).widget()
+                    if isinstance(item, QCheckBox):
+                        if checkbox_index < len(row_data):
+                            item.setChecked(row_data[checkbox_index])
+                        checkbox_index += 1
+    
+

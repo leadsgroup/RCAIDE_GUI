@@ -68,7 +68,7 @@ class PowertrainFrame(GeometryFrame):
     def add_buttons_layout(self):
         # define buttons
         save_button = QPushButton("Save Energy Network Data", self)
-        save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        # save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         delete_button = QPushButton("Clear Energy Network", self)
         delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
 
@@ -234,8 +234,8 @@ class PowertrainFrame(GeometryFrame):
         """
 
         # Load the name into the name line edit
-
-        assert self.name_line_edit is not None
+        self.index = index
+        assert self.name_line_edit is not None  
         self.name_line_edit.setText(data["name"])
 
         # Load the selected network into the combo box
@@ -252,6 +252,8 @@ class PowertrainFrame(GeometryFrame):
             powertrain_widget = PowertrainWidget()
             powertrain_widget.load_data_values(data["powertrain"])
             self.powertrain_layout.addWidget(powertrain_widget)
+        
+        self.add_buttons_layout()
 
     def create_new_structure(self):
         """Create a new powertrain structure."""
