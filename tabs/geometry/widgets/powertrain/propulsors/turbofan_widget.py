@@ -1,4 +1,4 @@
-from lib2to3.pytree import convert
+# from lib2to3.pytree import convert
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          import design_turbofan 
@@ -72,7 +72,7 @@ class TurbofanWidget(QWidget):
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
         
-        nacelle_data = values.geometry_data[3]
+        nacelle_data = values.geometry_data[6]
         nacelle_tags = []
         for nacelle in nacelle_data:
             nacelle_tags.append(convert_name(nacelle["name"]))
