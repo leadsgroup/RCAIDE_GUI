@@ -854,7 +854,7 @@
                                 0
                             ],
                             "Propulsor Tag": "starboard_propulsor",
-                            "Nacelle Tag": "main_fuselage"
+                            "Nacelle Tag": "nacelle_2"
                         },
                         {
                             "Origin": [
@@ -968,7 +968,7 @@
                                 0
                             ],
                             "Propulsor Tag": "port_propulsor",
-                            "Nacelle Tag": "main_fuselage"
+                            "Nacelle Tag": "nacelle_1"
                         }
                     ],
                     "converter data": [
