@@ -145,7 +145,7 @@ class MissionAnalysisWidget(TabWidget):
             analysis = RCAIDE.Framework.Analyses.Vehicle()
             analysis.vehicle = config #  MISSING NACELLS AND ASSIGNED PROPULSORS 
             
-            geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+            geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() # NEED TO BE REMOVED 
             analysis.append(geometry)
 
             for index, widget in enumerate(self.widgets):
@@ -154,7 +154,7 @@ class MissionAnalysisWidget(TabWidget):
                 if self.get_check_state(index):
                     analysis.append(widget.create_analysis(config))
 
-            energy = RCAIDE.Framework.Analyses.Energy.Energy() 
+            energy = RCAIDE.Framework.Analyses.Energy.Energy()   # NEED TO BE REMOVED 
             analysis.append(energy)
 
             values.rcaide_analyses[tag] = analysis

@@ -273,28 +273,6 @@ segment_data_fields = [
         ],
     }, 
     {
-        # Transition Subsegments
-        "Constant Acceleration/Constant Angle/Linear Climb": [
-            ("Altitude Start", Units.Length, "altitude_start"),
-            ("Altitude End", Units.Length, "altitude_end"),
-            ("Air Speed Start", Units.Velocity, "air_speed_start"),
-            ("Climb Angle", Units.Angle, "climb_angle"),
-            ("Acceleration", Units.Acceleration, "acceleration"),
-            ("Pitch Initial", Units.Angle, "pitch_initial"),
-            ("Pitch Final", Units.Angle, "pitch_final"),
-            ("True Course Angle", Units.Angle, "true_course")
-        ],
-        "Constant Acceleration/Constant Pitchrate/Constant Altitude": [
-            ("Altitude", Units.Length, "altitude"),
-            ("Acceleration", Units.Acceleration, "acceleration"),
-            ("Air Speed Start", Units.Velocity, "air_speed_start"),
-            ("Air Speed End", Units.Velocity, "air_speed_end"),
-            ("Pitch Initial", Units.Angle, "pitch_initial"),
-            ("Pitch Final", Units.Angle, "pitch_final"),
-            ("True Course Angle", Units.Angle, "true_course")
-        ],
-    }, 
-    {
         # Vertical Flight Subsegments
         "Climb": [
             ("Altitude Start", Units.Length, "altitude_start"), 
@@ -364,11 +342,6 @@ segment_rcaide_classes = [
         "Set Speed/Set Altitude/No Propulsion": Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion,
         "Set Speed/Set Altitude": Segments.Single_Point.Set_Speed_Set_Altitude,
         "Set Speed/Set Throttle": Segments.Single_Point.Set_Speed_Set_Throttle,
-    }, 
-    {
-        # Transition Subsegments
-        "Constant Acceleration/Constant Angle/Linear Climb": Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb,
-        "Constant Acceleration/Constant Pitchrate/Constant Altitude": Segments.Transition.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude,
     }, 
     {
         # Vertical Flight Subsegments
