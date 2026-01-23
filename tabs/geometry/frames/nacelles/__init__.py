@@ -2,4 +2,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from tabs.geometry.frames.powertrain.nacelles.nacelle_frame import NacelleFrame 
+from tabs.geometry.frames.nacelles.nacelle_frame import NacelleFrame 

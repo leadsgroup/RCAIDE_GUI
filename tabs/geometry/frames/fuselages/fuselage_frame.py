@@ -33,7 +33,7 @@ class FuselageFrame(GeometryFrame):
     ]
 
     def __init__(self):
-        """Create a frame for entering fuselage data."""
+        """Create a frame for entering nacelle data."""
         super(FuselageFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
@@ -156,14 +156,14 @@ class FuselageFrame(GeometryFrame):
         pass
 
     def create_new_structure(self):
-        """Create a new fuselage structure."""
+        """Create a new nacelle structure."""
         # Clear the main data values
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.clear_values()
         self.name_line_edit.clear()
         clear_layout(self.cabins_layout)
         clear_layout(self.fuselage_sections_layout)
-        # # Clear the fuselage sections
+        # # Clear the nacelle sections
         # for i in range(self.fuselage_sections_layout.count()):
         #     item = self.fuselage_sections_layout.itemAt(i)
         #     assert item is not None

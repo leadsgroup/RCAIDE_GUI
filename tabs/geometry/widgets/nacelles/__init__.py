@@ -2,4 +2,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget 
+from tabs.geometry.widgets.nacelles.nacelle_section_widget import NacelleSectionWidget 

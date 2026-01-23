@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs
+# RCAIDE_GUI/tabs/geometry/frames/nacelles/nacelle_sections_layout.py
 # 
 # Created:  Dec 2025, M. Clarke 
 
