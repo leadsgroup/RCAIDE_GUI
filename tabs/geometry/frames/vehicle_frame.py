@@ -33,6 +33,8 @@ class VehicleFrame(GeometryFrame):
         ("Negative Limit Load", Units.Unitless,
          "flight_envelope.negative_limit_load"),
         # ("Systems", Units.Heading),
+        ("Design Mach Number", Units.Unitless,
+         "flight_envelope.design_mach_number"),
         ("Design Cruise Altitude", Units.Length,
          "flight_envelope.design_cruise_altitude"),
         ("Design Range", Units.Length, "flight_envelope.design_range"),
@@ -41,6 +43,7 @@ class VehicleFrame(GeometryFrame):
          "flight_envelope.FAR_part_number"),
         ("Control Systems", Units.Area, "systems.control"),  # should be drop down
         ("Accessories", Units.Count, "systems.accessories"),  # should be dropdown
+    
     ]
 
     def __init__(self):

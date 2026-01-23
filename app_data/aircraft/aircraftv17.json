@@ -79,6 +79,10 @@
                 -1.0,
                 0
             ],
+            "Design Mach Number": [
+                0.78,
+                0
+            ],
             "Design Cruise Altitude": [
                 35000.0,
                 4
