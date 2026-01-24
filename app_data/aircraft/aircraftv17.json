@@ -89,7 +89,7 @@
             ],
             "Design Range": [
                 3500.0,
-                4
+                5
             ],
             "Aircraft Category": [
                 0.0,
@@ -147,7 +147,7 @@
                 ],
                 "Width": [
                     3.76,
-                    5
+                    0
                 ],
                 "Heights Maximum": [
                     3.76,
@@ -163,7 +163,7 @@
                 ],
                 "Height at Wing Root Quarter Chord": [
                     3.74,
-                    5
+                    0
                 ],
                 "Areas Side Projected": [
                     142.1948,
