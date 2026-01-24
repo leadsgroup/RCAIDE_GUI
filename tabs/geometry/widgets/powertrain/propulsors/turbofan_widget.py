@@ -72,13 +72,17 @@ class TurbofanWidget(QWidget):
         self.data_entry_widget = DataEntryWidget(data_units_labels)
         main_section_layout.addWidget(self.data_entry_widget)
         
-        nacelle_data = values.geometry_data[6]
-        nacelle_tags = []
-        for nacelle in nacelle_data:
-            nacelle_tags.append(convert_name(nacelle["name"]))
-        self.nacelle_selector = QComboBox()
-        self.nacelle_selector.addItems(nacelle_tags)
-        main_section_layout.addWidget(self.nacelle_selector)
+        # *********************************** 
+        # ******  ADD NACELLE WIDGET *******
+        # *********************************** 
+        
+        #nacelle_data = values.geometry_data[6]
+        #nacelle_tags = []
+        #for nacelle in nacelle_data:
+            #nacelle_tags.append(convert_name(nacelle["name"]))
+        #self.nacelle_selector = QComboBox()
+        #self.nacelle_selector.addItems(nacelle_tags)
+        #main_section_layout.addWidget(self.nacelle_selector)
 
         # Adding delete button
         delete_button = QPushButton("Delete Turbofan", self)
@@ -178,14 +182,34 @@ class TurbofanWidget(QWidget):
         fan_nozzle.pressure_ratio                      = data["Fan Nozzle Pressure Ratio"][0]
         turbofan.fan_nozzle                            = fan_nozzle
         
-        if len(values.vehicle.nacelles):
-            selected_nacelle_name = self.nacelle_selector.currentText()
-            found_nacelle = None
-            for nacelle in values.vehicle.nacelles:
-                if nacelle.tag == selected_nacelle_name:
-                    found_nacelle = nacelle
-                    break
-            turbofan.nacelle = found_nacelle
+
+        # *********************************** 
+        # ******  ADD NACELLE  *******
+        # ***********************************
+    
+        
+        # Nacelle
+        import  numpy as  np
+        nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
+        nacelle.diameter                            = 1.6
+        nacelle.length                              = 2.71
+        nacelle.tag                                 = 'nacelle_1'
+        nacelle.inlet_diameter                      = 2.0
+        nacelle.origin                              = [[13.5,4.38,-1.5]] 
+        nacelle.areas.wetted                        = 1.1*np.pi*nacelle.diameter*nacelle.length 
+        nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+        nacelle_airfoil.NACA_4_Series_code          = '2410'
+        nacelle.append_airfoil(nacelle_airfoil)  
+        turbofan.nacelle                            = nacelle
+        
+        #if len(values.vehicle.nacelles):
+            #selected_nacelle_name = self.nacelle_selector.currentText()
+            #found_nacelle = None
+            #for nacelle in values.vehicle.nacelles:
+                #if nacelle.tag == selected_nacelle_name:
+                    #found_nacelle = nacelle
+                    #break
+            #turbofan.nacelle = found_nacelle
 
         design_turbofan(turbofan)
         return turbofan
@@ -193,7 +217,7 @@ class TurbofanWidget(QWidget):
     def load_data_values(self, data):
         self.data_entry_widget.load_data(data)
         self.section_name_edit.setText(data["Propulsor Tag"])
-        self.nacelle_selector.setCurrentText(data["Nacelle Tag"])
+        #self.nacelle_selector.setCurrentText(data["Nacelle Tag"])
 
     def get_data_values(self):
         title = self.section_name_edit.text()
@@ -205,6 +229,6 @@ class TurbofanWidget(QWidget):
         data_si = self.data_entry_widget.get_values_si()
         data_si["Propulsor Tag"] = title
         
-        data["Nacelle Tag"] = self.nacelle_selector.currentText()
+        #data["Nacelle Tag"] = self.nacelle_selector.currentText()
 
         return data, self.create_rcaide_structure(data_si)

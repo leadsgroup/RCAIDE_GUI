@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/nacelles/nacelle_sections_layout.py
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/distributor_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 

@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/nacelles/nacelle_frame.py
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain_widget.py
 #
 # Created:  Dec 2025, M. Clarke
 
