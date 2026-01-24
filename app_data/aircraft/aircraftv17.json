@@ -89,7 +89,7 @@
             ],
             "Design Range": [
                 3500.0,
-                5
+                4
             ],
             "Aircraft Category": [
                 0.0,
@@ -653,39 +653,96 @@
         ],
         [
             {
-                "Main Tire Diameter": [
+                "Tire Diameter": [
                     44.5,
                     3
                 ],
-                "Nose Tire Diameter": [
-                    27.0,
+                "Rim Diameter": [
+                    21.0,
                     3
                 ],
-                "Main Strut Length": [
+                "Tire Width": [
+                    16.5,
+                    0
+                ],
+                "Strut Length": [
                     1.8,
                     0
                 ],
-                "Nose Strut Length": [
-                    1.8,
-                    0
-                ],
-                "Main Units": [
-                    2,
-                    0
-                ],
-                "Nose Units": [
-                    2,
-                    0
-                ],
-                "Main Wheels": [
+                "Origin": [
+                                [
+                                    [
+                                        18,
+                                        0.0,
+                                        -2
+                                    ]
+                                ],
+                                0
+                            ],
+                "Wheels": [
                     4,
                     0
                 ],
-                "Nose Wheels": [
+                "Number of Gear Types in Tandem": [
+                    1,
+                    0
+                ],
+                "Number of Wheels in Gear Type": [
                     2,
                     0
                 ],
-                "name": "maingear"
+                "X-Z Plane Symmetric": [
+                    true,
+                    0
+                ],
+                "name": "main_gear",
+                "landing_gear_type": "Main Gear"
+            },
+            {
+                "Tire Diameter": [
+                    27,
+                    3
+                ],
+                "Rim Diameter": [
+                    15,
+                    3
+                ],
+                "Tire Width": [
+                    7.75,
+                    0
+                ],
+                "Strut Length": [
+                    1.8,
+                    0
+                ],
+                "Origin": [
+                                [
+                                    [
+                                        5,
+                                        0.0,
+                                        -2
+                                    ]
+                                ],
+                                0
+                            ],
+                "Wheels": [
+                    2,
+                    0
+                ],
+                "Number of Gear Types in Tandem": [
+                    1,
+                    0
+                ],
+                "Number of Wheels in Gear Type": [
+                    2,
+                    0
+                ],
+                "X-Z Plane Symmetric": [
+                    false,
+                    0
+                ],
+                "name": "nose_gear",
+                "landing_gear_type": "Nose Gear"
             }
         ],
         [

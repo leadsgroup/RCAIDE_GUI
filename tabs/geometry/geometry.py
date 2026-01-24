@@ -200,9 +200,7 @@ class GeometryWidget(TabWidget):
         if vehicle_component:
             # Check if it is an energy network being added
             if tab_index == 5:
-                values.vehicle.append_energy_network(vehicle_component)
-            elif tab_index == 4:
-                values.vehicle.landing_gear = vehicle_component
+                values.vehicle.append_energy_network(vehicle_component) 
             else:
                 values.vehicle.append_component(vehicle_component)
 

@@ -114,14 +114,14 @@ class WingsFrame(GeometryFrame):
         
 
     def add_wing_type(self):
-        landing_gear_type_label = QLabel("Wing Type: ")
+        wing_type_label = QLabel("Wing Type: ")
         wing_type_layout = QHBoxLayout()
         spacer_left = QSpacerItem(
             50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(
             200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         wing_type_layout.addItem(spacer_left)
-        wing_type_layout.addWidget(landing_gear_type_label)
+        wing_type_layout.addWidget(wing_type_label)
         self.wing_type_combo = QComboBox()
         self.wing_type_combo.addItems(["Select Wing Type", "All Moving Surface", "Blended Wing Body", "Horizontal Tail", "Main Wing", "Stabilator", "Vertical Tail","Vertical Tail All Moving",  "Wing"])
         self.wing_type_combo.setFixedWidth(600)

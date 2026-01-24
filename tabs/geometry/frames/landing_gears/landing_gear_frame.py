@@ -25,14 +25,15 @@ class LandingGearFrame(GeometryFrame):
 
     # List of data labels
     data_units_labels = [
-        ("Main Tire Diameter", Units.Length, "main_tire_diameter"),
-        ("Nose Tire Diameter", Units.Length, "nose_tire_diameter"),
-        ("Main Strut Length", Units.Length, "main_strut_length"),
-        ("Nose Strut Length", Units.Length, "nose_strut_length"),
-        ("Main Units", Units.Count, "main_units"),
-        ("Nose Units", Units.Count, "nose_units"),
-        ("Main Wheels", Units.Count, "main_wheels"),
-        ("Nose Wheels", Units.Count, "nose_wheels")
+        ("Tire Diameter", Units.Length, "tire_diameter"),
+        ("Rim Diameter", Units.Length,  "rim_diameter"),
+        ("Tire Width", Units.Length, "tire_width"),
+        ("Strut Length", Units.Length, "strut_length"), 
+        ("Origin", Units.Position, "origin"),
+        ("Wheels", Units.Count, "wheels"), 
+        ("Number of Gear Types in Tandem", Units.Count, "number_of_gear_types_in_tandem"), 
+        ("Number of Wheels in Gear Type", Units.Count, "number_of_wheels_in_gear_type"),  
+        ("X-Z Plane Symmetric", Units.Boolean, "xz_plane_symmetric"),
     ]
     
     def __init__(self):
@@ -164,6 +165,7 @@ class LandingGearFrame(GeometryFrame):
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         data = self.data_entry_widget.get_values()
         data["name"] = self.name_line_edit.text()
+        data["landing_gear_type"] = self.landing_gear_type_combo.currentText()
         landing_gear = self.create_rcaide_structure()
         return data, landing_gear
 
@@ -176,6 +178,11 @@ class LandingGearFrame(GeometryFrame):
         """
         assert self.data_entry_widget is not None and self.name_line_edit is not None
         self.data_entry_widget.load_data(data)
+
+        if "landing_gear_type" in data:
+            self.landing_gear_type_combo.setCurrentText(data["landing_gear_type"])
+        else:
+            self.landing_gear_type_combo.setCurrentIndex(0)        
 
         self.name_line_edit.setText(data["name"])
         self.index = index
