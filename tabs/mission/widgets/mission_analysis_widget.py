@@ -20,6 +20,7 @@ class MissionAnalysisWidget(TabWidget):
             "Atmospheric",
             "Planets",
             "Weights",
+            "Geometry",
             "Propulsion",
             "Costs",
             "Noise",
@@ -43,7 +44,7 @@ class MissionAnalysisWidget(TabWidget):
 
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
-            if index > 3:
+            if index > 4:
                 item.setCheckState(1, Qt.CheckState.Unchecked)
             else:
                 item.setData(1, Qt.ItemDataRole.CheckStateRole, Qt.CheckState.Checked)
@@ -67,6 +68,7 @@ class MissionAnalysisWidget(TabWidget):
             AtmosphereWidget,
             PlanetsWidget,
             WeightsWidget,
+            GeometryWidget,
             PropulsionWidget,
             CostsWidget,
             NoiseWidget,
@@ -77,7 +79,7 @@ class MissionAnalysisWidget(TabWidget):
         for index, analysis_widget in enumerate(self.analysis_widgets):
             widget = analysis_widget()
             assert isinstance(widget, AnalysisDataWidget)
-            if index >= 4:
+            if index >= 5:
                 widget.setVisible(False)
             else:
                 widget.setVisible(True)
@@ -145,9 +147,6 @@ class MissionAnalysisWidget(TabWidget):
             analysis = RCAIDE.Framework.Analyses.Vehicle()
             analysis.vehicle = config 
             
-            geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() # NEED TO BE MADE AN ANALYSIS
-            analysis.append(geometry)
-
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
 
