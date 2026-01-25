@@ -21,6 +21,7 @@ class MissionAnalysisWidget(TabWidget):
             "Planets",
             "Weights",
             "Geometry",
+            "Energy",
             "Propulsion",
             "Costs",
             "Noise",
@@ -44,7 +45,7 @@ class MissionAnalysisWidget(TabWidget):
 
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
-            if index > 4:
+            if index > 5:
                 item.setCheckState(1, Qt.CheckState.Unchecked)
             else:
                 item.setData(1, Qt.ItemDataRole.CheckStateRole, Qt.CheckState.Checked)
@@ -69,6 +70,7 @@ class MissionAnalysisWidget(TabWidget):
             PlanetsWidget,
             WeightsWidget,
             GeometryWidget,
+            EnergyWidget,
             PropulsionWidget,
             CostsWidget,
             NoiseWidget,
@@ -153,8 +155,8 @@ class MissionAnalysisWidget(TabWidget):
                 if self.get_check_state(index):
                     analysis.append(widget.create_analysis(config))
 
-            energy = RCAIDE.Framework.Analyses.Energy.Energy()   # NEED TO BE MADE AN ANALYSIS
-            analysis.append(energy)
+            # energy = RCAIDE.Framework.Analyses.Energy.Energy()   # NEED TO BE MADE AN ANALYSIS
+            # analysis.append(energy)
 
             values.rcaide_analyses[tag] = analysis
             values.analysis_data.append(analysis)
