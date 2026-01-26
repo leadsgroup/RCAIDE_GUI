@@ -27,3 +27,4 @@ Anshrin- Connect the solve results to the plot
 General
 All- Data Entry Checks
 Matthew- Add more units
+Mihir- Dark theme (First)
