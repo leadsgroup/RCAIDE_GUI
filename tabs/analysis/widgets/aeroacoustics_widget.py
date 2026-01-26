@@ -9,12 +9,12 @@ import RCAIDE
 import json
 
 
-class NoiseWidget(AnalysisDataWidget):
+class AeroacousticsWidget(AnalysisDataWidget):
     def __init__(self):
-        super(NoiseWidget, self).__init__()
+        super(AeroacousticsWidget, self).__init__()
         self.main_layout = QVBoxLayout()
 
-        self.main_layout.addWidget(QLabel("<b>Noise</b>"))
+        self.main_layout.addWidget(QLabel("<b>Acoustics</b>"))
         self.main_layout.addWidget(create_line_bar())
 
         self.analysis_selector = QComboBox()
@@ -26,7 +26,7 @@ class NoiseWidget(AnalysisDataWidget):
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
         self.main_layout.addWidget(self.data_entry_widget)
 
-        with open("app_data/defaults/noise_analysis.json", "r") as defaults:
+        with open("app_data/defaults/aeroacoustics_analysis.json", "r") as defaults:
             self.defaults = json.load(defaults)
 
         self.data_entry_widget.load_data(self.defaults[0])
@@ -46,11 +46,11 @@ class NoiseWidget(AnalysisDataWidget):
     def create_analysis(self, vehicle):
         analysis_num = self.analysis_selector.currentIndex()
         if analysis_num == 0:
-            noise = RCAIDE.Framework.Analyses.Noise.Correlation_Buildup()
+            aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()
         else:
-            noise = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup()
+            aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based()
 
-        settings = noise.settings
+        settings  = aeroacoustics.settings
         values_si = self.data_entry_widget.get_values_si()
 
         for data_unit_label in self.data_units_labels[analysis_num]:
@@ -73,7 +73,7 @@ class NoiseWidget(AnalysisDataWidget):
         settings.noise_hemisphere_theta_angle_bounds = [
             theta_lower_bound, theta_upper_bound]
  
-        return noise
+        return aeroacoustics
     
     def get_values(self):
         data = self.data_entry_widget.get_values()
@@ -140,4 +140,4 @@ class NoiseWidget(AnalysisDataWidget):
             ("Noise Hemisphere Theta Lower Bound", Units.Angle),
         ]
     ]
-    analyses = ["Correlation Buildup", "Frequency Domain Buildup"]
+    analyses = ["Semi Empirical", "Physics-Based"]

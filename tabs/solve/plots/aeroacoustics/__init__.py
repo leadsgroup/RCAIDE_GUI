@@ -1,8 +1,8 @@
-# RCAIDE/Library/Plots/Noise/__init__.py
+# RCAIDE/Library/Plots/Aeracoustics/__init__.py
 # 
 
 """
-RCAIDE Noise Plotting Package
+RCAIDE Aeracoustics Plotting Package
 
 This package contains modules for visualizing noise-related data and analysis 
 results in RCAIDE.

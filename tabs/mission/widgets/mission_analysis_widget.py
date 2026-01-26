@@ -24,7 +24,7 @@ class MissionAnalysisWidget(TabWidget):
             "Energy",
             "Propulsion",
             "Costs",
-            "Noise",
+            "Aeroacoustics",
             "Stability",
         ]
 
@@ -73,7 +73,7 @@ class MissionAnalysisWidget(TabWidget):
             EnergyWidget,
             PropulsionWidget,
             CostsWidget,
-            NoiseWidget,
+            AeroacousticsWidget,
             StabilityWidget,
         ]
         self.widgets = []
