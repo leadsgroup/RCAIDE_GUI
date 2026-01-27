@@ -1,6 +1,12 @@
-from tabs.geometry.widgets.fuselage_section_widget import FuselageSectionWidget
-from tabs.geometry.widgets.nacelle_section_widget import NacelleSectionWidget
-from tabs.geometry.widgets.wing_cs_widget import WingCSWidget
-from tabs.geometry.widgets.wing_section_widget import WingSectionWidget
-from tabs.geometry.widgets.cabin_widget import CabinWidget
-from tabs.geometry.widgets.cabin_class_widget import CabinClassWidget
+# RCAIDE_GUI/tabs/geometry/widgets/__init__.py
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+
+from tabs.geometry.widgets.geometry_data_widget import GeometryDataWidget
+from tabs.geometry.widgets.booms import *
+from tabs.geometry.widgets.cargo_bays import *
+from tabs.geometry.widgets.landing_gears import *
+from tabs.geometry.widgets.wings import *
+from tabs.geometry.widgets.fuselages import *
+from tabs.geometry.widgets.powertrain import *

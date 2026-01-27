@@ -5,7 +5,10 @@ from PyQt6.QtWidgets import (
 )
 
 from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
-from tabs.mission.widgets.mission_segment_helper import segment_data_fields, segment_rcaide_classes
+from tabs.mission.widgets.mission_segment_helper import (
+    segment_data_fields,
+    segment_rcaide_classes,
+)
 from utilities import Units, set_data, convert_name
 import values
 import RCAIDE
@@ -16,7 +19,9 @@ class MissionSegmentWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        # MAIN LAYOUT
+        # ============================================================
+        # Root Layout
+        # ============================================================
         self.segment_layout = QVBoxLayout()
         self.segment_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(self.segment_layout)
@@ -25,6 +30,7 @@ class MissionSegmentWidget(QWidget):
         self.subsegment_entry_widget = None
         self.dof_entry_widget = None
         self.flight_controls_widget = None
+        self._suppress_defaults = False
 
         # Dropdowns
         self.top_dropdown = QComboBox()
@@ -32,93 +38,72 @@ class MissionSegmentWidget(QWidget):
         self.config_selector = QComboBox()
 
         # ============================================================
-        # GROUP 1 — Specify Segment Settings
+        # Group 1 — Specify Segment Settings
         # ============================================================
         self.settings_group = QGroupBox("Specify Segment Settings")
         self.settings_group.setStyleSheet(self._box_style())
         self.settings_layout = QVBoxLayout(self.settings_group)
 
-        # Control Points Row
         cp_row = QHBoxLayout()
         cp_row.addWidget(QLabel("Number of Control Points:"))
-        self.ctrl_points = QLineEdit("2")
+        self.ctrl_points = QLineEdit("16")
         self.ctrl_points.setFixedWidth(70)
         self.ctrl_points.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cp_row.addWidget(self.ctrl_points)
         cp_row.addStretch(1)
         self.settings_layout.addLayout(cp_row)
 
-        # Solver Row
-        solver_label = QLabel("Mission Solver:")
         solver_row = QHBoxLayout()
-        solver_row.addWidget(solver_label)
+        solver_row.addWidget(QLabel("Mission Solver:"))
         self.solver_root = QRadioButton("Root Solver")
         self.solver_opt = QRadioButton("Optimize Solver")
         self.solver_root.setChecked(True)
         solver_row.addWidget(self.solver_root)
         solver_row.addWidget(self.solver_opt)
         solver_row.addStretch(1)
-
         self.settings_layout.addLayout(solver_row)
+
         self.segment_layout.addWidget(self.settings_group)
 
         # ============================================================
-        # GROUP 2 — Specify Segment Details
+        # Group 2 — Specify Segment Details
         # ============================================================
         self.details_group = QGroupBox("Specify Segment Details")
         self.details_group.setStyleSheet(self._box_style())
         self.details_layout = QVBoxLayout(self.details_group)
-        self.details_layout.setSpacing(6)
-        self.details_layout.setContentsMargins(8, 6, 8, 6)
 
-        # ------------------------------------------------------------
-        # Segment Name (FULL WIDTH, STACKED)
-        # ------------------------------------------------------------
-        name_lbl = QLabel("Segment Name:")
-        self.details_layout.addWidget(name_lbl)
+        self.details_layout.addWidget(QLabel("Segment Name:"))
         self.segment_name_input = QLineEdit()
         self.details_layout.addWidget(self.segment_name_input)
 
-        # ------------------------------------------------------------
-        # Segment Type (FULL WIDTH, STACKED)
-        # ------------------------------------------------------------
-        stype_lbl = QLabel("Segment Type:")
-        self.details_layout.addWidget(stype_lbl)
-
-        self.top_dropdown.clear()
+        self.details_layout.addWidget(QLabel("Segment Type:"))
         self.top_dropdown.addItems([
             "Climb", "Cruise", "Descent", "Ground",
             "Single_Point", "Transition", "Vertical Flight"
         ])
-        self.top_dropdown.setFixedHeight(28)
         self.details_layout.addWidget(self.top_dropdown)
 
-        # ------------------------------------------------------------
-        # Subsegment Type (FULL WIDTH, STACKED)
-        # ------------------------------------------------------------
-        ssub_lbl = QLabel("Subsegment Type:")
-        self.details_layout.addWidget(ssub_lbl)
-
-        self.populate_nested_dropdown(self.top_dropdown.currentIndex())
-        self.nested_dropdown.setFixedHeight(28)
+        self.details_layout.addWidget(QLabel("Subsegment Type:"))
+        self.populate_nested_dropdown(0)
         self.details_layout.addWidget(self.nested_dropdown)
 
-        # ------------------------------------------------------------
-        # Aircraft Configuration (FULL WIDTH, STACKED)
-        # ------------------------------------------------------------
-        cfg_lbl = QLabel("Aircraft Configuration:")
-        self.details_layout.addWidget(cfg_lbl)
-
-        self.config_selector.addItems([c["config name"] for c in values.config_data])
-        self.config_selector.setFixedHeight(28)
+        self.details_layout.addWidget(QLabel("Aircraft Configuration:"))
+        config_names = [
+            c.get("config name", "")
+            for c in values.config_data
+            if isinstance(c, dict)
+        ]
+        if not config_names:
+            cfg_container = getattr(values, "rcaide_configs", None)
+            if isinstance(cfg_container, dict):
+                config_names = list(cfg_container.keys())
+        self.config_selector.addItems([n for n in config_names if n])
         self.details_layout.addWidget(self.config_selector)
 
-        # Dynamic fields placeholder
-        self.update_subsegment_fields()
         self.segment_layout.addWidget(self.details_group)
 
         # ============================================================
-        # GROUP 3 — DOF
+        # Group 3 — Degrees of Freedom
         # ============================================================
         self.dof_group = QGroupBox("Select Degrees of Freedom")
         self.dof_group.setStyleSheet(self._box_style())
@@ -138,7 +123,7 @@ class MissionSegmentWidget(QWidget):
         self.segment_layout.addWidget(self.dof_group)
 
         # ============================================================
-        # GROUP 4 — Flight Controls
+        # Group 4 — Flight Controls
         # ============================================================
         self.fc_group = QGroupBox("Select Flight Controls")
         self.fc_group.setStyleSheet(self._box_style())
@@ -148,10 +133,23 @@ class MissionSegmentWidget(QWidget):
         fc_layout.addWidget(self.flight_controls_widget)
         self.segment_layout.addWidget(self.fc_group)
 
-        # SIGNALS
-        self.top_dropdown.currentIndexChanged.connect(self._on_top_dropdown_change)
-        self.nested_dropdown.currentIndexChanged.connect(self.update_subsegment_fields)
+        # ============================================================
+        # Signals
+        # ============================================================
+        self.top_dropdown.currentIndexChanged.connect(
+            self._on_top_dropdown_change
+        )
+        self.nested_dropdown.currentIndexChanged.connect(
+            self.update_subsegment_fields
+        )
+        self.segment_name_input.textChanged.connect(
+            self._on_segment_name_change
+        )
 
+        self._apply_defaults()
+
+    # ============================================================
+    # Styling
     # ============================================================
     def _box_style(self):
         return """
@@ -166,37 +164,146 @@ class MissionSegmentWidget(QWidget):
         """
 
     # ============================================================
-    # DROPDOWN HANDLERS
+    # Dropdown Logic
     # ============================================================
+    def populate_nested_dropdown(self, index):
+        # Clear old subsegment options
+        self.nested_dropdown.clear()
+
+        # Populate subsegments for the selected segment type
+        self.nested_dropdown.addItems(
+            list(segment_data_fields[index].keys())
+        )
+
     def _on_top_dropdown_change(self, idx):
+        # Update available subsegments when segment type changes
         self.populate_nested_dropdown(idx)
+
+        # Rebuild the subsegment-specific input fields
         self.update_subsegment_fields()
 
-    def populate_nested_dropdown(self, index):
-        self.nested_dropdown.clear()
-        self.nested_dropdown.addItems(list(segment_data_fields[index].keys()))
-
     # ============================================================
-    # UPDATE SUBSEGMENT FIELDS
+    # Subsegment Handling
     # ============================================================
     def update_subsegment_fields(self):
+        # Remove the previous subsegment input widget if it exists
         if self.subsegment_entry_widget:
             self.subsegment_entry_widget.setParent(None)
             self.subsegment_entry_widget = None
 
+        # Get the selected segment type and subsegment
         top = self.top_dropdown.currentIndex()
         sub = self.nested_dropdown.currentText()
 
-        if sub == "":
+        # Do nothing if no subsegment is selected
+        if not sub:
             return
 
-        # new dynamic fields
-        data_fields = segment_data_fields[top][sub]
-        self.subsegment_entry_widget = DataEntryWidget(data_fields)
+        # Create input fields for the selected subsegment
+        self.subsegment_entry_widget = DataEntryWidget(
+            segment_data_fields[top][sub]
+        )
+
+        # Add the subsegment fields to the UI
         self.details_layout.addWidget(self.subsegment_entry_widget)
+        
+        # Re-apply DOF and control defaults once subsegment exists
+        if self.dof_entry_widget and self.flight_controls_widget:
+            self._apply_defaults()
+
+    def _default_config_key(self, top_text, sub_text, name_text):
+        # Normalize all inputs so comparisons are consistent
+        top = convert_name(top_text)
+        name = convert_name(name_text)
+
+        # Hard-map RCAIDE mission_setup tags to correct configs
+        if name:
+            tag_map = {
+                "takeoff_ground_run": "takeoff",
+                "takeoff_climb": "takeoff",
+                "inital_climb": "cutback",
+                "initial_climb": "cutback",
+                "climb_to_cruise_1": "cutback",
+                "climb_to_cruise_4": "cruise",
+                "cruise": "cruise",
+                "descent_1": "cruise",
+                "approach": "landing",
+                "final_approach": "landing",
+                "level_off_touchdown": "landing",
+                "landing": "reverse_thrust" if top == "ground" else "landing",
+            }
+            if name in tag_map:
+                return tag_map[name]
+
+        # Fallback to base config if nothing matched
+        return "base"
+
+
+    def _apply_config_default(self, config_key):
+        # Do nothing if no configuration data exists
+        if not values.config_data:
+            return
+
+        # Select the configuration matching the inferred key
+        for idx, cfg in enumerate(values.config_data):
+            if convert_name(cfg.get("config name", "")) == config_key:
+                self.config_selector.setCurrentIndex(idx)
+                break
+
+    def _on_segment_name_change(self, _):
+        # Avoid changing defaults while loading saved data
+        if self._suppress_defaults:
+            return
+
+        # Recompute the correct aircraft configuration
+        config_key = self._default_config_key(
+            self.top_dropdown.currentText(),
+            self.nested_dropdown.currentText(),
+            self.segment_name_input.text(),
+        )
+
+        # Apply the inferred configuration
+        self._apply_config_default(config_key)
+
+
+    def _apply_defaults(self):
+        # Skip defaults when restoring saved missions
+        if self._suppress_defaults:
+            return
+
+        # Read current UI values
+        top_text = self.top_dropdown.currentText()
+        sub_text = self.nested_dropdown.currentText()
+        name_text = self.segment_name_input.text()
+
+        # Ground segments cannot be trimmed
+        needs_trim = convert_name(top_text) != "ground"
+
+        dof_defaults = {}
+
+        # Enable only the forces needed for longitudinal trim
+        for label, _, _ in self.dof_entry_widget.data_units_labels:
+            dof_defaults[label] = (
+                label in {"Forces in X axis", "Forces in Z axis"} and needs_trim,
+                0,
+            )
+
+        # Apply DOF defaults to the UI
+        self.dof_entry_widget.load_data(dof_defaults)
+
+        # Ensure trim has at least throttle and body angle
+        self.flight_controls_widget.set_defaults(
+            throttle=needs_trim,
+            body_angle=needs_trim,
+        )
+
+        # Select the correct aircraft configuration
+        self._apply_config_default(
+            self._default_config_key(top_text, sub_text, name_text)
+        )
 
     # ============================================================
-    # SAVE DATA
+    # Save / Load
     # ============================================================
     def get_data(self):
         data = {
@@ -209,20 +316,18 @@ class MissionSegmentWidget(QWidget):
             "flight forces": self.dof_entry_widget.get_values(),
             "flight controls": self.flight_controls_widget.get_data(),
         }
-
         data.update(self.subsegment_entry_widget.get_values())
         return data, self.create_rcaide_segment()
 
-    # ============================================================
-    # LOAD DATA
-    # ============================================================
     def load_data(self, data):
+        self._suppress_defaults = True
+
         self.segment_name_input.setText(data["Segment Name"])
         self.top_dropdown.setCurrentIndex(data["top dropdown"])
         self.populate_nested_dropdown(data["top dropdown"])
         self.nested_dropdown.setCurrentText(data["nested dropdown"])
         self.config_selector.setCurrentIndex(data["config"])
-        self.ctrl_points.setText(str(data.get("Control Points", 2)))
+        self.ctrl_points.setText(str(data.get("Control Points", 16)))
 
         if data.get("Solver", "root") == "root":
             self.solver_root.setChecked(True)
@@ -234,31 +339,60 @@ class MissionSegmentWidget(QWidget):
         self.dof_entry_widget.load_data(data["flight forces"])
         self.flight_controls_widget.load_data(data["flight controls"])
 
+        self._suppress_defaults = False
+
     # ============================================================
-    # RCAIDE CREATION
+    # RCAIDE Segment Creation
     # ============================================================
     def create_rcaide_segment(self):
         top = self.top_dropdown.currentIndex()
         sub = self.nested_dropdown.currentText()
+
         seg = segment_rcaide_classes[top][sub]()
         seg.tag = self.segment_name_input.text()
 
+        if hasattr(seg, "state") and hasattr(seg.state, "numerics"):
+            solver = (
+                "root_finder"
+                if self.solver_root.isChecked()
+                else "optimize"
+            )
+            # Force cruise to use root_finder for better trim convergence
+            if top == 1:
+                solver = "root_finder"
+            if hasattr(seg.state.numerics, "solver"):
+                seg.state.numerics.solver.type = solver
+
         vals_si = self.subsegment_entry_widget.get_values_si()
-        for label, _, rcaide_label in self.subsegment_entry_widget.data_units_labels:
+        for label, _, rcaide_label in (
+            self.subsegment_entry_widget.data_units_labels
+        ):
             set_data(seg, rcaide_label, vals_si[label][0])
 
         dof_vals = self.dof_entry_widget.get_values()
-        for label, _, rcaide_label in self.dof_entry_widget.data_units_labels:
+        for label, _, rcaide_label in (
+            self.dof_entry_widget.data_units_labels
+        ):
             set_data(seg, rcaide_label, dof_vals[label][0])
-
-        self.flight_controls_widget.set_control_variables(seg)
 
         cfg = convert_name(self.config_selector.currentText())
         analyses = values.rcaide_analyses.get(cfg)
-        if analyses is None:
-            analyses = RCAIDE.Framework.Analyses.Vehicle()
-            values.rcaide_analyses[cfg] = analyses
+        if analyses is None or (hasattr(analyses, "__len__") and len(analyses) == 0):
+            fallback = None
+            for candidate in values.rcaide_analyses.values():
+                if hasattr(candidate, "__len__") and len(candidate) > 0:
+                    fallback = candidate
+                    break
+            if fallback is not None:
+                analyses = fallback
+            else:
+                raise RuntimeError(
+                    "No RCAIDE analyses available. "
+                    "Go to Mission tab and press 'Save Analyses'."
+                )
 
         seg.analyses.extend(analyses)
+        self.flight_controls_widget.set_control_variables(seg)
         seg.control_points = int(self.ctrl_points.text())
+
         return seg

@@ -14,55 +14,69 @@ def suppress_qt_warnings(mode, context, message):
     if "Unknown property" in message:  # hides CSS warnings (Qt Does not support CSS propertieis within Load/Scratch Aircraft (RH column) - Harmless warning, functionality not affected)
         return
     print(message)  
-
 qInstallMessageHandler(suppress_qt_warnings)
 
-BANNER_HEIGHT = 320
-VERTICAL_FOCUS = 0.3
+BANNER_HEIGHT = 320          # Default banner image height in pixels
+VERTICAL_FOCUS = 0.3         # Vertical offset ratio (0 = top, 1 = bottom crop focus)
+
 
 class BannerImage(QLabel):
+    # Displays a banner image that maintains aspect ratio and crops vertically when resized
     def __init__(self, path: str, height: int = BANNER_HEIGHT):
         super().__init__()
-        self._pix = QPixmap(path)
-        self._fixed_h = height
-        self.setFixedHeight(height)
+        self._pix = QPixmap(path)             # Load the image from file
+        self._fixed_h = height                # Store the banner height
+        self.setFixedHeight(height)           # Fix the widget height
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
 
     def resizeEvent(self, e):
+        # Scales and crops the banner image to fill the available width
         if not self._pix.isNull():
+            # Scale image to fill width while keeping aspect ratio
             scaled = self._pix.scaled(
                 self.width(), self._fixed_h,
                 Qt.AspectRatioMode.KeepAspectRatioByExpanding,
                 Qt.TransformationMode.SmoothTransformation
             )
+
+            # Compute how much to crop vertically based on focus ratio
             y_offset = int(max(0, scaled.height() - self._fixed_h) * VERTICAL_FOCUS)
+
+            # Crop the scaled image to fit the fixed height and apply
             cropped = scaled.copy(0, y_offset, self.width(), self._fixed_h)
             self.setPixmap(cropped)
+
+        # Call parent method to ensure normal event behavior
         super().resizeEvent(e)
 
 class HomeWidget(TabWidget):
     def __init__(self):
         super(HomeWidget, self).__init__()
 
-        # Logo Screen
+        # --- Splash logo screen setup ---
         self.splash_label = QLabel()
         self.splash_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.splash_label.setStyleSheet("background-color: #02101d;")
+
+        # Load and scale RCAIDE logo
         pixmap = QPixmap("app_data/images/logo.png")
         self.splash_label.setPixmap(
             pixmap.scaled(260, 260, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         )
 
+        # Add opacity effect for fade animations
         self.splash_opacity = QGraphicsOpacityEffect()
         self.splash_label.setGraphicsEffect(self.splash_opacity)
 
+        # Fade-in animation
         self.fade_in = QPropertyAnimation(self.splash_opacity, b"opacity")
         self.fade_in.setDuration(1800)
         self.fade_in.setStartValue(0)
         self.fade_in.setEndValue(1)
         self.fade_in.setEasingCurve(QEasingCurve.Type.InOutQuad)
 
+        # Fade-out animation
         self.fade_out = QPropertyAnimation(self.splash_opacity, b"opacity")
         self.fade_out.setDuration(1300)
         self.fade_out.setStartValue(1)
@@ -70,25 +84,36 @@ class HomeWidget(TabWidget):
         self.fade_out.setEasingCurve(QEasingCurve.Type.InOutQuad)
         self.fade_out.finished.connect(self._show_homepage_after_splash)
 
+        # --- Main layout container ---
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
+        # Main home widget (hidden until splash finishes)
         self.main_widget = QWidget()
         self.main_widget.setVisible(False)
+
+        # Add both widgets to layout
         self.layout.addWidget(self.splash_label)
         self.layout.addWidget(self.main_widget)
 
+        # Build main UI components
         self._build_main_ui()
+
+        # Start splash animation with short delay
         QTimer.singleShot(200, self._start_splash)
 
     def _start_splash(self):
+        """Starts the splash logo fade-in, then triggers fade-out."""
         self.fade_in.start()
         self.fade_in.finished.connect(lambda: QTimer.singleShot(800, self.fade_out.start))
 
     def _show_homepage_after_splash(self):
+        """Switches from splash logo to main home screen with fade-in."""
         self.splash_label.hide()
         self.main_widget.setVisible(True)
+
+        # Apply fade-in effect to main content
         home_opacity = QGraphicsOpacityEffect()
         self.main_widget.setGraphicsEffect(home_opacity)
         home_opacity.setOpacity(0.0)
@@ -100,10 +125,14 @@ class HomeWidget(TabWidget):
         self.home_fade_in.setEasingCurve(QEasingCurve.Type.InOutQuad)
         self.home_fade_in.finished.connect(lambda: self.main_widget.setGraphicsEffect(None))
         self.home_fade_in.start()
+
+        # Play fade sequence for banner and flowchart
         self.play_fade_sequence()
+
+        # Adjust layout for current screen or fullscreen mode
         self.adjust_for_screen(force=True)
 
-    # Main UI
+    # --- Main UI ----
     def _build_main_ui(self):
         base_layout = QVBoxLayout(self.main_widget)
         base_layout.setSpacing(0)
@@ -125,41 +154,64 @@ class HomeWidget(TabWidget):
         header_layout.setContentsMargins(12, 12, 12, 0)
         header_layout.setSpacing(10)
 
-        # Tab URLs
+        # --- Tab URLs ---
         website_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com")))
         github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/leadsgroup")))
         docs_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.docs.rcaide.leadsresearchgroup.com")))
         contribute_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
         contact_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
 
-        # Banner Section
+        # --- Banner Section ---
+        # Container for the banner image and overlay text
         banner_container = QFrame()
         banner_container.setFixedHeight(BANNER_HEIGHT)
         banner_container.setStyleSheet("border:none; background:transparent;")
-        self.banner = BannerImage("app_data/images/background.jpg", height=BANNER_HEIGHT)
 
+        # Background banner image
+        self.banner = BannerImage(
+            "app_data/images/background.jpg",
+            height=BANNER_HEIGHT
+        )
+
+        # Main title and subtitle shown on top of the banner
         self.rcaide_label = QLabel("RCAIDE")
         self.leads_label = QLabel("by L.E.A.D.S (UIUC)")
+
+        # Center text and allow mouse events to pass through
         for lbl in (self.rcaide_label, self.leads_label):
             lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
             lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        self.rcaide_label.setStyleSheet("color:#00BFFF; font-size:46px; font-weight:800; letter-spacing:2px;")
-        self.leads_label.setStyleSheet("color:white; font-size:20px; font-weight:500;")
 
+        # Styling for banner text
+        self.rcaide_label.setStyleSheet(
+            "color:#00BFFF; font-size:46px; font-weight:800; letter-spacing:2px;"
+        )
+        self.leads_label.setStyleSheet(
+            "color:white; font-size:20px; font-weight:500;"
+        )
+
+        # Layout that stacks title and subtitle vertically
         overlay_layout = QVBoxLayout()
         overlay_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         overlay_layout.addWidget(self.rcaide_label)
         overlay_layout.addWidget(self.leads_label)
 
+        # Widget that holds the overlay text (transparent background)
         overlay_widget = QWidget()
         overlay_widget.setLayout(overlay_layout)
         overlay_widget.setStyleSheet("background:transparent;")
 
+        # --- Layout for the banner container ---
+        # Banner image first, then text overlay on top
         banner_layout = QVBoxLayout(banner_container)
         banner_layout.setContentsMargins(0, 0, 0, 0)
         banner_layout.addWidget(self.banner)
-        banner_layout.addWidget(overlay_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+        banner_layout.addWidget(
+            overlay_widget,
+            alignment=Qt.AlignmentFlag.AlignCenter
+        )
 
+        # Add banner section to the main layout
         base_layout.addLayout(header_layout)
         base_layout.addWidget(banner_container)
         base_layout.addWidget(create_line_bar())
@@ -179,7 +231,7 @@ class HomeWidget(TabWidget):
         body_layout.setSpacing(30)
         body_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-    # Left Column: How To Use GUI Flowchart
+    # --- Left Column: How To Use GUI Flowchart Image ---
         self.flowchart_frame = QFrame()
         self.flowchart_frame.setStyleSheet("""
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -219,7 +271,7 @@ class HomeWidget(TabWidget):
         flowchart_layout.addWidget(self.flowchart_image, alignment=Qt.AlignmentFlag.AlignCenter)
         flowchart_layout.addStretch(1)
         
-        # Right Column: Load Aircraft / Mission Or Start From Scratch
+        # --- Right Column: Load Aircraft / Mission Or Start From Scratch ---
         self.mission_frame = QFrame()
         self.mission_frame.setObjectName("missionPanel")
         self.mission_frame.setStyleSheet("""
@@ -263,11 +315,12 @@ QPushButton:hover {
         mission_layout.setSpacing(30)
         mission_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Title
+    # --- Mission Panel Title Section ---
         title_container = QVBoxLayout()
         title_container.setSpacing(10)
         title_container.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        # Main section title text
         mission_label = QLabel("Get Started")
         mission_label.setFixedHeight(40)
         mission_label.setStyleSheet("""
@@ -279,6 +332,7 @@ QPushButton:hover {
             padding-bottom: 6px;
         """)
 
+        # Decorative underline below the title
         underline = QFrame()
         underline.setFixedHeight(5)
         underline.setFixedWidth(180)
@@ -295,31 +349,38 @@ QPushButton:hover {
             }
         """)
 
+        # Add title and underline to vertical layout
         title_container.addWidget(mission_label, alignment=Qt.AlignmentFlag.AlignCenter)
         title_container.addWidget(underline, alignment=Qt.AlignmentFlag.AlignCenter)
         mission_layout.addLayout(title_container)
 
+        # Subtitle text under the title
         subtitle = QLabel("Quickly set up or define your aircraft mission.")
         subtitle.setStyleSheet("color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 400;")
         mission_layout.addWidget(subtitle, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Buttons
+        # Horizontal layout for the load row
         load_row = QHBoxLayout()
         load_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         load_row.setSpacing(15)
 
+        # Button to load a predefined aircraft and mission setup
         load_btn = QPushButton("Load Aircraft and Mission")
         load_btn.setMinimumWidth(230)
         load_btn.setFixedHeight(42)
 
+        # Dropdown selector for available aircraft types
         aircraft_selector = QComboBox()
-        aircraft_selector.addItems(["Select Aircraft","Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"])
+        aircraft_selector.addItems(["Select Aircraft", "Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"])
         aircraft_selector.setFixedWidth(180)
 
+        # Add button and dropdown to the same row
         load_row.addWidget(load_btn)
         load_row.addWidget(aircraft_selector)
         mission_layout.addLayout(load_row)
 
+        # Divider line between the load and scratch sections
         divider = QFrame()
         divider.setFixedHeight(2)
         divider.setStyleSheet("""
@@ -338,6 +399,7 @@ QPushButton:hover {
         """)
         mission_layout.addWidget(divider)
 
+        # Button to start a new mission from scratch
         scratch_btn = QPushButton("Start from Scratch")
         scratch_btn.setMinimumWidth(250)
         scratch_btn.setFixedHeight(42)
@@ -349,7 +411,7 @@ QPushButton:hover {
         scratch_container.addWidget(scratch_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         mission_layout.addLayout(scratch_container)
 
-                # === Navigation Handler [Anshrin PR 1] ===
+        # Navigation Handler
         def go_to_geometry_tab(selected_aircraft=None):
             # Find the TabWidget that contains this HomeWidget
             parent = self.window()
@@ -398,7 +460,7 @@ QPushButton:hover {
                 except Exception as e:
                     print(f"[Home] Geometry tab load error: {e}")
 
-        # --- Button Logic ---
+        # Button Logic
         def handle_load_click():
             aircraft = aircraft_selector.currentText().strip()
             if aircraft == "Select Aircraft":
@@ -419,7 +481,6 @@ QPushButton:hover {
         load_btn.clicked.connect(handle_load_click)
         scratch_btn.clicked.connect(handle_scratch_click)
 
-
         # Sizes
         self._normal_flowchart_size = QSize(620, 320)
         self._normal_mission_size = QSize(550, 310)
@@ -437,65 +498,97 @@ QPushButton:hover {
         footer.setFixedHeight(12)
         footer.setStyleSheet("background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #004080, stop:1 #001A33);")
         base_layout.addWidget(footer)
-
         self.setup_fade_animations()
 
     def resizeEvent(self, event):
+        # Called when the widget is resized
         super().resizeEvent(event)
+
+        # Update sizes based on window state
         self.adjust_for_screen()
 
     def adjust_for_screen(self, force=False):
+        # Get the main application window
         window = self.window()
         if not window:
             return
+
+        # Check if the window is fullscreen
         is_fullscreen = window.isFullScreen()
+
+        # Pick scale factor (larger in fullscreen)
         scale = self._fullscreen_scale if is_fullscreen else 1.0
 
+        # Scale flowchart and mission frame sizes
         flow_w = int(self._normal_flowchart_size.width() * scale)
         flow_h = int(self._normal_flowchart_size.height() * scale)
         mission_w = int(self._normal_mission_size.width() * scale)
         mission_h = int(self._normal_mission_size.height() * scale)
 
+        # Apply new sizes
         self.flowchart_frame.setFixedSize(flow_w, flow_h)
         self.mission_frame.setFixedSize(mission_w, mission_h)
+
+        # Refresh layout and redraw
         self.updateGeometry()
         self.repaint()
 
     def setup_fade_animations(self):
+        # Create a simple fade-in animation for a widget
         def make_fade(widget, duration=2000):
             effect = QGraphicsOpacityEffect()
             widget.setGraphicsEffect(effect)
+
             anim = QPropertyAnimation(effect, b"opacity")
             anim.setDuration(duration)
             anim.setStartValue(0)
             anim.setEndValue(1)
             anim.setEasingCurve(QEasingCurve.Type.InOutCubic)
+
             return effect, anim
 
-        self.banner_effect, self.banner_anim = make_fade(self.banner, 2000)
-        self.flowchart_effect, self.flow_anim = make_fade(self.flowchart_frame, 2000)
-        self.mission_effect, self.mission_anim = make_fade(self.mission_frame, 2000)
+        # Fade animations for main UI elements
+        self.banner_effect, self.banner_anim = make_fade(self.banner)
+        self.flowchart_effect, self.flow_anim = make_fade(self.flowchart_frame)
+        self.mission_effect, self.mission_anim = make_fade(self.mission_frame)
+
+        # Fade animations for labels (slightly faster)
         self.rcaide_effect, self.rcaide_anim = make_fade(self.rcaide_label, 1800)
         self.leads_effect, self.leads_anim = make_fade(self.leads_label, 1800)
 
     def play_fade_sequence(self):
+        # Start main content fade-in
         def start_group1():
             self.banner_anim.start()
             self.flow_anim.start()
             self.mission_anim.start()
+
+            # Start label fade-in after a short delay
             QTimer.singleShot(1200, start_group2)
 
+        # Fade in branding labels
         def start_group2():
             self.rcaide_label.setVisible(True)
             self.leads_label.setVisible(True)
+
             self.rcaide_anim.start()
             self.leads_anim.start()
-            self.rcaide_anim.finished.connect(lambda: self.rcaide_label.setGraphicsEffect(None))
-            self.leads_anim.finished.connect(lambda: self.leads_label.setGraphicsEffect(None))
 
+            # Clean up effects after animation
+            self.rcaide_anim.finished.connect(
+                lambda: self.rcaide_label.setGraphicsEffect(None)
+            )
+            self.leads_anim.finished.connect(
+                lambda: self.leads_label.setGraphicsEffect(None)
+            )
+
+        # Hide labels before animation starts
         self.rcaide_label.setVisible(False)
         self.leads_label.setVisible(False)
+
+        # Small delay before starting animations
         QTimer.singleShot(100, start_group1)
 
 def get_widget() -> QWidget:
+    # Return the home screen widget
     return HomeWidget()

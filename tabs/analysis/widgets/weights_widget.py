@@ -79,5 +79,5 @@ class WeightsWidget(AnalysisDataWidget):
         selected_option = self.weight_selection.currentText()
         # if selected_option == "No selection":
         #     return None
-        weights = RCAIDE.Framework.Analyses.Weights.Conventional() 
+        weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
         return weights

@@ -15,8 +15,18 @@ class MissionAnalysisWidget(TabWidget):
     def __init__(self):
         super(MissionAnalysisWidget, self).__init__()
 
-        options = ["Aerodynamics", "Atmospheric", "Planets", "Weights", "Geometry",
-                   "Propulsion", "Costs", "Noise", "Stability"]
+        options = [
+            "Aerodynamics",
+            "Atmospheric",
+            "Planets",
+            "Weights",
+            "Geometry",
+            "Energy",
+            "Propulsion",
+            "Costs",
+            "Aeroacoustics",
+            "Stability",
+        ]
 
         self.tree_frame_layout = QVBoxLayout()
         self.tree_widget = QTreeWidget()
@@ -35,7 +45,7 @@ class MissionAnalysisWidget(TabWidget):
 
         for index, option in enumerate(options):
             item = QTreeWidgetItem([option])
-            if index > 4:
+            if index > 5:
                 item.setCheckState(1, Qt.CheckState.Unchecked)
             else:
                 item.setData(1, Qt.ItemDataRole.CheckStateRole, Qt.CheckState.Checked)
@@ -55,15 +65,23 @@ class MissionAnalysisWidget(TabWidget):
         assert self.main_layout is not None and isinstance(self.main_layout, QVBoxLayout)
 
         self.analysis_widgets = [
-            AerodynamicsWidget, AtmosphereWidget, PlanetsWidget, WeightsWidget, GeometryWidget,
-            PropulsionWidget, CostsWidget, NoiseWidget, StabilityWidget
+            AerodynamicsWidget,
+            AtmosphereWidget,
+            PlanetsWidget,
+            WeightsWidget,
+            GeometryWidget,
+            EnergyWidget,
+            PropulsionWidget,
+            CostsWidget,
+            AeroacousticsWidget,
+            StabilityWidget,
         ]
         self.widgets = []
 
         for index, analysis_widget in enumerate(self.analysis_widgets):
             widget = analysis_widget()
             assert isinstance(widget, AnalysisDataWidget)
-            if index >= 4:
+            if index >= 5:
                 widget.setVisible(False)
             else:
                 widget.setVisible(True)
@@ -107,21 +125,38 @@ class MissionAnalysisWidget(TabWidget):
         return top_level_item.checkState(1) == Qt.CheckState.Checked
 
     def save_analyses(self):
+        if (not getattr(values, "config_data", None) and
+                not getattr(values, "rcaide_configs", None)):
+            raise RuntimeError(
+                "No aircraft configuration data found. "
+                "Create a configuration in the Aircraft Configs tab."
+            )
+        if (not getattr(values, "rcaide_configs", None) or
+                not values.rcaide_configs):
+            from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
+            try:
+                values.rcaide_configs = build_rcaide_configs_from_geometry()
+            except Exception as exc:
+                raise RuntimeError(
+                    "No RCAIDE configurations found. "
+                    "Save a configuration in the Aircraft Configs tab."
+                ) from exc
         values.analysis_data = []
+        values.rcaide_analyses = {}
+
         for tag, config in values.rcaide_configs.items():
+
             analysis = RCAIDE.Framework.Analyses.Vehicle()
+            analysis.vehicle = config 
+            
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
-                if self.get_check_state(index) or index == len(self.analysis_widgets) - 1:
+
+                if self.get_check_state(index):
                     analysis.append(widget.create_analysis(config))
 
-            energy = RCAIDE.Framework.Analyses.Energy.Energy()
-            energy.vehicle = config
-            analysis.append(energy)
+            # energy = RCAIDE.Framework.Analyses.Energy.Energy()   # NEED TO BE MADE AN ANALYSIS
+            # analysis.append(energy)
 
             values.rcaide_analyses[tag] = analysis
-
-        for index, widget in enumerate(self.widgets):
-            data = widget.get_values()
-            data["enabled"] = self.get_check_state(index)
-            values.analysis_data.append(data)
+            values.analysis_data.append(analysis)

@@ -19,13 +19,13 @@ class AircraftConfigsWidget(TabWidget):
         super(AircraftConfigsWidget, self).__init__()
 
         # Define actions based on the selected index
-        self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame, NacelleFrame,
-                                                  LandingGearFrame, EnergyNetworkFrame]
-        self.tabs = ["", "Fuselages", "Wings", "Nacelles",
-                     "Landing Gear", "Energy Networks"]
+        self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame,
+                                                  LandingGearFrame, PowertrainFrame]
+        
+        self.tabs = ["", "Booms", "Cargo Bars", "Fuselages","Landing Gear","Wings",  "Powertrain"]
 
-        options = ["Select An Option", "Add Fuselage", "Add Wing", "Add Nacelle", "Add Landing Gear",
-                   "Add Energy Network"]
+        options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
+                   "Add Landing Gear" , "Add Powertrain", "Add Wing"]
         
         self.selected_config_index = 0
 

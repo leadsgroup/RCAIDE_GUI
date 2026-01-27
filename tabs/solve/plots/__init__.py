@@ -9,7 +9,7 @@ from .common              import *
 from .emissions           import *  
 from .energy              import * 
 from .mission             import *  
-from .noise               import *
+from .aeroacoustics       import *
 from .thermal_management  import * 
 from .stability           import * 
 from .weights             import *
