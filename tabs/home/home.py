@@ -9,6 +9,7 @@ from utilities import create_line_bar
 from tabs import TabWidget
 from widgets.image_widget import ImageWidget
 from PyQt6.QtCore import qInstallMessageHandler
+import os 
 
 def suppress_qt_warnings(mode, context, message):
     if "Unknown property" in message:  # hides CSS warnings (Qt Does not support CSS propertieis within Load/Scratch Aircraft (RH column) - Harmless warning, functionality not affected)
@@ -166,10 +167,11 @@ class HomeWidget(TabWidget):
         banner_container = QFrame()
         banner_container.setFixedHeight(BANNER_HEIGHT)
         banner_container.setStyleSheet("border:none; background:transparent;")
-
+    
+        separator = os.path.sep
         # Background banner image
         self.banner = BannerImage(
-            "app_data/images/background.jpg",
+            "app_data" + separator + "images" + separator + "background.jpg",
             height=BANNER_HEIGHT
         )
 
@@ -246,7 +248,7 @@ class HomeWidget(TabWidget):
         flowchart_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Load High-Resolution Flowchart Image
-        original_pix = QPixmap("app_data/images/flowchart.png")
+        original_pix = QPixmap("app_data" + separator + "images" + separator + "flowchart.png")
         if not original_pix.isNull():
             screen = QApplication.primaryScreen()
             dpr = screen.devicePixelRatio() if screen else 1.0

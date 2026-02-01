@@ -1,4 +1,3 @@
-import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction
@@ -9,6 +8,8 @@ import values
 from tabs import *
 from tabs.visualize_geometry import visualize_geometry
 
+import sys
+import os 
 
 class App(QMainWindow):
     def __init__(self):
@@ -88,7 +89,8 @@ class App(QMainWindow):
             # widget.save_to_values()
           
         json_data = values.write_to_json()
-        name = QFileDialog.getSaveFileName(self, 'Save File', "app_data/aircraft/", "JSON (*.json)")[0]
+        separator = os.path.sep
+        name      = QFileDialog.getSaveFileName(self, 'Save File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
         
         # Check if name has suffix, append if necessary
         if not QFileInfo(name).suffix():
@@ -99,7 +101,8 @@ class App(QMainWindow):
         file.close()
     
     def load_all(self):
-        name = QFileDialog.getOpenFileName(self, 'Open File', "app_data/aircraft/", "JSON (*.json)")[0]
+        separator = os.path.sep
+        name      = QFileDialog.getOpenFileName(self, 'Open File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
         
         try:
             file = open(name, 'r')
