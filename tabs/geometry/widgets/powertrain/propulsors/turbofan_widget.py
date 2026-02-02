@@ -1,3 +1,4 @@
+from lib2to3.pytree import convert # CHECK 
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy
 from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget
