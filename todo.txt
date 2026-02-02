@@ -4,8 +4,10 @@ Geometry Parameterization Tab
 Matthew- Change name to Vehicle Set-up Default tree as expanded when aircraft is loaded
 Anshrin- Add small visualization window in lower left hand corner
 - Add export/import features (FUTURE)
+
 Mihir- Add airfoil selection for nacelle @geometry
 Mihir- Nacelleframe into powertrain and make sure connectivity exists
+
 Geometry Visualization tab
 Matthew- Change tab name to visualization (in anticipation of network)
 - Add a button in the main window that switched for network to aircraft visualization (FUTURE)
@@ -18,13 +20,18 @@ Anshrin- New Configuration button instantiates empty field but does not save the
 Anshrin- Save Data button should append it to the tree
 Anshrin- Delete Data button should remove it from three
 Aircraft Performance
+
 Mihir- Swap performance and mission specification
+
 Matthew- Change name to Multidisciplinary Analysis
 Aircraft Analyses Tab
+
 Mihir-****Put back analyses tab *****
+
 Solve Tab
 Anshrin- Connect the solve results to the plot
 General
 All- Data Entry Checks
 Matthew- Add more units
+
 Mihir- Dark theme (First)

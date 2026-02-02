@@ -115,7 +115,12 @@ class App(QMainWindow):
 
 
 app = QApplication(sys.argv)
-qdarktheme.setup_theme()
+try:
+    qdarktheme.setup_theme()
+except:
+    print("Could not load the 'normal' dark theme")
+    stylesheet = qdarktheme.load_stylesheet()
+    app.setStyleSheet(stylesheet)
 window = App()
 window.show()
 sys.exit(app.exec())
