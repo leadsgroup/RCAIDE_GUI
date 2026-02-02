@@ -1,15 +1,14 @@
 from PyQt6.QtCore import QSize, Qt, QPropertyAnimation, QEasingCurve, QTimer, QUrl
 from PyQt6.QtGui import QPixmap, QDesktopServices
 from PyQt6.QtWidgets import (
-    QFrame, QGridLayout, QPushButton, QSizePolicy,
-    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect, QFileDialog
+    QComboBox, QFrame, QGridLayout, QPushButton, QSizePolicy,
+    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect
 )
 from PyQt6.QtWidgets import QApplication
 from utilities import create_line_bar
 from tabs import TabWidget
 from widgets.image_widget import ImageWidget
 from PyQt6.QtCore import qInstallMessageHandler
-import values
 
 def suppress_qt_warnings(mode, context, message):
     if "Unknown property" in message:  # hides CSS warnings (Qt Does not support CSS propertieis within Load/Scratch Aircraft (RH column) - Harmless warning, functionality not affected)
@@ -288,6 +287,13 @@ QLabel {
     font-size: 22px;
     font-weight: bold;
 }
+QComboBox {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 16px;
+    padding: 6px;
+    border-radius: 8px;
+}
 QPushButton {
     background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
         stop:0 #0099FF, stop:1 #0066CC);
@@ -364,8 +370,14 @@ QPushButton:hover {
         load_btn.setMinimumWidth(230)
         load_btn.setFixedHeight(42)
 
-        # Add button to the row
+        # Dropdown selector for available aircraft types
+        aircraft_selector = QComboBox()
+        aircraft_selector.addItems(["Select Aircraft", "Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"])
+        aircraft_selector.setFixedWidth(180)
+
+        # Add button and dropdown to the same row
         load_row.addWidget(load_btn)
+        load_row.addWidget(aircraft_selector)
         mission_layout.addLayout(load_row)
 
         # Divider line between the load and scratch sections
@@ -449,62 +461,23 @@ QPushButton:hover {
                     print(f"[Home] Geometry tab load error: {e}")
 
         # Button Logic
-        def load_all_from_dialog():
-            # Match the File -> Load dialog (open JSON aircraft data). Same functionality as top left file button
-            name = QFileDialog.getOpenFileName(self, "Open File", "app_data/aircraft/", "JSON (*.json)")[0]
-            if not name:
-                return False
-
-            # Read the selected file and initialize global runtime values.
-            try:
-                with open(name, "r") as file:
-                    data_str = file.read()
-            except FileNotFoundError:
-                return False
-
-            values.read_from_json(data_str)
-
-            # Priortize the main window's widget list to refresh all tabs.
-            parent = self.window()
-            if parent and hasattr(parent, "widgets"):
-                for widget, _name in parent.widgets:
-                    if hasattr(widget, "load_from_values"):
-                        try:
-                            widget.load_from_values()
-                        except Exception as e:
-                            print(f"[Home] Widget load error: {e}")
-                return True
-
-            # Fallback: walk the QTabWidget if the widget list isn't available.
-            tabs = None
-            if parent and hasattr(parent, "tabs"):
-                tabs = parent.tabs
-            elif parent and hasattr(parent, "tab_widget"):
-                tabs = parent.tab_widget
-
-            if tabs:
-                for i in range(tabs.count()):
-                    w = tabs.widget(i)
-                    if hasattr(w, "load_from_values"):
-                        try:
-                            w.load_from_values()
-                        except Exception as e:
-                            print(f"[Home] Widget load error: {e}")
-                return True
-
-            # If nothing else worked, signal failure and stay on Home.
-            return False
-
         def handle_load_click():
-            # Load file, then navigate to Geometry on success.
-            if load_all_from_dialog():
-                go_to_geometry_tab()
+            aircraft = aircraft_selector.currentText().strip()
+            if aircraft == "Select Aircraft":
+                print("[Home] No aircraft selected — staying on Home page.")
+                # Optional: show a small warning popup
+                from PyQt6.QtWidgets import QMessageBox
+                msg = QMessageBox()
+                msg.setWindowTitle("Select an Aircraft")
+                msg.setText("Please select an aircraft before loading mission data.")
+                msg.setIcon(QMessageBox.Icon.Warning)
+                msg.exec()
+                return
+            go_to_geometry_tab(selected_aircraft=aircraft)
 
         def handle_scratch_click():
-            # Start from scratch: just navigate to Geometry.
             go_to_geometry_tab()
 
-        # Wire up Home buttons to their handlers.
         load_btn.clicked.connect(handle_load_click)
         scratch_btn.clicked.connect(handle_scratch_click)
 
