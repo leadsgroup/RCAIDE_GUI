@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QSize, Qt, QPropertyAnimation, QEasingCurve, QTimer, QUrl
 from PyQt6.QtGui import QPixmap, QDesktopServices
 from PyQt6.QtWidgets import (
-    QComboBox, QFrame, QGridLayout, QPushButton, QSizePolicy,
+    QFrame, QGridLayout, QPushButton, QSizePolicy,
     QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect
 )
 from PyQt6.QtWidgets import QApplication
@@ -289,14 +289,7 @@ QLabel {
     font-size: 22px;
     font-weight: bold;
 }
-QComboBox {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-    font-size: 16px;
-    padding: 6px;
-    border-radius: 8px;
-}
-QPushButton {
+        QPushButton {
     background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
         stop:0 #0099FF, stop:1 #0066CC);
     color: white;
@@ -372,14 +365,8 @@ QPushButton:hover {
         load_btn.setMinimumWidth(230)
         load_btn.setFixedHeight(42)
 
-        # Dropdown selector for available aircraft types
-        aircraft_selector = QComboBox()
-        aircraft_selector.addItems(["Select Aircraft", "Boeing 737-800", "Airbus A321neo", "ATR-72", "Dash-8 Q400"])
-        aircraft_selector.setFixedWidth(180)
-
-        # Add button and dropdown to the same row
+        # Add button to the same row
         load_row.addWidget(load_btn)
-        load_row.addWidget(aircraft_selector)
         mission_layout.addLayout(load_row)
 
         # Divider line between the load and scratch sections
@@ -414,7 +401,7 @@ QPushButton:hover {
         mission_layout.addLayout(scratch_container)
 
         # Navigation Handler
-        def go_to_geometry_tab(selected_aircraft=None):
+        def go_to_geometry_tab():
             # Find the TabWidget that contains this HomeWidget
             parent = self.window()
             tabs = None
@@ -456,26 +443,19 @@ QPushButton:hover {
             # Switch and initialize
             tabs.setCurrentIndex(idx)
             w = tabs.widget(idx)
-            if hasattr(w, "load_from_values"):
+            if hasattr(w, "update_layout"):
                 try:
-                    w.load_from_values()
+                    w.update_layout()
                 except Exception as e:
-                    print(f"[Home] Geometry tab load error: {e}")
+                    print(f"[Home] Geometry tab update error: {e}")
 
         # Button Logic
         def handle_load_click():
-            aircraft = aircraft_selector.currentText().strip()
-            if aircraft == "Select Aircraft":
-                print("[Home] No aircraft selected — staying on Home page.")
-                # Optional: show a small warning popup
-                from PyQt6.QtWidgets import QMessageBox
-                msg = QMessageBox()
-                msg.setWindowTitle("Select an Aircraft")
-                msg.setText("Please select an aircraft before loading mission data.")
-                msg.setIcon(QMessageBox.Icon.Warning)
-                msg.exec()
+            parent = self.window()
+            if hasattr(parent, "load_all"):
+                parent.load_all()
+                go_to_geometry_tab()
                 return
-            go_to_geometry_tab(selected_aircraft=aircraft)
 
         def handle_scratch_click():
             go_to_geometry_tab()

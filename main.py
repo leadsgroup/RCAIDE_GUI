@@ -112,10 +112,30 @@ class App(QMainWindow):
         data_str = file.read()
         file.close()
         values.read_from_json(data_str)
+        # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
+        for i, (widget, tab_name) in enumerate(self.widgets):
+            if tab_name == "Geometry Parameterization":
+                # Keep the loaded geometry data before rebuilding the widget
+                loaded_geometry = values.geometry_data
+                # Remembers which tab the user was on
+                current_index = self.tabs.currentIndex()
+                # Remove the old Geometry tab (it holds duplicated UI state)
+                self.tabs.removeTab(i)
+                # Create a fresh Geometry widget
+                new_widget = geometry.get_widget()
+                # Restore the loaded geometry data for load_from_values()
+                values.geometry_data = loaded_geometry
+                # Insert the fresh tab back into the same position
+                self.tabs.insertTab(i, new_widget, tab_name)
+                # Update our cached widgets list.
+                self.widgets[i] = (new_widget, tab_name)
+                # Put the user back on the same tab if they were on Geometry
+                if current_index == i:
+                    self.tabs.setCurrentIndex(i)
+                break
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
             widget.load_from_values()
-
 
 app = QApplication(sys.argv)
 try:

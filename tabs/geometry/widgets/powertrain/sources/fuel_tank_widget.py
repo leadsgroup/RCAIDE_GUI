@@ -78,13 +78,14 @@ class FuelTankWidget(GeometryDataWidget):
         fuel_tank.tag        = title
         fuel_tank.origin     = data["Fuel Tank Origin"][0]  
         fuel_tank.lengths.external               = 1.0
-        fuel_tank.lengths.interal                = 0.5   
+        fuel_tank.lengths.internal                = 0.5   
         fuel_tank.widths.external                = 1.0
-        fuel_tank.widths.interal                 = 0.5 
+        fuel_tank.widths.internal                 = 0.5 
         fuel_tank.heights.external               = 1.0
         fuel_tank.heights.internal               = 0.5  
         fuel_tank.diameters.external             = 1.0
         fuel_tank.diameters.internal             = 0.5 
+
 
         fuel = RCAIDE.Library.Attributes.Propellants.Jet_A1()
         fuel.mass_properties.mass = data["Mass"][0]
