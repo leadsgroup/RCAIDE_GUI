@@ -17,6 +17,7 @@ from tabs.visualize_geometry import vehicle
 from PyQt6.QtGui import QIcon
 
 import matplotlib.colors as mcolors 
+import numpy as np
 import vtk
 import values
 import os
@@ -603,9 +604,10 @@ class VisualizeGeometryWidget(TabWidget):
         self.render_window_interactor.SetInteractorStyle(custom_style)
 
         # self.vtkWidget.show()
-        # Start the VTK interactor
+        # QVTKRenderWindowInteractor is driven by Qt's event loop.
+        # Start() can block/hang on macOS; just initialize and render once.
         self.render_window_interactor.Initialize()
-        self.render_window_interactor.Start()
+        self.vtkWidget.GetRenderWindow().Render()
         self.get_camera=self.renderer.GetActiveCamera()
         self.update_toolbar()
         if values.vehicle.wings:
