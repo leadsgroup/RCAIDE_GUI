@@ -2,8 +2,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction
-from PyQt6.QtCore import QFileInfo
-import qdarktheme
+from PyQt6.QtCore import QFileInfo 
 
 import values
 from tabs import *
@@ -114,13 +113,7 @@ class App(QMainWindow):
             widget.load_from_values()
 
 
-app = QApplication(sys.argv)
-try:
-    qdarktheme.setup_theme()
-except:
-    print("Could not load the 'normal' dark theme")
-    stylesheet = qdarktheme.load_stylesheet()
-    app.setStyleSheet(stylesheet)
+app = QApplication(sys.argv) 
 window = App()
 window.show()
 sys.exit(app.exec())
