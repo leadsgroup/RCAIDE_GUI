@@ -107,7 +107,7 @@
                 0,
                 0
             ],
-            "name": ""
+            "name": "Boeing 737-800"
         },
         [],
         [],
@@ -670,15 +670,15 @@
                     0
                 ],
                 "Origin": [
-                                [
-                                    [
-                                        18,
-                                        0.0,
-                                        -2
-                                    ]
-                                ],
-                                0
-                            ],
+                    [
+                        [
+                            18,
+                            0.0,
+                            -2
+                        ]
+                    ],
+                    0
+                ],
                 "Wheels": [
                     4,
                     0
@@ -716,15 +716,15 @@
                     0
                 ],
                 "Origin": [
-                                [
-                                    [
-                                        5,
-                                        0.0,
-                                        -2
-                                    ]
-                                ],
-                                0
-                            ],
+                    [
+                        [
+                            5,
+                            0.0,
+                            -2
+                        ]
+                    ],
+                    0
+                ],
                 "Wheels": [
                     2,
                     0
@@ -911,7 +911,42 @@
                                 0
                             ],
                             "Propulsor Tag": "starboard_propulsor",
-                            "Nacelle Tag": "nacelle_2"
+                            "nacelle_data": {
+                                "Nacelle Length": [
+                                    2.71,
+                                    0
+                                ],
+                                "Inlet Diameter": [
+                                    2.0,
+                                    0
+                                ],
+                                "Diameter": [
+                                    1.6,
+                                    0
+                                ],
+                                "Nacelle Origin": [
+                                    [
+                                        [
+                                            13.5,
+                                            4.38,
+                                            -1.5
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Wetted Area": [
+                                    14.9841,
+                                    0
+                                ],
+                                "Flow Through": [
+                                    true,
+                                    0
+                                ],
+                                "Nacelle Type": "Body of Revolution",
+                                "Airfoil Type": "NACA 4-Series",
+                                "Airfoil Code": "2412",
+                                "sections": []
+                            }
                         },
                         {
                             "Origin": [
@@ -1025,7 +1060,42 @@
                                 0
                             ],
                             "Propulsor Tag": "port_propulsor",
-                            "Nacelle Tag": "nacelle_1"
+                            "nacelle_data": {
+                                "Nacelle Length": [
+                                    2.71,
+                                    0
+                                ],
+                                "Inlet Diameter": [
+                                    2.0,
+                                    0
+                                ],
+                                "Diameter": [
+                                    1.6,
+                                    0
+                                ],
+                                "Nacelle Origin": [
+                                    [
+                                        [
+                                            13.5,
+                                            -4.38,
+                                            -1.5
+                                        ]
+                                    ],
+                                    0
+                                ],
+                                "Wetted Area": [
+                                    14.9841,
+                                    0
+                                ],
+                                "Flow Through": [
+                                    true,
+                                    0
+                                ],
+                                "Nacelle Type": "Body of Revolution",
+                                "Airfoil Type": "NACA 4-Series",
+                                "Airfoil Code": "2412",
+                                "sections": []
+                            }
                         }
                     ],
                     "converter data": [
@@ -2414,6 +2484,8 @@
     "propulsor_names": [
         [
             "starboard_propulsor",
+            "starboard_propulsor",
+            "port_propulsor",
             "port_propulsor"
         ]
     ]
