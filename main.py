@@ -1,8 +1,7 @@
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction
-from PyQt6.QtCore import QFileInfo
-import qdarktheme
+from PyQt6.QtCore import QFileInfo 
 
 import values
 from tabs import *
@@ -54,8 +53,9 @@ class App(QMainWindow):
         self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
         # make one shared analysis widget for both tabs
         shared_analysis_widget = analysis.get_widget() 
-        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
         self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Specification")) 
+        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
+
         self.widgets.append((solve.get_widget(), "Flight Simulation"))
 
         for widget, name in self.widgets:
@@ -138,12 +138,6 @@ class App(QMainWindow):
             widget.load_from_values()
 
 app = QApplication(sys.argv)
-try:
-    qdarktheme.setup_theme()
-except:
-    print("Could not load the 'normal' dark theme")
-    stylesheet = qdarktheme.load_stylesheet()
-    app.setStyleSheet(stylesheet)
 window = App()
 window.show()
 sys.exit(app.exec())

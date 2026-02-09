@@ -11,6 +11,5 @@ from tabs.geometry.frames.booms import *
 from tabs.geometry.frames.cargo_bays import * 
 from tabs.geometry.frames.fuselages import * 
 from tabs.geometry.frames.landing_gears import * 
-from tabs.geometry.frames.nacelles import * 
 from tabs.geometry.frames.powertrain import * 
 from tabs.geometry.frames.wings import * 
