@@ -6,7 +6,8 @@ import RCAIDE
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import (
     QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget,
-    QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy, QScrollArea, QGroupBox
+    QLabel, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy, QScrollArea, QGroupBox,
+    QMessageBox, QInputDialog
 )
 
 from tabs import TabWidget
@@ -44,13 +45,6 @@ class AircraftConfigsWidget(TabWidget):
         # --- Configuration editor (right side) ---
         self.main_layout = QVBoxLayout()
 
-        # Config name field (for selected config)
-        name_layout = QHBoxLayout()
-        self.name_line_edit = QLineEdit()
-        name_layout.addWidget(QLabel("Config Name:"), 3)
-        name_layout.addWidget(self.name_line_edit, 7)
-        self.main_layout.addLayout(name_layout)
-
         self.main_layout.addWidget(QLabel("<b>All Configurations</b>"))
 
         # Scroll area that holds all config blocks
@@ -63,14 +57,25 @@ class AircraftConfigsWidget(TabWidget):
 
         self.main_layout.addWidget(self.scroll)
 
-        # Save / New buttons
-        save_btn = QPushButton("Save Configuration")
-        save_btn.clicked.connect(self.save_data)
-        self.main_layout.addWidget(save_btn)
+        # Action buttons for config CRUD
+        button_layout = QHBoxLayout()
 
-        new_btn = QPushButton("New Configuration")
+        # New config name prompt
+        new_btn = QPushButton("New Config")
         new_btn.clicked.connect(self.new_configuration)
-        self.main_layout.addWidget(new_btn)
+        button_layout.addWidget(new_btn)
+
+        # Persist config data
+        save_btn = QPushButton("Save Config")
+        save_btn.clicked.connect(self.save_data)
+        button_layout.addWidget(save_btn)
+
+        # Remove selected config
+        delete_btn = QPushButton("Delete Config")
+        delete_btn.clicked.connect(self.delete_data)
+        button_layout.addWidget(delete_btn)
+
+        self.main_layout.addLayout(button_layout)
 
         # Put everything together
         base_layout.addLayout(tree_layout, 3)
@@ -159,6 +164,9 @@ class AircraftConfigsWidget(TabWidget):
         self._ensure_geometry()
         self._ensure_config_data()
 
+        if self.index >= len(values.config_data):
+            self.index = -1
+
         cs_labels, prop_labels = self._build_labels()
 
         # Clear old widget references
@@ -181,7 +189,11 @@ class AircraftConfigsWidget(TabWidget):
             group = QGroupBox(name)
             layout = QVBoxLayout(group)
 
-            layout.addWidget(QLabel(f"Config Name: {name}"))
+            name_layout = QHBoxLayout()
+            name_layout.addWidget(QLabel("Config Name:"))
+            name_edit = QLineEdit(name)
+            name_layout.addWidget(name_edit)
+            layout.addLayout(name_layout)
 
             # Control surfaces
             layout.addWidget(QLabel("<b>Control Surfaces</b>"))
@@ -210,6 +222,7 @@ class AircraftConfigsWidget(TabWidget):
 
             # Save widget references for this config
             self._cfg_widgets[i] = {
+                "name": name_edit,
                 "cs": cs_block,
                 "prop": prop_block,
                 "gear": gear
@@ -226,49 +239,93 @@ class AircraftConfigsWidget(TabWidget):
         self.tree.expandAll()
 
     def on_tree_item_clicked(self, item, _):
-        # Update selected config when clicking the tree
+        # Track selected config from the tree
         idx = self.root_item.indexOfChild(item)
         if idx >= 0:
             self.index = idx
-            self.name_line_edit.setText(
-                values.config_data[idx].get("config name", "")
-            )
 
     def new_configuration(self):
-        # Add a new empty config
+        # Prompt for a config name and immediately add a new entry
+        # Prompt name
+        name, ok = QInputDialog.getText(self, "New Configuration", "Configuration name:")
+        if not ok:
+            return
+
+        # Normalize whitespace
+        name = name.strip()
+        if not name:
+            QMessageBox.warning(self, "Invalid Name", "Configuration name cannot be empty.")
+            return
+
+        if self._config_name_exists(name):
+            QMessageBox.warning(self, "Duplicate Name", "Configuration name already exists.")
+            return
+
+        # Create the new config entry
         values.config_data.append({
-            "config name": "new_config",
+            "config name": name,
             "cs deflections": {},
             "propulsors": {},
             "gear down": False
         })
+        # Select new config
         self.index = len(values.config_data) - 1
+        # Refresh tree and editor widgets
         self.update_layout()
 
     def save_data(self):
-        # If a specific config is selected, save its widget values
-        if self.index in self._cfg_widgets:
-            w = self._cfg_widgets[self.index]
-            cfg = values.config_data[self.index]
+        # Save all current UI values back to config data
+        # Walk all config widgets
+        for i, w in self._cfg_widgets.items():
+            cfg = values.config_data[i]
 
-            cfg["config name"] = self.name_line_edit.text().strip() or cfg["config name"]
+            # Update name
+            cfg["config name"] = w["name"].text().strip() or cfg.get("config name", "")
 
             if w["cs"]:
+                # Save CS values
                 cfg["cs deflections"].update(w["cs"].get_values())
 
             if w["prop"]:
+                # Save propulsor values
                 cfg["propulsors"].update(w["prop"].get_values())
 
+            # Save gear state
             cfg["gear down"] = w["gear"].isChecked()
+
+        # Rebuild UI with updated data
+        self.update_layout()
 
         # Always build RCAIDE configs from current data
         try:
+            # Rebuild configs
             values.rcaide_configs = build_rcaide_configs_from_geometry()
             print("[OK] RCAIDE aircraft configs built")
             print("[DEBUG] rcaide_configs keys:", values.rcaide_configs.keys())
 
         except Exception as e:
             print("[WARN] Failed to build RCAIDE configs:", e)
+
+        # Let the user know configs were saved
+        # User feedback
+        QMessageBox.information(self, "Saved", "Aircraft configurations saved.")
+
+    def delete_data(self):
+        # Remove the selected configuration
+        if self.index in self._cfg_widgets:
+            # Remove from data
+            values.config_data.pop(self.index)
+            # Clear selection
+            self.index = -1
+            # Refresh UI
+            self.update_layout()
+
+    def _config_name_exists(self, name):
+        for cfg in values.config_data:
+            if cfg.get("config name") == name:
+                return True
+        return False
+
 
 def build_rcaide_configs_from_geometry():
     """
