@@ -2,7 +2,7 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QFileInfo 
-
+from qt_material import apply_stylesheet
 import values
 from tabs import *
 from tabs.visualize_geometry import visualize_geometry
@@ -48,13 +48,16 @@ class App(QMainWindow):
 
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
-        self.widgets.append((geometry.get_widget(), "Geometry Parameterization")) 
-        self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
-        self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
-        # make one shared analysis widget for both tabs
+        self.widgets.append((geometry.get_widget(), "Vehicle Setup")) 
+        self.widgets.append((visualize_geometry.get_widget(), "Vehicle Visualization"))
+        self.widgets.append((aircraft_configs.get_widget(), "Config Setup"))
+        self.widgets.append((analysis.get_widget(), "Analyses Setup"))
+
+        
         shared_analysis_widget = analysis.get_widget() 
-        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Specification")) 
-        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
+        #remove analyses from mission tab below
+        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Setup")) 
+        self.widgets.append((shared_analysis_widget, "Multidisciplinary Analysis")) 
 
         self.widgets.append((solve.get_widget(), "Flight Simulation"))
 
@@ -139,5 +142,6 @@ class App(QMainWindow):
 
 app = QApplication(sys.argv)
 window = App()
+apply_stylesheet(app, theme='dark_teal.xml')
 window.show()
 sys.exit(app.exec())

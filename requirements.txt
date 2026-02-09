@@ -20,6 +20,7 @@ PyQt6_sip
 pyqtgraph
 python-dateutil
 pytz
+qt-material
 scikit-learn
 scipy
 six
