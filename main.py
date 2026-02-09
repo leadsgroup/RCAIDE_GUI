@@ -49,36 +49,20 @@ class App(QMainWindow):
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
         self.widgets.append((geometry.get_widget(), "Vehicle Setup")) 
-        self.widgets.append((visualize_geometry.get_widget(), "Vehicle Visualization"))
-        self.widgets.append((aircraft_configs.get_widget(), "Config Setup"))
-        self.widgets.append((analysis.get_widget(), "Analyses Setup"))
-
-        
+        self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
+        self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
+        self.widgets.append((analysis.get_widget(), "Analyses Setup")) 
         shared_analysis_widget = analysis.get_widget() 
         #remove analyses from mission tab below
-        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Setup")) 
-        self.widgets.append((shared_analysis_widget, "Multidisciplinary Analysis")) 
-
-        self.widgets.append((solve.get_widget(), "Flight Simulation"))
+        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Setup"))  
+        self.widgets.append((solve.get_widget(), "Mission Simulation"))
+        self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
 
         self.setCentralWidget(self.tabs)
-        self.resize(1280, 720)
-
-        # name = "app_data/aircraft/737.json"
-        # try:
-        #     file = open(name, 'r')
-        # except FileNotFoundError:
-        #     print("Not found?")
-
-        # data_str = file.read()
-        # file.close()
-        # values.read_from_json(data_str)
-        # for widget, name in self.widgets:
-        #     assert isinstance(widget, TabWidget)
-        #     widget.load_from_values()
+        self.resize(1280, 720) 
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()
@@ -142,6 +126,6 @@ class App(QMainWindow):
 
 app = QApplication(sys.argv)
 window = App()
-apply_stylesheet(app, theme='dark_teal.xml')
+apply_stylesheet(app, theme='dark_blue.xml')
 window.show()
 sys.exit(app.exec())
