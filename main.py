@@ -52,8 +52,9 @@ class App(QMainWindow):
         self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
         # make one shared analysis widget for both tabs
         shared_analysis_widget = analysis.get_widget() 
-        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
         self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Specification")) 
+        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
+
         self.widgets.append((solve.get_widget(), "Flight Simulation"))
 
         for widget, name in self.widgets:
