@@ -2,6 +2,7 @@ import RCAIDE
 import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QComboBox, QFileDialog
 from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan  
 from utilities import Units, convert_name, clear_layout, set_data
 from widgets import DataEntryWidget
 from PyQt6.QtCore import Qt
@@ -247,21 +248,16 @@ class TurbofanWidget(QWidget):
         if self.on_delete is None:
             print("on_delete is None")
             return
-        self.on_delete(self.index)
+        self.on_delete(self.index) 
 
-    # def delete_nacelle_data(self)
-
-
-    def get_data_values(self):
-        print("DEBUG: get_data_values called")
+    def get_data_values(self): 
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["Propulsor Tag"] = title
         data_si["Propulsor Tag"] = title
 
-        if self.nacelle_active:
-            print("going in ")
+        if self.nacelle_active: 
             nacelle_data = self.nacelle_general_widget.get_values()
             nacelle_data["Nacelle Type"] = self.nacelle_combo.currentText()
             af_type = self.airfoil_type_combo.currentText()
@@ -296,8 +292,7 @@ class TurbofanWidget(QWidget):
             nacelle_si["Airfoil Path"] = self.file_path_input.text()
             nacelle_si["section_objects"] = section_objects
             
-            data_si["nacelle_si"] = nacelle_si
-            print(f"Data SI: {data_si}")
+            data_si["nacelle_si"] = nacelle_si 
         
         values.propulsor_names[0].append(convert_name(title))
 
@@ -392,8 +387,7 @@ class TurbofanWidget(QWidget):
             elif (n_type == "Body of Revolution"):
                 nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
             else:
-                nacelle = RCAIDE.Library.Components.Nacelles.Nacelle() #set as default
-            print(n_type)
+                nacelle = RCAIDE.Library.Components.Nacelles.Nacelle() #set as default 
             
 
             nacelle.tag = str(data["Propulsor Tag"]) + "_nacelle"
@@ -425,9 +419,11 @@ class TurbofanWidget(QWidget):
             else:
                 pass
             
-            turbofan.nacelle = nacelle
-            print(f"DEBUG: Attaching Nacelle: {nacelle.tag}")
-        print(f"DEBUG: Returning Final Turbofan: {turbofan.tag}")
+            turbofan.nacelle = nacelle 
+
+        # design turbofan
+        design_turbofan(turbofan)
+        
         return turbofan
 
     def load_data_values(self, data):
