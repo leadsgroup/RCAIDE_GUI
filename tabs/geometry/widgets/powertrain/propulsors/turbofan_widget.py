@@ -2,6 +2,7 @@ import RCAIDE
 import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QComboBox, QFileDialog
 from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan  
 from utilities import Units, convert_name, clear_layout, set_data
 from widgets import DataEntryWidget
 from PyQt6.QtCore import Qt
@@ -428,6 +429,10 @@ class TurbofanWidget(QWidget):
             turbofan.nacelle = nacelle
             print(f"DEBUG: Attaching Nacelle: {nacelle.tag}")
         print(f"DEBUG: Returning Final Turbofan: {turbofan.tag}")
+        
+        # design turbofan
+        design_turbofan(turbofan)
+        
         return turbofan
 
     def load_data_values(self, data):
