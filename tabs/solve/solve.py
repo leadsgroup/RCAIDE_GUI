@@ -6,8 +6,8 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 from RCAIDE.Framework.Core import Units,  Data 
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox
+from PyQt6.QtCore import Qt, QSize, QObject, QThread, pyqtSignal
 import pyqtgraph as pg
 import RCAIDE
 
@@ -18,6 +18,7 @@ import contextlib
 import io
 import sys
 import re
+import traceback
 
 # gui imports 
 from tabs import TabWidget
@@ -25,10 +26,26 @@ from .plots.create_plot_widgets import create_plot_widgets
 from .plots import  *  
 import values
 
+
+class _SolveWorker(QObject):
+    finished = pyqtSignal(object, str)
+    failed = pyqtSignal(str)
+
+    def __init__(self, mission):
+        super().__init__()
+        self._mission = mission
+
+    def run(self):
+        try:
+            # Let solver output stream directly to terminal so native progress bar rendering is preserved.
+            results = self._mission.evaluate()
+            self.finished.emit(results, "")
+        except Exception:
+            self.failed.emit(traceback.format_exc())
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  SolveWidget
 # ----------------------------------------------------------------------------------------------------------------------  
-
 class SolveWidget(TabWidget):
     def __init__(self):
         super(SolveWidget, self).__init__()
@@ -56,6 +73,11 @@ class SolveWidget(TabWidget):
         solve_button = QPushButton("Simulate Mission")
         solve_button.setFixedHeight(36)
         solve_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        # Custom state used by background solve execution + loading dialog.
+        self.solve_button = solve_button
+        self.loading_dialog = None
+        self._solve_thread = None
+        self._solve_worker = None
 
         solve_button.setStyleSheet("""
         QPushButton {
@@ -142,14 +164,17 @@ class SolveWidget(TabWidget):
         self.setLayout(base_layout)
 
     def init_tree(self):
+        # Two columns: option name + check state.
         self.tree.setColumnCount(2)
         self.tree.setHeaderLabels(["Plot Options", "Enabled"])
 
+        # Size first column to fit option text.
         header = self.tree.header()
         assert header is not None
         header.setSectionResizeMode(
             0, QHeaderView.ResizeMode.ResizeToContents)
 
+        # Add category rows and child plot options.
         for category, options in self.plot_options.items():
             category_item = QTreeWidgetItem([category])
             self.tree.addTopLevelItem(category_item)
@@ -162,120 +187,162 @@ class SolveWidget(TabWidget):
                 category_item.addChild(option_item)
 
     def run_solve(self):
+        # Use local imports to avoid extra startup/circular import issues.
         import values
         from tabs.mission.widgets.mission_analysis_widget import MissionAnalysisWidget
         from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
-        # Get the mission created by the user
+
+        # Read mission built in Mission tab.
         mission = getattr(values, "rcaide_mission", None)
         if mission is None:
             raise RuntimeError("No mission defined.")
 
-        # Get the aircraft configurations saved from the Aircraft Configs tab
+        # Read saved aircraft configs, or build them from geometry if missing.
         configs = getattr(values, "rcaide_configs", None)
         if not isinstance(configs, dict) or not configs:
-            # Try to build aircraft configs automatically if they are missing
             try:
-                from tabs.aircraft_configs.aircraft_configs import (
-                    build_rcaide_configs_from_geometry
-                )
-                # Build RCAIDE configs from current geometry + config data
+                from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
+                # Save generated configs so other tabs can reuse them.
                 values.rcaide_configs = build_rcaide_configs_from_geometry()
                 configs = values.rcaide_configs
             except Exception as e:
-                # Stop execution if configs cannot be created
+                # Stop with clear user guidance if configs cannot be created.
                 raise RuntimeError(
                     "No RCAIDE aircraft configs available.\n"
                     "Go to Aircraft Configurations tab and press 'Save Configuration'."
                 ) from e
 
-        # Rebuild mission if it has no segments but saved data exists
+        # If mission has no segments, rebuild it from saved mission_data.
         if not getattr(mission, "segments", []):
             if values.mission_data:
+                # Ensure analyses exist before rebuilding segments.
                 if not getattr(values, "rcaide_analyses", None):
                     MissionAnalysisWidget().save_analyses()
+
+                # Recreate mission and append each saved segment.
                 mission = RCAIDE.Framework.Mission.Sequential_Segments()
                 for seg_data in values.mission_data:
                     seg = MissionSegmentWidget()
                     seg.load_data(seg_data)
                     _, rcaide_segment = seg.get_data()
                     mission.append_segment(rcaide_segment)
+
+                # Save rebuilt mission back to shared state.
                 values.rcaide_mission = mission
             else:
-                raise RuntimeError(
-                    "No mission segments available. Save the mission first."
-                )
+                # No mission to run.
+                raise RuntimeError("No mission segments available. Save the mission first.")
 
-        # Indicate mission execution has started
+        # Ignore click if a solve is already running.
+        if self._solve_thread is not None and self._solve_thread.isRunning():
+            return
+
+        # Start solve with loading popup.
         print("Commencing Mission Simulation")
+        self._set_loading_state(True)
+        self._start_solve_worker(mission)
 
-        # Capture all solver output for warning parsing
-        buffer = io.StringIO()
+    def _start_solve_worker(self, mission):
+        # Create worker thread so UI does not freeze during solve.
+        self._solve_thread = QThread(self)
+        self._solve_worker = _SolveWorker(mission)
+        self._solve_worker.moveToThread(self._solve_thread)
 
-        # Helper class to duplicate stdout/stderr while normalizing progress bars
-        class _Tee(io.StringIO):
-            def __init__(self, *writers):
-                super().__init__()
-                self._writers = writers
+        # Wire start/success/failure/cleanup signals.
+        self._solve_thread.started.connect(self._solve_worker.run)
+        self._solve_worker.finished.connect(self._on_solve_finished)
+        self._solve_worker.failed.connect(self._on_solve_failed)
+        self._solve_worker.finished.connect(self._solve_thread.quit)
+        self._solve_worker.failed.connect(self._solve_thread.quit)
+        self._solve_thread.finished.connect(self._cleanup_solve_worker)
+        self._solve_thread.start()
 
-            def write(self, s):
-                s = s.replace("#", "█")
-                for w in self._writers:
-                    w.write(s)
-                    w.flush()
-                return super().write(s)
+    def _cleanup_solve_worker(self):
+        # Safely release worker objects after thread exits.
+        if self._solve_worker is not None:
+            self._solve_worker.deleteLater()
+            self._solve_worker = None
+        if self._solve_thread is not None:
+            self._solve_thread.deleteLater()
+            self._solve_thread = None
 
-        # Create tee streams for stdout and stderr
-        tee_out = _Tee(sys.stdout)
-        tee_err = _Tee(sys.stderr)
+    def _set_loading_state(self, is_loading):
+        # Lock solve controls while mission is running.
+        self.solve_button.setEnabled(not is_loading)
+        self.tree.setEnabled(not is_loading)
 
-        # Run mission while capturing all printed output
-        with contextlib.redirect_stdout(tee_out), contextlib.redirect_stderr(tee_err):
-            results = mission.evaluate()
+        if is_loading:
+            # Show modal loading popup.
+            dialog = QProgressDialog("Running mission simulation...", "", 0, 0, self)
+            dialog.setWindowTitle("Simulating Mission")
+            dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+            dialog.setCancelButton(None)
+            dialog.setMinimumDuration(0)
+            dialog.setAutoClose(False)
+            dialog.setAutoReset(False)
+            dialog.show()
+            self.loading_dialog = dialog
+            return
 
-        # Store captured output for analysis
-        buffer.write(tee_out.getvalue())
-        buffer.write(tee_err.getvalue())
-        output = buffer.getvalue()
+        if self.loading_dialog is not None:
+            # Hide loading popup when solve completes/fails.
+            self.loading_dialog.close()
+            self.loading_dialog.deleteLater()
+            self.loading_dialog = None
 
-        # Extract solver warnings from output text
+    def _on_solve_finished(self, results, output):
+        # Parse and print solver warnings (if any).
         warnings = _summarize_solve_output(output)
-
-        # Print warnings only if they were not already shown by the solver
         if warnings and not _warnings_already_reported(output):
             print("Mission completed with solver warnings:")
             for warning in warnings:
                 print(f"- {warning}")
 
-        # Indicate mission execution has finished
+        # Store results and refresh plots.
         print("Completed Mission Simulation")
-
-        # Store results so other tabs can access them
         values.rcaide_results = results
-        return results
+        self.render_solve_plots(results)
+        self._set_loading_state(False)
 
-        # WE NEED TO MAKE THESE OPTIONS  
-        plot_parameters                  = Data()      
-        plot_parameters.line_width       = 5 
-        plot_parameters.line_style       = '-'
-        plot_parameters.line_colors      = cm.viridis(np.linspace(0.2,1,len(results.segments)))
-        plot_parameters.marker_size      = 8
+    def _on_solve_failed(self, error_message):
+        # Restore UI state and surface error details.
+        self._set_loading_state(False)
+        print("Mission simulation failed.")
+        print(error_message)
+        QMessageBox.critical(self, "Mission Simulation Failed", error_message)
+
+    def render_solve_plots(self, results):
+        # Clear old curves before plotting new solve data.
+        self.clear_plot_widgets()
+        plot_parameters = self._build_plot_parameters(results)
+        # Baseline: show mission velocity plots.
+        plot_aircraft_velocities(self, results, plot_parameters)
+        if hasattr(self, "apply_plot_settings"):
+            self.apply_plot_settings()
+
+    def clear_plot_widgets(self):
+        # Remove all existing pyqtgraph data items.
+        for widget in self.findChildren(pg.PlotWidget):
+            widget.clear()
+
+    def _build_plot_parameters(self, results):
+        # Build shared style settings passed into plot functions.
+        plot_parameters = Data()
+        plot_parameters.line_width = 5
+        plot_parameters.line_style = '-'
+        # Keep mission lines white.
+        plot_parameters.line_colors = np.tile(np.array([1.0, 1.0, 1.0, 1.0]), (len(results.segments), 1))
+        plot_parameters.marker_size = 8
         plot_parameters.legend_font_size = 12
-        plot_parameters.axis_font_size   = 14
-        plot_parameters.title_font_size  = 18    
-        plot_parameters.styles           = {"color": "white", "font-size": "18px"}  
-        plot_parameters.markers          = ['o', 's', '^', 'X', 'd', 'v', 'P', '>','.', ',', 'o', 'v', '^', '<',\
-                                            '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h'\
-                                             , 'H', '+', 'x', 'D', 'd', '|', '_'] 
-        plot_parameters.color            = 'black'
-        plot_parameters.show_grid        = True
-        plot_parameters.save_figure      = False
-         
-        
-        # REPEAT FOR OTHER PLOTS 
-        plot_aircraft_velocities_flag = True 
-        if plot_aircraft_velocities_flag == True:
-            plot_aircraft_velocities(self, results, plot_parameters)
-
+        plot_parameters.axis_font_size = 14
+        plot_parameters.title_font_size = 18
+        plot_parameters.styles = {"color": "white", "font-size": "18px"}
+        plot_parameters.markers = ['o']
+        plot_parameters.color = 'white'
+        plot_parameters.show_grid = True
+        plot_parameters.save_figure = False
+        return plot_parameters
+    
     plot_options = {
         "Aerodynamics": [
             "Plot Aerodynamic Coefficients",
@@ -363,7 +430,6 @@ def _warnings_already_reported(output):
         or "Error Message:" in output
         or "Error:" in output
     )
-
     
 # ---------------------------------------
 # SolveWidget Theming and Layout Polish
@@ -722,17 +788,30 @@ def apply_plot_settings(self):
                 style=pen_style
             )
 
-            # Apply the new pen to the curve
-            curve.setPen(new_pen)
-
-            # Show or hide markers on the curve
+            # Sanitize marker symbol first so setPen can't fail on stale invalid symbols.
             if self.marker_check.isChecked():
-                curve.setSymbol(self.marker_style_combo.currentText())
+                symbol_map = {
+                    '^': 't1',
+                    'v': 't',
+                    '<': 't3',
+                    '>': 't2',
+                    # pyqtgraph uses "star" (not "*") for star markers.
+                    '*': 'star',
+                }
+                valid_symbols = {'o', 's', 't', 't1', 't2', 't3', 'd', '+', 'x', 'p', 'h', 'star', '|', '_'}
+                selected = self.marker_style_combo.currentText()
+                marker_symbol = symbol_map.get(selected, selected)
+                if marker_symbol not in valid_symbols:
+                    marker_symbol = 'o'
+                curve.setSymbol(marker_symbol)
                 curve.setSymbolSize(self.marker_size_spin.value())
                 curve.setSymbolBrush(new_pen.color())
                 curve.setSymbolPen(new_pen)
             else:
                 curve.setSymbol(None)
+
+            # Apply the new pen to the curve
+            curve.setPen(new_pen)
 
 # --------------------------------------------------------------------------------------------------
 #  Save Visible Plot
@@ -880,3 +959,4 @@ if not getattr(SolveWidget, "_LEADS_PATCHED", False):
 def get_widget() -> QWidget:
     # Factory used by the tab system to construct the SolveWidget
     return SolveWidget()
+
