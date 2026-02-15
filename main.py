@@ -125,6 +125,12 @@ class App(QMainWindow):
 
 app = QApplication(sys.argv)
 window = App()
-apply_stylesheet(app, theme='dark_blue.xml')
+extra = {
+    'density_scale': '-2',
+    'delete': '#b0220c',
+    'save': '#0291de'
+}
+# apply_stylesheet(app, theme='dark_blue.xml', extra=extra)
+apply_stylesheet(app, theme='rcaide_dark_theme.xml', extra=extra)
 window.show()
 sys.exit(app.exec())
