@@ -53,10 +53,9 @@ class App(QMainWindow):
         self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
         self.widgets.append((analysis.get_widget(), "Analyses Setup")) 
         shared_analysis_widget = analysis.get_widget() 
-        #remove analyses from mission tab below
-        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Setup"))  
+        self.widgets.append((mission.get_widget(), "Mission Setup"))  
         self.widgets.append((solve.get_widget(), "Mission Simulation"))
-        self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
+        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
