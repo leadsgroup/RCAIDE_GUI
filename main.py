@@ -128,7 +128,8 @@ window = App()
 extra = {
     'density_scale': '-2',
     'delete': '#b0220c',
-    'save': '#0291de'
+    'save': '#0291de',
+    'menubar': '#021a32'
 }
 # apply_stylesheet(app, theme='dark_blue.xml', extra=extra)
 apply_stylesheet(app, theme='rcaide_dark_theme.xml', extra=extra)

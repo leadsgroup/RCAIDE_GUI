@@ -2,17 +2,17 @@
 <resources>
 
 <!-- buttons on home page, selected tab, pretty much all button borders and button text-->
-<color name="primaryColor">#017ddb</color> 
+<color name="primaryColor">#ffffff</color> 
 <!-- file load and selection buttons-->
 <color name="primaryLightColor">#0092f8</color>
 <!-- filled color: file & documentation bar, component tree, most inputs in vehicle tab, all the trees, dropdowns and textboxes-->
-<color name="secondaryColor">#021a32</color>
+<color name="secondaryColor">#2b3445</color>
 <!-- lines and boxes, esp around configs setup-->
-<color name="secondaryLightColor">#01acfe</color>
+<color name="secondaryLightColor">#ffffff</color>
 <!-- background color for pretty much the whole thing-->
 <color name="secondaryDarkColor">#021a32</color>
 <!-- select text in dropdowns, -->
 <color name="primaryTextColor">#ffffff</color>
 <!-- pretty much all the text, variable names, heading names, text of stuff in tree, A LOT of text-->
-<color name="secondaryTextColor">#017ddb</color>
+<color name="secondaryTextColor">#ffffff</color>
 </resources>
