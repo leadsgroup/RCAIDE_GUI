@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
-    QTreeWidgetItem, QHeaderView, QPushButton, QLabel, QGroupBox
+    QTreeWidgetItem, QHeaderView, QPushButton, QLabel, QGroupBx
 from tabs.mission.widgets import MissionAnalysisWidget
 from tabs.analysis.widgets import *
 from tabs import TabWidget

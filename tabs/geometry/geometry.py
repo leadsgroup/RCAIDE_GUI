@@ -222,7 +222,6 @@ class GeometryWidget(TabWidget):
                 for index, data in enumerate(data_list):
                     # tree_index = self.find_tree_index(tab_index)
                     self.save_data(tab_index=tab_index, index=index, data=data, new=True)
-        # print(values.vehicle)
 
 
     # noinspection PyMethodMayBeStatic

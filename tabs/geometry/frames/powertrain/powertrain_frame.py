@@ -119,54 +119,11 @@ class PowertrainFrame(GeometryFrame):
         main_powertrain_widget.setLayout(main_layout)
         return main_powertrain_widget
 
-    # def add_energy_source(self):
-    # self.energy_sources_layout.addWidget(FuelTankWidget(
-    # self.energy_sources_layout.count(), self.delete_energy_source))
-
-    # def delete_energy_source(self, index):
-    # item = self.energy_sources_layout.itemAt(index)
-    # assert item is not None
-    # widget = item.widget()
-    # assert widget is not None and isinstance(widget, FuelTankWidget)
-
-    # widget.deleteLater()
-    # self.energy_sources_layout.removeWidget(widget)
-    # self.energy_sources_layout.update()
-
-    # for i in range(index, self.energy_sources_layout.count()):
-    # item = self.energy_sources_layout.itemAt(i)
-    # if item is None:
-    # continue
-
-    # widget = item.widget()
-    # if widget is not None and isinstance(widget, FuelTankWidget):
-    # widget.index = i
-
     def set_save_function(self, function):
         self.save_function = function
 
     def set_tab_index(self, index):
         self.tab_index = index
-
-    # def on_delete_button_pressed(self, index):
-    # item = self.powertrain_layout.itemAt(index)
-    # assert item is not None
-    # widget = item.widget()
-    # assert widget is not None
-    # widget.deleteLater()
-    # self.powertrain_layout.removeWidget(widget)
-    # self.powertrain_layout.update()
-    # print("Deleted powertrain at Index:", index)
-
-    # for i in range(index, self.powertrain_layout.count()):
-    # item = self.powertrain_layout.itemAt(i)
-    # assert item is not None
-
-    # widget = item.widget()
-    # assert widget is not None and isinstance(widget, FuelLineWidget)
-
-    # widget.index = i
-    # print("Updated Index:", i)
 
     def get_data_values(self):
         """Retrieve the entered data values from the widgets."""
@@ -210,9 +167,6 @@ class PowertrainFrame(GeometryFrame):
         entered_data, component = self.get_data_values()
         if isinstance(entered_data, bool):
             return
-
-        print("Entered data in PowertrainFrame:",
-              entered_data)  # Add this line for debugging
 
         if self.save_function:
             if self.index >= 0:

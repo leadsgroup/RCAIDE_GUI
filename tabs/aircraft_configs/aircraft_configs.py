@@ -300,8 +300,6 @@ class AircraftConfigsWidget(TabWidget):
         try:
             # Rebuild configs
             values.rcaide_configs = build_rcaide_configs_from_geometry()
-            print("[OK] RCAIDE aircraft configs built")
-            print("[DEBUG] rcaide_configs keys:", values.rcaide_configs.keys())
 
         except Exception as e:
             print("[WARN] Failed to build RCAIDE configs:", e)
