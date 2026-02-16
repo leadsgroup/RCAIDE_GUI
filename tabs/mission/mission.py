@@ -88,45 +88,19 @@ class MissionWidget(TabWidget):
     def __init__(self, shared_analysis_widget=None):
         super().__init__()
 
-       # Use the provided analysis widget if it exists,
-       # otherwise create a new MissionAnalysisWidget
-        if isinstance(shared_analysis_widget, MissionAnalysisWidget):
-            self.analysis_widget = shared_analysis_widget
-        else:
-            self.analysis_widget = MissionAnalysisWidget()
 
         # List of MissionSegmentWidget instances currently in the mission
         self.segment_widgets = []
         # Indices of segments that have been disabled by the user
         self.disabled_segments = set()
 
-        # --- Root splitter ---
-        root = QSplitter(Qt.Orientation.Horizontal)
-        root.setHandleWidth(2)
-        root.setChildrenCollapsible(False)
+        main_layout = QVBoxLayout(self)
 
         # --- Left column: analyses setup (keeps analysis widgets) ---
         left_col = QWidget()
         left_v = QVBoxLayout(left_col)
-        left_v.setContentsMargins(10, 10, 10, 10)
+        left_v.setContentsMargins(0, 0, 0, 0)
 
-        analyses_box = QGroupBox("Analyses Setup (RCAIDE)")
-        analyses_v = QVBoxLayout(analyses_box)
-
-        # Add the shared analysis widget instance
-        # (Does notcreate a new MissionAnalysisWidget here)
-        analyses_v.addWidget(self.analysis_widget)
-
-        left_v.addWidget(analyses_box)
-
-        # --- Right column: mission configuration and segment details ---
-        right_col = QWidget()
-        right_v = QVBoxLayout(right_col)
-        right_v.setContentsMargins(10, 10, 10, 10)
-
-        # =======================================================
-        # Mission Setup area (includes segment list and controls)
-        # =======================================================
         segments_box = QGroupBox("Mission Setup")
         segments_v = QVBoxLayout(segments_box)
 
@@ -188,15 +162,16 @@ class MissionWidget(TabWidget):
         action_row.addWidget(self.clear_btn)
         segments_v.addLayout(action_row)
 
-        right_v.addWidget(segments_box)
+        left_v.addWidget(segments_box)
 
-        # ==============================================
-        # Segment Details (Area with collapsible panels)
-        # ==============================================
+        right_col = QWidget()
+        right_v = QVBoxLayout(right_col)
+        right_v.setContentsMargins(0, 0, 0, 0)
+
+
         details_box = QGroupBox("Segment Details")
         details_v = QVBoxLayout(details_box)
 
-        # Scroll area that contains a vertical layout of panels
         self.details_scroll = QScrollArea()
         self.details_scroll.setWidgetResizable(True)
         details_container = QWidget()
@@ -206,17 +181,9 @@ class MissionWidget(TabWidget):
         details_v.addWidget(self.details_scroll)
         right_v.addWidget(details_box, 1)
 
-        # Put left and right columns into the splitter
-        root.addWidget(left_col)
-        root.addWidget(right_col)
+        main_layout.addWidget(left_col, 1)
+        main_layout.addWidget(right_col, 2)
 
-        layout = QVBoxLayout(self)
-        layout.addWidget(root)
-
-        # Ensure reasonable initial sizes after layout has been set
-        QTimer.singleShot(0, lambda: root.setSizes([1000, 1000]))
-
-        # Connect segment control buttons to their handlers
         self.disable_btn.clicked.connect(self.disable_enable_selected)
         self.clear_btn.clicked.connect(self.clear_selected_segments)
 
@@ -374,7 +341,6 @@ class MissionWidget(TabWidget):
         values.mission_data = []
 
         # Save analyses that were already defined by the user
-        self.analysis_widget.save_analyses()
 
         # Collect data from each enabled mission segment
         for idx, seg in enumerate(self.segment_widgets):
@@ -459,6 +425,6 @@ class MissionWidget(TabWidget):
         # Defer mission build until analyses are saved to avoid load-time errors.
 
 
-def get_widget(shared_analysis_widget=None) -> QWidget:
+def get_widget() -> QWidget:
     """Factory helper used to create a MissionWidget instance for the tab system."""
-    return MissionWidget(shared_analysis_widget)
+    return MissionWidget()

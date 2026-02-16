@@ -146,7 +146,6 @@ class AircraftConfigsWidget(TabWidget):
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
         """
-        # print("Saving data:", data)
         if data is None:
             return
 

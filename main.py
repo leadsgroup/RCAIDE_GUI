@@ -2,7 +2,7 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QFileInfo 
-
+from qt_material import apply_stylesheet
 import values
 from tabs import *
 from tabs.visualize_geometry import visualize_geometry
@@ -48,34 +48,20 @@ class App(QMainWindow):
 
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
-        self.widgets.append((geometry.get_widget(), "Geometry Parameterization")) 
+        self.widgets.append((geometry.get_widget(), "Vehicle Setup")) 
         self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
-        self.widgets.append((aircraft_configs.get_widget(), "Aircraft Configurations"))
-        # make one shared analysis widget for both tabs
+        self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
+        self.widgets.append((analysis.get_widget(), "Analyses Setup")) 
         shared_analysis_widget = analysis.get_widget() 
-        self.widgets.append((mission.get_widget(shared_analysis_widget), "Mission Specification")) 
-        self.widgets.append((shared_analysis_widget, "Aircraft Performance")) 
-
-        self.widgets.append((solve.get_widget(), "Flight Simulation"))
+        self.widgets.append((mission.get_widget(), "Mission Setup"))  
+        self.widgets.append((solve.get_widget(), "Mission Simulation"))
+        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
 
         self.setCentralWidget(self.tabs)
-        self.resize(1280, 720)
-
-        # name = "app_data/aircraft/737.json"
-        # try:
-        #     file = open(name, 'r')
-        # except FileNotFoundError:
-        #     print("Not found?")
-
-        # data_str = file.read()
-        # file.close()
-        # values.read_from_json(data_str)
-        # for widget, name in self.widgets:
-        #     assert isinstance(widget, TabWidget)
-        #     widget.load_from_values()
+        self.resize(1280, 720) 
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()
@@ -139,5 +125,13 @@ class App(QMainWindow):
 
 app = QApplication(sys.argv)
 window = App()
+extra = {
+    'density_scale': '-2',
+    'delete': '#b0220c',
+    'save': '#0291de',
+    'menubar': '#021a32'
+}
+# apply_stylesheet(app, theme='dark_blue.xml', extra=extra)
+apply_stylesheet(app, theme='rcaide_dark_theme.xml', extra=extra)
 window.show()
 sys.exit(app.exec())
