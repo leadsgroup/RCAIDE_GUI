@@ -10,7 +10,7 @@
 <!-- lines and boxes, esp around configs setup-->
 <color name="secondaryLightColor">#ffffff</color>
 <!-- background color for pretty much the whole thing-->
-<color name="secondaryDarkColor">#021a32</color>
+<color name="secondaryDarkColor">#081824</color>
 <!-- select text in dropdowns, -->
 <color name="primaryTextColor">#ffffff</color>
 <!-- pretty much all the text, variable names, heading names, text of stuff in tree, A LOT of text-->
