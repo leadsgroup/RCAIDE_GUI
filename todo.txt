@@ -5,15 +5,13 @@ Anshrin- Add small visualization window in lower left hand corner
 Geometry Visualization tab
 - Add a button in the main window that switched for network to aircraft visualization (FUTURE)
 - Add export/import from VSP options (FUTURE)
-Aircraft Configurations Tab
-Anshrin- Remove Config Name from the top
-Anshrin- update functionality of buttons
-Anshrin- New Configuration button instantiates empty field but does not save them
-Anshrin- Save Data button should append it to the tree
-Anshrin- Delete Data button should remove it from three
 
-Mihir-****Put back analyses tab *****
-Mihir - figure out best qt-material dark theme type
+Anshrin - Mission tab - add table and plot 
+
+Mihir - clean up code, get rid of unncessary comments that the public shouldnt see
+
+Mihir - update gui page on leads website
+Mihir - update rcaide git repository page (readme file for the gui)
 
 Solve Tab
 Anshrin- Connect the solve results to the plot
