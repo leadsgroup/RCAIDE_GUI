@@ -23,6 +23,7 @@ pyvistaqt==0.11.3
 qt-material==2.17
 python-dateutil
 pytz 
+rcaide
 scikit-learn
 scipy
 six
