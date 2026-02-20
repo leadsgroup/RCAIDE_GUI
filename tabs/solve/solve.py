@@ -5,26 +5,18 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from RCAIDE.Framework.Core import Units,  Data 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox
-from PyQt6.QtCore import Qt, QSize, QObject, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QSize, QObject, QThread, QTimer, pyqtSignal
 import pyqtgraph as pg
-import RCAIDE
 
 # numpy imports 
 import numpy as np
-import matplotlib.cm as cm
-import contextlib
-import io
-import sys
 import re
 import traceback
 
 # gui imports 
 from tabs import TabWidget
 from .plots.create_plot_widgets import create_plot_widgets
-from .plots import  *  
-import values
 
 
 class _SolveWorker(QObject):
@@ -47,6 +39,42 @@ class _SolveWorker(QObject):
 #  SolveWidget
 # ----------------------------------------------------------------------------------------------------------------------  
 class SolveWidget(TabWidget):
+    # Maps each tree option label to the corresponding SolveWidget renderer method.
+    _PLOT_OPTION_RENDERERS = {
+        "Plot Aircraft Velocities": "_render_aircraft_velocities",
+        "Plot Aerodynamic Coefficients": "_render_aerodynamic_coefficients_pg",
+        "Plot Aerodynamic Forces": "_render_aerodynamic_forces_pg",
+        "Plot Drag Components": "_render_drag_components_pg",
+        "Plot Lift Distribution": "_render_lift_distribution_pg",
+        "Plot Rotor Conditions": "_render_rotor_conditions_pg",
+        "Plot Altitude SFC Weight": "_render_altitude_sfc_weight_pg",
+        "Plot Propulsor Throttles": "_render_propulsor_throttles_pg",
+        "Plot Flight Conditions": "_render_flight_conditions_pg",
+        "Plot Flight Trajectory": "_render_flight_trajectory_pg",
+        "Plot Flight Forces and Moments": "_render_flight_forces_moments_pg",
+        "Plot Longitudinal Stability": "_render_longitudinal_stability_pg",
+        "Plot Lateral Stability": "_render_lateral_stability_pg",
+    }
+    # Aliases for options that intentionally reuse an existing renderer.
+    _PLOT_OPTION_ALIASES = {
+        "Plot Rotor Disc Inflow": "Plot Rotor Conditions",
+        "Plot Rotor Disc Performance": "Plot Rotor Conditions",
+        "Plot Rotor Performance": "Plot Rotor Conditions",
+        "Plot Disc and Power Loading": "Plot Rotor Conditions",
+        "Plot Fuel Consumption": "Plot Altitude SFC Weight",
+    }
+    # Drag-coefficient components plotted in the drag breakdown chart.
+    _DRAG_COMPONENTS = (
+        ("CDpar", ("parasite", "total")),
+        ("CDind", ("induced", "total")),
+        ("CDcomp", ("compressible", "total")),
+        ("CDmisc", ("miscellaneous", "total")),
+        ("CDwave", ("wave", "total")),
+        ("CDcool", ("cooling", "total")),
+        ("CDform", ("form", "total")),
+        ("CD", ("total",)),
+    )
+
     def __init__(self):
         super(SolveWidget, self).__init__()
 
@@ -78,6 +106,11 @@ class SolveWidget(TabWidget):
         self.loading_dialog = None
         self._solve_thread = None
         self._solve_worker = None
+        self._is_rendering_plots = False
+        self._plot_render_timer = QTimer(self)
+        self._plot_render_timer.setSingleShot(True)
+        self._plot_render_timer.timeout.connect(self._render_from_latest_results)
+        self._last_skipped_signature = None
 
         solve_button.setStyleSheet("""
         QPushButton {
@@ -137,15 +170,25 @@ class SolveWidget(TabWidget):
         # Create a scroll area for the plot widgets
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         # scroll_area.setFixedSize(1500, 900)  # Set a designated scroll area size
 
         # Create a container widget for the plots
         plot_container = QWidget()
         plot_layout = QVBoxLayout(plot_container)
+        plot_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.plot_layout = plot_layout
+        self._dynamic_plot_widgets = []
 
-        plot_size = QSize(700, 400)  # Set a fixed plot size
+        plot_size = QSize(620, 400)  # Slightly narrower to avoid lateral scrolling
         show_legend = True
         create_plot_widgets(self,plot_layout,plot_size,show_legend) 
+        self._base_plot_widgets = [
+            self.aircraft_TAS_plot,
+            self.aircraft_EAS_plot,
+            self.aircraft_Mach_plot,
+            self.aircraft_CAS_plot,
+        ]
 
         scroll_area.setWidget(plot_container)
 
@@ -220,6 +263,7 @@ class SolveWidget(TabWidget):
                     MissionAnalysisWidget().save_analyses()
 
                 # Recreate mission and append each saved segment.
+                import RCAIDE
                 mission = RCAIDE.Framework.Mission.Sequential_Segments()
                 for seg_data in values.mission_data:
                     seg = MissionSegmentWidget()
@@ -291,6 +335,7 @@ class SolveWidget(TabWidget):
             self.loading_dialog = None
 
     def _on_solve_finished(self, results, output):
+        import values
         # Parse and print solver warnings (if any).
         warnings = _summarize_solve_output(output)
         if warnings and not _warnings_already_reported(output):
@@ -312,20 +357,399 @@ class SolveWidget(TabWidget):
         QMessageBox.critical(self, "Mission Simulation Failed", error_message)
 
     def render_solve_plots(self, results):
-        # Clear old curves before plotting new solve data.
-        self.clear_plot_widgets()
-        plot_parameters = self._build_plot_parameters(results)
-        # Baseline: show mission velocity plots.
-        plot_aircraft_velocities(self, results, plot_parameters)
-        if hasattr(self, "apply_plot_settings"):
-            self.apply_plot_settings()
+        # Main render entry point: rebuild plots from current checked options.
+        if self._is_rendering_plots:
+            return
+        self._is_rendering_plots = True
+        self.setUpdatesEnabled(False)
+        try:
+            self.clear_plot_widgets()
+            self.clear_dynamic_plot_widgets()
+            for widget in self._base_plot_widgets:
+                widget.setVisible(False)
+            plot_parameters = self._build_plot_parameters(results)
+
+            rendered = set()
+            skipped = []
+            for option in self._collect_checked_plot_options():
+                key, renderer = self._resolve_plot_renderer(option)
+                if key in rendered:
+                    continue
+                # Option exists in the tree but no renderer is wired for it.
+                if renderer is None:
+                    skipped.append(f"{option}: no renderer")
+                    continue
+                start_idx = len(self._dynamic_plot_widgets)
+                try:
+                    # Each renderer can raise RuntimeError when its required
+                    # result fields are missing. We treat that as a per-plot
+                    # skip so the rest of the selected plots still render.
+                    renderer(results, plot_parameters)
+                    self._remove_empty_dynamic_plots(start_idx)
+                    rendered.add(key)
+                except Exception as exc:
+                    # Roll back widgets created by this renderer and record
+                    # the reason so the user knows why this plot was skipped.
+                    self._clear_dynamic_widgets_from(start_idx)
+                    skipped.append(f"{option}: {exc}")
+
+            self._log_skipped_plot_entries(skipped)
+            if hasattr(self, "apply_plot_settings"):
+                self.apply_plot_settings()
+        finally:
+            self.setUpdatesEnabled(True)
+            self._is_rendering_plots = False
 
     def clear_plot_widgets(self):
-        # Remove all existing pyqtgraph data items.
+        # Clear data items from all plot widgets (keeps widgets alive).
         for widget in self.findChildren(pg.PlotWidget):
             widget.clear()
 
+    def _collect_checked_plot_options(self):
+        # Return a list of plot options that are currently checked.
+        checked_options = []
+        for i in range(self.tree.topLevelItemCount()):
+            category_item = self.tree.topLevelItem(i)
+            # Skip invalid category rows.
+            if category_item is None:
+                continue
+            for j in range(category_item.childCount()):
+                option_item = category_item.child(j)
+                # Keep only checked child options.
+                if option_item is not None and option_item.checkState(1) == Qt.CheckState.Checked:
+                    checked_options.append(option_item.text(0))
+        return checked_options
+
+    def _resolve_plot_renderer(self, option):
+        # Map a tree option name to the renderer method that draws it.
+        key = self._PLOT_OPTION_ALIASES.get(option, option)
+        method_name = self._PLOT_OPTION_RENDERERS.get(key)
+        # No renderer is registered for this option.
+        if method_name is None:
+            return key, None
+        return key, getattr(self, method_name, None)
+
+    def _clear_dynamic_widgets_from(self, start_idx):
+        # Remove dynamic plots created after a given index.
+        to_remove = self._dynamic_plot_widgets[start_idx:]
+        self._dynamic_plot_widgets = self._dynamic_plot_widgets[:start_idx]
+        self._delete_plot_widgets(to_remove)
+
+    def _log_skipped_plot_entries(self, skipped):
+        # Print skipped-plot reasons, but only when the list changes.
+        if skipped:
+            signature = tuple(sorted(skipped))
+            # Avoid printing the same skip messages over and over.
+            if signature != self._last_skipped_signature:
+                print("Some selected plots were skipped:")
+                for entry in skipped[:8]:
+                    print(f"- {entry}")
+            self._last_skipped_signature = signature
+        else:
+            # Clear last signature when nothing is skipped.
+            self._last_skipped_signature = None
+
+    def _schedule_plot_render(self):
+        # Debounce rapid checkbox changes into one redraw.
+        self._plot_render_timer.start(80)
+
+    def _render_from_latest_results(self):
+        # Rebuild plots from the latest saved mission results.
+        import values
+        results = getattr(values, "rcaide_results", None)
+        # Only render when results exist.
+        if results is not None:
+            self.render_solve_plots(results)
+
+    def clear_dynamic_plot_widgets(self):
+        # Delete all dynamic plots from the layout.
+        self._delete_plot_widgets(self._dynamic_plot_widgets)
+        self._dynamic_plot_widgets = []
+
+    def _delete_plot_widgets(self, widgets):
+        # Remove widgets from layout and free them safely.
+        for widget in widgets:
+            self.plot_layout.removeWidget(widget)
+            widget.setParent(None)
+            widget.deleteLater()
+
+    def _new_plot_widget(self, title, y_label, x_label="Time (min)", show_legend=True):
+        # Create one new plot widget and add it to the dynamic list.
+        widget = pg.PlotWidget()
+        widget.setFixedSize(QSize(620, 380))
+        widget.setBackground("#0e141b")
+        plot_item = widget.getPlotItem()
+        plot_item.showGrid(x=True, y=True, alpha=0.15)
+        for axis_name in ("left", "bottom"):
+            axis = plot_item.getAxis(axis_name)
+            axis.setPen(pg.mkPen("#4da3ff"))
+            axis.setTextPen(pg.mkPen("#9fb8ff"))
+        plot_item.getViewBox().setBorder(pg.mkPen("#1f2a36"))
+        widget.setLabel("left", y_label, color="white", size="18px")
+        widget.setLabel("bottom", x_label, color="white", size="18px")
+        widget.setTitle(title, color="#9fb8ff", size="14pt")
+        # Add legend only when legend toggle is enabled.
+        if hasattr(self, "legend_check") and self.legend_check.isChecked():
+            legend = widget.addLegend(offset=(10, 10))
+            # Style legend when it was created.
+            if legend is not None:
+                legend.setBrush(pg.mkBrush(8, 12, 18, 180))
+                legend.setPen(pg.mkPen(120, 150, 210, 140))
+            self._position_plot_legend(widget)
+        self.plot_layout.addWidget(widget, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self._dynamic_plot_widgets.append(widget)
+        return widget
+
+    def _position_plot_legend(self, plot_widget):
+        # Keep legend fixed in the top-right corner.
+        legend = plot_widget.plotItem.legend
+        # Nothing to place if legend is missing.
+        if legend is None:
+            return
+        try:
+            legend.setParentItem(plot_widget.getPlotItem().getViewBox())
+            legend.anchor(itemPos=(1, 0), parentPos=(1, 0), offset=(-10, 10))
+            legend.setBrush(pg.mkBrush(8, 12, 18, 180))
+            legend.setPen(pg.mkPen(120, 150, 210, 140))
+        except Exception:
+            # Ignore legend anchor/styling errors to avoid breaking plotting.
+            pass
+
+    def _segment_style(self, i, plot_parameters):
+        # Build color and marker style for one mission segment.
+        rgba = plot_parameters.line_colors[i] * 255.0
+        line_color = (int(rgba[0]), int(rgba[1]), int(rgba[2]))
+        pen = pg.mkPen(color=line_color, width=plot_parameters.line_width)
+        symbol = plot_parameters.markers[0] if plot_parameters.markers else 'o'
+        return pen, line_color, symbol
+
+    def _has_attr_chain(self, obj, chain):
+        # Check whether all nested attributes exist on an object.
+        cur = obj
+        for name in chain:
+            # Stop early when any part of the path is missing.
+            if not hasattr(cur, name):
+                return False
+            cur = getattr(cur, name)
+        return True
+
+    def _units(self):
+        # Return shared RCAIDE unit conversions.
+        from RCAIDE.Framework.Core import Units
+        return Units
+
+    def _plot_time_series(self, widget, results, plot_parameters, y_fn):
+        # Plot one time-series curve per mission segment.
+        for segment, time, pen, brush, symbol, tag in self._iter_segments_with_style(results, plot_parameters):
+            y = np.asarray(y_fn(segment)).reshape(-1)
+            widget.plot(time, y, pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=tag)
+
+    def _iter_segments_with_style(self, results, plot_parameters):
+        # Yield segment data plus plotting style and label.
+        U = self._units()
+        for i, segment in enumerate(results.segments):
+            time = segment.conditions.frames.inertial.time[:, 0] / U.min
+            pen, brush, symbol = self._segment_style(i, plot_parameters)
+            yield segment, time, pen, brush, symbol, segment.tag.replace("_", " ")
+
+    def _render_time_series_group(self, results, plot_parameters, specs, x_label="Time (min)"):
+        # Create and fill a group of time-series plots.
+        for title, y_label, y_fn, show_legend in specs:
+            widget = self._new_plot_widget(title, y_label, x_label=x_label, show_legend=show_legend)
+            self._plot_time_series(widget, results, plot_parameters, y_fn)
+
+    def _render_aircraft_velocities(self, results, plot_parameters):
+        # Fill the base aircraft-velocity plots.
+        from .plots.mission import plot_aircraft_velocities
+        for widget in self._base_plot_widgets:
+            widget.setVisible(True)
+        plot_aircraft_velocities(self, results, plot_parameters)
+
+    def _render_aerodynamic_coefficients_pg(self, results, plot_parameters):
+        # Plot AoA, L/D, CL, and CD.
+        U = self._units()
+        self._render_time_series_group(results, plot_parameters, [
+            ("Aerodynamic Coefficients: AoA", "AoA (deg)", lambda s: s.conditions.aerodynamics.angles.alpha[:, 0] / U.deg, True),
+            ("Aerodynamic Coefficients: L/D", "L/D", lambda s: s.conditions.aerodynamics.coefficients.lift.total[:, 0] / np.clip(s.conditions.aerodynamics.coefficients.drag.total[:, 0], 1e-9, None), False),
+            ("Aerodynamic Coefficients: CL", "CL", lambda s: s.conditions.aerodynamics.coefficients.lift.total[:, 0], False),
+            ("Aerodynamic Coefficients: CD", "CD", lambda s: s.conditions.aerodynamics.coefficients.drag.total[:, 0], False),
+        ])
+
+    def _render_aerodynamic_forces_pg(self, results, plot_parameters):
+        # Plot aerodynamic power, thrust, lift, and drag.
+        self._render_time_series_group(results, plot_parameters, [
+            ("Aerodynamic Forces: Power", "Power (MW)", lambda s: s.conditions.energy.power[:, 0] / 1e6, True),
+            ("Aerodynamic Forces: Thrust", "Thrust (kN)", lambda s: s.conditions.frames.body.thrust_force_vector[:, 0] / 1000.0, False),
+            ("Aerodynamic Forces: Lift", "Lift (kN)", lambda s: -s.conditions.frames.wind.force_vector[:, 2] / 1000.0, False),
+            ("Aerodynamic Forces: Drag", "Drag (kN)", lambda s: -s.conditions.frames.wind.force_vector[:, 0] / 1000.0, False),
+        ])
+
+    def _render_drag_components_pg(self, results, plot_parameters):
+        # Plot drag breakdown components.
+        U = self._units()
+        widget = self._new_plot_widget("Drag Components", "Drag Coefficient", show_legend=True)
+        for i, segment in enumerate(results.segments):
+            time = segment.conditions.frames.inertial.time[:, 0] / U.min
+            drag = segment.conditions.aerodynamics.coefficients.drag
+            cd_total = np.asarray(drag.total[:, 0]).reshape(-1)
+            pen, brush, symbol = self._segment_style(i, plot_parameters)
+            for name, chain in self._DRAG_COMPONENTS:
+                value = drag
+                try:
+                    for key in chain:
+                        value = getattr(value, key)
+                    arr_np = np.asarray(value)
+                    arr = arr_np[:, 0].reshape(-1) if arr_np.ndim > 1 else arr_np.reshape(-1)
+                except Exception:
+                    # Missing drag component: plot zeros for that component.
+                    arr = np.zeros_like(cd_total)
+                label = name if i == 0 else None
+                widget.plot(time, arr, pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=label)
+
+    def _render_lift_distribution_pg(self, results, plot_parameters):
+        # Plot final spanwise lift distribution for each segment.
+        if not self._has_attr_chain(
+            results.segments[0].conditions,
+            ["aerodynamics", "coefficients", "lift", "inviscid", "spanwise"]
+        ):
+            # This plot needs spanwise lift data; skip when not available.
+            raise RuntimeError("no spanwise lift data")
+        widget = self._new_plot_widget("Lift Distribution", "Spanwise Lift Coefficient", "Span Index", show_legend=True)
+        for i, segment in enumerate(results.segments):
+            spanwise = np.asarray(segment.conditions.aerodynamics.coefficients.lift.inviscid.spanwise)
+            y = np.asarray(spanwise[-1]).reshape(-1)
+            x = np.arange(y.size)
+            pen, brush, symbol = self._segment_style(i, plot_parameters)
+            tag = segment.tag.replace("_", " ")
+            widget.plot(x, y, pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=tag)
+
+    def _render_rotor_conditions_pg(self, results, plot_parameters):
+        # Plot rotor disc loading and power loading.
+        U = self._units()
+        seg0 = results.segments[0]
+        if not self._has_attr_chain(seg0.conditions, ["energy", "converters"]):
+            # This plot needs converter data; skip when not available.
+            raise RuntimeError("no rotor converter data")
+        dl = self._new_plot_widget("Rotor Conditions: Disc Loading", "Disc Loading", show_legend=True)
+        pl = self._new_plot_widget("Rotor Conditions: Power Loading", "Power Loading", show_legend=False)
+        for i, segment in enumerate(results.segments):
+            converters = segment.conditions.energy.converters
+            if hasattr(converters, "keys"):
+                tag = next(iter(converters.keys()))
+                conv = converters[tag]
+            else:
+                tags = [name for name in dir(converters) if not name.startswith("_")]
+                tag = tags[0]
+                conv = getattr(converters, tag)
+            if not hasattr(conv, "disc_loading") or not hasattr(conv, "power_loading"):
+                # Skip when converter metrics are incomplete.
+                raise RuntimeError("no disc/power loading data")
+            time = segment.conditions.frames.inertial.time[:, 0] / U.min
+            pen, brush, symbol = self._segment_style(i, plot_parameters)
+            name = segment.tag.replace("_", " ")
+            dl.plot(time, np.asarray(conv.disc_loading[:, 0]).reshape(-1), pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=name)
+            pl.plot(time, np.asarray(conv.power_loading[:, 0]).reshape(-1), pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=name)
+
+    def _render_altitude_sfc_weight_pg(self, results, plot_parameters):
+        # Plot weight, fuel burn, SFC, and fuel flow.
+        U = self._units()
+        seg0 = results.segments[0]
+        if not self._has_attr_chain(seg0.conditions, ["weights", "total_mass"]):
+            # Skip when weight history is missing.
+            raise RuntimeError("no total_mass data")
+        if not self._has_attr_chain(seg0.conditions, ["weights", "vehicle_mass_rate"]):
+            # Skip when mass-rate (fuel flow) is missing.
+            raise RuntimeError("no vehicle_mass_rate data")
+        if not self._has_attr_chain(seg0.conditions, ["energy", "cumulative_fuel_consumption"]):
+            # Skip when cumulative fuel-burn data is missing.
+            raise RuntimeError("no cumulative_fuel_consumption data")
+        self._render_time_series_group(results, plot_parameters, [
+            ("Weight", "Weight (lbf)", lambda s: (s.conditions.weights.total_mass[:, 0] * 9.81) / U.lbf, True),
+            ("Fuel Burn", "Fuel Burn (lb)", lambda s: s.conditions.energy.cumulative_fuel_consumption[:, 0] / U.lb, False),
+            ("SFC", "SFC", lambda s: ((s.conditions.weights.vehicle_mass_rate[:, 0] / U.lb) / np.clip(np.abs(s.conditions.frames.body.thrust_force_vector[:, 0]) / U.lbf, 1e-9, None)), False),
+            ("Fuel Flow", "mdot (lb/s)", lambda s: s.conditions.weights.vehicle_mass_rate[:, 0] / U.lb, False),
+        ])
+
+    def _render_propulsor_throttles_pg(self, results, plot_parameters):
+        # Plot throttle traces for each propulsor.
+        U = self._units()
+        widget = self._new_plot_widget("Propulsor Throttles", "Throttle", show_legend=True)
+        for i, segment in enumerate(results.segments):
+            time = segment.conditions.frames.inertial.time[:, 0] / U.min
+            pen, brush, symbol = self._segment_style(i, plot_parameters)
+            for prop_tag, prop_data in segment.conditions.energy.propulsors.items():
+                y = np.asarray(prop_data.throttle[:, 0]).reshape(-1)
+                label = f"{segment.tag.replace('_', ' ')}: {prop_tag}"
+                widget.plot(time, y, pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=label)
+
+    def _render_flight_conditions_pg(self, results, plot_parameters):
+        # Plot altitude, airspeed, and range.
+        U = self._units()
+        self._render_time_series_group(results, plot_parameters, [
+            ("Flight Conditions: Altitude", "Altitude (ft)", lambda s: s.conditions.freestream.altitude[:, 0] / U.feet, True),
+            ("Flight Conditions: Airspeed", "Airspeed (mph)", lambda s: s.conditions.freestream.velocity[:, 0] / U["mph"], False),
+            ("Flight Conditions: Range", "Range (nmi)", lambda s: s.conditions.frames.inertial.aircraft_range[:, 0] / U.nmi, False),
+        ])
+
+    def _render_flight_trajectory_pg(self, results, plot_parameters):
+        # Plot trajectory as range-time, XY, and altitude-time.
+        U = self._units()
+        tr = self._new_plot_widget("Flight Trajectory: Range vs Time", "Range (nmi)", show_legend=True)
+        xy = self._new_plot_widget("Flight Trajectory: Y vs X", "Y", "X", show_legend=False)
+        alt = self._new_plot_widget("Flight Trajectory: Altitude", "Altitude (m)", show_legend=False)
+        for segment, time, pen, brush, symbol, tag in self._iter_segments_with_style(results, plot_parameters):
+            rng = segment.conditions.frames.inertial.aircraft_range[:, 0] / U.nmi
+            x = segment.conditions.frames.inertial.position_vector[:, 0]
+            y = segment.conditions.frames.inertial.position_vector[:, 1]
+            z = -segment.conditions.frames.inertial.position_vector[:, 2]
+            tr.plot(time, np.asarray(rng).reshape(-1), pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=tag)
+            xy.plot(np.asarray(x).reshape(-1), np.asarray(y).reshape(-1), pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=tag)
+            alt.plot(time, np.asarray(z).reshape(-1), pen=pen, symbol=symbol, symbolBrush=brush, symbolSize=plot_parameters.marker_size, name=tag)
+
+    def _render_flight_forces_moments_pg(self, results, plot_parameters):
+        # Plot wind-axis forces and moments.
+        self._render_time_series_group(results, plot_parameters, [
+            ("X Force", "X (N)", lambda s: s.conditions.frames.wind.total_force_vector[:, 0], True),
+            ("Y Force", "Y (N)", lambda s: s.conditions.frames.wind.total_force_vector[:, 1], False),
+            ("Z Force", "Z (N)", lambda s: s.conditions.frames.wind.total_force_vector[:, 2], False),
+            ("Roll Moment", "L", lambda s: s.conditions.frames.wind.total_moment_vector[:, 0], False),
+            ("Pitch Moment", "M", lambda s: s.conditions.frames.wind.total_moment_vector[:, 1], False),
+            ("Yaw Moment", "N", lambda s: s.conditions.frames.wind.total_moment_vector[:, 2], False),
+        ])
+
+    def _render_longitudinal_stability_pg(self, results, plot_parameters):
+        # Plot longitudinal stability metrics.
+        U = self._units()
+        self._render_time_series_group(results, plot_parameters, [
+            ("Longitudinal: Cm", "Cm", lambda s: s.conditions.static_stability.coefficients.M[:, 0], True),
+            ("Longitudinal: Static Margin", "SM", lambda s: s.conditions.static_stability.static_margin[:, 0], False),
+            ("Longitudinal: Elevator", "delta_e (deg)", lambda s: s.conditions.control_surfaces.elevator.deflection[:, 0] / U.deg, False),
+        ])
+
+    def _render_lateral_stability_pg(self, results, plot_parameters):
+        # Plot lateral-directional stability metrics.
+        U = self._units()
+        self._render_time_series_group(results, plot_parameters, [
+            ("Lateral: Bank Angle", "phi (deg)", lambda s: -s.conditions.aerodynamics.angles.phi[:, 0] / U.deg, True),
+            ("Lateral: Aileron", "delta_a (deg)", lambda s: s.conditions.control_surfaces.aileron.deflection[:, 0] / U.deg, False),
+            ("Lateral: Rudder", "delta_r (deg)", lambda s: s.conditions.control_surfaces.rudder.deflection[:, 0] / U.deg, False),
+        ])
+
+    def _remove_empty_dynamic_plots(self, start_index=0):
+        # Remove new dynamic plots that ended up with no curves.
+        kept = []
+        removed = []
+        for idx, widget in enumerate(self._dynamic_plot_widgets):
+            # Keep old plots and any plot that has data items.
+            if idx < start_index or widget.listDataItems():
+                kept.append(widget)
+            else:
+                removed.append(widget)
+        self._dynamic_plot_widgets = kept
+        self._delete_plot_widgets(removed)
+
     def _build_plot_parameters(self, results):
+        from RCAIDE.Framework.Core import Data
         # Build shared style settings passed into plot functions.
         plot_parameters = Data()
         plot_parameters.line_width = 5
@@ -610,6 +1034,7 @@ def init_plot_settings_panel(self):
 
     # Toggle to show or hide markers on the lines
     self.marker_check = QCheckBox("Show Markers")
+    self.marker_check.setChecked(True)
     layout.addWidget(self.marker_check)
 
     # Dropdown to select marker symbol style
@@ -723,13 +1148,28 @@ def select_grid_color(self):
 # --------------------------------------------------------------------------------------------------
 def apply_plot_settings(self):
 
-    # Find all PlotWidget instances attached to this widget
-    plots = [
+    # Collect all plot widgets (base + dynamic + fallback attribute scan)
+    plots = []
+    if hasattr(self, "_base_plot_widgets"):
+        plots.extend([p for p in self._base_plot_widgets if isinstance(p, pg.PlotWidget)])
+    if hasattr(self, "_dynamic_plot_widgets"):
+        plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
+    plots.extend([
         getattr(self, name) for name in dir(self)
         if isinstance(getattr(self, name), pg.PlotWidget)
-    ]
+    ])
 
+    # De-duplicate while preserving order.
+    seen = set()
+    unique_plots = []
     for plot in plots:
+        pid = id(plot)
+        if pid in seen:
+            continue
+        seen.add(pid)
+        unique_plots.append(plot)
+
+    for plot in unique_plots:
 
         # Show or hide grid lines based on the checkbox state
         plot.showGrid(
@@ -758,6 +1198,8 @@ def apply_plot_settings(self):
         if self.legend_check.isChecked():
             if not plot.plotItem.legend:
                 plot.addLegend()
+            if hasattr(self, "_position_plot_legend"):
+                self._position_plot_legend(plot)
             plot.plotItem.legend.show()
         else:
             if plot.plotItem.legend:
@@ -862,17 +1304,11 @@ def toggle_plot_visibility(self, item, column):
     if item.childCount() > 0:
         return
 
-    # Determine whether the plot should be visible based on the checkbox
-    visible = item.checkState(1) == Qt.CheckState.Checked
-
-    # Convert the tree item text into a key used to match plot widget names
-    plot_key = item.text(0).lower().replace(" ", "_")
-
-    # Toggle visibility for matching PlotWidget instances
-    for name in dir(self):
-        widget = getattr(self, name)
-        if isinstance(widget, pg.PlotWidget) and plot_key in name.lower():
-            widget.setVisible(visible)
+    # Re-render selected plots based on current tree state (debounced).
+    import values
+    results = getattr(values, "rcaide_results", None)
+    if results is not None and hasattr(self, "_schedule_plot_render"):
+        self._schedule_plot_render()
 
 def init_plot_options_panel(self):
     # Create the container widget for plot options
