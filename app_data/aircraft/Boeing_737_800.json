@@ -209,7 +209,7 @@
                     {
                         "Percent X Location": [
                             0.00576,
-                            1
+                            0
                         ],
                         "Percent Z Location": [
                             -0.00144,
@@ -2477,7 +2477,7 @@
                 ]
             },
             "top dropdown": 1,
-            "nested dropdown": "Constant Speed/Constant Altitude",
+            "nested dropdown": "Constant Speed-Constant Altitude",
             "config": 1
         }
     ],
