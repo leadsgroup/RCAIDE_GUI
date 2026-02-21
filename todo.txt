@@ -1,13 +1,11 @@
-Geometry Parameterization Tab
-Anshrin- Add small visualization window in lower left hand corner
+Geometry Parameterization Tab 
 - Add export/import features (FUTURE)
 
 Geometry Visualization tab
 - Add a button in the main window that switched for network to aircraft visualization (FUTURE)
 - Add export/import from VSP options (FUTURE)
 
-
-Mihir - clean up code, get rid of unncessary comments that the public shouldnt see
+ 
 Mihir - update gui page on leads website
 Mihir - update rcaide git repository page (readme file for the gui)
 Mihir - Increasing the GUI font
