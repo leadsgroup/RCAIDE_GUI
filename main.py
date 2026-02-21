@@ -52,7 +52,6 @@ class App(QMainWindow):
         self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
         self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
         self.widgets.append((analysis.get_widget(), "Analyses Setup")) 
-        shared_analysis_widget = analysis.get_widget() 
         self.widgets.append((mission.get_widget(), "Mission Setup"))  
         self.widgets.append((solve.get_widget(), "Mission Simulation"))
         # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
@@ -131,7 +130,7 @@ extra = {
     'save': '#0291de',
     'menubar': '#021a32'
 }
-# apply_stylesheet(app, theme='dark_blue.xml', extra=extra)
-apply_stylesheet(app, theme='rcaide_dark_theme.xml', extra=extra)
+separator = os.path.sep
+apply_stylesheet(app, theme= "app_data" + separator + "style_sheets" + separator + 'rcaide_dark_theme.xml', extra=extra)
 window.show()
 sys.exit(app.exec())
