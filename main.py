@@ -42,7 +42,6 @@ class App(QMainWindow):
 
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(QTabWidget.TabPosition.North)
-        # self.tabs.setMovable(True)
 
         self.tabs.currentChanged.connect(self.on_tab_change)
 
