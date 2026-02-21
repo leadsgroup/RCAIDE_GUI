@@ -21,6 +21,8 @@ Anshrin - MAJOR BUG - on the mission tab, when the users mouse over over the fei
             the fields change. The only way this should change is if the user clicks the dropdown and changes it.
             So far it affects the following fields "Segment Type" , "Subsegment Type" 
 
+Matthew- Add more units
+Matthew- Replace VTK plotting with PyVista
 
 General
 All- Data Entry Checks
