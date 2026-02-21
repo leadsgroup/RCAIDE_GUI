@@ -104,4 +104,3 @@ class VehicleFrame(GeometryFrame):
         assert self.save_function is not None
         self.save_function(self.tab_index, vehicle_component=None,
                            index=-1, data=self.get_data_values())
-        print(values.vehicle)

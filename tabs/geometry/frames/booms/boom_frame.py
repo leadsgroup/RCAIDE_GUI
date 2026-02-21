@@ -125,8 +125,6 @@ class BoomFrame(GeometryFrame):
                     tab_index=self.tab_index, vehicle_component=boom, data=entered_data, new=True)
 
             show_popup("Data Saved!", self)
-        else:
-            print("No save function set.")
 
     def add_boom_section(self):
         self.boom_sections_layout.addWidget(BoomSectionWidget(
