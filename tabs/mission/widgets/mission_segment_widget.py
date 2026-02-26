@@ -40,10 +40,10 @@ class MissionSegmentWidget(QWidget):
         # ============================================================
         # Group 1 — Specify Segment Settings
         # ============================================================
-        self.settings_group = QGroupBox("Specify Segment Settings")
+        self.settings_group = QGroupBox("Segment Settings")
         self.settings_group.setStyleSheet(self._box_style())
-        self.settings_layout = QVBoxLayout(self.settings_group)
-
+        self.settings_layout = QVBoxLayout(self.settings_group) 
+        
         cp_row = QHBoxLayout()
         cp_row.addWidget(QLabel("Number of Control Points:"))
         self.ctrl_points = QLineEdit("16")
@@ -68,7 +68,7 @@ class MissionSegmentWidget(QWidget):
         # ============================================================
         # Group 2 — Specify Segment Details
         # ============================================================
-        self.details_group = QGroupBox("Specify Segment Details")
+        self.details_group = QGroupBox("Mission Profile")
         self.details_group.setStyleSheet(self._box_style())
         self.details_layout = QVBoxLayout(self.details_group)
 
@@ -76,23 +76,24 @@ class MissionSegmentWidget(QWidget):
         self.segment_name_input = QLineEdit()
         self.details_layout.addWidget(self.segment_name_input)
 
-        self.details_layout.addWidget(QLabel("Segment Type:"))
+        self.details_layout.addWidget(QLabel("Segment Classification:"))
         self.top_dropdown.addItems([
             "Climb", "Cruise", "Descent", "Ground",
-            "Single_Point", "Transition", "Vertical Flight"
+            "Single_Point", "Vertical Flight"
         ])
         self.details_layout.addWidget(self.top_dropdown)
 
-        self.details_layout.addWidget(QLabel("Subsegment Type:"))
+        self.details_layout.addWidget(QLabel("Segment Type:"))
         self.populate_nested_dropdown(0)
         self.details_layout.addWidget(self.nested_dropdown)
 
-        self.details_layout.addWidget(QLabel("Aircraft Configuration:"))
+        self.details_layout.addWidget(QLabel("Vehicle Configuration:"))
         config_names = [
             c.get("config name", "")
             for c in values.config_data
             if isinstance(c, dict)
         ]
+        self.details_layout.addWidget(QLabel("Segment Details:"))
         if not config_names:
             cfg_container = getattr(values, "rcaide_configs", None)
             if isinstance(cfg_container, dict):
@@ -158,8 +159,8 @@ class MissionSegmentWidget(QWidget):
             font-weight:600;
             border:1px solid #2d3a4e;
             border-radius:6px;
-            padding:6px;
-            margin-bottom:6px;
+            padding:20px;
+            margin-bottom:20px;
         }
         """
 

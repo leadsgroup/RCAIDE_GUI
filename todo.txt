@@ -1,20 +1,29 @@
-Geometry Parameterization Tab
-Anshrin- Add small visualization window in lower left hand corner
+Geometry Parameterization Tab 
 - Add export/import features (FUTURE)
 
 Geometry Visualization tab
 - Add a button in the main window that switched for network to aircraft visualization (FUTURE)
 - Add export/import from VSP options (FUTURE)
 
-Anshrin - Mission tab - add table and plot 
-
-Mihir - clean up code, get rid of unncessary comments that the public shouldnt see
-
+ 
 Mihir - update gui page on leads website
 Mihir - update rcaide git repository page (readme file for the gui)
+Mihir - Increasing the GUI font
+Mihir - Make the component tree expanded (by default) so that you can see the wings, fuselages etc
+Mihir - Decrease the thickness of the button border (seems a bit too thick)
+Mihir - On the visualization Tab - the ""show gridlines button" has no border 
 
-Solve Tab
-Anshrin- Connect the solve results to the plot
+
+Anshrin - PLot Export  
+Anshrin - Mission tab - add table and plot 
+Anshrin - Add geometry visualization window to the bottom right of the vehicle setup tab  
+Anshrin - MAJOR BUG - on the mission tab, when the users mouse over over the feilds and scrolls,
+            the fields change. The only way this should change is if the user clicks the dropdown and changes it.
+            So far it affects the following fields "Segment Type" , "Subsegment Type" 
+
+Matthew- Add more units
+Matthew- Replace VTK plotting with PyVista
+
 General
 All- Data Entry Checks
 Matthew- Add more units
