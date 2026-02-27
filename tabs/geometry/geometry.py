@@ -1,11 +1,13 @@
 from typing import Type
 
 import RCAIDE
+import vtk
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, \
-    QLabel, QLineEdit
+    QLabel, QLineEdit, QApplication
 
 from tabs.geometry.frames import *
 from tabs import TabWidget
+from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
 from utilities import set_data
 import values
 
@@ -32,6 +34,10 @@ class GeometryWidget(TabWidget):
         self.tree_frame_layout = QVBoxLayout()
         self.right_layout = QVBoxLayout()
         self.main_layout = QStackedLayout()
+        # Gate preview redraws during bulk operations (e.g., load from file).
+        self._preview_updates_enabled = True
+        # Ensure VTK cleanup runs only once during shutdown.
+        self._preview_cleaned_up = False
 
         for index, frame in enumerate(self.frames):
             frame_widget = frame()
@@ -60,6 +66,45 @@ class GeometryWidget(TabWidget):
         self.tree.addTopLevelItem(vehicle_item)
         self.tree_frame_layout.addWidget(self.tree)
         self.tree.expandAll()
+
+        # Reuse the full Geometry Visualization widget as an embedded preview.
+        self.preview_widget = VisualizeGeometryWidget()
+        # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
+        if hasattr(self.preview_widget, "toolbar"):
+            self.preview_widget.toolbar.hide()
+        if hasattr(self.preview_widget, "colorbar_widget") and self.preview_widget.colorbar_widget:
+            self.preview_widget.colorbar_widget.hide()
+        self.preview_widget.setMinimumHeight(220)
+
+        # Wrap preview in a titled box so users can identify it clearly.
+        self.preview_container = QWidget()
+        self.preview_container.setObjectName("aircraftPreviewContainer")
+        preview_layout = QVBoxLayout()
+        preview_layout.setContentsMargins(6, 6, 6, 6)
+        preview_layout.setSpacing(6)
+        self.preview_container.setLayout(preview_layout)
+        # Added label to preview container
+        self.preview_label = QLabel("Aircraft Preview")
+        self.preview_label.setObjectName("aircraftPreviewLabel")
+        preview_layout.addWidget(self.preview_label)
+        preview_layout.addWidget(self.preview_widget, 1)
+        # Style the preview container and label for better visual separation and clarity.
+        self.preview_container.setStyleSheet("""
+            QWidget#aircraftPreviewContainer {
+                border: 1px solid #6c7788;
+                border-radius: 4px;
+            }
+            QLabel#aircraftPreviewLabel {
+                border: none;
+                font-weight: 600;
+            }
+        """)
+
+        self.tree_frame_layout.addWidget(self.preview_container, 1)
+        app = QApplication.instance()
+        if app is not None:
+            # Fallback cleanup hook in case closeEvent order differs by platform.
+            app.aboutToQuit.connect(self._cleanup_preview)
  
         self.right_layout.addLayout(self.main_layout)
         base_layout.addLayout(self.tree_frame_layout, 1)
@@ -204,10 +249,16 @@ class GeometryWidget(TabWidget):
             else:
                 values.vehicle.append_component(vehicle_component)
 
+        # Keep preview synced with current geometry edits.
+        if self._preview_updates_enabled:
+            self.preview_widget.run_solve()
+
         return index
 
     def load_from_values(self):
         """Load the geometry data from the values file."""
+        # Avoid repeated expensive redraws while reconstructing full geometry tree.
+        self._preview_updates_enabled = False
         if values.geometry_data:
             if values.geometry_data[0]:
                 self.vehicle_name_input.setText(values.geometry_data[0]["name"])
@@ -222,7 +273,44 @@ class GeometryWidget(TabWidget):
                 for index, data in enumerate(data_list):
                     # tree_index = self.find_tree_index(tab_index)
                     self.save_data(tab_index=tab_index, index=index, data=data, new=True)
+        self._preview_updates_enabled = True
+        # Single redraw after all loaded parts are in place.
+        self.preview_widget.run_solve()
 
+    def update_layout(self):
+        # Refresh preview when this tab becomes active.
+        self.preview_widget.run_solve()
+
+    def closeEvent(self, event):
+        # Clean embedded VTK resources before QWidget teardown.
+        self._cleanup_preview()
+        super().closeEvent(event)
+
+    def _cleanup_preview(self):
+        if self._preview_cleaned_up:
+            return
+        self._preview_cleaned_up = True
+        self._preview_updates_enabled = False
+
+        try:
+            # Suppress VTK warnings during teardown path.
+            vtk.vtkObject.GlobalWarningDisplayOff()
+            if hasattr(self, "preview_widget") and self.preview_widget:
+                # Hide first, then release GL/VTK resources.
+                self.preview_widget.hide()
+                self.preview_widget.vtkWidget.hide()
+                rw = self.preview_widget.vtkWidget.GetRenderWindow()
+                iren = rw.GetInteractor() if rw else None
+                if iren:
+                    # Stop interactor loop before finalizing the window.
+                    iren.TerminateApp()
+                if rw:
+                    # Finalize render window explicitly to avoid Win32 handle errors.
+                    rw.SetOffScreenRendering(1)
+                    rw.Finalize()
+        except Exception:
+            # Ignore teardown errors to keep app shutdown clean.
+            pass
 
     # noinspection PyMethodMayBeStatic
     def find_tree_index(self, tab_index):

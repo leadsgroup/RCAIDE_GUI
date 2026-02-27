@@ -13,6 +13,8 @@ import pyqtgraph as pg
 import numpy as np
 import re
 import traceback
+import os
+from datetime import datetime
 
 # gui imports 
 from tabs import TabWidget
@@ -1086,7 +1088,7 @@ def init_plot_settings_panel(self):
     layout.addWidget(header("Export"))
 
     # Button to save the currently visible plot(s)
-    self.save_plot_button = QPushButton("Save Visible Plot")
+    self.save_plot_button = QPushButton("Save Plots")
     self.save_plot_button.clicked.connect(self.save_current_plot)
     layout.addWidget(self.save_plot_button)
 
@@ -1260,40 +1262,130 @@ def apply_plot_settings(self):
 # --------------------------------------------------------------------------------------------------
 def save_current_plot(self):
     from PyQt6.QtWidgets import QFileDialog, QApplication
-    from PyQt6.QtGui import QPixmap
 
-    # Find the widget that contains the plot layouts
-    plot_container = None
-    for child in self.findChildren(QWidget):
-        # Heuristic: look for a widget with a layout holding multiple plots
-        if child.layout() and child.layout().count() >= 4:
-            plot_container = child
-            break
+    def _plot_has_real_data(plot_widget):
+        # Export only plots that actually contain finite data points.
+        for curve in plot_widget.listDataItems():
+            try:
+                x_data, y_data = curve.getData()
+            except Exception:
+                continue
+            if x_data is None or y_data is None:
+                continue
+            x = np.asarray(x_data).reshape(-1)
+            y = np.asarray(y_data).reshape(-1)
+            if x.size == 0 or y.size == 0:
+                continue
+            if np.isfinite(x).any() and np.isfinite(y).any():
+                return True
+        return False
 
-    # Exit if no plot container was found
-    if plot_container is None:
+    # Collect visible plots in display order.
+    plots = []
+    if hasattr(self, "_base_plot_widgets"):
+        plots.extend([p for p in self._base_plot_widgets if isinstance(p, pg.PlotWidget)])
+    if hasattr(self, "_dynamic_plot_widgets"):
+        plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
+    plots = [p for p in plots if p.isVisible() and _plot_has_real_data(p)]
+
+    if not plots:
+        QMessageBox.information(self, "Save Plots", "No visible plots with data to save.")
         return
 
-    # Open a file dialog to choose where to save the image
-    file_path, _ = QFileDialog.getSaveFileName(
+    # Choose parent directory where a new plots folder will be created.
+    parent_dir = QFileDialog.getExistingDirectory(
         self,
-        "Save Mission Plots",
-        "mission_plots.png",
-        "PNG Files (*.png)"
+        "Choose Folder to Save Mission Plots",
+        os.getcwd(),
     )
-    if not file_path:
+    if not parent_dir:
         return
 
-    # Ensure all plots are fully rendered before capturing
-    plot_container.repaint()
-    QApplication.processEvents()
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    export_dir = os.path.join(parent_dir, f"Mission Plots {timestamp}")
+    os.makedirs(export_dir, exist_ok=True)
 
-    # Render the entire plot container into a single pixmap
-    pixmap = QPixmap(plot_container.size())
-    plot_container.render(pixmap)
+    def _sanitize_name(text):
+        text = re.sub(r"<[^>]*>", "", str(text)).strip()
+        text = re.sub(r"[^A-Za-z0-9._ -]", "_", text)
+        text = re.sub(r"\s+", "_", text).strip("_")
+        return text or "plot"
 
-    # Save the captured image to disk
-    pixmap.save(file_path, "PNG")
+    for idx, plot in enumerate(plots, start=1):
+        plot_item = plot.getPlotItem()
+        if plot_item is None:
+            continue
+
+        left_axis = plot_item.getAxis("left")
+        bottom_axis = plot_item.getAxis("bottom")
+
+        # Preserve current styling so we can restore after exporting.
+        old_bg = plot.backgroundBrush()
+        old_bottom_pen = bottom_axis.pen()
+        old_left_pen = left_axis.pen()
+        old_bottom_text_pen = bottom_axis.textPen()
+        old_left_text_pen = left_axis.textPen()
+        old_border = plot_item.getViewBox().border
+        old_left_show_values = left_axis.style.get("showValues", True)
+        old_bottom_show_values = bottom_axis.style.get("showValues", True)
+        old_left_width = left_axis.width()
+
+        # Ensure axes/labels remain visible on white export background.
+        plot.setBackground("white")
+        bottom_axis.setPen(pg.mkPen("black"))
+        left_axis.setPen(pg.mkPen("black"))
+        bottom_axis.setTextPen(pg.mkPen("black"))
+        left_axis.setTextPen(pg.mkPen("black"))
+        # Force tick value labels to render and reserve width on the left axis.
+        left_axis.setStyle(showValues=True, autoExpandTextSpace=True)
+        bottom_axis.setStyle(showValues=True, autoExpandTextSpace=True)
+        left_axis.setWidth(max(int(old_left_width or 0), 75))
+        plot_item.getViewBox().setBorder(pg.mkPen("black"))
+
+        # Ensure very light curves are visible on white export background.
+        curve_state = []
+        for curve in plot.listDataItems():
+            old_pen = curve.opts.get("pen")
+            old_symbol_pen = curve.opts.get("symbolPen")
+            old_symbol_brush = curve.opts.get("symbolBrush")
+            curve_state.append((curve, old_pen, old_symbol_pen, old_symbol_brush))
+
+            pen_color = old_pen.color() if old_pen is not None else None
+            if pen_color is not None and pen_color.lightness() > 220:
+                export_pen = pg.mkPen("black", width=old_pen.widthF() if hasattr(old_pen, "widthF") else 2)
+                curve.setPen(export_pen)
+                if curve.opts.get("symbol") is not None:
+                    curve.setSymbolPen(export_pen)
+                    curve.setSymbolBrush(pg.mkBrush("black"))
+
+        plot.repaint()
+        QApplication.processEvents()
+
+        title = plot_item.titleLabel.text if plot_item.titleLabel else ""
+        base_name = _sanitize_name(title) if title else f"plot_{idx:02d}"
+        file_path = os.path.join(export_dir, f"{idx:02d}_{base_name}.png")
+
+        # Capture exactly what the user sees in the plot widget.
+        plot.grab().save(file_path, "PNG")
+
+        # Restore UI styling.
+        plot.setBackground(old_bg)
+        bottom_axis.setPen(old_bottom_pen)
+        left_axis.setPen(old_left_pen)
+        bottom_axis.setTextPen(old_bottom_text_pen)
+        left_axis.setTextPen(old_left_text_pen)
+        left_axis.setStyle(showValues=old_left_show_values, autoExpandTextSpace=True)
+        bottom_axis.setStyle(showValues=old_bottom_show_values, autoExpandTextSpace=True)
+        if old_left_width:
+            left_axis.setWidth(old_left_width)
+        plot_item.getViewBox().setBorder(old_border if old_border is not None else pg.mkPen(None))
+        for curve, old_pen, old_symbol_pen, old_symbol_brush in curve_state:
+            if old_pen is not None:
+                curve.setPen(old_pen)
+            curve.setSymbolPen(old_symbol_pen)
+            curve.setSymbolBrush(old_symbol_brush)
+
+    QMessageBox.information(self, "Save Plots", f"Saved {len(plots)} plots to:\n{export_dir}")
 
 # --------------------------------------------------------------------------------------------------
 #  Plot Visibility Toggle (Tree)
