@@ -203,7 +203,7 @@ class GeometryWidget(TabWidget):
                 values.vehicle.append_energy_network(vehicle_component) 
             else:
                 values.vehicle.append_component(vehicle_component)
-
+        self.tree.expandAll()
         return index
 
     def load_from_values(self):
@@ -222,6 +222,7 @@ class GeometryWidget(TabWidget):
                 for index, data in enumerate(data_list):
                     # tree_index = self.find_tree_index(tab_index)
                     self.save_data(tab_index=tab_index, index=index, data=data, new=True)
+        self.tree.expandAll()
 
 
     # noinspection PyMethodMayBeStatic
