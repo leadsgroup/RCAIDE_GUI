@@ -52,6 +52,8 @@
 # .idea/modules
 # *.iml
 # *.ipr
+# Mac
+.DS_Store
 
 # CMake
 cmake-build-*/

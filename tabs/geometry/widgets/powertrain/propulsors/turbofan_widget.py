@@ -249,9 +249,6 @@ class TurbofanWidget(QWidget):
             return
         self.on_delete(self.index)
 
-    # def delete_nacelle_data(self)
-
-
     def get_data_values(self):
         title = self.section_name_edit.text()
         data = self.data_entry_widget.get_values()

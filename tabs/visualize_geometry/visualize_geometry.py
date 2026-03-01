@@ -482,10 +482,8 @@ class VisualizeGeometryWidget(TabWidget):
             #     GEOM = generate_3d_basic_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
             make_object(self.renderer, self.nacelle_actors, GEOM, nacelle_rgb_color, nacelle_opacity)
         
-        for network in geometry.networks:
-            print(network.tag)     
-            for propulsor in network.propulsors: 
-                print(propulsor.tag)
+        for network in geometry.networks: 
+            for propulsor in network.propulsors:  
                 if 'nacelle' in propulsor: 
                     if propulsor.nacelle !=  None: 
                         
