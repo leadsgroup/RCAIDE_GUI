@@ -253,6 +253,8 @@ class GeometryWidget(TabWidget):
         if self._preview_updates_enabled:
             self.preview_widget.run_solve()
 
+        self.tree.expandAll()
+
         return index
 
     def load_from_values(self):
@@ -276,6 +278,7 @@ class GeometryWidget(TabWidget):
         self._preview_updates_enabled = True
         # Single redraw after all loaded parts are in place.
         self.preview_widget.run_solve()
+        self.tree.expandAll()
 
     def update_layout(self):
         # Refresh preview when this tab becomes active.

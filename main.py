@@ -130,5 +130,13 @@ extra = {
 }
 separator = os.path.sep
 apply_stylesheet(app, theme= "app_data" + separator + "style_sheets" + separator + 'rcaide_dark_theme.xml', extra=extra)
+custom_qss = app.styleSheet() + """
+    QPushButton {
+        border: 1px solid;
+        border-radius: 4px;
+        border-color: #ffffff;
+    }
+"""
+app.setStyleSheet(custom_qss)
 window.show()
 sys.exit(app.exec())
