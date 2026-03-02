@@ -8,13 +8,6 @@ class DefaultFrame(GeometryFrame):
     def __init__(self):
         super(DefaultFrame, self).__init__()
 
-        # Set the background color of the DefaultFrame
-        # self.setAutoFillBackground(True)
-        # palette = self.palette()
-        # palette.setColor(QPalette.ColorRole.Window,
-        #                  QColor(0, 0, 128))  # RGB Value For Navy. You can change it to any other color using RGB
-        # self.setPalette(palette)
-
         # Create a QVBoxLayout for the DefaultFrame
         layout = QVBoxLayout(self)
 

@@ -33,10 +33,6 @@ class AerodynamicsWidget(AnalysisDataWidget):
 
         self.setLayout(self.main_layout)
 
-        # Adds scroll function
-        # self.main_layout.addItem(QSpacerItem(
-        #     20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
-
     def on_analysis_change(self, index): 
         assert self.main_layout is not None
 

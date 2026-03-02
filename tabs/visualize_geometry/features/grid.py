@@ -146,7 +146,14 @@ def _add_gridline_toggle(self):
     # Checkbox UI
     self.grid_checkbox = QCheckBox("Show Gridlines")
     self.grid_checkbox.setChecked(False)
-    self.grid_checkbox.setStyleSheet("color:white;font-size:10pt;")
+    self.grid_checkbox.setStyleSheet("""
+    QCheckBox {
+        color: white;
+        font-size: 10pt;
+        border: 1px solid white;
+        padding: 2px;
+    }
+    """)
 
     self.toolbar.addSeparator()
     self.toolbar.addWidget(self.grid_checkbox)

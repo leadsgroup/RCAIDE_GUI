@@ -163,17 +163,6 @@ class FuselageFrame(GeometryFrame):
         self.name_line_edit.clear()
         clear_layout(self.cabins_layout)
         clear_layout(self.fuselage_sections_layout)
-        # # Clear the fuselage sections
-        # for i in range(self.fuselage_sections_layout.count()):
-        #     item = self.fuselage_sections_layout.itemAt(i)
-        #     assert item is not None
-
-        #     widget = item.widget()
-        #     assert widget is not None
-
-        #     widget.deleteLater()
-
-        # self.fuselage_sections_layout.update()
         self.index = -1
 
     def create_rcaide_structure(self):

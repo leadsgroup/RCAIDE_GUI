@@ -70,13 +70,11 @@ class App(QMainWindow):
     def save_all(self):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
-            # widget.save_to_values()
           
         json_data = values.write_to_json()
         separator = os.path.sep
         name      = QFileDialog.getSaveFileName(self, 'Save File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
         
-        # Check if name has suffix, append if necessary
         if not QFileInfo(name).suffix():
             name += ".json"
         
@@ -127,9 +125,18 @@ extra = {
     'density_scale': '-2',
     'delete': '#b0220c',
     'save': '#0291de',
-    'menubar': '#021a32'
+    'menubar': '#021a32',
+    'font_size': '15px'
 }
 separator = os.path.sep
 apply_stylesheet(app, theme= "app_data" + separator + "style_sheets" + separator + 'rcaide_dark_theme.xml', extra=extra)
+custom_qss = app.styleSheet() + """
+    QPushButton {
+        border: 1px solid;
+        border-radius: 4px;
+        border-color: #ffffff;
+    }
+"""
+app.setStyleSheet(custom_qss)
 window.show()
 sys.exit(app.exec())
