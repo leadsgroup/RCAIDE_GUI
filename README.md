@@ -33,25 +33,25 @@
   ```mermaid
   %%{init: {'flowchart': {'curve': 'linear', 'nodeSpacing': 50, 'rankSpacing': 50}}}%%
   flowchart LR
-      Vehicle Setup[Vehicle Setup]
-      Geometry Visualization[Geometry Visualization]
-      Configurations Setup[Configurations Setup]
-      Analyses Setup[Analyses Setup]
-      Mission Setup[Mission Setup]
-      Mission Simulation[Mission Simulation]
+      VS[Vehicle Setup]
+      GV[Geometry Visualization]
+      CS[Configurations Setup]
+      AS[Analyses Setup]
+      MSP[Mission Setup]
+      MSI[Mission Simulation]
       
       
-      Vehicle Setup ---> Geometry Visualization
-      Geometry Visualization ---> Configurations Setup
-      Configurations Setup ---> Analyses Setup
-      Analyses Setup ---> Mission Setup
-      Mission Setup ---> Mission Simulation
+      VS ---> GV
+      GV ---> CS
+      CS ---> AS
+      AS ---> MSP
+      MSP ---> MSI
 
 
       style Vehicle Setup fill:#0d6dc5,color:#fff
       style Geometry Visualization fill:#0d6dc5,color:#fff
-      style RCAIDE_LEADS fill:#0d6dc5,color:#fff
       style Configurations Setup fill:#0d6dc5,color:#fff
+      style Analyses Setup fill:#0d6dc5,color:#fff
       style Mission Setup fill:#0d6dc5,color:#fff
       style Mission Simulation fill:#0d6dc5,color:#fff
   ```
