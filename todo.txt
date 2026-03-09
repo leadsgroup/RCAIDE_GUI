@@ -8,11 +8,11 @@ Geometry Visualization tab
  
 Mihir - update gui page on leads website
 Mihir - update rcaide git repository page (readme file for the gui)
-Mihir - Increasing the GUI font
-Mihir - Make the component tree expanded (by default) so that you can see the wings, fuselages etc
-Mihir - Decrease the thickness of the button border (seems a bit too thick)
-Mihir - On the visualization Tab - the ""show gridlines button" has no border 
 
+Anshrin - expand visualization plot when mouse hovering over it
+
+Mihir - need to pip install it - need Matthew's PyPy account
+add rcaide to gui requirements.txt
 
 Anshrin - PLot Export  
 Anshrin - Mission tab - add table and plot 
@@ -27,3 +27,8 @@ Matthew- Replace VTK plotting with PyVista
 General
 All- Data Entry Checks
 Matthew- Add more units
+
+rcaide gui website:
+by the rcaide download button add a gui button
+
+for the gui sub page, same thing but replace the button with 'download gui'
