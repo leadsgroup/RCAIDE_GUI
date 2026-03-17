@@ -306,7 +306,8 @@ class MissionSegmentWidget(QWidget):
     # ============================================================
     # Save / Load
     # ============================================================
-    def get_data(self):
+    def get_form_data(self):
+        # Save only the UI-entered mission fields; do not build RCAIDE objects here.
         data = {
             "Segment Name": self.segment_name_input.text(),
             "top dropdown": self.top_dropdown.currentIndex(),
@@ -318,6 +319,11 @@ class MissionSegmentWidget(QWidget):
             "flight controls": self.flight_controls_widget.get_data(),
         }
         data.update(self.subsegment_entry_widget.get_values())
+        return data
+
+    def get_data(self):
+        # RCAIDE segment creation is kept separate so plain mission saves cannot fail on missing analyses.
+        data = self.get_form_data()
         return data, self.create_rcaide_segment()
 
     def load_data(self, data):

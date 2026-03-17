@@ -144,6 +144,7 @@ class MissionAnalysisWidget(TabWidget):
         values.analysis_data = []
         values.rcaide_analyses = {}
 
+        # Build and save one RCAIDE analysis container per aircraft configuration.
         for tag, config in values.rcaide_configs.items():
 
             analysis = RCAIDE.Framework.Analyses.Vehicle()
