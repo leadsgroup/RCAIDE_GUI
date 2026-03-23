@@ -1,5 +1,3 @@
-Geometry Parameterization Tab 
-- Add export/import features (FUTURE)
 
 Geometry Visualization tab
 - Add a button in the main window that switched for network to aircraft visualization (FUTURE)
@@ -7,26 +5,21 @@ Geometry Visualization tab
 
  
 Mihir - update gui page on leads website
-Mihir - update rcaide git repository page (readme file for the gui)
-
-Anshrin - expand visualization plot when mouse hovering over it
 
 Mihir - need to pip install it - need Matthew's PyPy account
 add rcaide to gui requirements.txt
 
-Anshrin - PLot Export  
-Anshrin - Mission tab - add table and plot 
-Anshrin - Add geometry visualization window to the bottom right of the vehicle setup tab  
-Anshrin - MAJOR BUG - on the mission tab, when the users mouse over over the feilds and scrolls,
-            the fields change. The only way this should change is if the user clicks the dropdown and changes it.
-            So far it affects the following fields "Segment Type" , "Subsegment Type" 
 
 Matthew- Add more units
 Matthew- Replace VTK plotting with PyVista
+Matthew - How to save the same RCAIDE info into a json file for the GUI
 
 General
 All- Data Entry Checks
-Matthew- Add more units
+Anshrin - Add more units
+Anshrin - double check types (int, float in data input)
+All - Add Code Cov, CI Pipeline, downloads (create a pip.install) badges
+Anshrin/Mihir: Add a leads logo icon
 
 rcaide gui website:
 by the rcaide download button add a gui button
