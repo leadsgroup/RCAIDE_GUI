@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QEvent, QObject, Qt
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit,
     QGroupBox, QRadioButton
@@ -15,9 +15,21 @@ import RCAIDE
 from widgets import DataEntryWidget
 
 
+class _MissionComboWheelGuard(QObject):
+    def eventFilter(self, obj, event):
+        # Prevent hover-scrolling from changing combo values unless the user
+        # has explicitly opened the combo box popup.
+        if event.type() == QEvent.Type.Wheel and isinstance(obj, QComboBox):
+            if not obj.view().isVisible():
+                event.ignore()
+                return True
+        return super().eventFilter(obj, event)
+
+
 class MissionSegmentWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self._combo_wheel_guard = _MissionComboWheelGuard(self)
 
         # ============================================================
         # Root Layout
@@ -148,6 +160,7 @@ class MissionSegmentWidget(QWidget):
         )
 
         self._apply_defaults()
+        self._install_combo_wheel_guards()
 
     # ============================================================
     # Styling
@@ -207,6 +220,7 @@ class MissionSegmentWidget(QWidget):
 
         # Add the subsegment fields to the UI
         self.details_layout.addWidget(self.subsegment_entry_widget)
+        self._install_combo_wheel_guards(self.subsegment_entry_widget)
         
         # Re-apply DOF and control defaults once subsegment exists
         if self.dof_entry_widget and self.flight_controls_widget:
@@ -303,10 +317,18 @@ class MissionSegmentWidget(QWidget):
             self._default_config_key(top_text, sub_text, name_text)
         )
 
+    def _install_combo_wheel_guards(self, root=None):
+        root = root or self
+        # Apply the guard to existing mission-tab combo boxes, including any
+        # detail widgets rebuilt when the segment type changes.
+        for combo in root.findChildren(QComboBox):
+            combo.installEventFilter(self._combo_wheel_guard)
+
     # ============================================================
     # Save / Load
     # ============================================================
-    def get_data(self):
+    def get_form_data(self):
+        # Save only the UI-entered mission fields; do not build RCAIDE objects here.
         data = {
             "Segment Name": self.segment_name_input.text(),
             "top dropdown": self.top_dropdown.currentIndex(),
@@ -318,6 +340,11 @@ class MissionSegmentWidget(QWidget):
             "flight controls": self.flight_controls_widget.get_data(),
         }
         data.update(self.subsegment_entry_widget.get_values())
+        return data
+
+    def get_data(self):
+        # RCAIDE segment creation is kept separate so plain mission saves cannot fail on missing analyses.
+        data = self.get_form_data()
         return data, self.create_rcaide_segment()
 
     def load_data(self, data):

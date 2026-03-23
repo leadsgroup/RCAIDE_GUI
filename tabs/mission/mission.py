@@ -905,12 +905,21 @@ class MissionWidget(TabWidget):
             if idx in self.disabled_segments:
                 continue
 
-            seg_data, _ = seg.get_data()
+            # Save only the form state here; building RCAIDE segments requires analyses and happens later.
+            seg_data = seg.get_form_data()
             seg_data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
             values.mission_data.append(seg_data)
 
         # Create the RCAIDE mission using existing data only
         # Defer mission build until analyses are saved
+
+        segment_names = [
+            segment.get("Segment Name", f"Segment {index + 1}")
+            for index, segment in enumerate(values.mission_data)
+        ]
+        print("\n[Mission Data Saved]")
+        print(f"Active segments: {len(values.mission_data)}")
+        print(f"Names: {', '.join(segment_names) if segment_names else 'None'}")
 
         # Notify the user that the mission was saved
         self._notify("Mission data saved")
