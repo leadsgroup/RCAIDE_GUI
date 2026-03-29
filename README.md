@@ -46,14 +46,6 @@
       CS ---> AS
       AS ---> MSP
       MSP ---> MSI
-
-
-      style Vehicle Setup fill:#0d6dc5,color:#fff
-      style Geometry Visualization fill:#0d6dc5,color:#fff
-      style Configurations Setup fill:#0d6dc5,color:#fff
-      style Analyses Setup fill:#0d6dc5,color:#fff
-      style Mission Setup fill:#0d6dc5,color:#fff
-      style Mission Simulation fill:#0d6dc5,color:#fff
   ```
 
   **Getting Involved**   
