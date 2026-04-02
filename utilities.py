@@ -110,14 +110,14 @@ class Units(metaclass=_UnitsMeta):
         ]
 
     class Area:
-        SQUARE_METER = ("m^2", lambda x: x)
-        SQUARE_CENTIMETER = ("cm^2", lambda x: x * 1.0e-4)
-        SQUARE_MILLIMETER = ("mm^2", lambda x: x * 1.0e-6)
-        SQUARE_INCH = ("in^2", lambda x: x * 0.00064516)
-        SQUARE_FOOT = ("ft^2", lambda x: x * 0.09290304)
-        SQUARE_KILOMETER = ("km^2", lambda x: x * 1.0e6)
-        SQUARE_YARD = ("yd^2", lambda x: x * 0.83612736)
-        SQUARE_MILE = ("mi^2", lambda x: x * 2.589988e6)
+        SQUARE_METER = ("m²", lambda x: x)
+        SQUARE_CENTIMETER = ("cm²", lambda x: x * 1.0e-4)
+        SQUARE_MILLIMETER = ("mm²", lambda x: x * 1.0e-6)
+        SQUARE_INCH = ("in²", lambda x: x * 0.00064516)
+        SQUARE_FOOT = ("ft²", lambda x: x * 0.09290304)
+        SQUARE_KILOMETER = ("km²", lambda x: x * 1.0e6)
+        SQUARE_YARD = ("yd²", lambda x: x * 0.83612736)
+        SQUARE_MILE = ("mi²", lambda x: x * 2.589988e6)
 
         unit_list = [
             SQUARE_METER,
@@ -131,11 +131,11 @@ class Units(metaclass=_UnitsMeta):
         ]
 
     class Volume:
-        CUBIC_METER = ("m^3", lambda x: x)
-        CUBIC_CENTIMETER = ("cm^3", lambda x: x * 1.0e-6)
-        CUBIC_MILLIMETER = ("mm^3", lambda x: x * 1.0e-9)
-        CUBIC_INCH = ("in^3", lambda x: x * (0.0254 ** 3))
-        CUBIC_FOOT = ("ft^3", lambda x: x * (0.3048 ** 3))
+        CUBIC_METER = ("m³", lambda x: x)
+        CUBIC_CENTIMETER = ("cm³", lambda x: x * 1.0e-6)
+        CUBIC_MILLIMETER = ("mm³", lambda x: x * 1.0e-9)
+        CUBIC_INCH = ("in³", lambda x: x * (0.0254 ** 3))
+        CUBIC_FOOT = ("ft³", lambda x: x * (0.3048 ** 3))
         LITER = ("L", lambda x: x * 1.0e-3)
         MILLILITER = ("mL", lambda x: x * 1.0e-6)
         GALLON = ("gal", lambda x: x * 3.785411784e-3)
@@ -207,9 +207,9 @@ class Units(metaclass=_UnitsMeta):
         ]
 
     class Acceleration:
-        METER_PER_SECOND_SQUARED = ("m/s^2", lambda x: x)
+        METER_PER_SECOND_SQUARED = ("m/s²", lambda x: x)
         KNOTS_PER_SECOND = ("kn/s", lambda x: x * 0.514444)
-        FOOT_PER_SECOND_SQUARED = ("ft/s^2", lambda x: x * 0.3048)
+        FOOT_PER_SECOND_SQUARED = ("ft/s²", lambda x: x * 0.3048)
         STANDARD_GRAVITY = ("g0", lambda x: x * 9.80665)
 
         unit_list = [METER_PER_SECOND_SQUARED, KNOTS_PER_SECOND, FOOT_PER_SECOND_SQUARED, STANDARD_GRAVITY]
@@ -275,7 +275,7 @@ class Units(metaclass=_UnitsMeta):
         unit_list = [NONE, PERCENT]
 
     class Count:
-        UNIT = ("Unit", lambda x: x)
+        UNIT = ("ct", lambda x: x)
         unit_list = [UNIT]
 
     class Angle:
@@ -284,15 +284,15 @@ class Units(metaclass=_UnitsMeta):
         unit_list = [DEGREE, RADIAN]
 
     class Intertia:
-        KILOGRAM_PER_SQUARE_METER = ("kg/m^2", lambda x: x)
-        POUND_PER_SQUARE_FOOT = ("slug/ft^2", lambda x: x * 1.35581795)
+        KILOGRAM_PER_SQUARE_METER = ("kg/m²", lambda x: x)
+        POUND_PER_SQUARE_FOOT = ("slug/ft²", lambda x: x * 1.35581795)
         unit_list = [KILOGRAM_PER_SQUARE_METER, POUND_PER_SQUARE_FOOT]
 
     class Density:
-        KILOGRAM_PER_CUBIC_METER = ("kg/m^3", lambda x: x)
-        SLUG_PER_CUBIC_FOOT = ("slug/ft^3", lambda x: x * 515.378818)
-        POUND_PER_CUBIC_FOOT = ("lb/ft^3", lambda x: x * 16.0185)
-        GRAM_PER_CUBIC_CENTIMETER = ("g/cm^3", lambda x: x * 1000.0)
+        KILOGRAM_PER_CUBIC_METER = ("kg/m³", lambda x: x)
+        SLUG_PER_CUBIC_FOOT = ("slug/ft³", lambda x: x * 515.378818)
+        POUND_PER_CUBIC_FOOT = ("lb/ft³", lambda x: x * 16.0185)
+        GRAM_PER_CUBIC_CENTIMETER = ("g/cm³", lambda x: x * 1000.0)
 
         unit_list = [
             KILOGRAM_PER_CUBIC_METER,
