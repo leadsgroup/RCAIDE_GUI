@@ -6,7 +6,7 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
-from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
+from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations 
  
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit
@@ -423,11 +423,8 @@ class VisualizeGeometryWidget(TabWidget):
         # -------------------------------------------------------------------------
         # Run Geoemtry Analysis Functions
         # -------------------------------------------------------------------------   
-        for wing in geometry.wings:  
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-                bwb_wing_planform(wing) 
-            else: 
-                wing_planform(wing)  
+        for wing in geometry.wings:   
+            wing_planform(wing)  
                          
         compute_fuel_volume(geometry)
 

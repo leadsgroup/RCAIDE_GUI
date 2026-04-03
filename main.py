@@ -1,6 +1,6 @@
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QFileInfo 
 from qt_material import apply_stylesheet
 import values
@@ -10,11 +10,17 @@ from tabs.visualize_geometry import visualize_geometry
 import sys
 import os 
 
+if sys.platform == "win32":
+    import ctypes
+
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("LEADS.RCAIDE.GUI")
+
 class App(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("RCAIDE GUI")
+        self.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))
 
         menubar = self.menuBar()
         if menubar is None:
@@ -120,6 +126,7 @@ class App(QMainWindow):
             widget.load_from_values()
 
 app = QApplication(sys.argv)
+app.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))
 window = App()
 extra = {
     'density_scale': '-2',
