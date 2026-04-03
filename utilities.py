@@ -155,8 +155,8 @@ class Units:
     # Velocity Units
     class Velocity:
         METER_PER_SECOND = ("m/s", lambda x: x)
-        # KILOMETER_PER_HOUR = ("km/h", lambda x: x / 3.6)
-        # MILE_PER_HOUR = ("mph", lambda x: x * 0.44704)
+        KILOMETER_PER_HOUR = ("km/h", lambda x: x / 3.6)
+        MILE_PER_HOUR = ("mph", lambda x: x * 0.44704)
         KNOT = ("kts", lambda x: x * 0.514444)
         FOOT_PER_SECOND = ("ft/s", lambda x: x * 0.3048)
         FOOT_PER_MINUTE = ("ft/min", lambda x: x * 0.3048 / 60.0)
