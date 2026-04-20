@@ -102,9 +102,10 @@ class App(QMainWindow):
         values.read_from_json(data_str)
         # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
         for i, (widget, tab_name) in enumerate(self.widgets):
-            if tab_name == "Geometry Parameterization":
+            if tab_name == "Vehicle Setup":
                 # Keep the loaded geometry data before rebuilding the widget
-                loaded_geometry = values.geometry_data
+                loaded_geometry = values.rcaide_vehicle
+                loaded_vehicle = values.vehicle
                 # Remembers which tab the user was on
                 current_index = self.tabs.currentIndex()
                 # Remove the old Geometry tab (it holds duplicated UI state)
@@ -112,7 +113,8 @@ class App(QMainWindow):
                 # Create a fresh Geometry widget
                 new_widget = geometry.get_widget()
                 # Restore the loaded geometry data for load_from_values()
-                values.geometry_data = loaded_geometry
+                values.rcaide_vehicle = loaded_geometry
+                values.vehicle = loaded_vehicle
                 # Insert the fresh tab back into the same position
                 self.tabs.insertTab(i, new_widget, tab_name)
                 # Update our cached widgets list.

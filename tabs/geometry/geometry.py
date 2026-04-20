@@ -24,11 +24,8 @@ class GeometryWidget(TabWidget):
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage", "Add Landing Gear" , "Add Powertrain", "Add Wing"]
 
-        values.geometry_data = []
+        values.rcaide_vehicle = values.new_rcaide_vehicle_data()
         values.vehicle = RCAIDE.Vehicle()
-
-        for _ in range(len(self.tabs)):
-            values.geometry_data.append([])
 
         base_layout = QHBoxLayout()
         self.tree_frame_layout = QVBoxLayout()
@@ -188,7 +185,7 @@ class GeometryWidget(TabWidget):
             index = component_item.indexOfChild(item)
             frame = self.main_layout.currentWidget()
             assert isinstance(frame, GeometryFrame)
-            frame.load_data(values.geometry_data[tab_index][index], index)
+            frame.load_data(values.rcaide_vehicle[tab_index][index], index)
 
     def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False):
         """Save the entered data in a frame to the list.
@@ -206,7 +203,7 @@ class GeometryWidget(TabWidget):
 
         assert tab_index >= 0
         if tab_index == 0:
-            values.geometry_data[0] = data
+            values.rcaide_vehicle[0] = data
             values.vehicle.tag = data["name"]
             for data_unit_label in VehicleFrame.data_units_labels:
                 rcaide_label = data_unit_label[-1]
@@ -227,13 +224,13 @@ class GeometryWidget(TabWidget):
                 component_item.setExpanded(True)
                 insert_index = 0
                 for i in range(1, tab_index):
-                    if values.geometry_data[i]:
+                    if values.rcaide_vehicle[i]:
                         insert_index += 1
                 top_item.insertChild(insert_index, component_item)
                     
             if new:
                 if index == -1:
-                    values.geometry_data[tab_index].append(data)
+                    values.rcaide_vehicle[tab_index].append(data)
                 else:
                     frame : GeometryFrame = self.frames[tab_index]()
                     frame.load_data(data, -1)
@@ -245,7 +242,7 @@ class GeometryWidget(TabWidget):
                 child.setSelected(True)
                 index = component_item.indexOfChild(child)
             else:
-                values.geometry_data[tab_index][index] = data
+                values.rcaide_vehicle[tab_index][index] = data
                 if tree_index == -1:
                     tree_index = index
                 child = component_item.child(tree_index)
@@ -269,22 +266,42 @@ class GeometryWidget(TabWidget):
 
     def load_from_values(self):
         """Load the geometry data from the values file."""
+        if not isinstance(values.rcaide_vehicle, list):
+            tag = getattr(values.vehicle, "tag", "")
+            self.vehicle_name_input.setText(str(tag))
+            self.preview_widget.run_solve()
+            return
+
         # Avoid repeated expensive redraws while reconstructing full geometry tree.
         self._preview_updates_enabled = False
-        if values.geometry_data:
-            if values.geometry_data[0]:
-                self.vehicle_name_input.setText(values.geometry_data[0]["name"])
+        self.tree.clear()
+        vehicle_item = QTreeWidgetItem(["Vehicle"])
+        self.tree.addTopLevelItem(vehicle_item)
+
+        if values.rcaide_vehicle:
+            # Load vehicle data (index 0) - it's already in UI format
+            if values.rcaide_vehicle[0]:
+                vehicle_data = values.rcaide_vehicle[0]
+                self.vehicle_name_input.setText(vehicle_data.get("name", ""))
+                # Update the vehicle frame
+                frame = self.main_layout.widget(0)
+                if isinstance(frame, GeometryFrame):
+                    frame.load_data(vehicle_data, 0)
             
-            for tab_index, data_list in enumerate(values.geometry_data):
-                if tab_index == 0:
-                    self.save_data(tab_index=tab_index, data=data_list,
-                                   index=0, new=True)
-                    self.main_layout.widget(0).update_layout()
+            # Build the component tree directly from the loaded values structure
+            for tab_index, data_list in enumerate(values.rcaide_vehicle):
+                if tab_index == 0 or not data_list:
                     continue
 
+                category_name = self.tabs[tab_index]
+                component_item = QTreeWidgetItem([category_name])
+                component_item.setExpanded(True)
+                vehicle_item.addChild(component_item)
+
                 for index, data in enumerate(data_list):
-                    # tree_index = self.find_tree_index(tab_index)
-                    self.save_data(tab_index=tab_index, index=index, data=data, new=True)
+                    child = QTreeWidgetItem([data.get("name", f"Item {index}")])
+                    component_item.addChild(child)
+
         self._preview_updates_enabled = True
         # Single redraw after all loaded parts are in place.
         self.preview_widget.run_solve()
@@ -360,11 +377,11 @@ class GeometryWidget(TabWidget):
 
     # noinspection PyMethodMayBeStatic
     def find_tree_index(self, tab_index):
-        # Start from tab_index - 1 to account for values.geometry_data[0] being None
+        # Start from tab_index - 1 to account for values.rcaide_vehicle[0] being None
         tree_index = tab_index - 1
-        # Start from 1 to skip values.geometry_data[0]
+        # Start from 1 to skip values.rcaide_vehicle[0]
         for i in range(1, tab_index):
-            if not values.geometry_data[i]:
+            if not values.rcaide_vehicle[i]:
                 tree_index -= 1
 
         tree_index = max(0, tree_index)
@@ -375,9 +392,9 @@ class GeometryWidget(TabWidget):
         tab_index = 0
         count = 0
 
-        # Start from 1 to skip values.geometry_data[0]
-        for i in range(1, len(values.geometry_data)):
-            if not values.geometry_data[i]:
+        # Start from 1 to skip values.rcaide_vehicle[0]
+        for i in range(1, len(values.rcaide_vehicle)):
+            if not values.rcaide_vehicle[i]:
                 continue
             count += 1
             if count == tree_index + 1:

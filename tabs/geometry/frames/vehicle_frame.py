@@ -97,8 +97,8 @@ class VehicleFrame(GeometryFrame):
         assert self.data_entry_widget is not None and isinstance(
             self.data_entry_widget, DataEntryWidget)
 
-        if values.geometry_data[0]:
-            self.load_data(values.geometry_data[0], 0)
+        if isinstance(values.rcaide_vehicle, list) and values.rcaide_vehicle[0]:
+            self.load_data(values.rcaide_vehicle[0], 0)
 
     def save_data(self):
         assert self.save_function is not None

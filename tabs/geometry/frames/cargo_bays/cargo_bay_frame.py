@@ -26,7 +26,7 @@ class CargoBayFrame(GeometryFrame):
         ("Length", Units.Unitless, "length"),
         ("Width", Units.Unitless, "width"),
         ("Height", Units.Length, "height"),
-        ("Cargo Mass", Units.Mass, "cargo.mass_properties.mass"), 
+        ("Cargo Mass", Units.Mass, "mass_properties.mass"), 
         ("Baggage Mass", Units.Mass, "baggage.mass_properties.mass"), 
         ("Container Mass", Units.Mass, "container.mass_properties.mass"), 
         ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),

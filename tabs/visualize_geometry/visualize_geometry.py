@@ -481,7 +481,7 @@ class VisualizeGeometryWidget(TabWidget):
         
         for network in geometry.networks: 
             for propulsor in network.propulsors:  
-                if 'nacelle' in propulsor: 
+                if getattr(propulsor, "nacelle", None) is not None: 
                     if propulsor.nacelle !=  None: 
                         
                         if type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle: 

@@ -102,11 +102,11 @@ class AircraftConfigsWidget(TabWidget):
             } for n in _DEFAULT_CONFIG_NAMES]
 
     def _ensure_geometry(self):
-        if not isinstance(getattr(values, "geometry_data", None), list):
-            values.geometry_data = [None] * 8
+        if not hasattr(values, "rcaide_vehicle"):
+            values.rcaide_vehicle = values.new_rcaide_vehicle_data()
 
     def _discover_from_geometry(self):
-        # Find all control surfaces and propulsors in geometry_data
+        # Find all control surfaces and propulsors in rcaide_vehicle
         cs, props = set(), set()
 
         def walk(obj):
@@ -119,9 +119,23 @@ class AircraftConfigsWidget(TabWidget):
                             if name:
                                 cs.add(name)
 
+                    if k == "control_surfaces" and isinstance(v, dict):
+                        for name, csd in v.items():
+                            if isinstance(csd, dict):
+                                name = csd.get("tag") or name
+                            if name:
+                                cs.add(name)
+
                     if k == "propulsor data" and isinstance(v, list):
                         for p in v:
                             tag = p.get("Propulsor Tag") or p.get("name")
+                            if tag:
+                                props.add(tag)
+
+                    if k == "propulsors" and isinstance(v, dict):
+                        for tag, propulsor in v.items():
+                            if isinstance(propulsor, dict):
+                                tag = propulsor.get("tag") or tag
                             if tag:
                                 props.add(tag)
 
@@ -131,7 +145,7 @@ class AircraftConfigsWidget(TabWidget):
                 for v in obj:
                     walk(v)
 
-        walk(values.geometry_data)
+        walk(values.rcaide_vehicle)
         return sorted(cs), sorted(props)
 
     def _build_labels(self):
@@ -328,14 +342,14 @@ class AircraftConfigsWidget(TabWidget):
 def build_rcaide_configs_from_geometry():
     """
     Build RCAIDE aircraft configuration objects from
-    values.geometry_data and values.config_data.
+    values.rcaide_vehicle and values.config_data.
     """
     import values
     from copy import deepcopy
     import numpy as np
 
     # Ensure geometry has been defined before building configs
-    if not values.geometry_data:
+    if values.vehicle is None:
         raise RuntimeError("No geometry data available")
 
     # Use the already-built base RCAIDE vehicle as the template
@@ -368,6 +382,13 @@ def build_rcaide_configs_from_geometry():
             return arr.reshape(3, 3)
         return arr
 
+    def _has_assignment(assignment):
+        if assignment is None:
+            return False
+        if isinstance(assignment, np.ndarray):
+            return assignment.size > 0
+        return bool(assignment)
+
     # Build one RCAIDE vehicle per user-defined configuration
     for cfg in values.config_data:
         # Config entries must be dictionaries
@@ -384,7 +405,7 @@ def build_rcaide_configs_from_geometry():
         vehicle.tag = name
 
         # Store raw geometry for use by other GUI tabs
-        vehicle.geometry = values.geometry_data
+        vehicle.geometry = values.rcaide_vehicle
 
         # Apply configuration-specific settings
         vehicle.cs_deflections = cfg.get("cs deflections", {})
@@ -412,14 +433,14 @@ def build_rcaide_configs_from_geometry():
             for fuel_line in getattr(network, "fuel_lines", []):
                 if hasattr(fuel_line, "assigned_propulsors"):
                     fuel_line.assigned_propulsors = [
-                        group for group in fuel_line.assigned_propulsors if group
+                        group for group in fuel_line.assigned_propulsors if _has_assignment(group)
                     ]
 
             # Remove empty propulsor references from electrical busses
             for bus in getattr(network, "busses", []):
                 if hasattr(bus, "assigned_propulsors"):
                     bus.assigned_propulsors = [
-                        group for group in bus.assigned_propulsors if group
+                        group for group in bus.assigned_propulsors if _has_assignment(group)
                     ]
 
         # Register the completed vehicle configuration
