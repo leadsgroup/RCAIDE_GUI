@@ -5,7 +5,7 @@ import vtk
 from PyQt6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QTimer
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, \
     QLabel, QLineEdit, QApplication
-
+from tabs.visualize_geometry.core_3d_viewer import Core3DViewer
 from tabs.geometry.frames import *
 from tabs import TabWidget
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
@@ -68,13 +68,7 @@ class GeometryWidget(TabWidget):
         self.tree.expandAll()
 
         # Reuse the full Geometry Visualization widget as an embedded preview.
-        self.preview_widget = VisualizeGeometryWidget()
-        # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
-        if hasattr(self.preview_widget, "toolbar"):
-            self.preview_widget.toolbar.hide()
-        if hasattr(self.preview_widget, "colorbar_widget") and self.preview_widget.colorbar_widget:
-            self.preview_widget.colorbar_widget.hide()
-        self.preview_widget.setMinimumHeight(180)
+        self.preview_widget = Core3DViewer()
 
         # Wrap preview in a titled box so users can identify it clearly.
         self.preview_container = QWidget()
@@ -126,6 +120,8 @@ class GeometryWidget(TabWidget):
         # Initially display the DefaultFrame
         self.main_layout.setCurrentIndex(0)
         self.setLayout(base_layout)
+
+
 
     def on_dropdown_change(self, index):
         """Change the index of the main layout based on the selected index of the dropdown.
@@ -293,6 +289,7 @@ class GeometryWidget(TabWidget):
     def update_layout(self):
         # Refresh preview when this tab becomes active.
         self.preview_widget.run_solve()
+        pass
 
     def eventFilter(self, watched, event):
         watched_preview = watched in {
