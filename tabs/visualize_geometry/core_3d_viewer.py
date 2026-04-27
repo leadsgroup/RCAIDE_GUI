@@ -22,11 +22,6 @@ import values
 import os
 from copy import deepcopy 
 
-
-# IMPORTANT: You must paste your specific RCAIDE geometry imports here!
-# (e.g., from RCAIDE.Library.Plots.Geometry... import make_object, generate_3d_wing_points, etc.)
-# Copy them directly from the top of your visualize_geometry.py file.
-
 def make_object(renderer, actor_group,  GEOM,  rgb_color, opacity): 
 
     actor = vehicle.generate_vtk_object(GEOM.PTS)
@@ -53,13 +48,10 @@ def make_actuator_disc(renderer, inner_radius, outer_radius, origin, rot_x,rot_y
     disk_source.SetRadialResolution(50)
     disk_source.SetCircumferentialResolution(50) 
     
-    # 2. Define a rotation using vtkTransform
     transform = vtk.vtkTransform()
     transform.RotateX(rot_x/Units.degrees)  
     transform.RotateY(rot_y/Units.degrees)  
     transform.RotateZ(rot_z/Units.degrees)  
-
-    # 3. Apply the transformation with vtkTransformPolyDataFilter
     transformFilter = vtk.vtkTransformPolyDataFilter()
     transformFilter.SetTransform(transform)
     transformFilter.SetInputConnection(disk_source.GetOutputPort()) 
@@ -81,11 +73,11 @@ class Core3DViewer(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         
-        # 1. Setup Layout
+        # Setup Layout
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         
-        # 2. Setup VTK Window (Done ONLY ONCE to prevent memory leaks)
+        # Setup VTK Window
         self.vtkWidget = QVTKRenderWindowInteractor(self)
         layout.addWidget(self.vtkWidget)
         
@@ -94,7 +86,6 @@ class Core3DViewer(QWidget):
         self.render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
         style = vtk.vtkInteractorStyleTrackballCamera()
         self.render_window_interactor.SetInteractorStyle(style)
-        # We will use simple lists to hold our actors so we can clear them easily
         self.wing_actors = []
         self.fuselage_actors = []
         self.boom_actors = []
@@ -102,10 +93,6 @@ class Core3DViewer(QWidget):
         self.rotor_actors = []
         self.fuel_tank_actors = []
         self.part_actors = [] # General list if needed
-
-        # Note: If you have CustomInteractorStyle, import it and apply it here.
-        # custom_style = CustomInteractorStyle()
-        # self.render_window_interactor.SetInteractorStyle(custom_style)
 
         self.render_window_interactor.Initialize()
 
@@ -123,10 +110,8 @@ class Core3DViewer(QWidget):
     def run_solve(self):
         """Calculates and draws the geometry based on values.vehicle"""
         
-        # 1. STOP THE LEAK: Clear old models before drawing new ones!
         self.clear_scene()
 
-        # 2. Setup Colors and Params
         wing_color          = 'grey'  
         fuselage_color      = 'grey'  
         nacelle_color       = 'grey' 
@@ -157,10 +142,7 @@ class Core3DViewer(QWidget):
             
         geometry = deepcopy(values.vehicle)
 
-        # -------------------------------------------------------------------------
-        # Run Geometry Analysis Functions
-        # -------------------------------------------------------------------------   
-        # (Assuming wing_planform, compute_fuel_volume, etc. are imported above)
+    
         for wing in geometry.wings:   
             try: wing_planform(wing)
             except: pass # Bypass if not fully defined yet in GUI
@@ -173,10 +155,7 @@ class Core3DViewer(QWidget):
                 compute_layout_of_passenger_accommodations(fuselage)
                 fuselage_planform(fuselage) 
             except: pass
-    
-        # -------------------------------------------------------------------------  
-        # Plot wings
-        # -------------------------------------------------------------------------
+
         for wing in geometry.wings:
             n_segments = len(wing.segments)
             dim        = n_segments if n_segments > 0 else 2
@@ -195,27 +174,19 @@ class Core3DViewer(QWidget):
             except Exception as e:
                 print(f"Skipping a wing due to incomplete data: {e}")
     
-        # -------------------------------------------------------------------------  
-        # Plot fuselage
-        # -------------------------------------------------------------------------  
+
         for fuselage in geometry.fuselages:
             try:
                 GEOM = generate_3d_fuselage_points(fuselage, tessellation)
                 make_object(self.renderer, self.fuselage_actors,GEOM, fuselage_rgb_color,fuselage_opacity)
             except: pass
-            
-        # -------------------------------------------------------------------------  
-        # Plot boom
-        # -------------------------------------------------------------------------  
+
         for boom in geometry.booms:
             try:
                 GEOM = generate_3d_fuselage_points(boom, tessellation)
                 make_object(self.renderer, self.boom_actors, GEOM, boom_rgb_color,boom_opacity)
             except: pass
-    
-        # -------------------------------------------------------------------------  
-        # Plot Nacelle, Rotors and Fuel Tanks (I kept your logic exactly the same)
-        # ------------------------------------------------------------------------- 
+
         for nacelle in geometry.nacelles:
             try:
                 GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
@@ -337,6 +308,4 @@ class Core3DViewer(QWidget):
         self.renderer.ResetCamera()
         self.renderer.SetBackground(0.1, 0.1, 0.15)  # A nice dark theme background
 
-        # FINALLY: Render the scene. 
-        # (I removed self.render_window_interactor.Start() because it causes freezing in PyQt!)
         self.vtkWidget.GetRenderWindow().Render()
