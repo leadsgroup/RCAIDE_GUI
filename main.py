@@ -102,7 +102,7 @@ class App(QMainWindow):
         values.read_from_json(data_str)
         # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
         for i, (widget, tab_name) in enumerate(self.widgets):
-            if tab_name == "Geometry Parameterization":
+            if tab_name == "Vehicle Setup":
                 # Keep the loaded geometry data before rebuilding the widget
                 loaded_geometry = values.geometry_data
                 # Remembers which tab the user was on
@@ -124,6 +124,16 @@ class App(QMainWindow):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
             widget.load_from_values()
+        self._go_to_geometry_visualization_tab()
+
+    def _go_to_geometry_visualization_tab(self):
+        for index in range(self.tabs.count()):
+            if self.tabs.tabText(index).strip().lower() == "geometry visualization":
+                self.tabs.setCurrentIndex(index)
+                current_widget = self.tabs.widget(index)
+                if isinstance(current_widget, TabWidget):
+                    current_widget.update_layout()
+                return
 
 app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))

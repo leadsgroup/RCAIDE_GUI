@@ -454,7 +454,6 @@ QPushButton:hover {
             parent = self.window()
             if hasattr(parent, "load_all"):
                 parent.load_all()
-                go_to_geometry_tab()
                 return
 
         def handle_scratch_click():
