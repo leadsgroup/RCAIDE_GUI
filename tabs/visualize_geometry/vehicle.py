@@ -1,45 +1,19 @@
 import numpy as np
-import vtk
+import pyvista as pv
+
 
 def generate_vtk_object(pts):
-    comp = vtk.vtkPolyData()
-    points = vtk.vtkPoints()
-    polys = vtk.vtkCellArray()
-    scalars = vtk.vtkFloatArray()
+    n_r, n_a = pts.shape[0], pts.shape[1]
+    n = n_a * (n_r - 1)
+    X = pts.reshape(n_r * n_a, 3).astype(float)
+    cells = write_azimuthal_cell_values(X, n, n_a).astype(int)
 
-    size = np.shape(pts)
-    n_r = size[0]
-    n_a = size[1]
-    n = n_a * (n_r - 1)  # total number of cells
-    X = pts.reshape(n_r * n_a, 3)
-    geom_pts = write_azimuthal_cell_values(X, n, n_a)
+    # Build PyVista quad faces: [4, a, b, c, d, ...]
+    faces = np.empty((n, 5), dtype=int)
+    faces[:, 0] = 4
+    faces[:, 1:] = cells
 
-    size = np.shape(X)
-    for i, fxi in enumerate(X):
-        points.InsertPoint(i, fxi)
-        scalars.InsertTuple1(i, i)
-    for pt in geom_pts:
-        polys.InsertNextCell(mkVtkIdList(pt))
-
-    comp.SetPoints(points)
-    comp.SetPolys(polys)
-    comp.GetPointData().SetScalars(scalars)
-
-    mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputData(comp)
-    mapper.SetScalarRange(comp.GetScalarRange())
-
-    actor = vtk.vtkActor()
-    actor.SetMapper(mapper)
-
-    return actor
-
-
-def mkVtkIdList(it):
-    vil = vtk.vtkIdList()
-    for i in it:
-        vil.InsertNextId(int(i))
-    return vil
+    return pv.PolyData(X, faces.ravel())
 
 
 def write_azimuthal_cell_values(f, n_cells, n_a):
