@@ -29,6 +29,31 @@ def make_json_safe(value):
     return value
 
 
+def is_unit_argument_pair(value):
+    return (
+        isinstance(value, list)
+        and len(value) == 2
+        and isinstance(value[1], int)
+        and not isinstance(value[1], bool)
+    )
+
+
+def strip_unit_arguments(value):
+    if is_mapping(value):
+        clean = OrderedDict()
+        for key, item in value.items():
+            clean[key] = strip_unit_arguments(item)
+        return clean
+
+    if is_unit_argument_pair(value):
+        return strip_unit_arguments(value[0])
+
+    if isinstance(value, list):
+        return [strip_unit_arguments(item) for item in value]
+
+    return value
+
+
 def repair_local_file_paths(value):
     if is_mapping(value):
         for key, item in value.items():
@@ -204,6 +229,40 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
     from tabs.geometry.frames.landing_gears.landing_gear_frame import LandingGearFrame
     from tabs.geometry.frames.powertrain.powertrain_frame import PowertrainFrame
     from tabs.geometry.frames.wings.wings_frame import WingsFrame
+
+    def wing_segment_to_ui(segment):
+        return {
+            "Segment Name": segment.get("tag", ""),
+            "Percent Span Location": [segment.get("percent_span_location", 0), 0],
+            "Twist": [segment.get("twist", 0), 0],
+            "Root Chord Percent": [segment.get("root_chord_percent", 0), 0],
+            "Thickness to Chord": [segment.get("thickness_to_chord", 0), 0],
+            "Dihedral Outboard": [segment.get("dihedral_outboard", 0), 0],
+            "Quarter Chord Sweep": [segment.get("sweeps", {}).get("quarter_chord", 0), 0],
+            "Has Fuel Tank": [bool(segment.get("Fuel_Tank")), 0],
+            "Has Aft Fuel Tank": [bool(segment.get("Aft_Fuel_Tank")), 0],
+            "Airfoil Type": None,
+        }
+
+    def wing_control_surface_to_ui(control_surface):
+        cs_type = {
+            "aileron": 0,
+            "slat": 1,
+            "flap": 2,
+            "elevator": 3,
+            "rudder": 4,
+            "spoiler": 5,
+        }.get(control_surface.get("tag", "").lower(), 0)
+
+        return {
+            "CS name": control_surface.get("tag", ""),
+            "CS type": cs_type,
+            "Span Fraction Start": [control_surface.get("span_fraction_start", 0), 0],
+            "Span Fraction End": [control_surface.get("span_fraction_end", 0), 0],
+            "Deflection": [control_surface.get("deflection", 0), 0],
+            "Chord Fraction": [control_surface.get("chord_fraction", 0), 0],
+            "Number of Slots": [1, 0],
+        }
     
     def to_ui_format(component_dict, frame_class):
         """Convert component dict to UI format using frame's data_units_labels."""
@@ -253,10 +312,24 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             ui_dict.setdefault("wing_type", "")
             segments = ui_dict.pop("segments", {})
             if isinstance(segments, dict):
-                ui_dict["sections"] = list(segments.values())
+                ui_dict["sections"] = [wing_segment_to_ui(segment) for segment in segments.values()]
             else:
-                ui_dict["sections"] = segments if isinstance(segments, list) else []
-            ui_dict.setdefault("control_surfaces", ui_dict.get("control_surfaces", []))
+                ui_dict["sections"] = [wing_segment_to_ui(segment) for segment in segments] if isinstance(segments, list) else []
+
+            control_surfaces = ui_dict.get("control_surfaces", [])
+            if isinstance(control_surfaces, dict):
+                ui_dict["control_surfaces"] = [
+                    wing_control_surface_to_ui(control_surface)
+                    for control_surface in control_surfaces.values()
+                ]
+            elif isinstance(control_surfaces, list):
+                ui_dict["control_surfaces"] = [
+                    wing_control_surface_to_ui(control_surface)
+                    for control_surface in control_surfaces
+                ]
+            else:
+                ui_dict["control_surfaces"] = []
+
             ui_dict.setdefault("cabins", [])
             ui_dict.setdefault("side_cabins", [])
         
@@ -335,11 +408,12 @@ def read_from_json(data_str):
 
     data = json.loads(data_str, object_pairs_hook=OrderedDict)
     rcaide_vehicle_dict = data["rcaide_vehicle"]
-    repair_local_file_paths(rcaide_vehicle_dict)
+    rcaide_vehicle_clean = strip_unit_arguments(rcaide_vehicle_dict)
+    repair_local_file_paths(rcaide_vehicle_clean)
 
     vehicle = RCAIDE.Vehicle()
-    if isinstance(rcaide_vehicle_dict, OrderedDict):
-        vehicle.update(read_RCAIDE_json_dict(rcaide_vehicle_dict))
+    if isinstance(rcaide_vehicle_clean, OrderedDict):
+        vehicle.update(read_RCAIDE_json_dict(rcaide_vehicle_clean))
         restore_airfoil_components(vehicle)
         restore_nacelle_components(vehicle)
         restore_propulsor_components(vehicle)
@@ -349,7 +423,7 @@ def read_from_json(data_str):
         rcaide_vehicle = data["geometry_data"]
     else:
         # Fallback: convert rcaide_vehicle_dict to UI structure
-        rcaide_vehicle = vehicle_dict_to_ui_list_structure(rcaide_vehicle_dict)
+        rcaide_vehicle = vehicle_dict_to_ui_list_structure(rcaide_vehicle_clean)
         rcaide_vehicle[0] = vehicle_to_ui_format(vehicle)
 
     config_data = data["config_data"]

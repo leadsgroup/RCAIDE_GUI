@@ -232,7 +232,7 @@ class Units:
         RADIAN = ("rad", lambda x: x)
         DEGREE = ("deg", lambda x: np.deg2rad(x))
 
-        unit_list = [DEGREE, RADIAN]
+        unit_list = [RADIAN, DEGREE]
 
     # Intertia Units
     class Intertia:

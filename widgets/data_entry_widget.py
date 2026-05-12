@@ -190,7 +190,10 @@ class DataEntryWidget(QWidget):
             elif self.data_units_labels[i][1] == Units.Position:
                 x_line_edit, y_line_edit, z_line_edit, unit_picker = self.data_fields[label]
                 value, index = data[label]
-                value = value[0]
+                if isinstance(value, list) and value and isinstance(value[0], list):
+                    value = value[0]
+                elif not isinstance(value, list):
+                    value = [0, 0, 0]
                 x_line_edit.setText(str(value[0]))
                 y_line_edit.setText(str(value[1]))
                 z_line_edit.setText(str(value[2]))

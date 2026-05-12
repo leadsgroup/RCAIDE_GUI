@@ -33,6 +33,11 @@ data_units_labels = [
         ("Span Fraction End", Units.Unitless),
         ("Deflection", Units.Angle),
         ("Chord Fraction", Units.Unitless),
+    ], [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
     ]
 ]
 
@@ -123,6 +128,8 @@ class WingCSWidget(QWidget):
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
         elif self.cs_type == 4:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
+        elif self.cs_type == 5:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler()
 
         assert cs is not None
         cs.tag = data["CS name"]
