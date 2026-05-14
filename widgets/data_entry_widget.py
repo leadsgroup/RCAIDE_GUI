@@ -38,6 +38,9 @@ class DataEntryWidget(QWidget):
                 z_line_edit.setValidator(QDoubleValidator())
 
                 unit_picker = UnitPickerWidget(Units.Length)
+                unit_picker.on_change_callback = self._make_unit_change_handler(
+                    unit_picker, x_line_edit, y_line_edit, z_line_edit
+                )
                 unit_picker.setFixedWidth(80)
 
                 layout = QHBoxLayout()
@@ -77,6 +80,9 @@ class DataEntryWidget(QWidget):
                 # line_edit.setFixedWidth(150)
 
                 unit_picker = UnitPickerWidget(label[1])
+                unit_picker.on_change_callback = self._make_unit_change_handler(
+                    unit_picker, line_edit
+                )
                 unit_picker.setFixedWidth(80)
 
                 grid_layout.addWidget(line_edit, row, col * 4 + 1, 1, 2)
@@ -96,6 +102,50 @@ class DataEntryWidget(QWidget):
 
         grid_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(grid_layout)
+
+    @staticmethod
+    def _apply_unit_at(unit_picker, index, value):
+        return unit_picker.unit_list[index][1](value)
+
+    @staticmethod
+    def _display_value_from_si(unit_picker, index, si_value):
+        # Unit converters map display values into RCAIDE/base units; invert
+        # that linear conversion to show the same value in the selected unit.
+        converter = unit_picker.unit_list[index][1]
+        zero = converter(0.0)
+        one = converter(1.0)
+        scale = one - zero
+        if scale == 0:
+            return si_value
+        return (si_value - zero) / scale
+
+    @staticmethod
+    def _format_converted_value(value):
+        return f"{value:.15g}"
+
+    def _make_unit_change_handler(self, unit_picker, *line_edits):
+        def convert_display_values(previous_index, new_index):
+            for line_edit in line_edits:
+                text = line_edit.text()
+                if not text:
+                    continue
+
+                try:
+                    old_display_value = float(text)
+                except ValueError:
+                    continue
+
+                # Preserve the stored physical value while changing only how
+                # the current text is displayed, e.g. radians <-> degrees.
+                si_value = self._apply_unit_at(
+                    unit_picker, previous_index, old_display_value
+                )
+                new_display_value = self._display_value_from_si(
+                    unit_picker, new_index, si_value
+                )
+                line_edit.setText(self._format_converted_value(new_display_value))
+
+        return convert_display_values
 
     def clear_values(self):
         for i, key in enumerate(self.data_fields.keys()):

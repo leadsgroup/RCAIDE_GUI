@@ -54,6 +54,31 @@ def strip_unit_arguments(value):
     return value
 
 
+def add_default_unit_arguments(value):
+    # RCAIDE export values are stored in their base units; the extra 0 tells
+    # the GUI the value is currently tagged with the first unit option.
+    if is_mapping(value):
+        wrapped = OrderedDict()
+        for key, item in value.items():
+            wrapped[key] = add_default_unit_arguments(item)
+        return wrapped
+
+    if is_unit_argument_pair(value):
+        return value
+
+    if isinstance(value, list):
+        safe_items = [make_json_safe(item) for item in value]
+        # Lists of dictionaries are tree collections, not numeric vectors.
+        if all(is_mapping(item) for item in safe_items):
+            return [add_default_unit_arguments(item) for item in safe_items]
+        return [safe_items, 0]
+
+    if isinstance(value, tuple):
+        return [make_json_safe(value), 0]
+
+    return [value, 0]
+
+
 def repair_local_file_paths(value):
     if is_mapping(value):
         for key, item in value.items():
@@ -392,7 +417,9 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
 
 def write_to_json():
     data = {
-        "rcaide_vehicle": make_json_safe(build_dict_base(vehicle)),
+        "rcaide_vehicle": add_default_unit_arguments(
+            make_json_safe(build_dict_base(vehicle))
+        ),
         "config_data": config_data,
         "analysis_data": analysis_data,
         "mission_data": mission_data,
