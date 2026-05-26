@@ -1,7 +1,10 @@
+# RCAIDE_GUI/tabs/visualize_geometry/geometry_helper_functions.py
 import numpy as np
 import pyvista as pv
 
-
+# ------------------------------------------------------------------------------
+# Geometry Helper Functions
+# ------------------------------------------------------------------------------
 def generate_vtk_object(pts):
     n_r, n_a = pts.shape[0], pts.shape[1]
     n = n_a * (n_r - 1)

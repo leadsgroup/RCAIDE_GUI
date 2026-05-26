@@ -1,18 +1,14 @@
-# RCAIDE/Library/Plots/Aerodynamics/plot_rotor_performance.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+# RCAIDE_GUI/tabs/solve/plots/aerodynamics/plot_rotor_performance.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
-import pandas as pd 
+# Python imports
+import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots 
+from plotly.subplots import make_subplots
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------      
+# ------------------------------------------------------------------------------
+# Plot Rotor Performance
+# ------------------------------------------------------------------------------
+
 def plot_rotor_performance(rotor, outputs,title=None, show_figure = True, save_figure=False, save_filename='Rotor_Performance', file_type=".png"):
     """
     Generate plots summarizing rotor aerodynamic performance distributions.

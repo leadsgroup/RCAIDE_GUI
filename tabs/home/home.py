@@ -1,20 +1,30 @@
+# RCAIDE_GUI/tabs/home/home.py
+
+# RCAIDE-GUI imports
+from utilities import create_line_bar
+from tabs import TabWidget
+from common_widgets.image_widget import ImageWidget
+
+# PyQt imports
 from PyQt6.QtCore import QSize, Qt, QPropertyAnimation, QEasingCurve, QTimer, QUrl
+from PyQt6.QtCore import qInstallMessageHandler
 from PyQt6.QtGui import QPixmap, QDesktopServices
 from PyQt6.QtWidgets import (
     QFrame, QGridLayout, QPushButton, QSizePolicy,
     QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect
 )
 from PyQt6.QtWidgets import QApplication
-from utilities import create_line_bar
-from tabs import TabWidget
-from widgets.image_widget import ImageWidget
-from PyQt6.QtCore import qInstallMessageHandler
-import os 
 
+# Python imports
+import os
+
+# ------------------------------------------------------------------------------
+# Home Widget
+# ------------------------------------------------------------------------------
 def suppress_qt_warnings(mode, context, message):
     if "Unknown property" in message:  # hides CSS warnings (Qt Does not support CSS propertieis within Load/Scratch Aircraft (RH column) - Harmless warning, functionality not affected)
         return
-    print(message)  
+    print(message)
 qInstallMessageHandler(suppress_qt_warnings)
 
 BANNER_HEIGHT = 320          # Default banner image height in pixels
@@ -167,7 +177,7 @@ class HomeWidget(TabWidget):
         banner_container = QFrame()
         banner_container.setFixedHeight(BANNER_HEIGHT)
         banner_container.setStyleSheet("border:none; background:transparent;")
-    
+
         separator = os.path.sep
         # Background banner image
         self.banner = BannerImage(
@@ -272,7 +282,7 @@ class HomeWidget(TabWidget):
         flowchart_layout.addStretch(1)
         flowchart_layout.addWidget(self.flowchart_image, alignment=Qt.AlignmentFlag.AlignCenter)
         flowchart_layout.addStretch(1)
-        
+
         # --- Right Column: Load Aircraft / Mission Or Start From Scratch ---
         self.mission_frame = QFrame()
         self.mission_frame.setObjectName("missionPanel")
@@ -394,7 +404,7 @@ QPushButton:hover {
         scratch_btn.setFixedHeight(42)
 
         # Move the button slightly up under the divider
-        mission_layout.addSpacing(-10)  
+        mission_layout.addSpacing(-10)
         scratch_container = QVBoxLayout()
         scratch_container.setContentsMargins(0, 0, 0, 0)
         scratch_container.addWidget(scratch_btn, alignment=Qt.AlignmentFlag.AlignCenter)

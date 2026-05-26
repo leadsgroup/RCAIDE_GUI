@@ -1,21 +1,16 @@
-# RCAIDE/Library/Plots/Noise/plot_3D_noise_contour.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/aeroacoustics/plot_3D_noise_contour.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------   
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots  import *
 
-# python imports 
-import numpy as np  
+# Python imports
+import numpy as np
 import plotly.graph_objects as go
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------    
+# ------------------------------------------------------------------------------
+# Plot 3D Noise Contour
+# ------------------------------------------------------------------------------
 def plot_3D_noise_contour(noise_data,
                        noise_level = None,
                        min_noise_level = 35,  

@@ -1,26 +1,26 @@
 # RCAIDE_GUI/tabs/solve/solve.py
-# 
-# Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainabiltiy
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE-GUI imports
+from tabs import TabWidget
+from .plots.create_plot_widgets import create_plot_widgets
+
+# PyQt imports
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox
+from PyQt6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QColorDialog
 from PyQt6.QtCore import Qt, QSize, QObject, QThread, QTimer, pyqtSignal
-import pyqtgraph as pg
 
-# numpy imports 
+# Python imports
+import pyqtgraph as pg
+import pyqtgraph.exporters as pg_exporters
 import numpy as np
 import re
 import traceback
 import os
 from datetime import datetime
 
-# gui imports 
-from tabs import TabWidget
-from .plots.create_plot_widgets import create_plot_widgets
-
-
+# ------------------------------------------------------------------------------
+# Solve Widget
+# ------------------------------------------------------------------------------
 class _SolveWorker(QObject):
     finished = pyqtSignal(object, str)
     failed = pyqtSignal(str)
@@ -990,14 +990,6 @@ def _apply_solve_graph_skin(self):
 # ==================================================================================================
 # Plot Settings (Appearance, Save, Visibility)
 # ==================================================================================================
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton,
-    QCheckBox, QComboBox, QDoubleSpinBox,
-    QFileDialog, QColorDialog
-)
-from PyQt6.QtCore import Qt
-import pyqtgraph as pg
-import pyqtgraph.exporters as pg_exporters
 
 def init_plot_settings_panel(self):
 

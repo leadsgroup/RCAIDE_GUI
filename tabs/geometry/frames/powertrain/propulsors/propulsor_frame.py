@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/powertrain/sources/energy_source_frame.py
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/propulsors/propulsor_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 

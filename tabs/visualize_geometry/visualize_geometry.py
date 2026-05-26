@@ -1,3 +1,6 @@
+# RCAIDE_GUI/tabs/visualize_geometry/core_3d_viewer.py
+
+# RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Components.Airfoils import Airfoil
@@ -8,14 +11,18 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations 
- 
+
+# RCAIDE-GUI imports
+from RCAIDE_GUI.tabs.visualize_geometry import geometry_helper_functions
+
+# PyQt imports
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit
 from PyQt6.QtCore import Qt
 from tabs import TabWidget
 from pyvistaqt import QtInteractor
-from tabs.visualize_geometry import vehicle
 from PyQt6.QtGui import QIcon
 
+# Python imports
 import matplotlib.colors as mcolors
 import pyvista as pv
 import numpy as np
@@ -24,6 +31,9 @@ import os
 from copy import deepcopy
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleTrackballCamera
 
+# ------------------------------------------------------------------------------
+# make_object
+# ------------------------------------------------------------------------------
 class CustomInteractorStyle(vtkInteractorStyleTrackballCamera):
     def __init__(self, parent=None):
         super().__init__()
@@ -637,7 +647,7 @@ def get_widget() -> QWidget:
     return VisualizeGeometryWidget()
 
 def make_object(plotter, actor_group, GEOM, rgb_color, opacity):
-    mesh = vehicle.generate_vtk_object(GEOM.PTS)
+    mesh = geometry_helper_functions.generate_vtk_object(GEOM.PTS)
 
     bright = tuple(min(1.0, c * 1.2) for c in rgb_color)
     actor = plotter.add_mesh(

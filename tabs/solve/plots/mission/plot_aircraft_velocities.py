@@ -1,18 +1,15 @@
-# RCAIDE_GUI/tabs/solve/plots/plot_aircraft_velocities.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/mission/plot_aircraft_velocities.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
-from RCAIDE.Framework.Core import Units   
-import numpy as np 
+# RCAIDE imports
+from RCAIDE.Framework.Core import Units
+
+# Python imports
+import numpy as np
 import pyqtgraph as pg
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------
+# Plot Aircraft Velocities
+# ------------------------------------------------------------------------------
 def plot_aircraft_velocities(self,
                              results, 
                              plot_parameters,  

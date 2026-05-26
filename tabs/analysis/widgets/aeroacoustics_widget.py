@@ -1,14 +1,26 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox
+# RCAIDE_GUI/tabs/analysis/widgets/aeroacoustics_widget.py
 
-from utilities import create_line_bar, Units, set_data
-from widgets import DataEntryWidget
-from tabs.analysis.widgets import AnalysisDataWidget
-
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
 import RCAIDE
 
+# RCAIDE-GUI imports
+from utilities import create_line_bar, Units, set_data
+from tabs.analysis.widgets import AnalysisDataWidget
+from widgets import DataEntryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox
+
+# Python imports
 import json
 
-
+# ------------------------------------------------------------------------------
+# Aeroacoustics Widget
+# ------------------------------------------------------------------------------
 class AeroacousticsWidget(AnalysisDataWidget):
     def __init__(self):
         super(AeroacousticsWidget, self).__init__()

@@ -1,11 +1,10 @@
-# RCAIDE_GUI/tabs/geometry/widgets/nacelle/nacelle_section_widget.py
-# 
-# Created:  Dec 2025, M. Clarke 
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/nacelles/nacelle_section_widget.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports   
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
 import RCAIDE
 
 from tabs.geometry.widgets import GeometryDataWidget

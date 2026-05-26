@@ -1,8 +1,15 @@
 # RCAIDE_GUI/tabs/aircraft_configs/aircraft_configs.py
-#
-# Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainability
 
+# RCAIDE imports
 import RCAIDE
+
+# RCAIDE-GUI imports
+from tabs import TabWidget
+from utilities import Units
+from common_widgets import DataEntryWidget
+import values
+
+# PyQt imports
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import (
     QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget,
@@ -10,10 +17,9 @@ from PyQt6.QtWidgets import (
     QMessageBox, QInputDialog
 )
 
-from tabs import TabWidget
-from utilities import Units
-from widgets import DataEntryWidget
-import values
+# ------------------------------------------------------------------------------
+# Aircraft Configs Widget
+# ------------------------------------------------------------------------------
 
 # Used if no configurations exist yet
 _DEFAULT_CONFIG_NAMES = ["base", "cruise", "takeoff", "cutback", "landing", "reverse_thrust"]

@@ -1,14 +1,28 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
+# RCAIDE_GUI/tabs/analysis/widgets/geometry_widget.py
 
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
 from utilities import create_line_bar
 from tabs.analysis.widgets import AnalysisDataWidget
 from utilities import Units
 from widgets import DataEntryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
+
+# Python imports
 import os
 import sys
-import RCAIDE
 
-
+# ------------------------------------------------------------------------------
+# Geometry Widget
+# ------------------------------------------------------------------------------
 class GeometryWidget(AnalysisDataWidget):
     def __init__(self):
         super(GeometryWidget, self).__init__()

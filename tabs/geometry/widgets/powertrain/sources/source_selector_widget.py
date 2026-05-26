@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/sources/source_selector_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
 from utilities import Units

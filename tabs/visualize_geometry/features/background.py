@@ -1,11 +1,11 @@
-# =================================
-# BACKGROUND MENU (with checkmarks)
-# =================================
-# UI widgets used to build the small background mode menu
+# RCAIDE_GUI/tabs/visualize_geometry/features/background.py
 
+# RCAIDE-GUI Imports
+from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
 from PyQt6.QtWidgets import QPushButton, QMenu, QColorDialog
 from PyQt6.QtGui import QAction, QColor
-from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
 
 class BackgroundManager:
     """Manage background mode and menu checkmarks (dark / light / custom)."""

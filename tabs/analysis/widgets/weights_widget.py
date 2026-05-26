@@ -1,16 +1,27 @@
+# RCAIDE_GUI/tabs/analysis/widgets/weights_widget.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
+from utilities import create_line_bar, Units
+from tabs.analysis.widgets import AnalysisDataWidget
+from widgets import DataEntryWidget
+
+# PyQt imports
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
 
-
-from utilities import create_line_bar
-from tabs.analysis.widgets import AnalysisDataWidget
-from utilities import Units
-from widgets import DataEntryWidget
+# Python imports
 import os
 import sys
 
-import RCAIDE
-
-
+# ------------------------------------------------------------------------------
+# Weights Widget
+# ------------------------------------------------------------------------------
 class WeightsWidget(AnalysisDataWidget):
     def __init__(self):
         super(WeightsWidget, self).__init__()

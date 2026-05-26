@@ -1,3 +1,6 @@
+# RCAIDE_GUI/tabs/visualize_geometry/core_3d_viewer.py
+
+# RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Components.Airfoils import Airfoil
@@ -9,22 +12,29 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations 
  
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit
-from PyQt6.QtCore import Qt
+ # RCAIDE-GUI imports
 from tabs import TabWidget
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from tabs.visualize_geometry import vehicle
+from RCAIDE_GUI.tabs.visualize_geometry import geometry_helper_functions
+
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 
+# python imports
 import matplotlib.colors as mcolors 
 import vtk
 import values
 import os
 from copy import deepcopy 
 
+# ------------------------------------------------------------------------------
+# make_object
+# ------------------------------------------------------------------------------
 def make_object(renderer, actor_group,  GEOM,  rgb_color, opacity): 
 
-    actor = vehicle.generate_vtk_object(GEOM.PTS)
+    actor = geometry_helper_functions.generate_vtk_object(GEOM.PTS)
 
     # Set color of fuselage
     mapper = actor.GetMapper()

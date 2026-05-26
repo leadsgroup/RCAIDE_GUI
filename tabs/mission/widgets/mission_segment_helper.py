@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/mission/widgets/mission_segment_helper.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from utilities import Units
 
 import RCAIDE.Framework.Mission.Segments as Segments

@@ -1,18 +1,16 @@
-# RCAIDE/Library/Plots/Aerodynamics/plot_lift_distribution.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/aerodynamics/plot_lift_distribution.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
-
+# RCAIDE imports
 from RCAIDE.Library.Plots.Common import plot_style
-import matplotlib.pyplot as plt 
-import numpy as np 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+
+# Python imports
+import matplotlib.pyplot as plt
+import numpy as np
+
+# ------------------------------------------------------------------------------
+# Plot Lift Distribution
+# ------------------------------------------------------------------------------
+
 def plot_lift_distribution(results,
                            save_figure = False,
                            save_filename = "Lift_Distribution",

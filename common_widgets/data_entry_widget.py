@@ -1,12 +1,18 @@
+# RCAIDE_GUI/tabs/visualize_geometry/features/axes_gizmo.py
+
+# Created: M Clarke, LEADS, 2024
+# Python imports
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, \
     QVBoxLayout
 
 from utilities import Units
-from widgets import UnitPickerWidget
+from common_widgets import UnitPickerWidget
 
-
+# ------------------------------------------------------------------------------
+# Data Entry Widget
+# ------------------------------------------------------------------------------
 class DataEntryWidget(QWidget):
     def __init__(self, data_units_labels, num_cols=2):
         super(DataEntryWidget, self).__init__()

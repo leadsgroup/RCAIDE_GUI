@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/wings.py
+# RCAIDE_GUI/tabs/geometry/frames/wings/wings_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 

@@ -1,12 +1,16 @@
-# =====================================
-# RENDER SAFETY + CAMERA VIEW STABILITY
-# =====================================
-# Patches to improve stability of camera view functions 
+# RCAIDE_GUI/tabs/visualize_geometry/features/camera.py
 
+# RCAIDE-GUI Imports
+from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtCore import QTimer
+
+# Python imports
 import functools
 import types
-import vtk
-from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+import math
 
 _DEFAULT_BOUNDS = (-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
 # --- helpers: unwrap / window / interactor ---
@@ -193,10 +197,6 @@ if not getattr(VisualizeGeometryWidget, "_run_solve_nonblocking_patched", False)
 # AUTO-ROTATE CAMERA (360° ORBIT)
 # =======================================
 # Toolbar toggle that orbits the camera around its current focal point.
-
-import math
-from PyQt6.QtCore import QTimer
-from PyQt6.QtWidgets import QPushButton
 
 def add_360_view(self):
     # Requires toolbar + renderer + VTK widget

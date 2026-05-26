@@ -1,3 +1,6 @@
+# RCAIDE_GUI/common_widgets/animated_toggle.py
+
+# PyQt imports
 from PyQt6.QtCore import (
     Qt, QSize, QPoint, QPointF, QRectF,
     QEasingCurve, QPropertyAnimation, QSequentialAnimationGroup,
@@ -5,7 +8,9 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import QColor, QBrush, QPaintEvent, QPen, QPainter
 from PyQt6.QtWidgets import QCheckBox
 
-
+# ------------------------------------------------------------------------------
+# Animated Toggle Widget
+# ------------------------------------------------------------------------------
 class AnimatedToggle(QCheckBox):
     _transparent_pen = QPen(Qt.GlobalColor.transparent)
     _light_grey_pen = QPen(Qt.GlobalColor.lightGray)

@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/sources/fuel_tank_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 

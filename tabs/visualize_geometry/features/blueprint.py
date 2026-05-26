@@ -1,13 +1,15 @@
-# ==========================
-# BLUEPRINT UPLOAD SYSTEM
-# ==========================
-# Loads 2D blueprint images (top/side/front) as textured planes around the model.
-# Click a blueprint to select it (highlights with an outline).
+# RCAIDE_GUI/tabs/visualize_geometry/features/blueprint.py
 
-from PyQt6.QtWidgets import QPushButton, QFileDialog, QMenu
-from PyQt6.QtCore import QTimer
-import vtk, os
+# RCAIDE-GUI Imports
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QPushButton, QFileDialog, QMenu, QWidget, QLabel, QSlider, QVBoxLayout, QWidgetAction
+from PyQt6.QtCore import Qt, QTimer
+
+# Python imports
+import vtkmodules.all as vtk
+import os
 
 class BlueprintManager:
     # Manages blueprint images (load, show, click-to-select).
@@ -493,12 +495,6 @@ _patch_run_solve_for_blueprints()
 # ================================
 # Adds an "Adjustor" button to the toolbar that opens a dropdown menu
 # with sliders to adjust the opacity and size of the selected blueprint.
-
-from PyQt6.QtWidgets import (
-    QPushButton, QWidget, QMenu, QLabel,
-    QSlider, QVBoxLayout, QWidgetAction
-)
-from PyQt6.QtCore import Qt, QTimer
 
 def add_blueprint_adjustor_dropdown(self):
     # don’t add this twice

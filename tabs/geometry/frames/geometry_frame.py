@@ -1,3 +1,10 @@
+# RCAIDE_GUI/tabs/geometry/frames/geometry_frame.py
+#
+# Created:  Dec 2025, M. Clarke
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QWidget
 
 import RCAIDE

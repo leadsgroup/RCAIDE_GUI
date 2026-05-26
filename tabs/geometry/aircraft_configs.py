@@ -1,18 +1,27 @@
-import json
-from typing import Type
+# RCAIDE_GUI/tabs/geometry/aircraft_configs.py
 
+# RCAIDE imports
 import RCAIDE
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit
 
+# RCAIDE-GUI imports
 from tabs.geometry.frames import *
 from tabs import TabWidget
 from utilities import set_data
 import values
 from widgets import Color
 
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit
+
+# Python imports
+import json
+from typing import Type
+
 # WARNING: This file is incomplete and is not intended to be used yet.
 
-
+# ------------------------------------------------------------------------------
+# Aircraft Configs Widget
+# ------------------------------------------------------------------------------
 class AircraftConfigsWidget(TabWidget):
     def __init__(self):
         """Create a widget for entering vehicle geometry."""
@@ -21,12 +30,12 @@ class AircraftConfigsWidget(TabWidget):
         # Define actions based on the selected index
         self.frames: list[Type[GeometryFrame]] = [DefaultFrame, FuselageFrame, WingsFrame,
                                                   LandingGearFrame, PowertrainFrame]
-        
+
         self.tabs = ["", "Booms", "Cargo Bars", "Fuselages","Landing Gear","Wings",  "Powertrain"]
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage",
                    "Add Landing Gear" , "Add Powertrain", "Add Wing"]
-        
+
         self.selected_config_index = 0
 
         values.config_data = [[]]
@@ -104,16 +113,16 @@ class AircraftConfigsWidget(TabWidget):
         while item2.parent():
             parent = item2.parent()
             assert parent is not None
-            
+
             item2 = parent
             depth += 1
-            
+
         if depth == 0:
             self.main_layout.setCurrentIndex(0)
             return
         if depth == 1:
             top_item = item.parent()
-            
+
             assert top_item is not None
             tree_index = top_item.indexOfChild(item)
             tab_index = self.find_tab_index(tree_index)
@@ -121,20 +130,20 @@ class AircraftConfigsWidget(TabWidget):
             self.main_layout.setCurrentIndex(tab_index)
         if depth == 2:
             component_item = item.parent()
-            
+
             assert component_item is not None
             top_item = component_item.parent()
             assert top_item is not None
-            
+
             tree_index = top_item.indexOfChild(component_item)
             tab_index = self.find_tab_index(tree_index)
             self.main_layout.setCurrentIndex(tab_index)
-            
+
             index = component_item.indexOfChild(item)
             frame = self.main_layout.currentWidget()
             assert isinstance(frame, GeometryFrame)
-            frame.load_data(values.config_data[tab_index][index], index)            
-            
+            frame.load_data(values.config_data[tab_index][index], index)
+
 
     def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
         """Save the entered data in a frame to the list.

@@ -1,3 +1,10 @@
+# RCAIDE_GUI/tabs/mission/widgets/flight_controls_widget.py
+
+# Created: May 2023, M. Clarke 
+# ------------------------------------------------------------------------------
+# Imports 
+# ------------------------------------------------------------------------------
+# Python imports 
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -7,11 +14,14 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
 )
 
+# RCAIDE-GUI imports
 from utilities import Units, create_line_bar, set_data
 from widgets import DataEntryWidget
 import values
 
-
+# ------------------------------------------------------------------------------
+# Flight Controls Widget
+# ------------------------------------------------------------------------------
 class FlightControlsWidget(QWidget):
     def __init__(self):
         super().__init__()

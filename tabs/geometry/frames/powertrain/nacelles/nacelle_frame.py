@@ -1,8 +1,8 @@
-# # ----------------------------------------------------------------------------------------------------------------------
-# # ----------------------------------------------------------------------------------------------------------------------
-# # THIS FILE IS NO LONGER USED - NACELLES ARE NOW INTEGRATED INTO THE POWERTRAIN, TO EDIT CHECK TURBOFAN_WIDGET.PY
-# # ----------------------------------------------------------------------------------------------------------------------
-# # ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/nacelles/nacelle_frame.py
+#
+# Created:  Dec 2025, M. Clarke
+
+# NOTE: This file is no longer used - nacelles are now integrated into the powertrain. See turbofan_widget.py.
 
 
 

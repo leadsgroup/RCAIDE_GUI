@@ -1,3 +1,5 @@
+# RCAIDE_GUI/tabs/__init__.py
+
 from tabs.tab_widget import TabWidget
 from tabs.aircraft_configs import aircraft_configs
 from tabs.analysis import analysis
