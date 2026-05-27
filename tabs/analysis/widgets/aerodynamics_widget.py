@@ -1,4 +1,5 @@
 import json
+import os
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, \
     QComboBox
 
@@ -24,7 +25,7 @@ class AerodynamicsWidget(AnalysisDataWidget):
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0], num_cols=1)
 
         # Load defaults
-        with open("app_data/defaults/aerodynamic_analysis.json", "r") as defaults:
+        with open(os.path.join("app_data", "defaults", "aerodynamic_analysis.json"), "r") as defaults:
             self.defaults = json.load(defaults)
 
         self.data_entry_widget.load_data(self.defaults)
