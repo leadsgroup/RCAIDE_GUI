@@ -159,7 +159,7 @@ class MissionSegmentWidget(QWidget):
             self._on_segment_name_change
         )
 
-        self._apply_defaults()
+        #self._apply_defaults()
         self._install_combo_wheel_guards()
 
     # ============================================================
@@ -220,39 +220,7 @@ class MissionSegmentWidget(QWidget):
 
         # Add the subsegment fields to the UI
         self.details_layout.addWidget(self.subsegment_entry_widget)
-        self._install_combo_wheel_guards(self.subsegment_entry_widget)
-        
-        # Re-apply DOF and control defaults once subsegment exists
-        if self.dof_entry_widget and self.flight_controls_widget:
-            self._apply_defaults()
-
-    def _default_config_key(self, top_text, sub_text, name_text):
-        # Normalize all inputs so comparisons are consistent
-        top = convert_name(top_text)
-        name = convert_name(name_text)
-
-        # Hard-map RCAIDE mission_setup tags to correct configs
-        if name:
-            tag_map = {
-                "takeoff_ground_run": "takeoff",
-                "takeoff_climb": "takeoff",
-                "inital_climb": "cutback",
-                "initial_climb": "cutback",
-                "climb_to_cruise_1": "cutback",
-                "climb_to_cruise_4": "cruise",
-                "cruise": "cruise",
-                "descent_1": "cruise",
-                "approach": "landing",
-                "final_approach": "landing",
-                "level_off_touchdown": "landing",
-                "landing": "reverse_thrust" if top == "ground" else "landing",
-            }
-            if name in tag_map:
-                return tag_map[name]
-
-        # Fallback to base config if nothing matched
-        return "base"
-
+        self._install_combo_wheel_guards(self.subsegment_entry_widget) 
 
     def _apply_config_default(self, config_key):
         # Do nothing if no configuration data exists
@@ -279,44 +247,7 @@ class MissionSegmentWidget(QWidget):
 
         # Apply the inferred configuration
         self._apply_config_default(config_key)
-
-
-    def _apply_defaults(self):
-        # Skip defaults when restoring saved missions
-        if self._suppress_defaults:
-            return
-
-        # Read current UI values
-        top_text = self.top_dropdown.currentText()
-        sub_text = self.nested_dropdown.currentText()
-        name_text = self.segment_name_input.text()
-
-        # Ground segments cannot be trimmed
-        needs_trim = convert_name(top_text) != "ground"
-
-        dof_defaults = {}
-
-        # Enable only the forces needed for longitudinal trim
-        for label, _, _ in self.dof_entry_widget.data_units_labels:
-            dof_defaults[label] = (
-                label in {"Forces in X axis", "Forces in Z axis"} and needs_trim,
-                0,
-            )
-
-        # Apply DOF defaults to the UI
-        self.dof_entry_widget.load_data(dof_defaults)
-
-        # Ensure trim has at least throttle and body angle
-        self.flight_controls_widget.set_defaults(
-            throttle=needs_trim,
-            body_angle=needs_trim,
-        )
-
-        # Select the correct aircraft configuration
-        self._apply_config_default(
-            self._default_config_key(top_text, sub_text, name_text)
-        )
-
+        
     def _install_combo_wheel_guards(self, root=None):
         root = root or self
         # Apply the guard to existing mission-tab combo boxes, including any
