@@ -1,13 +1,11 @@
 # RCAIDE_GUI/tabs/solve/plots/create_plot_widgets.py
-# 
-# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
-# PyQT imports  
+# Python imports
 import pyqtgraph as pg
- 
+
+# ------------------------------------------------------------------------------
+# Create Plot Widgets
+# ------------------------------------------------------------------------------
 def create_plot_widgets(self,plot_layout, plot_size,show_legend):
      
     # Create two PlotWidgets from PyQtGraph

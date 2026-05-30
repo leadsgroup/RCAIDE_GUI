@@ -1,13 +1,8 @@
-## @ingroup Library-Plots-Performance-Common
-# RCAIDE/Library/Plots/Performance/Common/set_axes.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
- 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------    
-## @ingroup Library-Plots-Performance-Common
+# RCAIDE_GUI/tabs/solve/plots/common/set_axes.py
+
+# ------------------------------------------------------------------------------
+# Set Axes
+# ------------------------------------------------------------------------------
 def set_axes(axes):
     """
     Apply a standardized RCAIDE formatting style to matplotlib plot axes.
@@ -38,10 +33,10 @@ def set_axes(axes):
 
     'Major Grid'
         Primary grid lines at major tick marks
-    
+
     'Minor Grid'
         Secondary grid lines at minor tick marks
-    
+
     'Tick Marks'
         Small lines indicating axis scale divisions
 

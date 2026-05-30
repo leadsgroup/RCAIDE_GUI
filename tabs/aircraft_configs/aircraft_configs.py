@@ -1,8 +1,15 @@
 # RCAIDE_GUI/tabs/aircraft_configs/aircraft_configs.py
-#
-# Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainability
 
+# RCAIDE imports
 import RCAIDE
+
+# RCAIDE-GUI imports
+from tabs import TabWidget
+from utilities import Units
+from common_widgets import DataEntryWidget
+import values
+
+# PyQt imports
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import (
     QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTreeWidget,
@@ -10,10 +17,9 @@ from PyQt6.QtWidgets import (
     QMessageBox, QInputDialog
 )
 
-from tabs import TabWidget
-from utilities import Units
-from widgets import DataEntryWidget
-import values
+# ------------------------------------------------------------------------------
+# Aircraft Configs Widget
+# ------------------------------------------------------------------------------
 
 # Used if no configurations exist yet
 _DEFAULT_CONFIG_NAMES = ["base", "cruise", "takeoff", "cutback", "landing", "reverse_thrust"]
@@ -91,16 +97,7 @@ class AircraftConfigsWidget(TabWidget):
             values.config_data = []
         elif values.config_data and not all(isinstance(cfg, dict) for cfg in values.config_data):
             values.config_data = []
-
-        # If empty, create default configs
-        if not values.config_data:
-            values.config_data = [{
-                "config name": n,
-                "cs deflections": {},
-                "propulsors": {},
-                "gear down": False
-            } for n in _DEFAULT_CONFIG_NAMES]
-
+            
     def _ensure_geometry(self):
         if not hasattr(values, "rcaide_vehicle"):
             values.rcaide_vehicle = values.new_rcaide_vehicle_data()

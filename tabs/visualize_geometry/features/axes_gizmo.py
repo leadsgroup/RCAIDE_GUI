@@ -1,11 +1,15 @@
-# =====================================
-# AXES GIZMO
-# =====================================
-# Adds a small 3D axes gizmo in the corner of the VTK view
+# RCAIDE_GUI/tabs/visualize_geometry/features/axes_gizmo.py
 
-import vtk
+# Created: M Clarke, LEADS, 2024
+# RCAIDE-GUI imports 
+# RCAIDE-GUI Imports 
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
 
+# Python imports
+import vtkmodules.all as vtk
+# ------------------------------------------------------------------------------
+# Gizmo functions
+# ------------------------------------------------------------------------------
 def _bind_gizmo_renderer(widget, renderer):
     # VTK uses different method names depending on the version
     try:

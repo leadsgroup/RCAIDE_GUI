@@ -8,7 +8,10 @@ from tabs import *
 from tabs.visualize_geometry import visualize_geometry
 
 import sys
-import os 
+import os
+
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+_IMG  = os.path.join(_ROOT, "app_data", "images")
 
 if sys.platform == "win32":
     import ctypes
@@ -20,7 +23,7 @@ class App(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("RCAIDE GUI")
-        self.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))
+        self.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
 
         menubar = self.menuBar()
         if menubar is None:
@@ -78,8 +81,7 @@ class App(QMainWindow):
             assert isinstance(widget, TabWidget)
           
         json_data = values.write_to_json()
-        separator = os.path.sep
-        name      = QFileDialog.getSaveFileName(self, 'Save File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
+        name      = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
         
         if not QFileInfo(name).suffix():
             name += ".json"
@@ -89,8 +91,7 @@ class App(QMainWindow):
         file.close()
     
     def load_all(self):
-        separator = os.path.sep
-        name      = QFileDialog.getOpenFileName(self, 'Open File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
+        name      = QFileDialog.getOpenFileName(self, 'Open File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
         
         try:
             file = open(name, 'r')
@@ -128,7 +129,7 @@ class App(QMainWindow):
             widget.load_from_values()
 
 app = QApplication(sys.argv)
-app.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))
+app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
 window = App()
 extra = {
     'density_scale': '-2',
@@ -137,8 +138,7 @@ extra = {
     'menubar': '#021a32',
     'font_size': '15px'
 }
-separator = os.path.sep
-apply_stylesheet(app, theme= "app_data" + separator + "style_sheets" + separator + 'rcaide_dark_theme.xml', extra=extra)
+apply_stylesheet(app, theme=os.path.join(_ROOT, "app_data", "style_sheets", "rcaide_dark_theme.xml"), extra=extra)
 custom_qss = app.styleSheet() + """
     QPushButton {
         border: 1px solid;

@@ -1,3 +1,10 @@
+# RCAIDE_GUI/tabs/geometry/frames/default_frame.py
+#
+# Created:  Dec 2025, M. Clarke
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 

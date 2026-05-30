@@ -1,8 +1,15 @@
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/converters/converter_frame.py
+#
+# Created:  Dec 2025, M. Clarke
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, \
     QSizePolicy, QSpacerItem
 
 from tabs.geometry.widgets.powertrain.converters import TurboelectricGeneratorWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 class ConverterFrame(QWidget):
     def __init__(self):

@@ -1,15 +1,17 @@
-# RCAIDE imports  
-import matplotlib.colors 
+# RCAIDE_GUI/tabs/solve/plots/aeroacoustics/plot_noise_certification_contour.py
+
+# RCAIDE imports
+import matplotlib.colors
 import matplotlib.colors as colors
 from RCAIDE.Library.Plots import *
- 
-# Pacakge imports 
+
+# Python imports
 import numpy as np
 from matplotlib import pyplot as plt
 
-# ----------------------------------------------------------------------
-#  Plot Aircraft Noise Certification Data  
-# ----------------------------------------------------------------------  
+# ------------------------------------------------------------------------------
+# Plot Noise Certification Contour
+# ------------------------------------------------------------------------------
 def plot_noise_certification_contour( noise_data,
                                     noise_level       = None, 
                                     min_noise_level   = 45,  

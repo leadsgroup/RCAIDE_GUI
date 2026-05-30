@@ -1,10 +1,9 @@
-# RCAIDE_GUI/tabs/geometry/widgets/powertrain_widget.py
-#
-# Created:  Dec 2025, M. Clarke
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/powertrain_widget.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
 
@@ -20,7 +19,7 @@ from tabs.geometry.frames.powertrain.distributors import DistributorFrame
 from tabs.geometry.frames.powertrain.converters import ConverterFrame
 from tabs.geometry.frames.powertrain.propulsors import PropulsorFrame
 from tabs.geometry.widgets.powertrain.powertrain_connector_widget import PowertrainConnectorWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 # ----------------------------------------------------------------------------------------------------------------------

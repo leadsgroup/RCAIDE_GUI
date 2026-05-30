@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/wings.py
+# RCAIDE_GUI/tabs/geometry/frames/wings/wings_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 
@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxL
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import WingCSWidget, WingSectionWidget, CabinWidget
 from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Wing Frame 

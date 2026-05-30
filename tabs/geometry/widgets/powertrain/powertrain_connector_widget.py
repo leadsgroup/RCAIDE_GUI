@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/powertrain_connector_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QWidgetItem
 
 

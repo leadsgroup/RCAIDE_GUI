@@ -1,8 +1,14 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/distributors/fuel_line_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QPushButton, QLineEdit
 
 from tabs.geometry.widgets import GeometryDataWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class FuelLineWidget(GeometryDataWidget):

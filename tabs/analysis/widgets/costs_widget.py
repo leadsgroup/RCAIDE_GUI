@@ -1,12 +1,23 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy
+# RCAIDE_GUI/tabs/analysis/widgets/costs_widget.py
 
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
 from utilities import create_line_bar
 from tabs.analysis.widgets import AnalysisDataWidget
 
-import RCAIDE
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollArea, \
+    QFrame, QSpacerItem, QSizePolicy
 
-
+# ------------------------------------------------------------------------------
+# Costs Widget
+# ------------------------------------------------------------------------------
 class CostsWidget(AnalysisDataWidget):
     def __init__(self):
         super(CostsWidget, self).__init__()

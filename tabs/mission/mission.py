@@ -1,3 +1,16 @@
+# RCAIDE_GUI/tabs/mission/mission.py
+
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
+from tabs.mission.widgets import MissionSegmentWidget
+from tabs.mission.widgets import MissionAnalysisWidget
+from tabs import TabWidget
+from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
+import values
+
+# PyQt imports
 from PyQt6.QtCore import Qt, QTimer, QPointF
 from PyQt6.QtGui import QColor, QPainter, QPen, QBrush, QFont, QPainterPath
 from PyQt6.QtWidgets import (
@@ -6,16 +19,9 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem, QHeaderView, QSizePolicy, QAbstractItemView
 )
 
-from tabs.mission.widgets import MissionSegmentWidget
-from tabs.mission.widgets import MissionAnalysisWidget
-from tabs import TabWidget
-from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
-import values
-import RCAIDE
-
-# ============================================================
-#  Mission Profile (animated line diagram)
-# ============================================================
+# ------------------------------------------------------------------------------
+# Mission Profile Widget
+# ------------------------------------------------------------------------------
 class MissionProfileWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -848,15 +854,16 @@ class MissionWidget(TabWidget):
         """Create a new MissionSegmentWidget and add it to the UI and internal state."""
         seg = MissionSegmentWidget()
         # Default to a simple cruise segment for quick GUI validation
-        try:
-            seg.top_dropdown.setCurrentIndex(1)  # Cruise
-            seg.populate_nested_dropdown(seg.top_dropdown.currentIndex())
-            seg.nested_dropdown.setCurrentText("Constant Speed/Constant Altitude")
-            seg.segment_name_input.setText("cruise")
-            if hasattr(seg, "_apply_defaults"):
-                seg._apply_defaults()
-        except Exception:
-            pass
+        #try:
+            #seg.top_dropdown.setCurrentIndex(1)  # Cruise
+            #seg.populate_nested_dropdown(seg.top_dropdown.currentIndex())
+            #seg.nested_dropdown.setCurrentText("Constant Speed/Constant Altitude")
+            #seg.segment_name_input.setText("cruise")
+            ##if hasattr(seg, "_apply_defaults"):
+                ##seg._apply_defaults()
+        #except Exception:
+            #pass
+            
         self.segment_widgets.append(seg)
         self._wire_segment_summary_signals(seg)
 

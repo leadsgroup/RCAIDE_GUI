@@ -1,12 +1,14 @@
-# ===========================
-# SCREENSHOT EXPORT SECTION
-# ===========================
-# Adds "📷 Export View" to the toolbar and saves the current VTK view to PNG/JPG.
+# RCAIDE_GUI/tabs/visualize_geometry/features/screenshot.py
 
-import datetime
-import vtk
-from PyQt6.QtWidgets import QPushButton, QFileDialog, QMessageBox
+# RCAIDE-GUI Imports
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QPushButton, QFileDialog, QMessageBox
+
+# Python imports
+import datetime
+import vtkmodules.all as vtk
 
 def add_screenshot_button(self):
     # --- need toolbar + vtkWidget ---

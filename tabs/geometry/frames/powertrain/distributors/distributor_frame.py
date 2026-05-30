@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxL
 
 from tabs.geometry.widgets.powertrain.distributors import FuelLineWidget
 from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 # ----------------------------------------------------------------------------------------------------------------------

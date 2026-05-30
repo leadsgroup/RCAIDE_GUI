@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 # RCAIDE GUI imports  
 from tabs.geometry.frames        import GeometryFrame 
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Cargo Bay Frame 

@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/mission/widgets/mission_analysis_widget.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
     QTreeWidgetItem, QHeaderView, QPushButton, QLabel
@@ -144,20 +150,17 @@ class MissionAnalysisWidget(TabWidget):
         values.analysis_data = []
         values.rcaide_analyses = {}
 
-        # Build and save one RCAIDE analysis container per aircraft configuration.
+        # Build and save one RCAIDE analysis container per aircraft configuration.   
         for tag, config in values.rcaide_configs.items():
 
-            analysis = RCAIDE.Framework.Analyses.Vehicle()
-            analysis.vehicle = config 
+            analyses = RCAIDE.Framework.Analyses.Vehicle()
+            analyses.vehicle = config  
             
             for index, widget in enumerate(self.widgets):
                 assert isinstance(widget, AnalysisDataWidget)
 
                 if self.get_check_state(index):
-                    analysis.append(widget.create_analysis(config))
+                    analyses.append(widget.create_analysis(config)) 
 
-            # energy = RCAIDE.Framework.Analyses.Energy.Energy()   # NEED TO BE MADE AN ANALYSIS
-            # analysis.append(energy)
-
-            values.rcaide_analyses[tag] = analysis
-            values.analysis_data.append(analysis)
+            values.rcaide_analyses[tag] = analyses
+            values.analysis_data.append(analyses)

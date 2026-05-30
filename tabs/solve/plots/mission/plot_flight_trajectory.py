@@ -1,20 +1,17 @@
-# RCAIDE/Library/Plots/Performance/Mission/plot_flight_trajectory.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+# RCAIDE_GUI/tabs/solve/plots/mission/plot_flight_trajectory.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np  
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------              
+# ------------------------------------------------------------------------------
+# Plot Flight Trajectory
+# ------------------------------------------------------------------------------
 def plot_flight_trajectory(results,
                            line_color = 'bo-',
                            line_color2 = 'rs--',

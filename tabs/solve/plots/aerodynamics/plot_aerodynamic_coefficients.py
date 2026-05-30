@@ -1,20 +1,17 @@
-# RCAIDE/Library/Plots/Performance/Aerodynamics/plot_aerodynamic_coefficients.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/aerodynamics/plot_aerodynamic_coefficients.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np  
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------
+# Plot Aerodynamic Coefficients
+# ------------------------------------------------------------------------------
 def plot_aerodynamic_coefficients(results,
                              save_figure = False,  
                              show_legend = True,

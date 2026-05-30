@@ -1,20 +1,17 @@
-# RCAIDE/Library/Plots/Aerodynamics/plot_aircraft_aerodynamic_analysis.py
-# 
-# 
-# Created:  Dec 2024, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/aerodynamics/plot_aircraft_aerodynamics.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------
+# Plot Aircraft Aerodynamics
+# ------------------------------------------------------------------------------
 def plot_aircraft_aerodynamics(results,
                             save_figure = False,
                             line_color = 'bo-',

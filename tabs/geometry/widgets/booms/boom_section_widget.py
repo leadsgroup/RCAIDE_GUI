@@ -1,16 +1,15 @@
 # RCAIDE_GUI/tabs/geometry/widgets/booms/boom_section_widget.py
-# 
-# Created:  Dec 2025, M. Clarke 
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports   
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
 import RCAIDE
 
 # RCAIDE GUI imports
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQT imports  
 from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame

@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/geometry/widgets/geometry_data_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QWidget
 
 

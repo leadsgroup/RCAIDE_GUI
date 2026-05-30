@@ -1,14 +1,27 @@
-import json
-import os
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, \
-    QComboBox
+# RCAIDE_GUI/tabs/analysis/widgets/aerodynamics_widget.py
 
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
 from tabs.analysis.widgets import AnalysisDataWidget
 from utilities import create_line_bar, create_scroll_area, Units, set_data
-from widgets.data_entry_widget import DataEntryWidget
+from common_widgets.data_entry_widget import DataEntryWidget
 
-import RCAIDE 
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QScrollArea, QComboBox
 
+# Python imports
+import json
+import os
+import sys
+# ------------------------------------------------------------------------------
+# Aerodynamics Widget
+# ------------------------------------------------------------------------------
 class AerodynamicsWidget(AnalysisDataWidget):
     def __init__(self):
         super(AerodynamicsWidget, self).__init__()
@@ -25,7 +38,9 @@ class AerodynamicsWidget(AnalysisDataWidget):
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0], num_cols=1)
 
         # Load defaults
-        with open(os.path.join("app_data", "defaults", "aerodynamic_analysis.json"), "r") as defaults:
+        _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        _defaults_path = os.path.join(_root, "app_data", "defaults", "aerodynamic_analysis.json")
+        with open(_defaults_path, "r") as defaults:
             self.defaults = json.load(defaults)
 
         self.data_entry_widget.load_data(self.defaults)

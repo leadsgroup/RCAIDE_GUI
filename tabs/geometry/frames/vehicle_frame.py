@@ -1,9 +1,16 @@
+# RCAIDE_GUI/tabs/geometry/frames/vehicle_frame.py
+#
+# Created:  Dec 2025, M. Clarke
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \
     QSpacerItem, QSizePolicy
 
 from tabs.geometry.frames import GeometryFrame
 from utilities import create_line_bar, Units, create_scroll_area
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 import values
 
 
