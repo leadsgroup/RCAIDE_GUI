@@ -1,9 +1,19 @@
+# RCAIDE_GUI/tabs/analysis/widgets/analysis_data_widget.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+
+# PyQt imports
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget
 
-import RCAIDE
-
-
+# ------------------------------------------------------------------------------
+# Analysis Data Widget
+# ------------------------------------------------------------------------------
 class AnalysisDataWidget(QWidget):
     def __init__(self):
         super(AnalysisDataWidget, self).__init__()

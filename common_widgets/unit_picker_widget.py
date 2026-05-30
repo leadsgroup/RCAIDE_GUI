@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QComboBox
 
-
 class UnitPickerWidget(QWidget):
     def __init__(self, unit_class):
         super(UnitPickerWidget, self).__init__()

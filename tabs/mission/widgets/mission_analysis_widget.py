@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/mission/widgets/mission_analysis_widget.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
     QTreeWidgetItem, QHeaderView, QPushButton, QLabel

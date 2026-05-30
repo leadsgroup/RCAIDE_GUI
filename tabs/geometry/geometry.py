@@ -1,10 +1,9 @@
-from typing import Type
+# RCAIDE_GUI/tabs/geometry/geometry.py
 
+# RCAIDE imports
 import RCAIDE
-import vtk
-from PyQt6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QTimer
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, \
-    QLabel, QLineEdit, QApplication
+
+# RCAIDE-GUI imports
 from tabs.visualize_geometry.core_3d_viewer import Core3DViewer
 from tabs.geometry.frames import *
 from tabs import TabWidget
@@ -12,6 +11,17 @@ from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
 from utilities import set_data
 import values
 
+# PyQt imports
+from PyQt6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QTimer
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, \
+    QLabel, QLineEdit, QApplication
+
+# Python imports
+import vtk
+
+# ------------------------------------------------------------------------------
+# Geometry Widget
+# ------------------------------------------------------------------------------
 class GeometryWidget(TabWidget):
     def __init__(self):
         """Create a widget for entering vehicle geometry."""
@@ -43,7 +53,7 @@ class GeometryWidget(TabWidget):
             frame_widget = frame()
             frame_widget.set_save_function(self.save_data)
             frame_widget.set_tab_index(index)
-            self.main_layout.addWidget(frame_widget) 
+            self.main_layout.addWidget(frame_widget)
 
         vehicle_name_layout = QHBoxLayout()
         vehicle_name_layout.addWidget(QLabel("Vehicle Name:"))
@@ -109,7 +119,7 @@ class GeometryWidget(TabWidget):
         if app is not None:
             # Fallback cleanup hook in case closeEvent order differs by platform.
             app.aboutToQuit.connect(self._cleanup_preview)
- 
+
         self.right_layout.addLayout(self.main_layout)
         base_layout.addLayout(self.tree_frame_layout, 1)
         base_layout.addLayout(self.right_layout, 4)
@@ -196,7 +206,7 @@ class GeometryWidget(TabWidget):
             vehicle_component: The vehicle component to be appended to the vehicle.
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
-        """ 
+        """
         if data is None:
             return
 
@@ -226,7 +236,7 @@ class GeometryWidget(TabWidget):
                     if values.geometry_data[i]:
                         insert_index += 1
                 top_item.insertChild(insert_index, component_item)
-                    
+
             if new:
                 if index == -1:
                     values.geometry_data[tab_index].append(data)
@@ -251,7 +261,7 @@ class GeometryWidget(TabWidget):
         if vehicle_component:
             # Check if it is an energy network being added
             if tab_index == 5:
-                values.vehicle.append_energy_network(vehicle_component) 
+                values.vehicle.append_energy_network(vehicle_component)
             else:
                 values.vehicle.append_component(vehicle_component)
 
@@ -270,7 +280,7 @@ class GeometryWidget(TabWidget):
         if values.geometry_data:
             if values.geometry_data[0]:
                 self.vehicle_name_input.setText(values.geometry_data[0]["name"])
-            
+
             for tab_index, data_list in enumerate(values.geometry_data):
                 if tab_index == 0:
                     self.save_data(tab_index=tab_index, data=data_list,

@@ -1,21 +1,17 @@
-# RCAIDE/Library/Plots/Noise/plot_noise_level.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+# RCAIDE_GUI/tabs/solve/plots/aeroacoustics/plot_noise_level.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------   
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Library.Plots.Common import set_axes, plot_style
 
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ------------------------------------------------------------------------------
+# Plot Noise Level
+# ------------------------------------------------------------------------------
 def plot_noise_level(noise_data,
                      noise_level = False,
                      save_figure = False,

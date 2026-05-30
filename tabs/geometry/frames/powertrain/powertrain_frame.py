@@ -1,3 +1,10 @@
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/powertrain_frame.py
+#
+# Created:  Dec 2025, M. Clarke
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \

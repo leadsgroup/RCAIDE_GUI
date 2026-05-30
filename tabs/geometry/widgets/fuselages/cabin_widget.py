@@ -1,10 +1,16 @@
+# RCAIDE_GUI/tabs/geometry/widgets/fuselages/cabin_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 from tabs.geometry.widgets.fuselages.cabin_class_widget import CabinClassWidget
 
 

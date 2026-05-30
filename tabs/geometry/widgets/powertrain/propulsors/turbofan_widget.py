@@ -1,10 +1,16 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/propulsors/turbofan_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QComboBox, QFileDialog
 from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan  
 from utilities import Units, convert_name, clear_layout, set_data
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 from PyQt6.QtCore import Qt
 import values
 

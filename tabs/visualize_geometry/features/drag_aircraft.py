@@ -1,12 +1,13 @@
-# =========================================
-# AIRCRAFT DRAG (Move Entire Model)
-# =========================================
-# Adds a "✈️ Drag Aircraft" toggle button to the toolbar.
-# When enabled, lets the user click and drag to move the entire aircraft model.
+# RCAIDE_GUI/tabs/visualize_geometry/features/drag_aircraft.py
 
-import vtk
-from PyQt6.QtWidgets import QPushButton
+# RCAIDE-GUI Imports
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QPushButton
+
+# Python imports
+import vtkmodules.all as vtk
 
 class DragAircraftInteractor(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self, widget, actors):

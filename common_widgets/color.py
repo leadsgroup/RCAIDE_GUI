@@ -1,7 +1,12 @@
+# RCAIDE_GUI/tabs/visualize_geometry/features/axes_gizmo.py
+
+# Python imports
 from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtWidgets import QWidget
 
-
+# ------------------------------------------------------------------------------
+# Color Widget
+# ------------------------------------------------------------------------------
 class Color(QWidget):
     def __init__(self, color):
         super(Color, self).__init__()

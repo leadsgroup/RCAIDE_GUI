@@ -1,17 +1,14 @@
-# ===========================
-# MEASUREMENT TOOL SECTION
-# ===========================
-# - Adds a lightweight "distance measurement" tool to the VG toolbar.
-# - User workflow:
-#   1) Toggle 📏 Measure ON
-#   2) Click two points in the scene
-#   3) A line + endpoint markers + distance label are created
-#   4) Use ↩ Undo to remove the most recent measurement, 🧹 Clear to remove all
+# RCAIDE_GUI/tabs/visualize_geometry/features/measurement.py
 
-import math
-import vtk
-from PyQt6.QtWidgets import QPushButton
+# RCAIDE-GUI Imports
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QPushButton
+
+# Python imports
+import math
+import vtkmodules.all as vtk
 
 def add_measure_tool(self):
     """

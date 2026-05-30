@@ -1,10 +1,16 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/sources/fuel_tank_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import GeometryDataWidget
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 class FuelTankWidget(GeometryDataWidget):
     def __init__(self, index, on_delete, data_values=None):

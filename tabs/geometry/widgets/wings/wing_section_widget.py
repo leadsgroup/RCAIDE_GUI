@@ -1,11 +1,10 @@
-# RCAIDE_GUI/tabs/geometry/widgets/wing_section_widget.py
-# 
-# Created: Oct 2024, Laboratry for Electric Aircraft Design and Sustainabiltiy
+# RCAIDE_GUI/tabs/geometry/widgets/wings/wing_section_widget.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports  
+# Created: Oct 2024, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
 import RCAIDE
 
 # PtQt imports  
@@ -15,7 +14,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
 
 # gui imports 
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 import os
 import sys
 

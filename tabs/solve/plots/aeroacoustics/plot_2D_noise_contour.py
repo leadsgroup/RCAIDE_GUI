@@ -1,22 +1,17 @@
-# RCAIDE/Library/Plots/Noise/plot_2D_noise_contour.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+# RCAIDE_GUI/tabs/solve/plots/aeroacoustics/plot_2D_noise_contour.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
-from RCAIDE.Framework.Core import Units  
+# RCAIDE imports
+from RCAIDE.Framework.Core import Units
 
-# python imports 
-import numpy as np   
-import matplotlib.pyplot as plt  
+# Python imports
+import numpy as np
+import matplotlib.pyplot as plt
 import matplotlib.colors
-import matplotlib.colors as colors  
+import matplotlib.colors as colors
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------
+# Plot 2D Noise Contour
+# ------------------------------------------------------------------------------
 def plot_2D_noise_contour(noise_data,
                        noise_level = None,
                        min_noise_level = 35,  

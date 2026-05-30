@@ -1,20 +1,15 @@
-# RCAIDE/Library/Plots/Aerodynamics/plot_rotor_disc_performance.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+# RCAIDE_GUI/tabs/solve/plots/aerodynamics/plot_rotor_disc_performance.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
 
-# python imports   
-import matplotlib.pyplot as plt 
+# Python imports
+import matplotlib.pyplot as plt
 import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------      
+# ------------------------------------------------------------------------------
+# Plot Rotor Disc Performance
+# ------------------------------------------------------------------------------
 def plot_rotor_disc_performance(prop, outputs, i=0, title=None, save_figure=False):
     """
     Generate plots of rotor disc aerodynamic performance distributions.

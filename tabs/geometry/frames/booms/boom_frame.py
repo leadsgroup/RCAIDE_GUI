@@ -12,7 +12,7 @@ import RCAIDE
 from tabs.geometry.frames        import GeometryFrame
 from tabs.geometry.widgets.booms import BoomSectionWidget
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQT imports  
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, \

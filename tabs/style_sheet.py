@@ -1,6 +1,12 @@
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget,QTreeWidgetItem,QFrame, QMainWindow, QApplication, QMainWindow, QTabWidget, QFileDialog, QMenu
+# RCAIDE_GUI/tabs/style_sheet.py
 
+# PyQt imports
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget, QTreeWidgetItem, QFrame, QMainWindow, QApplication, QMainWindow, QTabWidget, QFileDialog, QMenu
+
+# ------------------------------------------------------------------------------
+# Style Sheet Utilities
+# ------------------------------------------------------------------------------
 def add_line(shape = "HLine", shadow = "Sunken", color = "gray", height = "20"):
     line = QFrame()
     shape_dict = {
@@ -19,11 +25,11 @@ def add_line(shape = "HLine", shadow = "Sunken", color = "gray", height = "20"):
     if shape not in shape_dict:
         raise TypeError("Have problem in shape format, shape should be 'NoFrame , Box , Panel , StyledPanel , HLine, VLine'" )
     #shape:NoFrame , Box , Panel , StyledPanel , HLine, VLine
-    line.setFrameShape(shape_dict[shape])  
+    line.setFrameShape(shape_dict[shape])
     if shadow not in shadow_dict:
         raise TypeError("Have problem in shadow format, shadow should be 'Plain , Raised and Sunken'" )
     #shadow:Plain , Raised and Sunken
-    line.setFrameShadow(shadow_dict[shadow]) 
+    line.setFrameShadow(shadow_dict[shadow])
     try:
         line.setStyleSheet(f"background-color: {color}; height: {height}px;")
     except:
@@ -44,12 +50,12 @@ def add_title(text, font_weight="bold", color = "black", font_size="20", Alignme
     }
     if Alignment not in Alignment_dict:
         raise TypeError("Have problem in Alignment format, Alignment should be 'AlignLeft, AlignRight, AlignHCenter, AlignJustify, AlignTop, AlignBottom, AlignVCenter, AlignBaseline'" )
-    else:     
+    else:
         title.setAlignment(Alignment_dict[Alignment])
     try:
         title.setStyleSheet(f"font-size: {font_size}px; font-weight: {font_weight}; color: {color};")
     except:
-        raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )    
+        raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )
     return title
 
 def add_subtitle(text, font_weight="bold", color = "black", font_size="15", Alignment="AlignLeft"):
@@ -66,12 +72,12 @@ def add_subtitle(text, font_weight="bold", color = "black", font_size="15", Alig
     }
     if Alignment not in Alignment_dict:
         raise TypeError("Have problem in Alignment format, Alignment should be 'AlignLeft, AlignRight, AlignHCenter, AlignJustify, AlignTop, AlignBottom, AlignVCenter, AlignBaseline'" )
-    else:     
+    else:
         subtitle.setAlignment(Alignment_dict[Alignment])
     try:
         subtitle.setStyleSheet(f"font-size: {font_size}px; font-weight: {font_weight}; color: {color};")
     except:
-        raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )    
+        raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )
     return subtitle
 
 
@@ -81,13 +87,13 @@ def add_header(window, window_name, menu_list = None):
     window.setWindowTitle(window_name)
     menubar = window.menuBar()
     if menubar is None:
-        return 
+        return
     if menu_list:
         for i in menu_list:
             menubar.addMenu(i)
-    return 
+    return
 
-#After use this function,programmer can find exact menu. 
+#After use this function,programmer can find exact menu.
 def find_menu_variable(window, target_menu):
     menubar = window.menuBar()
     if menubar is None:
@@ -106,5 +112,3 @@ if __name__ == '__main__':
     file_mune.addAction("Quit")
     window.show()
     app.exec()
-
-

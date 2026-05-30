@@ -1,3 +1,16 @@
+# RCAIDE_GUI/tabs/mission/mission.py
+
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
+from tabs.mission.widgets import MissionSegmentWidget
+from tabs.mission.widgets import MissionAnalysisWidget
+from tabs import TabWidget
+from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
+import values
+
+# PyQt imports
 from PyQt6.QtCore import Qt, QTimer, QPointF
 from PyQt6.QtGui import QColor, QPainter, QPen, QBrush, QFont, QPainterPath
 from PyQt6.QtWidgets import (
@@ -6,16 +19,9 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem, QHeaderView, QSizePolicy, QAbstractItemView
 )
 
-from tabs.mission.widgets import MissionSegmentWidget
-from tabs.mission.widgets import MissionAnalysisWidget
-from tabs import TabWidget
-from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
-import values
-import RCAIDE
-
-# ============================================================
-#  Mission Profile (animated line diagram)
-# ============================================================
+# ------------------------------------------------------------------------------
+# Mission Profile Widget
+# ------------------------------------------------------------------------------
 class MissionProfileWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
