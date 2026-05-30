@@ -10,13 +10,14 @@ import RCAIDE
 # RCAIDE-GUI imports
 from utilities import create_line_bar, Units, set_data
 from tabs.analysis.widgets import AnalysisDataWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox
 
 # Python imports
 import json
+import os
 
 # ------------------------------------------------------------------------------
 # Aeroacoustics Widget
@@ -38,7 +39,9 @@ class AeroacousticsWidget(AnalysisDataWidget):
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
         self.main_layout.addWidget(self.data_entry_widget)
 
-        with open("app_data/defaults/aeroacoustics_analysis.json", "r") as defaults:
+        _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        _defaults_path = os.path.join(_root, "app_data", "defaults", "aeroacoustics_analysis.json")
+        with open(_defaults_path, "r") as defaults:
             self.defaults = json.load(defaults)
 
         self.data_entry_widget.load_data(self.defaults[0])

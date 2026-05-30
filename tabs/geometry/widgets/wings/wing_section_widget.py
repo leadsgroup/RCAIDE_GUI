@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
 
 # gui imports 
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 import os
 import sys
 

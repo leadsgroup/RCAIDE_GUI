@@ -29,7 +29,7 @@
 # from tabs.geometry.frames import GeometryFrame
 # from tabs.geometry.widgets.nacelles.nacelle_section_widget import NacelleSectionWidget
 # from utilities import set_data, show_popup, create_line_bar, Units, create_scroll_area, clear_layout
-# from widgets import DataEntryWidget
+# from common_widgets import DataEntryWidget
 
 # # python imports 
 # from turtle import clear

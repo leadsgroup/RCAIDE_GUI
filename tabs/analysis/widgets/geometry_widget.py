@@ -11,7 +11,7 @@ import RCAIDE
 from utilities import create_line_bar
 from tabs.analysis.widgets import AnalysisDataWidget
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox

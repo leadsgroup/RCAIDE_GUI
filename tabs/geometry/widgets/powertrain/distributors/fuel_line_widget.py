@@ -8,7 +8,7 @@ import RCAIDE
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QPushButton, QLineEdit
 
 from tabs.geometry.widgets import GeometryDataWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class FuelLineWidget(GeometryDataWidget):

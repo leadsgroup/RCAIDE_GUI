@@ -1,3 +1,6 @@
-from common_widgets.color import Color
-from common_widgets.unit_picker_widget import UnitPickerWidget
-from common_widgets.data_entry_widget import DataEntryWidget
+from .color import Color
+from .unit_picker_widget import UnitPickerWidget
+from .data_entry_widget import DataEntryWidget
+from .image_widget import ImageWidget
+from .animated_toggle import AnimatedToggle
+

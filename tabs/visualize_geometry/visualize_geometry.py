@@ -13,7 +13,7 @@ from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage
 from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations 
 
 # RCAIDE-GUI imports
-from RCAIDE_GUI.tabs.visualize_geometry import geometry_helper_functions
+from tabs.visualize_geometry import geometry_helper_functions
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit

@@ -15,7 +15,7 @@ from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_
  # RCAIDE-GUI imports
 from tabs import TabWidget
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from RCAIDE_GUI.tabs.visualize_geometry import geometry_helper_functions
+from tabs.visualize_geometry import geometry_helper_functions
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit

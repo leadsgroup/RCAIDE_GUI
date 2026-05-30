@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLine
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import GeometryDataWidget
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 class FuelTankWidget(GeometryDataWidget):
     def __init__(self, index, on_delete, data_values=None):

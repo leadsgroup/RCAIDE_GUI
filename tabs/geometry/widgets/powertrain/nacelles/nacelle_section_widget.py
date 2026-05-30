@@ -10,7 +10,7 @@ import RCAIDE
 from tabs.geometry.widgets import GeometryDataWidget
 # RCAIDE GUI imports
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQT imports  
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget, \

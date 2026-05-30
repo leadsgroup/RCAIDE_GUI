@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFra
     QSizePolicy, QSpacerItem
 
 from tabs.geometry.widgets.powertrain.converters import TurboelectricGeneratorWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 class ConverterFrame(QWidget):
     def __init__(self):

@@ -10,7 +10,7 @@ import RCAIDE
 # RCAIDE-GUI imports
 from utilities import create_line_bar, Units
 from tabs.analysis.widgets import AnalysisDataWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox

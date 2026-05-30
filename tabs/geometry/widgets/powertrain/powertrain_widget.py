@@ -19,7 +19,7 @@ from tabs.geometry.frames.powertrain.distributors import DistributorFrame
 from tabs.geometry.frames.powertrain.converters import ConverterFrame
 from tabs.geometry.frames.powertrain.propulsors import PropulsorFrame
 from tabs.geometry.widgets.powertrain.powertrain_connector_widget import PowertrainConnectorWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
 
 # RCAIDE-GUI imports
 from utilities import Units, create_line_bar, set_data
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 import values
 
 # ------------------------------------------------------------------------------

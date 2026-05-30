@@ -18,6 +18,9 @@ from PyQt6.QtWidgets import QApplication
 # Python imports
 import os
 
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_IMG  = os.path.join(_ROOT, "app_data", "images")
+
 # ------------------------------------------------------------------------------
 # Home Widget
 # ------------------------------------------------------------------------------
@@ -71,7 +74,7 @@ class HomeWidget(TabWidget):
         self.splash_label.setStyleSheet("background-color: #02101d;")
 
         # Load and scale RCAIDE logo
-        pixmap = QPixmap("app_data/images/logo.png")
+        pixmap = QPixmap(os.path.join(_IMG, "logo.png"))
         self.splash_label.setPixmap(
             pixmap.scaled(260, 260, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         )
@@ -178,10 +181,9 @@ class HomeWidget(TabWidget):
         banner_container.setFixedHeight(BANNER_HEIGHT)
         banner_container.setStyleSheet("border:none; background:transparent;")
 
-        separator = os.path.sep
         # Background banner image
         self.banner = BannerImage(
-            "app_data" + separator + "images" + separator + "background.jpg",
+            os.path.join(_IMG, "background.jpg"),
             height=BANNER_HEIGHT
         )
 
@@ -258,7 +260,7 @@ class HomeWidget(TabWidget):
         flowchart_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Load High-Resolution Flowchart Image
-        original_pix = QPixmap("app_data" + separator + "images" + separator + "flowchart.png")
+        original_pix = QPixmap(os.path.join(_IMG, "flowchart.png"))
         if not original_pix.isNull():
             screen = QApplication.primaryScreen()
             dpr = screen.devicePixelRatio() if screen else 1.0

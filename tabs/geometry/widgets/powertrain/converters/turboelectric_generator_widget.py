@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidge
 from RCAIDE.Library.Components.Powertrain.Converters import Turboelectric_Generator
 
 from tabs.geometry.widgets import GeometryDataWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class TurboelectricGeneratorWidget(GeometryDataWidget):

@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/mission/widgets/mission_segment_widget.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtCore import QEvent, QObject, Qt
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit,
@@ -12,7 +18,7 @@ from tabs.mission.widgets.mission_segment_helper import (
 from utilities import Units, set_data, convert_name
 import values
 import RCAIDE
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class _MissionComboWheelGuard(QObject):

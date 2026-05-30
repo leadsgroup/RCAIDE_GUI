@@ -8,7 +8,7 @@ from tabs.geometry.frames import *
 from tabs import TabWidget
 from utilities import set_data
 import values
-from widgets import Color
+from common_widgets import Color
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit

@@ -13,7 +13,7 @@ from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import FuselageSectionWidget, CabinWidget, CabinClassWidget
 
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class FuselageFrame(GeometryFrame):

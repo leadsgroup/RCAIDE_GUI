@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
 from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan  
 from utilities import Units, convert_name, clear_layout, set_data
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 from PyQt6.QtCore import Qt
 import values
 

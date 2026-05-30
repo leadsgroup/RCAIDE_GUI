@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 from tabs.geometry.widgets.fuselages.cabin_class_widget import CabinClassWidget
 
 
