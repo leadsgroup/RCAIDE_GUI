@@ -5,6 +5,10 @@ from collections import OrderedDict
 from RCAIDE.load import read_RCAIDE_json_dict
 from RCAIDE.save import build_dict_base
 
+_ROOT         = os.path.dirname(os.path.abspath(__file__))
+_AIRCRAFT_DIR = os.path.join(_ROOT, "app_data", "aircraft")
+_AIRFOIL_DIR  = os.path.join(_ROOT, "app_data", "airfoils")
+
 
 # RCAIDE vehicle GUI data
 def new_rcaide_vehicle_data():
@@ -95,9 +99,15 @@ def repair_airfoil_path(path):
     if not path or os.path.exists(path):
         return path
 
-    local_path = os.path.join("app_data", "aircraft", os.path.basename(path))
-    if os.path.exists(local_path):
-        return local_path
+    basename = os.path.basename(path)
+
+    aircraft_path = os.path.join(_AIRCRAFT_DIR, basename)
+    if os.path.exists(aircraft_path):
+        return aircraft_path
+
+    airfoil_path = os.path.join(_AIRFOIL_DIR, basename)
+    if os.path.exists(airfoil_path):
+        return airfoil_path
 
     return path
 
