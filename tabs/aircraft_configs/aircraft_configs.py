@@ -97,16 +97,7 @@ class AircraftConfigsWidget(TabWidget):
             values.config_data = []
         elif values.config_data and not all(isinstance(cfg, dict) for cfg in values.config_data):
             values.config_data = []
-
-        # If empty, create default configs
-        if not values.config_data:
-            values.config_data = [{
-                "config name": n,
-                "cs deflections": {},
-                "propulsors": {},
-                "gear down": False
-            } for n in _DEFAULT_CONFIG_NAMES]
-
+            
     def _ensure_geometry(self):
         if not isinstance(getattr(values, "geometry_data", None), list):
             values.geometry_data = [None] * 8

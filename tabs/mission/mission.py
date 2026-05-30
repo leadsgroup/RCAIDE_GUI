@@ -854,15 +854,16 @@ class MissionWidget(TabWidget):
         """Create a new MissionSegmentWidget and add it to the UI and internal state."""
         seg = MissionSegmentWidget()
         # Default to a simple cruise segment for quick GUI validation
-        try:
-            seg.top_dropdown.setCurrentIndex(1)  # Cruise
-            seg.populate_nested_dropdown(seg.top_dropdown.currentIndex())
-            seg.nested_dropdown.setCurrentText("Constant Speed/Constant Altitude")
-            seg.segment_name_input.setText("cruise")
-            if hasattr(seg, "_apply_defaults"):
-                seg._apply_defaults()
-        except Exception:
-            pass
+        #try:
+            #seg.top_dropdown.setCurrentIndex(1)  # Cruise
+            #seg.populate_nested_dropdown(seg.top_dropdown.currentIndex())
+            #seg.nested_dropdown.setCurrentText("Constant Speed/Constant Altitude")
+            #seg.segment_name_input.setText("cruise")
+            ##if hasattr(seg, "_apply_defaults"):
+                ##seg._apply_defaults()
+        #except Exception:
+            #pass
+            
         self.segment_widgets.append(seg)
         self._wire_segment_summary_signals(seg)
 

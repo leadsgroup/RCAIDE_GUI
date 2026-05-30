@@ -1,26 +1,33 @@
 # RCAIDE_GUI/tabs/solve/solve.py
+# 
+# Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainabiltiy
 
-# RCAIDE-GUI imports
-from tabs import TabWidget
-from .plots.create_plot_widgets import create_plot_widgets
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE GUI Imports
+import RCAIDE
+import values
+from tabs.mission.widgets.mission_analysis_widget import MissionAnalysisWidget
+from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
+from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
 
-# PyQt imports
+# PtQT imports 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox
-from PyQt6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QColorDialog
 from PyQt6.QtCore import Qt, QSize, QObject, QThread, QTimer, pyqtSignal
-
-# Python imports
 import pyqtgraph as pg
-import pyqtgraph.exporters as pg_exporters
+
+# numpy imports 
 import numpy as np
 import re
 import traceback
 import os
 from datetime import datetime
 
-# ------------------------------------------------------------------------------
-# Solve Widget
-# ------------------------------------------------------------------------------
+# gui imports 
+from tabs import TabWidget
+from .plots.create_plot_widgets import create_plot_widgets
+
 class _SolveWorker(QObject):
     finished = pyqtSignal(object, str)
     failed = pyqtSignal(str)
@@ -233,9 +240,6 @@ class SolveWidget(TabWidget):
 
     def run_solve(self):
         # Use local imports to avoid extra startup/circular import issues.
-        import values
-        from tabs.mission.widgets.mission_analysis_widget import MissionAnalysisWidget
-        from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 
         # Read mission built in Mission tab.
         mission = getattr(values, "rcaide_mission", None)
@@ -244,19 +248,11 @@ class SolveWidget(TabWidget):
 
         # Read saved aircraft configs, or build them from geometry if missing.
         configs = getattr(values, "rcaide_configs", None)
-        if not isinstance(configs, dict) or not configs:
-            try:
-                from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
-                # Save generated configs so other tabs can reuse them.
-                values.rcaide_configs = build_rcaide_configs_from_geometry()
-                configs = values.rcaide_configs
-            except Exception as e:
-                # Stop with clear user guidance if configs cannot be created.
-                raise RuntimeError(
-                    "No RCAIDE aircraft configs available.\n"
-                    "Go to Aircraft Configurations tab and press 'Save Configuration'."
-                ) from e
-
+        if not isinstance(configs, dict) or not configs: 
+            # Save generated configs so other tabs can reuse them.
+            values.rcaide_configs = build_rcaide_configs_from_geometry()
+            configs = values.rcaide_configs
+            
         # If mission has no segments, rebuild it from saved mission_data.
         if not getattr(mission, "segments", []):
             if values.mission_data:
@@ -265,7 +261,6 @@ class SolveWidget(TabWidget):
                     MissionAnalysisWidget().save_analyses()
 
                 # Recreate mission and append each saved segment.
-                import RCAIDE
                 mission = RCAIDE.Framework.Mission.Sequential_Segments()
                 for seg_data in values.mission_data:
                     seg = MissionSegmentWidget()
@@ -990,6 +985,14 @@ def _apply_solve_graph_skin(self):
 # ==================================================================================================
 # Plot Settings (Appearance, Save, Visibility)
 # ==================================================================================================
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QPushButton,
+    QCheckBox, QComboBox, QDoubleSpinBox,
+    QFileDialog, QColorDialog
+)
+from PyQt6.QtCore import Qt
+import pyqtgraph as pg
+import pyqtgraph.exporters as pg_exporters
 
 def init_plot_settings_panel(self):
 
