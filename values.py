@@ -59,8 +59,7 @@ def strip_unit_arguments(value):
 
 
 def add_default_unit_arguments(value):
-    # RCAIDE export values are stored in their base units; the extra 0 tells
-    # the GUI the value is currently tagged with the first unit option.
+    # RCAIDE uses base units; 0 marks the default GUI unit.
     if is_mapping(value):
         wrapped = OrderedDict()
         for key, item in value.items():
@@ -72,7 +71,7 @@ def add_default_unit_arguments(value):
 
     if isinstance(value, list):
         safe_items = [make_json_safe(item) for item in value]
-        # Lists of dictionaries are tree collections, not numeric vectors.
+        # Lists of dictionaries are tree collections, not numeric.
         if all(is_mapping(item) for item in safe_items):
             return [add_default_unit_arguments(item) for item in safe_items]
         return [safe_items, 0]
@@ -211,6 +210,68 @@ def make_propulsor_component(data):
     return propulsor
 
 
+def restore_wing_components(vehicle_obj):
+  # Restore wing classes after JSON load so RCAIDE recognizess main wing
+    if not has_key(vehicle_obj, "wings") or not is_mapping(vehicle_obj.wings):
+        return
+
+    # Create a new RCAIDE wing container to replace the old loaded one.
+    restored_wings = RCAIDE.Library.Components.Wings.Wing.Container()
+
+    # Rebuild each loaded wing dictionary/object into the closest RCAIDE wing class.
+    for key, item in list(vehicle_obj.wings.items()):
+        # Append preserves RCAIDE's expected container behavior and key formatting.
+        restored_wings.append(make_wing_component(item, key))
+
+    # Swap the vehicle over to the restored wing container.
+    vehicle_obj.wings = restored_wings
+    # Keep Vehicle.append_component() pointing at the restored container.
+    if hasattr(vehicle_obj, "_component_root_map"):
+        vehicle_obj._component_root_map[RCAIDE.Library.Components.Wings.Wing] = restored_wings
+
+
+def make_wing_component(data, key=None):
+    # If this is already a real RCAIDE wing object, leave it unchanged.
+    if isinstance(data, RCAIDE.Library.Components.Wings.Wing):
+        return data
+
+    # Infer the correct RCAIDE wing class from the saved key or tag.
+    name = f"{key} {data.get('tag', '')}".lower()
+    # Main wings must be Main_Wing objects for RCAIDE
+    if "main" in name:
+        wing = RCAIDE.Library.Components.Wings.Main_Wing()
+    # Horizontal stabilizers should use RCAIDE's horizontal tail class.
+    elif "horizontal" in name:
+        wing = RCAIDE.Library.Components.Wings.Horizontal_Tail()
+    # Vertical stabilizers should use RCAIDE's vertical tail class.
+    elif "vertical" in name:
+        wing = RCAIDE.Library.Components.Wings.Vertical_Tail()
+    # Unknown wing-like objects fall back to the generic RCAIDE Wing class.
+    else:
+        wing = RCAIDE.Library.Components.Wings.Wing()
+
+    # Copy the loaded geometry/properties into the restored RCAIDE object.
+    wing.update(data)
+    # Return the restored wing for insertion into the vehicle's wing container.
+    return wing
+
+
+def wing_type_label_for_ui(component_dict):
+    # Infer the GUI combo-box label from the saved component tag.
+    name = str(component_dict.get("tag", "")).lower()
+    # Show loaded main wings as "Main Wing" in the geometry editor.
+    if "main" in name:
+        return "Main Wing"
+    # Show loaded horizontal stabilizers as "Horizontal Tail".
+    if "horizontal" in name:
+        return "Horizontal Tail"
+    # Show loaded vertical stabilizers as "Vertical Tail".
+    if "vertical" in name:
+        return "Vertical Tail"
+    # Default label for any other wing component.
+    return "Wing"
+
+
 def is_mapping(value):
     return hasattr(value, "items") and hasattr(value, "__setitem__")
 
@@ -344,7 +405,7 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
                 ui_dict["Dynamic Pressure Ratio"] = [component_dict.get("dynamic_pressure_ratio", 0), 0]
                 ui_dict["Exposed Root Chord Offset"] = [component_dict.get("exposed_root_chord_offset", 0), 0]
             # special handling
-            ui_dict.setdefault("wing_type", "")
+            ui_dict.setdefault("wing_type", wing_type_label_for_ui(component_dict))
             segments = ui_dict.pop("segments", {})
             if isinstance(segments, dict):
                 ui_dict["sections"] = [wing_segment_to_ui(segment) for segment in segments.values()]
@@ -451,6 +512,7 @@ def read_from_json(data_str):
     vehicle = RCAIDE.Vehicle()
     if isinstance(rcaide_vehicle_clean, OrderedDict):
         vehicle.update(read_RCAIDE_json_dict(rcaide_vehicle_clean))
+        restore_wing_components(vehicle)
         restore_airfoil_components(vehicle)
         restore_nacelle_components(vehicle)
         restore_propulsor_components(vehicle)
