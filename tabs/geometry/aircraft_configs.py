@@ -7,7 +7,7 @@ import RCAIDE
 from tabs.geometry.frames import *
 from tabs import TabWidget
 from utilities import set_data
-import values
+import rcaide_io
 from common_widgets import Color
 
 # PyQt imports
@@ -38,10 +38,10 @@ class AircraftConfigsWidget(TabWidget):
 
         self.selected_config_index = 0
 
-        values.config_data = [[]]
+        rcaide_io.config_data = [[]]
 
         for _ in range(len(self.tabs)):
-            values.config_data[0].append([])
+            rcaide_io.config_data[0].append([])
 
         base_layout = QHBoxLayout()
         self.tree_frame_layout = QVBoxLayout()
@@ -56,8 +56,8 @@ class AircraftConfigsWidget(TabWidget):
 
         vehicle_name_layout = QHBoxLayout()
         vehicle_name_layout.addWidget(QLabel("Configuration Name:"))
-        values.vehicle_name_input = QLineEdit()
-        vehicle_name_layout.addWidget(values.vehicle_name_input)
+        rcaide_io.vehicle_name_input = QLineEdit()
+        vehicle_name_layout.addWidget(rcaide_io.vehicle_name_input)
         self.tree_frame_layout.addLayout(vehicle_name_layout)
 
         self.dropdown = QComboBox()
@@ -142,7 +142,7 @@ class AircraftConfigsWidget(TabWidget):
             index = component_item.indexOfChild(item)
             frame = self.main_layout.currentWidget()
             assert isinstance(frame, GeometryFrame)
-            frame.load_data(values.config_data[tab_index][index], index)
+            frame.load_data(rcaide_io.config_data[tab_index][index], index)
 
 
     def save_data(self, tab_index, vehicle_component=None, index=0, data=None, new=False):
@@ -162,19 +162,19 @@ class AircraftConfigsWidget(TabWidget):
         tree_index = self.find_tree_index(tab_index)
         assert top_item is not None
 
-        if not values.config_data[tab_index]:
+        if not rcaide_io.config_data[tab_index]:
             component_item = QTreeWidgetItem([self.tabs[tab_index]])
             top_item.insertChild(tree_index, component_item)
 
         if new:
-            values.config_data[tab_index].append(data)
+            rcaide_io.config_data[tab_index].append(data)
             child = QTreeWidgetItem([data["name"]])
             item = top_item.child(tree_index)
             assert item is not None
             item.addChild(child)
             index = item.indexOfChild(child)
         else:
-            values.config_data[tab_index][index] = data
+            rcaide_io.config_data[tab_index][index] = data
             child = top_item.child(tree_index)
             assert child is not None
             child = child.child(index)
@@ -182,27 +182,27 @@ class AircraftConfigsWidget(TabWidget):
             child.setText(0, data["name"])
 
         # with open("app_data/geometry.json", "w") as f:
-        #     f.write(json.dumps(values.config_data, indent=2))
+        #     f.write(json.dumps(rcaide_io.config_data, indent=2))
 
         if vehicle_component:
             # Check if it is an energy network being added
             if tab_index == 5:
-                values.vehicle.append_energy_network(vehicle_component)
+                rcaide_io.vehicle.append_energy_network(vehicle_component)
             else:
-                values.vehicle.append_component(vehicle_component)
+                rcaide_io.vehicle.append_component(vehicle_component)
 
         return index
 
     def get_vehicle(self):
-        return values.vehicle
+        return rcaide_io.vehicle
 
     def get_data(self):
-        return values.config_data
+        return rcaide_io.config_data
 
     def find_tree_index(self, tab_index):
         tree_index = tab_index
         for i in range(tree_index):
-            if not values.config_data[i]:
+            if not rcaide_io.config_data[i]:
                 tree_index -= 1
 
         tree_index = max(0, tree_index)
@@ -213,8 +213,8 @@ class AircraftConfigsWidget(TabWidget):
         tab_index = 0
         count = 0
 
-        for i in range(1, len(values.config_data)):
-            if not values.config_data[i]:
+        for i in range(1, len(rcaide_io.config_data)):
+            if not rcaide_io.config_data[i]:
                 continue
             count += 1
             if count == tree_index + 1:

@@ -9,7 +9,7 @@ from tabs.geometry.frames import *
 from tabs import TabWidget
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
 from utilities import set_data
-import values
+import rcaide_io
 
 # PyQt imports
 from PyQt6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QTimer
@@ -35,8 +35,8 @@ class GeometryWidget(TabWidget):
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage", "Add Landing Gear" , "Add Powertrain", "Add Wing"]
 
-        values.rcaide_vehicle = values.new_rcaide_vehicle_data()
-        values.vehicle = RCAIDE.Vehicle()
+        rcaide_io.rcaide_vehicle = rcaide_io.new_rcaide_vehicle_data()
+        rcaide_io.vehicle = RCAIDE.Vehicle()
 
         base_layout = QHBoxLayout()
         self.tree_frame_layout = QVBoxLayout()
@@ -76,7 +76,7 @@ class GeometryWidget(TabWidget):
         self.tree.expandAll()
 
         # Reuse the full Geometry Visualization widget as an embedded preview.
-        self.preview_widget = VisualizeGeometryWidget()
+        self.preview_widget = VisualizeGeometryWidget(show_lopa=False, show_fuel_tanks=False, show_cargo_bays=False)
         # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
         if hasattr(self.preview_widget, "toolbar"):
             self.preview_widget.toolbar.hide()
@@ -196,7 +196,7 @@ class GeometryWidget(TabWidget):
             index = component_item.indexOfChild(item)
             frame = self.main_layout.currentWidget()
             assert isinstance(frame, GeometryFrame)
-            frame.load_data(values.rcaide_vehicle[tab_index][index], index)
+            frame.load_data(rcaide_io.rcaide_vehicle[tab_index][index], index)
 
     def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False):
         """Save the entered data in a frame to the list.
@@ -214,12 +214,12 @@ class GeometryWidget(TabWidget):
 
         assert tab_index >= 0
         if tab_index == 0:
-            values.rcaide_vehicle[0] = data
-            values.vehicle.tag = data["name"]
+            rcaide_io.rcaide_vehicle[0] = data
+            rcaide_io.vehicle.tag = data["name"]
             for data_unit_label in VehicleFrame.data_units_labels:
                 rcaide_label = data_unit_label[-1]
                 user_label   = data_unit_label[0]
-                set_data(values.vehicle, rcaide_label, data[user_label][0])
+                set_data(rcaide_io.vehicle, rcaide_label, data[user_label][0])
         else:
             top_item = self.tree.topLevelItem(0)
             assert top_item is not None
@@ -235,13 +235,13 @@ class GeometryWidget(TabWidget):
                 component_item.setExpanded(True)
                 insert_index = 0
                 for i in range(1, tab_index):
-                    if values.rcaide_vehicle[i]:
+                    if rcaide_io.rcaide_vehicle[i]:
                         insert_index += 1
                 top_item.insertChild(insert_index, component_item)
 
             if new:
                 if index == -1:
-                    values.rcaide_vehicle[tab_index].append(data)
+                    rcaide_io.rcaide_vehicle[tab_index].append(data)
                 else:
                     frame : GeometryFrame = self.frames[tab_index]()
                     frame.load_data(data, -1)
@@ -253,7 +253,7 @@ class GeometryWidget(TabWidget):
                 child.setSelected(True)
                 index = component_item.indexOfChild(child)
             else:
-                values.rcaide_vehicle[tab_index][index] = data
+                rcaide_io.rcaide_vehicle[tab_index][index] = data
                 if tree_index == -1:
                     tree_index = index
                 child = component_item.child(tree_index)
@@ -263,9 +263,9 @@ class GeometryWidget(TabWidget):
         if vehicle_component:
             # Check if it is an energy network being added
             if tab_index == 5:
-                values.vehicle.append_energy_network(vehicle_component)
+                rcaide_io.vehicle.append_energy_network(vehicle_component)
             else:
-                values.vehicle.append_component(vehicle_component)
+                rcaide_io.vehicle.append_component(vehicle_component)
 
         # Keep preview synced with current geometry edits.
         if self._preview_updates_enabled:
@@ -277,8 +277,8 @@ class GeometryWidget(TabWidget):
 
     def load_from_values(self):
         """Load the geometry data from the values file."""
-        if not isinstance(values.rcaide_vehicle, list):
-            tag = getattr(values.vehicle, "tag", "")
+        if not isinstance(rcaide_io.rcaide_vehicle, list):
+            tag = getattr(rcaide_io.vehicle, "tag", "")
             self.vehicle_name_input.setText(str(tag))
             self.preview_widget.run_solve()
             return
@@ -289,10 +289,10 @@ class GeometryWidget(TabWidget):
         vehicle_item = QTreeWidgetItem(["Vehicle"])
         self.tree.addTopLevelItem(vehicle_item)
 
-        if values.rcaide_vehicle:
+        if rcaide_io.rcaide_vehicle:
             # Load vehicle data (index 0) - it's already in UI format
-            if values.rcaide_vehicle[0]:
-                vehicle_data = values.rcaide_vehicle[0]
+            if rcaide_io.rcaide_vehicle[0]:
+                vehicle_data = rcaide_io.rcaide_vehicle[0]
                 self.vehicle_name_input.setText(vehicle_data.get("name", ""))
                 # Update the vehicle frame
                 frame = self.main_layout.widget(0)
@@ -300,7 +300,7 @@ class GeometryWidget(TabWidget):
                     frame.load_data(vehicle_data, 0)
 
             # Build the component tree directly from the loaded values structure
-            for tab_index, data_list in enumerate(values.rcaide_vehicle):
+            for tab_index, data_list in enumerate(rcaide_io.rcaide_vehicle):
                 if tab_index == 0 or not data_list:
                     continue
 
@@ -388,11 +388,11 @@ class GeometryWidget(TabWidget):
 
     # noinspection PyMethodMayBeStatic
     def find_tree_index(self, tab_index):
-        # Start from tab_index - 1 to account for values.rcaide_vehicle[0] being None
+        # Start from tab_index - 1 to account for rcaide_io.rcaide_vehicle[0] being None
         tree_index = tab_index - 1
-        # Start from 1 to skip values.rcaide_vehicle[0]
+        # Start from 1 to skip rcaide_io.rcaide_vehicle[0]
         for i in range(1, tab_index):
-            if not values.rcaide_vehicle[i]:
+            if not rcaide_io.rcaide_vehicle[i]:
                 tree_index -= 1
 
         tree_index = max(0, tree_index)
@@ -403,9 +403,9 @@ class GeometryWidget(TabWidget):
         tab_index = 0
         count = 0
 
-        # Start from 1 to skip values.rcaide_vehicle[0]
-        for i in range(1, len(values.rcaide_vehicle)):
-            if not values.rcaide_vehicle[i]:
+        # Start from 1 to skip rcaide_io.rcaide_vehicle[0]
+        for i in range(1, len(rcaide_io.rcaide_vehicle)):
+            if not rcaide_io.rcaide_vehicle[i]:
                 continue
             count += 1
             if count == tree_index + 1:

@@ -241,7 +241,7 @@ class HomeWidget(TabWidget):
 }
 """)
         body_layout = QHBoxLayout(body_bg)
-        body_layout.setContentsMargins(60, 40, 100, 70)
+        body_layout.setContentsMargins(60, 16, 100, 16)
         body_layout.setSpacing(30)
         body_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -318,13 +318,13 @@ QPushButton:hover {
 }
 """)
         mission_layout = QVBoxLayout(self.mission_frame)
-        mission_layout.setContentsMargins(45, 45, 45, 45)
-        mission_layout.setSpacing(30)
+        mission_layout.setContentsMargins(45, 16, 45, 16)
+        mission_layout.setSpacing(14)
         mission_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     # --- Mission Panel Title Section ---
         title_container = QVBoxLayout()
-        title_container.setSpacing(10)
+        title_container.setSpacing(6)
         title_container.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Main section title text
@@ -363,7 +363,7 @@ QPushButton:hover {
 
         # Subtitle text under the title
         subtitle = QLabel("Quickly set up or define your aircraft mission.")
-        subtitle.setStyleSheet("color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 400;")
+        subtitle.setStyleSheet("color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 400;")
         mission_layout.addWidget(subtitle, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Buttons
@@ -405,8 +405,6 @@ QPushButton:hover {
         scratch_btn.setMinimumWidth(250)
         scratch_btn.setFixedHeight(42)
 
-        # Move the button slightly up under the divider
-        mission_layout.addSpacing(-10)
         scratch_container = QVBoxLayout()
         scratch_container.setContentsMargins(0, 0, 0, 0)
         scratch_container.addWidget(scratch_btn, alignment=Qt.AlignmentFlag.AlignCenter)

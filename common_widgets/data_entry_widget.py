@@ -193,12 +193,14 @@ class DataEntryWidget(QWidget):
             elif self.data_units_labels[i][1] == Units.Count:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
-                value = int(line_edit.text()) if line_edit.text() else 0
+                text = line_edit.text()
+                value = int(text) if text else 0
                 data[label] = value, unit_picker.current_index
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
-                value = float(line_edit.text()) if line_edit.text() else 0.0
+                text = line_edit.text()
+                value = float(text) if text else None
                 data[label] = value, unit_picker.current_index
         return data
 
@@ -229,14 +231,15 @@ class DataEntryWidget(QWidget):
             elif self.data_units_labels[i][1] == Units.Count:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
-                value = int(line_edit.text()) if line_edit.text() else 0
+                text = line_edit.text()
+                value = int(text) if text else 0
                 data[label] = value, unit_picker.current_index
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
-                value = float(line_edit.text()) if line_edit.text() else 0.0
-                data[label] = unit_picker.apply_unit(
-                    value), unit_picker.current_index
+                text = line_edit.text()
+                value = unit_picker.apply_unit(float(text)) if text else None
+                data[label] = value, unit_picker.current_index
         return data
 
     def load_data(self, data):
@@ -259,7 +262,7 @@ class DataEntryWidget(QWidget):
             else:
                 line_edit, unit_picker = self.data_fields[label]
                 value, index = data[label]
-                line_edit.setText(str(value))
+                line_edit.setText("" if value is None else str(value))
                 unit_picker.set_index(index)
     
     # TODO implement mark_save and changed_since_save

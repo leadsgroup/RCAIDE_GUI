@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QFileInfo 
 from qt_material import apply_stylesheet
-import values
+import rcaide_io
 from tabs import *
 from tabs.visualize_geometry import visualize_geometry
 
@@ -80,7 +80,7 @@ class App(QMainWindow):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
           
-        json_data = values.write_to_json()
+        json_data = rcaide_io.write_to_json()
         name      = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
         
         if not QFileInfo(name).suffix():
@@ -100,13 +100,13 @@ class App(QMainWindow):
         
         data_str = file.read()
         file.close()
-        values.read_from_json(data_str)
+        rcaide_io.read_from_json(data_str, source_dir=os.path.dirname(os.path.abspath(name)))
         # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
         for i, (widget, tab_name) in enumerate(self.widgets):
             if tab_name == "Vehicle Setup":
                 # Keep the loaded geometry data before rebuilding the widget
-                loaded_geometry = values.rcaide_vehicle
-                loaded_vehicle = values.vehicle
+                loaded_geometry = rcaide_io.rcaide_vehicle
+                loaded_vehicle = rcaide_io.vehicle
                 # Remembers which tab the user was on
                 current_index = self.tabs.currentIndex()
                 # Remove the old Geometry tab (it holds duplicated UI state)
@@ -114,8 +114,8 @@ class App(QMainWindow):
                 # Create a fresh Geometry widget
                 new_widget = geometry.get_widget()
                 # Restore the loaded geometry data for load_from_values()
-                values.rcaide_vehicle = loaded_geometry
-                values.vehicle = loaded_vehicle
+                rcaide_io.rcaide_vehicle = loaded_geometry
+                rcaide_io.vehicle = loaded_vehicle
                 # Insert the fresh tab back into the same position
                 self.tabs.insertTab(i, new_widget, tab_name)
                 # Update our cached widgets list.

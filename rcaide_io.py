@@ -1,0 +1,700 @@
+import RCAIDE
+import json
+import os
+import importlib
+import numpy as np
+import types as _types_module
+from collections import OrderedDict
+from RCAIDE.load import read_RCAIDE_json_dict
+from RCAIDE.Framework.Core import Data, DataOrdered
+
+_ROOT         = os.path.dirname(os.path.abspath(__file__))
+_AIRCRAFT_DIR = os.path.join(_ROOT, "app_data", "aircraft")
+_AIRFOIL_DIR  = os.path.join(_ROOT, "app_data", "airfoils")
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Utility helpers
+# ----------------------------------------------------------------------------------------------------------------------
+
+def is_mapping(value):
+    return hasattr(value, "items") and hasattr(value, "__setitem__")
+
+
+def has_key(value, key):
+    return hasattr(value, "keys") and key in value.keys()
+
+
+def is_unit_argument_pair(value):
+    return (
+        isinstance(value, list)
+        and len(value) == 2
+        and isinstance(value[1], int)
+        and not isinstance(value[1], bool)
+    )
+
+
+def make_json_safe(value):
+    if is_mapping(value):
+        safe = OrderedDict()
+        for key, item in value.items():
+            if isinstance(key, type):
+                key = key.__name__
+            safe[str(key)] = make_json_safe(item)
+        return safe
+    if isinstance(value, list):
+        return [make_json_safe(item) for item in value]
+    if isinstance(value, tuple):
+        return [make_json_safe(item) for item in value]
+    return value
+
+
+def strip_unit_arguments(value):
+    if is_mapping(value):
+        clean = OrderedDict()
+        for key, item in value.items():
+            clean[key] = strip_unit_arguments(item)
+        return clean
+    if is_unit_argument_pair(value):
+        return strip_unit_arguments(value[0])
+    if isinstance(value, list):
+        return [strip_unit_arguments(item) for item in value]
+    return value
+
+
+def add_default_unit_arguments(value):
+    if is_mapping(value):
+        wrapped = OrderedDict()
+        for key, item in value.items():
+            wrapped[key] = add_default_unit_arguments(item)
+        return wrapped
+    if is_unit_argument_pair(value):
+        return value
+    if isinstance(value, str):
+        return value  # strings stay plain to match export_rcaide_data format
+    if isinstance(value, list):
+        safe_items = [make_json_safe(item) for item in value]
+        if all(is_mapping(item) for item in safe_items):
+            return [add_default_unit_arguments(item) for item in safe_items]
+        return [safe_items, 0]
+    if isinstance(value, tuple):
+        return [make_json_safe(value), 0]
+    return [value, 0]
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Local file-path repair (airfoil coordinate files)
+# ----------------------------------------------------------------------------------------------------------------------
+
+def repair_local_file_paths(value, source_dir=None):
+    if is_mapping(value):
+        for key, item in value.items():
+            if key == "coordinate_file" and isinstance(item, str):
+                value[key] = repair_airfoil_path(item, source_dir)
+            else:
+                repair_local_file_paths(item, source_dir)
+    elif isinstance(value, list):
+        for item in value:
+            repair_local_file_paths(item, source_dir)
+
+
+def repair_airfoil_path(path, source_dir=None):
+    if not path or os.path.exists(path):
+        return path
+    basename = os.path.basename(path)
+    if source_dir:
+        candidate = os.path.join(source_dir, basename)
+        if os.path.exists(candidate):
+            return candidate
+    for search_dir in (_AIRCRAFT_DIR, _AIRFOIL_DIR):
+        candidate = os.path.join(search_dir, basename)
+        if os.path.exists(candidate):
+            return candidate
+    return path
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Type-aware class resolution
+# ----------------------------------------------------------------------------------------------------------------------
+
+def _class_for_type_string(type_str):
+    """
+    Return the Python class for a fully-qualified '__type__' string.
+
+    Handles nested classes (e.g. 'RCAIDE.Library.Components.Wings.Wing.Container')
+    by trying progressively shorter module prefixes until the import succeeds and
+    the remaining parts resolve as class attributes on the module.
+    """
+    if not type_str or not isinstance(type_str, str):
+        return None
+    parts = type_str.split('.')
+    for i in range(len(parts) - 1, 0, -1):
+        module_path = '.'.join(parts[:i])
+        attr_chain  = parts[i:]
+        try:
+            mod = importlib.import_module(module_path)
+            obj = mod
+            for attr in attr_chain:
+                obj = getattr(obj, attr)
+            if isinstance(obj, type):
+                return obj
+        except Exception:
+            continue
+    return None
+
+
+def _type_str(data):
+    """Extract the __type__ string from a Data object or plain dict, if present."""
+    if hasattr(data, 'get'):
+        return data.get('__type__') or ''
+    return getattr(data, '__type__', '') or ''
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Generic typed-component maker
+# ----------------------------------------------------------------------------------------------------------------------
+
+def _make_typed_component(data, fallback_cls=None):
+    """
+    Instantiate the correct RCAIDE class from *data*.
+
+    Resolution order
+    ----------------
+    1. Already the right type → return as-is (if fallback_cls given).
+    2. '__type__' field present → import class and call cls(); update from data.
+    3. fallback_cls given       → call fallback_cls(); update from data.
+    4. Return data unchanged.
+    """
+    if fallback_cls is not None and isinstance(data, fallback_cls):
+        return data
+
+    ts = _type_str(data)
+    if ts:
+        cls = _class_for_type_string(ts)
+        if cls is not None and cls is not Data and cls is not DataOrdered:
+            if not (getattr(cls, '__module__', '') or '').startswith('RCAIDE.Framework.Core'):
+                try:
+                    obj = cls()
+                    obj.update(data)
+                    return obj
+                except Exception:
+                    pass
+
+    if fallback_cls is not None:
+        try:
+            obj = fallback_cls()
+            obj.update(data)
+            return obj
+        except Exception:
+            pass
+
+    return data
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Vehicle-container restoration  (single table-driven function)
+# ----------------------------------------------------------------------------------------------------------------------
+
+# Each entry: (container_key, base_class, root_map_attr, _unused)
+# Class selection is driven by __type__; base_class is the graceful fallback.
+# To add a new top-level component type, append one row here.
+_VEHICLE_CONTAINER_TABLE = [
+    ('fuselages',     RCAIDE.Library.Components.Fuselages.Fuselage,           '_component_root_map',      None),
+    ('booms',         RCAIDE.Library.Components.Booms.Boom,                   '_component_root_map',      None),
+    ('landing_gears', RCAIDE.Library.Components.Landing_Gear.Landing_Gear,    '_component_root_map',      None),
+    ('cargo_bays',    RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay,         '_component_root_map',      None),
+    ('wings',         RCAIDE.Library.Components.Wings.Wing,                   '_component_root_map',      None),
+    ('nacelles',      RCAIDE.Library.Components.Nacelles.Nacelle,             '_component_root_map',      None),
+    ('networks',      RCAIDE.Framework.Networks.Network,                       '_energy_network_root_map', None),
+]
+
+
+def restore_vehicle_components(vehicle_obj):
+    """
+    Single-pass restoration of all typed vehicle-level component containers.
+
+    Iterates _VEHICLE_CONTAINER_TABLE so that every top-level container
+    (fuselages, wings, networks, etc.) is rebuilt with correctly-typed RCAIDE
+    instances.  Class selection is driven entirely by the __type__ field written
+    by export_rcaide_data / write_to_json.  If __type__ is absent or cannot be
+    resolved, the entry's base class is used as a graceful fallback.
+    """
+    for container_key, base_cls, map_attr, _ in _VEHICLE_CONTAINER_TABLE:
+        if not has_key(vehicle_obj, container_key) or not is_mapping(vehicle_obj[container_key]):
+            continue
+
+        container_cls = getattr(base_cls, 'Container', None)
+        if container_cls is None:
+            continue
+
+        restored = container_cls()
+        for _key, item in list(vehicle_obj[container_key].items()):
+            if not is_mapping(item):
+                continue
+            restored.append(_make_typed_component(item, base_cls))
+
+        vehicle_obj[container_key] = restored
+        root_map = getattr(vehicle_obj, map_attr, None)
+        if root_map is not None:
+            root_map[base_cls] = restored
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Airfoil restoration  (walks the full tree — kept separate because airfoils
+#  are embedded as attributes of wings/nacelles, not top-level containers)
+# ----------------------------------------------------------------------------------------------------------------------
+
+def restore_airfoil_components(value):
+    if is_mapping(value):
+        for key, item in list(value.items()):
+            if key == "airfoil" and _is_serialized_airfoil(item):
+                value[key] = _make_typed_component(item, RCAIDE.Library.Components.Airfoils.Airfoil)
+            else:
+                restore_airfoil_components(item)
+    elif isinstance(value, list):
+        for item in value:
+            restore_airfoil_components(item)
+
+
+def _is_serialized_airfoil(value):
+    return is_mapping(value) and (
+        has_key(value, "coordinate_file") or has_key(value, "NACA_4_Series_code")
+    )
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Generic sub-component restoration  (Fan, Combustor, Fuel_Line, etc.)
+# ----------------------------------------------------------------------------------------------------------------------
+
+_SKIP_KEYS = frozenset({'__type__', '_component_root_map', '_energy_network_root_map'})
+
+
+def restore_typed_subcomponents(obj):
+    """
+    Recursively replace raw DataOrdered objects with properly-typed RCAIDE instances.
+
+    Runs after restore_vehicle_components so that all nested sub-components
+    (Fan, Combustor, Fuel_Line, Compressor, …) whose types are recorded in the
+    __type__ field are also correctly typed.  Only objects that are still the
+    raw DataOrdered produced by read_RCAIDE_json_dict are touched; already-typed
+    objects are left unchanged.
+    """
+    if not is_mapping(obj):
+        return
+
+    for key in list(obj.keys()):
+        if key in _SKIP_KEYS:
+            continue
+        child = obj[key]
+        if not is_mapping(child):
+            continue
+
+        restore_typed_subcomponents(child)   # depth-first
+
+        if type(child) is not DataOrdered:   # already typed → skip
+            continue
+
+        ts = child.get('__type__') if hasattr(child, 'get') else None
+        if not ts or not isinstance(ts, str):
+            continue
+
+        cls = _class_for_type_string(ts)
+        if cls is None or cls is Data or cls is DataOrdered:
+            continue
+        if (getattr(cls, '__module__', '') or '').startswith('RCAIDE.Framework.Core'):
+            continue
+
+        try:
+            new_obj = cls()
+            for k, v in child.items():
+                if k != '__type__':
+                    new_obj[k] = v
+            obj[key] = new_obj
+        except Exception:
+            pass
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  JSON serialisation (write side)
+# ----------------------------------------------------------------------------------------------------------------------
+
+def _build_dict_r_with_types(v):
+    """Serialise a RCAIDE value to a plain Python structure, recording __type__ for containers."""
+    tv = type(v)
+    if tv is type or tv is _types_module.FunctionType:
+        return None
+    if tv in (str, bool) or tv is type(None):
+        return v
+    if tv in (float, int):
+        return v
+    if tv in (np.ndarray, np.float64):
+        return v.tolist()
+    if tv is list:
+        return v
+
+    try:
+        keys = v.keys()
+    except AttributeError:
+        return None if callable(tv) else None
+
+    ret = {}
+    module   = getattr(tv, '__module__', '') or ''
+    qualname = getattr(tv, '__qualname__', '') or ''
+    if module and qualname and not qualname.startswith('<'):
+        ret['__type__'] = f"{module}.{qualname}"
+
+    _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff')
+    for k in keys:
+        if k in _skip:
+            continue
+        ret[k] = _build_dict_r_with_types(v[k])
+    return ret
+
+
+def _build_dict_base_with_types(base):
+    """Top-level serialisation: like RCAIDE.save.build_dict_base but includes __type__."""
+    _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff')
+    base_dict = {}
+    for k in base.keys():
+        if k in _skip:
+            continue
+        base_dict[k] = _build_dict_r_with_types(base[k])
+    return base_dict
+
+
+_WING_TYPE_LABELS = {
+    'Main_Wing':       'Main Wing',
+    'Horizontal_Tail': 'Horizontal Tail',
+    'Vertical_Tail':   'Vertical Tail',
+}
+
+def wing_type_label_for_ui(component_dict):
+    """Derive the GUI wing-type label from __type__, falling back to 'Wing'."""
+    type_str = component_dict.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    return _WING_TYPE_LABELS.get(class_name, 'Wing')
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Global state
+# ----------------------------------------------------------------------------------------------------------------------
+
+def new_rcaide_vehicle_data():
+    return [[] for _ in range(7)]
+
+
+rcaide_vehicle = new_rcaide_vehicle_data()
+propulsor_names = [[]]
+vehicle = RCAIDE.Vehicle()
+
+config_data     = []
+rcaide_configs  = RCAIDE.Library.Components.Configs.Config.Container()   # type: ignore
+
+analysis_data   = []
+rcaide_analyses = RCAIDE.Framework.Analyses.Analysis.Container()         # type: ignore
+
+mission_data    = []
+rcaide_mission  = RCAIDE.Framework.Mission.Sequential_Segments()
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Vehicle → UI conversion helpers
+# ----------------------------------------------------------------------------------------------------------------------
+
+def vehicle_to_ui_format(vehicle_obj):
+    """Convert a RCAIDE vehicle object to UI format for display in frames."""
+    from RCAIDE.save import build_dict_base
+    from tabs.geometry.frames import VehicleFrame
+
+    vehicle_dict = make_json_safe(build_dict_base(vehicle_obj))
+    ui_dict = {"name": getattr(vehicle_obj, "tag", "")}
+
+    for ui_label, units, rcaide_path in VehicleFrame.data_units_labels:
+        try:
+            value = vehicle_dict
+            for key in rcaide_path.split("."):
+                value = value[key]
+            ui_dict[ui_label] = [value, 0]
+        except (KeyError, TypeError):
+            ui_dict[ui_label] = [0, 0]
+
+    return ui_dict
+
+
+def vehicle_dict_to_ui_list_structure(vehicle_dict):
+    """Convert a stripped rcaide_vehicle dict to the 7-slot UI structure."""
+    from tabs.geometry.frames.booms.boom_frame import BoomFrame
+    from tabs.geometry.frames.cargo_bays.cargo_bay_frame import CargoBayFrame
+    from tabs.geometry.frames.fuselages.fuselage_frame import FuselageFrame
+    from tabs.geometry.frames.landing_gears.landing_gear_frame import LandingGearFrame
+    from tabs.geometry.frames.powertrain.powertrain_frame import PowertrainFrame
+    from tabs.geometry.frames.wings.wings_frame import WingsFrame
+
+    def wing_segment_to_ui(segment):
+        return {
+            "Segment Name":        segment.get("tag", ""),
+            "Percent Span Location": [segment.get("percent_span_location", 0), 0],
+            "Twist":               [segment.get("twist", 0), 0],
+            "Root Chord Percent":  [segment.get("root_chord_percent", 0), 0],
+            "Thickness to Chord":  [segment.get("thickness_to_chord", 0), 0],
+            "Dihedral Outboard":   [segment.get("dihedral_outboard", 0), 0],
+            "Quarter Chord Sweep": [segment.get("sweeps", {}).get("quarter_chord", 0), 0],
+            "Has Fuel Tank":       [bool(segment.get("Fuel_Tank")), 0],
+            "Has Aft Fuel Tank":   [bool(segment.get("Aft_Fuel_Tank")), 0],
+            "Airfoil Type":        None,
+        }
+
+    def wing_control_surface_to_ui(cs):
+        cs_type = {
+            "aileron": 0, "slat": 1, "flap": 2,
+            "elevator": 3, "rudder": 4, "spoiler": 5,
+        }.get(cs.get("tag", "").lower(), 0)
+        return {
+            "CS name":            cs.get("tag", ""),
+            "CS type":            cs_type,
+            "Span Fraction Start":[cs.get("span_fraction_start", 0), 0],
+            "Span Fraction End":  [cs.get("span_fraction_end", 0), 0],
+            "Deflection":         [cs.get("deflection", 0), 0],
+            "Chord Fraction":     [cs.get("chord_fraction", 0), 0],
+            "Number of Slots":    [1, 0],
+        }
+
+    def to_ui_format(component_dict, frame_class):
+        ui_dict = {"name": component_dict.get("tag", component_dict.get("name", ""))}
+        if hasattr(frame_class, 'data_units_labels'):
+            for ui_label, units, rcaide_path in frame_class.data_units_labels:
+                try:
+                    value = component_dict
+                    for key in rcaide_path.split("."):
+                        value = value[key]
+                    ui_dict[ui_label] = [value, 0]
+                except (KeyError, TypeError):
+                    ui_dict[ui_label] = [0, 0]
+        else:
+            ui_dict.update(component_dict)
+
+        if frame_class.__name__ == 'WingsFrame':
+            if 'Spans Projected' not in ui_dict:
+                ui_dict["Spans Projected"]         = [component_dict.get("spans", {}).get("projected", 0), 0]
+                ui_dict["Reference Area"]          = [component_dict.get("areas", {}).get("reference", 0), 0]
+                ui_dict["Wetted Area"]             = [component_dict.get("areas", {}).get("wetted", 0), 0]
+                ui_dict["Root Chord"]              = [component_dict.get("chords", {}).get("root", 0), 0]
+                ui_dict["Tip Chord"]               = [component_dict.get("chords", {}).get("tip", 0), 0]
+                ui_dict["Mean Aerodynamic Chord"]  = [component_dict.get("chords", {}).get("mean_aerodynamic", 0), 0]
+                ui_dict["Quarter Chord Sweep Angle"] = [component_dict.get("sweeps", {}).get("quarter_chord", 0), 0]
+                ui_dict["Leading Edge Sweep Angle"]  = [component_dict.get("sweeps", {}).get("leading_edge", 0), 0]
+                ui_dict["Root Chord Twist Angle"]  = [component_dict.get("twists", {}).get("root", 0), 0]
+                ui_dict["Tip Chord Twist Angle"]   = [component_dict.get("twists", {}).get("tip", 0), 0]
+                ui_dict["Taper"]                   = [component_dict.get("taper", 0), 0]
+                ui_dict["Dihedral"]                = [component_dict.get("dihedral", 0), 0]
+                ui_dict["Aspect Ratio"]            = [component_dict.get("aspect_ratio", 0), 0]
+                ui_dict["Thickness to Chord"]      = [component_dict.get("thickness_to_chord", 0), 0]
+                ui_dict["Aerodynamic Center"]      = [component_dict.get("aerodynamic_center", [0, 0, 0]), 0]
+                ui_dict["Origin"]                  = [component_dict.get("origin", [0, 0, 0]), 0]
+                ui_dict["Vertical"]                = [component_dict.get("vertical", False), 0]
+                ui_dict["X-Y Plane Symmetric"]     = [component_dict.get("xy_plane_symmetric", False), 0]
+                ui_dict["High Lift"]               = [component_dict.get("high_lift", False), 0]
+                ui_dict["X-Z Plane Symmetric"]     = [component_dict.get("xz_plane_symmetric", False), 0]
+                ui_dict["T-Tail"]                  = [component_dict.get("t_tail", False), 0]
+                ui_dict["Y-Z Plane Symmetric"]     = [component_dict.get("yz_plane_symmetric", False), 0]
+                ui_dict["Dynamic Pressure Ratio"]  = [component_dict.get("dynamic_pressure_ratio", 0), 0]
+                ui_dict["Exposed Root Chord Offset"] = [component_dict.get("exposed_root_chord_offset", 0), 0]
+
+            ui_dict.setdefault("wing_type", wing_type_label_for_ui(component_dict))
+
+            segments = ui_dict.pop("segments", {})
+            if isinstance(segments, dict):
+                ui_dict["sections"] = [wing_segment_to_ui(s) for s in segments.values() if is_mapping(s)]
+            elif isinstance(segments, list):
+                ui_dict["sections"] = [wing_segment_to_ui(s) for s in segments if is_mapping(s)]
+            else:
+                ui_dict["sections"] = []
+
+            control_surfaces = ui_dict.get("control_surfaces", [])
+            if isinstance(control_surfaces, dict):
+                ui_dict["control_surfaces"] = [wing_control_surface_to_ui(cs) for cs in control_surfaces.values() if is_mapping(cs)]
+            elif isinstance(control_surfaces, list):
+                ui_dict["control_surfaces"] = [wing_control_surface_to_ui(cs) for cs in control_surfaces if is_mapping(cs)]
+            else:
+                ui_dict["control_surfaces"] = []
+
+            ui_dict.setdefault("cabins", [])
+            ui_dict.setdefault("side_cabins", [])
+
+        return ui_dict
+
+    ui_structure = [[] for _ in range(7)]
+    ui_structure[0] = None
+
+    if "booms" in vehicle_dict and vehicle_dict["booms"]:
+        ui_structure[1] = [to_ui_format(b, BoomFrame) for b in vehicle_dict["booms"].values() if is_mapping(b)]
+
+    if "cargo_bays" in vehicle_dict and vehicle_dict["cargo_bays"]:
+        ui_structure[2] = [to_ui_format(c, CargoBayFrame) for c in vehicle_dict["cargo_bays"].values() if is_mapping(c)]
+
+    if "fuselages" in vehicle_dict and vehicle_dict["fuselages"]:
+        ui_structure[3] = [to_ui_format(f, FuselageFrame) for f in vehicle_dict["fuselages"].values() if is_mapping(f)]
+
+    if "landing_gears" in vehicle_dict and vehicle_dict["landing_gears"]:
+        ui_structure[4] = [to_ui_format(l, LandingGearFrame) for l in vehicle_dict["landing_gears"].values() if is_mapping(l)]
+
+    if "powertrains" in vehicle_dict and vehicle_dict["powertrains"]:
+        ui_structure[5] = [to_ui_format(p, PowertrainFrame) for p in vehicle_dict["powertrains"].values() if is_mapping(p)]
+    elif "networks" in vehicle_dict and vehicle_dict["networks"]:
+        for network in vehicle_dict["networks"].values():
+            if not is_mapping(network):
+                continue
+            network_tag = network.get("tag", "Fuel").title()
+            propulsors  = network.get("propulsors", {})
+            if propulsors:
+                for propulsor in propulsors.values():
+                    if not is_mapping(propulsor):
+                        continue
+                    ui_structure[5].append({
+                        "name": propulsor.get("tag", network_tag),
+                        "energy network selected": network_tag,
+                        "powertrain": {
+                            "distributor data": [], "source data": [],
+                            "propulsor data":   [], "converter data": [],
+                            "connections":      [],
+                        }
+                    })
+            else:
+                ui_structure[5].append({
+                    "name": network_tag,
+                    "energy network selected": network_tag,
+                    "powertrain": {
+                        "distributor data": [], "source data": [],
+                        "propulsor data":   [], "converter data": [],
+                        "connections":      [],
+                    }
+                })
+
+    if "wings" in vehicle_dict and vehicle_dict["wings"]:
+        ui_structure[6] = [to_ui_format(w, WingsFrame) for w in vehicle_dict["wings"].values() if is_mapping(w)]
+
+    return ui_structure
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Config serialisation helpers
+# ----------------------------------------------------------------------------------------------------------------------
+
+_DIFF_SKIP = frozenset({'_component_root_map', '_energy_network_root_map', '_base', '_diff'})
+
+
+def _apply_diff_to_obj(obj, diff_dict):
+    """Walk a stripped diff dict and apply every leaf value to obj via key navigation."""
+    for key, value in diff_dict.items():
+        if key == '__type__':
+            continue
+        if isinstance(value, (dict, OrderedDict)):
+            try:
+                child = obj[key]
+                _apply_diff_to_obj(child, value)
+            except (KeyError, TypeError, AttributeError):
+                pass
+        else:
+            try:
+                obj[key] = value
+            except (KeyError, TypeError, AttributeError):
+                pass
+
+
+def _serialise_config_entry(config):
+    """Serialize one Config object via store_diff() into a JSON-safe diff entry."""
+    config.store_diff()
+    diff = config._diff
+
+    diff_raw = {}
+    for k in diff.keys():
+        if k in _DIFF_SKIP:
+            continue
+        diff_raw[k] = _build_dict_r_with_types(diff[k])
+
+    diff_serialised = add_default_unit_arguments(make_json_safe(diff_raw))
+
+    tv = type(config)
+    module   = getattr(tv, '__module__', '') or ''
+    qualname = getattr(tv, '__qualname__', '') or ''
+
+    return {
+        "__type__": f"{module}.{qualname}",
+        "tag":      config.tag,
+        "diff":     diff_serialised,
+    }
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Public read / write API
+# ----------------------------------------------------------------------------------------------------------------------
+
+def write_to_json():
+    config_entries = []
+    for _, config in rcaide_configs.items():
+        try:
+            config_entries.append(_serialise_config_entry(config))
+        except Exception:
+            pass
+
+    data = {
+        "rcaide_vehicle": add_default_unit_arguments(
+            make_json_safe(_build_dict_base_with_types(vehicle))
+        ),
+        "config_data":   config_entries,
+        "analysis_data": analysis_data,
+        "mission_data":  mission_data,
+    }
+    return json.dumps(data, indent=4)
+
+
+def read_from_json(data_str, source_dir=None):
+    global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses
+    from RCAIDE.Library.Components.Configs.Config import Config
+    from RCAIDE.import_rcaide_data import analyses_setup as _analyses_setup
+
+    data = json.loads(data_str, object_pairs_hook=OrderedDict)
+    rcaide_vehicle_dict  = data["rcaide_vehicle"]
+    rcaide_vehicle_clean = strip_unit_arguments(rcaide_vehicle_dict)
+    repair_local_file_paths(rcaide_vehicle_clean, source_dir)
+
+    vehicle = RCAIDE.Vehicle()
+    if isinstance(rcaide_vehicle_clean, OrderedDict):
+        vehicle.update(read_RCAIDE_json_dict(rcaide_vehicle_clean))
+        restore_vehicle_components(vehicle)    # rebuilds all top-level containers
+        restore_airfoil_components(vehicle)    # fixes embedded airfoil objects
+        restore_typed_subcomponents(vehicle)   # fixes Fan, Combustor, Fuel_Line, etc.
+
+    if "geometry_data" in data and data["geometry_data"]:
+        rcaide_vehicle = data["geometry_data"]
+    else:
+        rcaide_vehicle    = vehicle_dict_to_ui_list_structure(rcaide_vehicle_clean)
+        rcaide_vehicle[0] = vehicle_to_ui_format(vehicle)
+
+    rcaide_configs = Config.Container()
+    for entry in data.get("config_data", []):
+        if not isinstance(entry, dict):
+            continue
+        name = entry.get("tag", "")
+        if not name:
+            continue
+        config = Config(vehicle)
+        config.tag = name
+        diff_clean = strip_unit_arguments(entry.get("diff", {}))
+        _apply_diff_to_obj(config, diff_clean)
+        rcaide_configs.append(config)
+
+    config_data   = []
+    analysis_data = data.get("analysis_data", [])
+    mission_data  = data.get("mission_data",  [])
+
+    rcaide_analyses = _analyses_setup(analysis_data, rcaide_configs)
+
+    propulsor_names = [[]]
+    try:
+        for network in vehicle.networks:
+            for prop in network.propulsors:
+                propulsor_names[0].append(prop.tag)
+    except Exception:
+        pass

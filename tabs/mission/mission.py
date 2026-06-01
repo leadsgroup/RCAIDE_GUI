@@ -8,7 +8,136 @@ from tabs.mission.widgets import MissionSegmentWidget
 from tabs.mission.widgets import MissionAnalysisWidget
 from tabs import TabWidget
 from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
-import values
+import rcaide_io
+
+
+# ------------------------------------------------------------------------------
+# RCAIDE-format → GUI-format conversion helpers
+# ------------------------------------------------------------------------------
+
+def _get_nested_raw(d, path):
+    """Navigate a dotted attribute path in a nested dict.
+
+    Returns the raw value (which may still be a [value, units_index] pair),
+    or [False, 0] when the path cannot be resolved.
+    """
+    for part in path.split('.'):
+        if isinstance(d, dict):
+            d = d.get(part, None)
+        else:
+            return [False, 0]
+    if d is None:
+        return [False, 0]
+    return d if isinstance(d, (list, tuple)) else [d, 0]
+
+
+def _rcaide_seg_to_gui(seg_dict):
+    """Convert one RCAIDE native segment dict (with unit-arg pairs) to GUI form data.
+
+    The RCAIDE format uses [value, units_index] for every leaf; the GUI's
+    DataEntryWidget.load_data expects the same pairs keyed by display label.
+    """
+    from tabs.mission.widgets.mission_segment_helper import (
+        segment_rcaide_classes, segment_data_fields,
+    )
+    from tabs.mission.widgets.flight_controls_widget import FlightControlsWidget
+
+    # Reverse-map __type__ string → (top_dropdown_index, sub_name)
+    type_str = seg_dict.get("__type__", "")
+    top_idx, sub_name = 0, ""
+    for ti, sub_dict in enumerate(segment_rcaide_classes):
+        for sn, cls in sub_dict.items():
+            if f"{cls.__module__}.{cls.__qualname__}" == type_str:
+                top_idx, sub_name = ti, sn
+                break
+        if sub_name:
+            break
+
+    # control_points is stored as [16, 0] — extract the scalar
+    cp_raw = seg_dict.get("control_points", [16, 0])
+    cp = int(cp_raw[0]) if isinstance(cp_raw, (list, tuple)) else int(cp_raw)
+
+    # Degrees-of-freedom flags
+    dof_labels = [
+        ("Forces in X axis",     "flight_dynamics.force_x"),
+        ("Moments about X axis", "flight_dynamics.moment_x"),
+        ("Forces in Y axis",     "flight_dynamics.force_y"),
+        ("Moments about Y axis", "flight_dynamics.moment_y"),
+        ("Forces in Z axis",     "flight_dynamics.force_z"),
+        ("Moments about Z axis", "flight_dynamics.moment_z"),
+    ]
+    flight_forces = {
+        label: _get_nested_raw(seg_dict, path)
+        for label, path in dof_labels
+    }
+
+    # Flight-control active flags
+    flight_controls = {}
+    for group_fields in FlightControlsWidget.fields.values():
+        for label, _, rcaide_path in group_fields:
+            flight_controls[label] = _get_nested_raw(seg_dict, rcaide_path)
+
+    # Assigned propulsors for throttle — stored as [[[name1, name2]], 0] after unit-arg wrapping
+    try:
+        acv_raw = seg_dict.get("assigned_control_variables", {})
+        throttle_raw = acv_raw.get("throttle", {}) if isinstance(acv_raw, dict) else {}
+        ap_raw = throttle_raw.get("assigned_propulsors", []) if isinstance(throttle_raw, dict) else []
+        if isinstance(ap_raw, list) and len(ap_raw) == 2 and isinstance(ap_raw[1], int) and not isinstance(ap_raw[1], bool):
+            ap_raw = ap_raw[0]  # strip unit-arg wrapper → [[name1, name2]]
+        if ap_raw and isinstance(ap_raw[0], list):
+            assigned_propulsors = ap_raw[0]
+        elif ap_raw and isinstance(ap_raw[0], str):
+            assigned_propulsors = list(ap_raw)
+        else:
+            assigned_propulsors = []
+    except Exception:
+        assigned_propulsors = []
+    flight_controls["assigned_propulsors"] = assigned_propulsors
+
+    gui_data = {
+        "Segment Name":    seg_dict.get("tag", ""),
+        "top dropdown":    top_idx,
+        "nested dropdown": sub_name,
+        "config":          seg_dict.get("config_tag", ""),
+        "Control Points":  cp,
+        "Solver":          "root",
+        "flight forces":   flight_forces,
+        "flight controls": flight_controls,
+    }
+
+    # Subsegment-specific parameter values (altitude, speed, etc.)
+    if sub_name and top_idx < len(segment_data_fields):
+        for label, _, rcaide_label in segment_data_fields[top_idx].get(sub_name, []):
+            gui_data[label] = seg_dict.get(rcaide_label, [0, 0])
+
+    return gui_data
+
+
+def _extract_gui_segments(mission_data):
+    """Return a flat list of GUI-format segment dicts from mission_data.
+
+    Handles both formats:
+      - Old GUI format: list where each item has a "Segment Name" key
+      - New RCAIDE format: list of mission objects each containing a "segments" list
+    """
+    if not mission_data:
+        return []
+
+    first = mission_data[0] if mission_data else {}
+
+    # Old GUI format — items are already GUI dicts
+    if isinstance(first, dict) and "Segment Name" in first:
+        return list(mission_data)
+
+    # New RCAIDE format — extract and convert each segment from every mission
+    result = []
+    for mission_entry in mission_data:
+        if not isinstance(mission_entry, dict):
+            continue
+        for seg_dict in mission_entry.get("segments", []):
+            if isinstance(seg_dict, dict):
+                result.append(_rcaide_seg_to_gui(seg_dict))
+    return result
 
 # PyQt imports
 from PyQt6.QtCore import Qt, QTimer, QPointF
@@ -398,10 +527,6 @@ class MissionSummaryTable(QTableWidget):
                     cfg_idx = seg.config_selector.currentIndex()
                     if cfg_idx >= 0:
                         config_name = seg.config_selector.itemText(cfg_idx).strip()
-                    if not config_name and isinstance(values.config_data, list) and 0 <= cfg_idx < len(values.config_data):
-                        cfg = values.config_data[cfg_idx]
-                        if isinstance(cfg, dict):
-                            config_name = str(cfg.get("config name", "")).strip()
                     if not config_name:
                         cfgs = getattr(values, "rcaide_configs", None)
                         if isinstance(cfgs, dict) and cfg_idx >= 0:
@@ -416,20 +541,12 @@ class MissionSummaryTable(QTableWidget):
                         seg.nested_dropdown.currentText() if hasattr(seg, "nested_dropdown") else "",
                         name,
                     )
-                    if isinstance(values.config_data, list):
-                        for cfg in values.config_data:
-                            if isinstance(cfg, dict):
-                                cfg_name = str(cfg.get("config name", "")).strip()
-                                if self._norm(cfg_name) == self._norm(cfg_key):
-                                    config_name = cfg_name
-                                    break
-                    if not config_name:
-                        cfgs = getattr(values, "rcaide_configs", None)
-                        if isinstance(cfgs, dict):
-                            for key in cfgs.keys():
-                                if self._norm(key) == self._norm(cfg_key):
-                                    config_name = str(key)
-                                    break
+                    cfgs = getattr(values, "rcaide_configs", None)
+                    if isinstance(cfgs, dict):
+                        for key in cfgs.keys():
+                            if self._norm(key) == self._norm(cfg_key):
+                                config_name = str(key)
+                                break
                 except Exception:
                     pass
             if not config_name:
@@ -900,10 +1017,10 @@ class MissionWidget(TabWidget):
         Save mission data and build the RCAIDE mission object.
         This function must not build or modify aircraft configurations.
         """
-        import values
+        import rcaide_io
 
         # Reset stored mission data before saving
-        values.mission_data = []
+        rcaide_io.mission_data = []
 
         # Save analyses that were already defined by the user
 
@@ -915,17 +1032,17 @@ class MissionWidget(TabWidget):
             # Save only the form state here; building RCAIDE segments requires analyses and happens later.
             seg_data = seg.get_form_data()
             seg_data["Segment Name"] = self.tree.topLevelItem(idx).text(0)
-            values.mission_data.append(seg_data)
+            rcaide_io.mission_data.append(seg_data)
 
         # Create the RCAIDE mission using existing data only
         # Defer mission build until analyses are saved
 
         segment_names = [
             segment.get("Segment Name", f"Segment {index + 1}")
-            for index, segment in enumerate(values.mission_data)
+            for index, segment in enumerate(rcaide_io.mission_data)
         ]
         print("\n[Mission Data Saved]")
-        print(f"Active segments: {len(values.mission_data)}")
+        print(f"Active segments: {len(rcaide_io.mission_data)}")
         print(f"Names: {', '.join(segment_names) if segment_names else 'None'}")
 
         # Notify the user that the mission was saved
@@ -946,12 +1063,12 @@ class MissionWidget(TabWidget):
             _, rcaide_segment = seg.get_data()
 
             # Ensure analyses exist before assigning them to a segment
-            if not values.rcaide_analyses:
+            if not rcaide_io.rcaide_analyses:
                 raise RuntimeError("No RCAIDE analyses available")
 
             # If the segment has no analyses (should be rare), assign a fallback
             if not getattr(rcaide_segment, "analyses", None):
-                rcaide_segment.analyses = next(iter(values.rcaide_analyses.values()))
+                rcaide_segment.analyses = next(iter(rcaide_io.rcaide_analyses.values()))
 
             # Append the segment to the mission sequence
             rcaide_mission.append_segment(rcaide_segment)
@@ -963,7 +1080,7 @@ class MissionWidget(TabWidget):
     # ====================================================
 
     def load_from_values(self):
-        """Populate the UI from `values.mission_data` previously saved."""
+        """Populate the UI from `rcaide_io.mission_data` previously saved."""
         # Reset UI and internal lists
         self.tree.clear()
         self.segment_widgets = []
@@ -975,8 +1092,8 @@ class MissionWidget(TabWidget):
             if w:
                 w.deleteLater()
 
-        # Recreate segments from saved data
-        for seg_data in values.mission_data:
+        # Recreate segments from saved data (handles both old GUI and new RCAIDE formats)
+        for seg_data in _extract_gui_segments(rcaide_io.mission_data):
             seg = MissionSegmentWidget()
             seg.load_data(seg_data)
             self.segment_widgets.append(seg)

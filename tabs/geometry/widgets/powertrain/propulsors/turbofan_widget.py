@@ -12,7 +12,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turb
 from utilities import Units, convert_name, clear_layout, set_data
 from common_widgets import DataEntryWidget
 from PyQt6.QtCore import Qt
-import values
+import rcaide_io
 
 
 class TurbofanWidget(QWidget):
@@ -285,7 +285,7 @@ class TurbofanWidget(QWidget):
                     section_objects.append(s_object)
 
             data["nacelle_data"] = nacelle_data
-            values.propulsor_names[0].append(convert_name(title))
+            rcaide_io.propulsor_names[0].append(convert_name(title))
 
             data_si = self.data_entry_widget.get_values_si()
             data_si["Propulsor Tag"] = title
@@ -299,7 +299,7 @@ class TurbofanWidget(QWidget):
             
             data_si["nacelle_si"] = nacelle_si
         
-        values.propulsor_names[0].append(convert_name(title))
+        rcaide_io.propulsor_names[0].append(convert_name(title))
 
 
 

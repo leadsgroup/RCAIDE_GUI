@@ -8,7 +8,7 @@ from tabs.mission.widgets import MissionAnalysisWidget
 from tabs.analysis.widgets import *
 from tabs import TabWidget
 from utilities import create_scroll_area
-import values
+import rcaide_io
 
 # PyQt imports
 from PyQt6.QtCore import Qt, QTimer
@@ -62,7 +62,7 @@ class AnalysisWidget(TabWidget):
         self.save_notice.setVisible(True)
         QTimer.singleShot(2500, lambda: self.save_notice.setVisible(False))
 
-        # Print a readable summary of what was written into `values.rcaide_analyses`.
+        # Print a readable summary of what was written into `rcaide_io.rcaide_analyses`.
         print("\n[Analyses Saved]")
         print(f"Configs: {len(saved_configs)}")
         print(f"Names: {', '.join(saved_configs) if saved_configs else 'None'}")
