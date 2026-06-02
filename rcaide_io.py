@@ -384,9 +384,10 @@ def new_rcaide_vehicle_data():
     return [[] for _ in range(7)]
 
 
-rcaide_vehicle = new_rcaide_vehicle_data()
-propulsor_names = [[]]
-vehicle = RCAIDE.Vehicle()
+rcaide_vehicle    = new_rcaide_vehicle_data()
+propulsor_names   = [[]]
+vehicle           = RCAIDE.Vehicle()
+current_file_path = ""   # path of the last loaded or saved JSON file
 
 config_data     = []
 rcaide_configs  = RCAIDE.Library.Components.Configs.Config.Container()   # type: ignore

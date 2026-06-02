@@ -19,6 +19,16 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStack
 # Python imports
 from typing import Type
 import vtk
+import os
+
+# Maps geometry tab name → rcaide_io.vehicle container attribute name.
+_TAB_TO_CONTAINER = {
+    "Booms":        "booms",
+    "Cargo Bays":   "cargo_bays",
+    "Fuselages":    "fuselages",
+    "Landing Gear": "landing_gears",
+    "Wings":        "wings",
+}
 
 # ------------------------------------------------------------------------------
 # Geometry Widget
@@ -198,7 +208,7 @@ class GeometryWidget(TabWidget):
             assert isinstance(frame, GeometryFrame)
             frame.load_data(rcaide_io.rcaide_vehicle[tab_index][index], index)
 
-    def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False):
+    def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False, persist=False):
         """Save the entered data in a frame to the list.
 
         Args:
@@ -208,6 +218,7 @@ class GeometryWidget(TabWidget):
             vehicle_component: The vehicle component to be appended to the vehicle.
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
+            persist: When True, write the updated data back to the currently loaded JSON file.
         """
         if data is None:
             return
@@ -228,9 +239,9 @@ class GeometryWidget(TabWidget):
             for i in range(top_item.childCount()):
                 child = top_item.child(i)
                 if child.text(0) == category_name:
-                    component_item = child #checking if the field like 'wings' or 'fuselages' already exists
+                    component_item = child
                     break
-            if component_item is None: #if the field doesnt exist, create it
+            if component_item is None:
                 component_item = QTreeWidgetItem([category_name])
                 component_item.setExpanded(True)
                 insert_index = 0
@@ -260,8 +271,21 @@ class GeometryWidget(TabWidget):
                 if child:
                     child.setText(0, data["name"])
 
+                # Rebuild the RCAIDE component so run_solve sees the updated values.
+                # (vehicle_component is None on updates — append_component is not called,
+                # so we must replace the existing entry directly.)
+                container_key = _TAB_TO_CONTAINER.get(category_name)
+                if container_key and tab_index != 5:
+                    container = getattr(rcaide_io.vehicle, container_key, None)
+                    if container is not None:
+                        keys = list(container.keys())
+                        if index < len(keys):
+                            tmp = self.frames[tab_index]()
+                            tmp.load_data(data, index)
+                            container[keys[index]] = tmp.create_rcaide_structure()
+                            tmp.deleteLater()
+
         if vehicle_component:
-            # Check if it is an energy network being added
             if tab_index == 5:
                 rcaide_io.vehicle.append_energy_network(vehicle_component)
             else:
@@ -270,6 +294,15 @@ class GeometryWidget(TabWidget):
         # Keep preview synced with current geometry edits.
         if self._preview_updates_enabled:
             self.preview_widget.run_solve()
+
+        # Write changes back to the loaded file when explicitly requested.
+        if persist and getattr(rcaide_io, "current_file_path", ""):
+            try:
+                json_data = rcaide_io.write_to_json()
+                with open(rcaide_io.current_file_path, "w") as f:
+                    f.write(json_data)
+            except Exception as e:
+                print(f"Auto-save to file failed: {e}")
 
         self.tree.expandAll()
 

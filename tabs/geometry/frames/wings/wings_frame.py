@@ -71,6 +71,7 @@ class WingsFrame(GeometryFrame):
 
         # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
+        self.wire_auto_save(self.data_entry_widget)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -176,11 +177,11 @@ class WingsFrame(GeometryFrame):
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(
-                    tab_index=self.tab_index, index=self.index, data=entered_data)
+                    tab_index=self.tab_index, index=self.index, data=entered_data, persist=True)
                 return
             else:
                 self.index = self.save_function(
-                    tab_index=self.tab_index, vehicle_component=wing, data=entered_data, new=True)
+                    tab_index=self.tab_index, vehicle_component=wing, data=entered_data, new=True, persist=True)
 
             show_popup("Data Saved!", self)
 

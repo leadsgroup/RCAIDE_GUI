@@ -79,27 +79,30 @@ class App(QMainWindow):
     def save_all(self):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
-          
+
         json_data = rcaide_io.write_to_json()
-        name      = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
-        
+        name      = QFileDialog.getSaveFileName(self, 'Save As', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
+
+        if not name:
+            return
         if not QFileInfo(name).suffix():
             name += ".json"
-        
-        file = open(name,'w')
-        file.write(json_data)
-        file.close()
-    
+
+        with open(name, 'w') as f:
+            f.write(json_data)
+        rcaide_io.current_file_path = name
+
     def load_all(self):
-        name      = QFileDialog.getOpenFileName(self, 'Open File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
-        
+        name = QFileDialog.getOpenFileName(self, 'Open File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
+
         try:
             file = open(name, 'r')
         except FileNotFoundError:
             return
-        
+
         data_str = file.read()
         file.close()
+        rcaide_io.current_file_path = name
         rcaide_io.read_from_json(data_str, source_dir=os.path.dirname(os.path.abspath(name)))
         # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
         for i, (widget, tab_name) in enumerate(self.widgets):

@@ -86,6 +86,7 @@ class VehicleFrame(GeometryFrame):
         # Numeric / position fields rendered by DataEntryWidget
         widget_labels = [l for l in self.data_units_labels if l[0] not in _COMBO_LABELS]
         self.data_entry_widget = DataEntryWidget(widget_labels)
+        self.wire_auto_save(self.data_entry_widget)
         self.main_layout.addWidget(self.data_entry_widget)
 
         # Inject the combo rows directly into DataEntryWidget's QGridLayout so
@@ -167,4 +168,4 @@ class VehicleFrame(GeometryFrame):
     def save_data(self):
         assert self.save_function is not None
         self.save_function(self.tab_index, vehicle_component=None,
-                           index=-1, data=self.get_data_values())
+                           index=-1, data=self.get_data_values(), persist=True)

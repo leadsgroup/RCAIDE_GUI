@@ -2,7 +2,7 @@
 
 # Created: M Clarke, LEADS, 2024
 # Python imports
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, \
     QVBoxLayout
@@ -14,6 +14,10 @@ from common_widgets import UnitPickerWidget
 # Data Entry Widget
 # ------------------------------------------------------------------------------
 class DataEntryWidget(QWidget):
+    # Emitted when the user finishes editing any field or changes a unit.
+    # Safe to connect to save_data — does NOT fire during programmatic load_data calls.
+    data_changed = pyqtSignal()
+
     def __init__(self, data_units_labels, num_cols=2):
         super(DataEntryWidget, self).__init__()
         self.data_units_labels = data_units_labels
@@ -32,6 +36,7 @@ class DataEntryWidget(QWidget):
             if label[1] == Units.Boolean:
                 check_box = QCheckBox(self)
                 check_box.setChecked(False)
+                check_box.stateChanged.connect(lambda _: self.data_changed.emit())
                 grid_layout.addWidget(check_box, row, col * 4 + 1, 1, 2)
                 self.data_fields[label[0]] = check_box
             elif label[1] == Units.Position:
@@ -47,6 +52,10 @@ class DataEntryWidget(QWidget):
                 unit_picker.on_change_callback = self._make_unit_change_handler(
                     unit_picker, x_line_edit, y_line_edit, z_line_edit
                 )
+                # Also emit data_changed when unit changes (fires only on user action,
+                # not during load_data, because UnitPickerWidget._suppress_callback guards it).
+                _conv_cb = unit_picker.on_change_callback
+                unit_picker.on_change_callback = lambda p, n, _cb=_conv_cb: (_cb(p, n), self.data_changed.emit())
                 unit_picker.setFixedWidth(80)
 
                 layout = QHBoxLayout()
@@ -57,6 +66,11 @@ class DataEntryWidget(QWidget):
                 x_line_edit.setMinimumSize(50, 0)
                 y_line_edit.setMinimumSize(50, 0)
                 z_line_edit.setMinimumSize(50, 0)
+
+                # editingFinished fires on Enter/Tab — not on programmatic setText.
+                x_line_edit.editingFinished.connect(self.data_changed)
+                y_line_edit.editingFinished.connect(self.data_changed)
+                z_line_edit.editingFinished.connect(self.data_changed)
 
                 grid_layout.addLayout(layout, row, col * 4 + 1, 1, 2)
                 grid_layout.addWidget(
@@ -82,23 +96,23 @@ class DataEntryWidget(QWidget):
                 line_edit = QLineEdit(self)
                 line_edit.setValidator(QDoubleValidator())
                 line_edit.setMinimumWidth(150)
-                # Set the width of the line edit
-                # line_edit.setFixedWidth(150)
 
                 unit_picker = UnitPickerWidget(label[1])
                 unit_picker.on_change_callback = self._make_unit_change_handler(
                     unit_picker, line_edit
                 )
+                _conv_cb = unit_picker.on_change_callback
+                unit_picker.on_change_callback = lambda p, n, _cb=_conv_cb: (_cb(p, n), self.data_changed.emit())
                 unit_picker.setFixedWidth(80)
 
+                line_edit.editingFinished.connect(self.data_changed)
+
                 grid_layout.addWidget(line_edit, row, col * 4 + 1, 1, 2)
-                # Add a spacer
                 grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), row,
                                     col * 4 + 2)
                 grid_layout.addWidget(
                     unit_picker, row, col * 4 + 3, alignment=Qt.AlignmentFlag.AlignLeft)
 
-                # Store a reference to the QLineEdit in the dictionary
                 self.data_fields[label[0]] = (line_edit, unit_picker)
 
             col = col + 1 if col < num_cols - 1 else 0
