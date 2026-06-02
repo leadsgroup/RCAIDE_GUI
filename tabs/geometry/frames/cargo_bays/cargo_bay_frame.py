@@ -26,9 +26,8 @@ class CargoBayFrame(GeometryFrame):
         ("Length", Units.Unitless, "length"),
         ("Width", Units.Unitless, "width"),
         ("Height", Units.Length, "height"),
+        # RCAIDE Cargo_Bay stores cargo mass directly; it has no baggage/container subobjects.
         ("Cargo Mass", Units.Mass, "mass_properties.mass"), 
-        ("Baggage Mass", Units.Mass, "baggage.mass_properties.mass"), 
-        ("Container Mass", Units.Mass, "container.mass_properties.mass"), 
         ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),
         ("Origin", Units.Position, "origin"),
     ]
