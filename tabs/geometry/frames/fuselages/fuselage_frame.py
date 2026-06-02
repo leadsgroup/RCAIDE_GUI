@@ -58,7 +58,7 @@ class FuselageFrame(GeometryFrame):
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
-        # Add the sections layout to the main layout
+        # Add the segments layout to the main layout
         self.fuselage_sections_layout = QVBoxLayout()
         self.main_layout.addLayout(self.fuselage_sections_layout)
 
@@ -90,7 +90,7 @@ class FuselageFrame(GeometryFrame):
     # noinspection PyUnresolvedReferences
     def add_buttons_layout(self):
         """Add the save, delete, and new buttons to the layout."""
-        new_section_button = QPushButton("New Fuselage Section", self)
+        new_section_button = QPushButton("New Fuselage Segment", self)
         new_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         save_button = QPushButton("Save Data", self)
         save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
@@ -222,7 +222,7 @@ class FuselageFrame(GeometryFrame):
         data = self.data_entry_widget.get_values()
         fuselage = self.create_rcaide_structure()
 
-        data["sections"] = []
+        data["segments"] = []
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
             if item is None:
@@ -231,7 +231,7 @@ class FuselageFrame(GeometryFrame):
             fuselage_section = item.widget()
             if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
                 segment_data, segment = fuselage_section.get_data_values()
-                data["sections"].append(segment_data)
+                data["segments"].append(segment_data)
                 fuselage.append_segment(segment)
 
         assert self.name_line_edit is not None
@@ -262,16 +262,16 @@ class FuselageFrame(GeometryFrame):
         
         clear_layout(self.fuselage_sections_layout)
 
-        for section in data["sections"]:
+        segments = data.get("segments", data.get("sections", []))
+        for section in segments:
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
 
         clear_layout(self.cabins_layout)
-        if "cabins" in data:
-            for cabin in data["cabins"]:
-                self.cabins_layout.addWidget(CabinWidget(
-                    self.cabins_layout.count(), self.delete_cabin, cabin))
+        for cabin in data.get("cabins", []):
+            self.cabins_layout.addWidget(CabinWidget(
+                self.cabins_layout.count(), self.delete_cabin, cabin))
         
         assert self.name_line_edit is not None
-        self.name_line_edit.setText(data["name"])
+        self.name_line_edit.setText(data.get("name", ""))
         self.index = index
