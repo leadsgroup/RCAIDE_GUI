@@ -2,6 +2,8 @@
 
 # Created: M Clarke, LEADS, 2024
 # Python imports
+import ast
+
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, \
@@ -94,7 +96,9 @@ class DataEntryWidget(QWidget):
                 self.data_fields[label[0]] = ()
             else:
                 line_edit = QLineEdit(self)
-                line_edit.setValidator(QDoubleValidator())
+                # Inertia tensors are entered as list/matrix text, not scalar floats.
+                if label[1] != Units.Intertia:
+                    line_edit.setValidator(QDoubleValidator())
                 line_edit.setMinimumWidth(150)
 
                 unit_picker = UnitPickerWidget(label[1])
@@ -142,6 +146,14 @@ class DataEntryWidget(QWidget):
     @staticmethod
     def _format_converted_value(value):
         return f"{value:.15g}"
+
+    @staticmethod
+    def _parse_list_value(text):
+        # Use literal_eval so list-like fields become Python lists without eval.
+        value = ast.literal_eval(text)
+        if not isinstance(value, list):
+            raise ValueError(f"Expected a list value, got {type(value).__name__}")
+        return value
 
     def _make_unit_change_handler(self, unit_picker, *line_edits):
         def convert_display_values(previous_index, new_index):
@@ -208,13 +220,25 @@ class DataEntryWidget(QWidget):
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
                 text = line_edit.text()
+                # Count fields should remain integers for RCAIDE.
                 value = int(text) if text else 0
+                data[label] = value, unit_picker.current_index
+            elif self.data_units_labels[i][1] == Units.Intertia:
+                data_field = self.data_fields[label]
+                line_edit, unit_picker = data_field
+                text = line_edit.text()
+                # Inertia is stored as a tensor/list, not a single scalar.
+                value = self._parse_list_value(text) if text else None
                 data[label] = value, unit_picker.current_index
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
                 text = line_edit.text()
-                value = float(text) if text else None
+                # Most fields are numeric, but some Unitless fields are text labels.
+                try:
+                    value = float(text) if text else None
+                except ValueError:
+                    value = text
                 data[label] = value, unit_picker.current_index
         return data
 
@@ -246,13 +270,25 @@ class DataEntryWidget(QWidget):
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
                 text = line_edit.text()
+                # Count fields should remain integers for RCAIDE.
                 value = int(text) if text else 0
+                data[label] = value, unit_picker.current_index
+            elif self.data_units_labels[i][1] == Units.Intertia:
+                data_field = self.data_fields[label]
+                line_edit, unit_picker = data_field
+                text = line_edit.text()
+                # Inertia is stored as a tensor/list, not a single scalar.
+                value = self._parse_list_value(text) if text else None
                 data[label] = value, unit_picker.current_index
             else:
                 data_field = self.data_fields[label]
                 line_edit, unit_picker = data_field
                 text = line_edit.text()
-                value = unit_picker.apply_unit(float(text)) if text else None
+                # Numeric fields are converted to SI; text fields are preserved.
+                try:
+                    value = unit_picker.apply_unit(float(text)) if text else None
+                except ValueError:
+                    value = text
                 data[label] = value, unit_picker.current_index
         return data
 

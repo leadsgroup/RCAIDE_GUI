@@ -223,7 +223,7 @@ class FuselageFrame(GeometryFrame):
         data = self.data_entry_widget.get_values()
         fuselage = self.create_rcaide_structure()
 
-        data["sections"] = []
+        data["segments"] = []
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
             if item is None:
@@ -232,7 +232,7 @@ class FuselageFrame(GeometryFrame):
             fuselage_section = item.widget()
             if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
                 segment_data, segment = fuselage_section.get_data_values()
-                data["sections"].append(segment_data)
+                data["segments"].append(segment_data)
                 fuselage.append_segment(segment)
 
         assert self.name_line_edit is not None
@@ -263,7 +263,8 @@ class FuselageFrame(GeometryFrame):
         
         clear_layout(self.fuselage_sections_layout)
 
-        for section in data["sections"]:
+        # New files use RCAIDE's "segments"; older GUI data may still say "sections".
+        for section in data.get("segments", data.get("sections", [])):
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
 
