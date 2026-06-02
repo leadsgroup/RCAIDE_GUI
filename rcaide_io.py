@@ -369,11 +369,26 @@ _WING_TYPE_LABELS = {
     'Vertical_Tail':   'Vertical Tail',
 }
 
+_FUSELAGE_SEGMENT_TYPE_LABELS = {
+    'Circle_Segment':            'Circle Segment',
+    'Ellipse_Segment':           'Ellipse Segment',
+    'Rounded_Rectangle_Segment': 'Rounded Rectangle Segment',
+    'Super_Ellipse_Segment':     'Super Ellipse Segment',
+    'Segment':                   'Segment',
+}
+
 def wing_type_label_for_ui(component_dict):
     """Derive the GUI wing-type label from __type__, falling back to 'Wing'."""
     type_str = component_dict.get('__type__', '')
     class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
     return _WING_TYPE_LABELS.get(class_name, 'Wing')
+
+
+def fuselage_segment_type_label_for_ui(segment_dict):
+    """Derive the GUI fuselage segment label from __type__, falling back to Segment."""
+    type_str = segment_dict.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    return _FUSELAGE_SEGMENT_TYPE_LABELS.get(class_name, 'Segment')
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -461,6 +476,16 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             "Number of Slots":    [1, 0],
         }
 
+    def fuselage_segment_to_ui(segment):
+        return {
+            "Segment Name":       segment.get("tag", ""),
+            "Percent X Location": [segment.get("percent_x_location", 0), 0],
+            "Percent Z Location": [segment.get("percent_z_location", 0), 0],
+            "Height":             [segment.get("height", 0), 0],
+            "Width":              [segment.get("width", 0), 0],
+            "segment_type":       fuselage_segment_type_label_for_ui(segment),
+        }
+
     def to_ui_format(component_dict, frame_class):
         ui_dict = {"name": component_dict.get("tag", component_dict.get("name", ""))}
         if hasattr(frame_class, 'data_units_labels'):
@@ -522,6 +547,17 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
 
             ui_dict.setdefault("cabins", [])
             ui_dict.setdefault("side_cabins", [])
+
+        if frame_class.__name__ == 'FuselageFrame':
+            segments = component_dict.get("segments", {})
+            if isinstance(segments, dict):
+                ui_dict["segments"] = [fuselage_segment_to_ui(s) for s in segments.values() if is_mapping(s)]
+            elif isinstance(segments, list):
+                ui_dict["segments"] = [fuselage_segment_to_ui(s) for s in segments if is_mapping(s)]
+            else:
+                ui_dict["segments"] = []
+
+            ui_dict.setdefault("cabins", [])
 
         return ui_dict
 
