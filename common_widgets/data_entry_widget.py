@@ -293,27 +293,41 @@ class DataEntryWidget(QWidget):
         return data
 
     def load_data(self, data):
-        for i, label in enumerate(self.data_fields.keys()):
-            if self.data_units_labels[i][1] == Units.Boolean:
-                self.data_fields[label].setChecked(data[label][0])
-            elif self.data_units_labels[i][1] == Units.Position:
-                x_line_edit, y_line_edit, z_line_edit, unit_picker = self.data_fields[label]
-                value, index = data[label]
-                if isinstance(value, list) and value and isinstance(value[0], list):
-                    value = value[0]
-                elif not isinstance(value, list):
-                    value = [0, 0, 0]
-                x_line_edit.setText(str(value[0]))
-                y_line_edit.setText(str(value[1]))
-                z_line_edit.setText(str(value[2]))
-                unit_picker.set_index(index)
-            elif self.data_units_labels[i][1] == Units.Heading:
-                pass
-            else:
-                line_edit, unit_picker = self.data_fields[label]
-                value, index = data[label]
-                line_edit.setText("" if value is None else str(value))
-                unit_picker.set_index(index)
+        # Loading saved data should not trigger auto-save.
+        old_block_state = self.blockSignals(True)
+        try:
+            # Load each field based on its input type.
+            for i, label in enumerate(self.data_fields.keys()):
+                if self.data_units_labels[i][1] == Units.Boolean:
+                    # Checkbox field.
+                    self.data_fields[label].setChecked(data[label][0])
+                elif self.data_units_labels[i][1] == Units.Position:
+                    # Three coordinate boxes and one unit picker.
+                    x_line_edit, y_line_edit, z_line_edit, unit_picker = self.data_fields[label]
+                    value, index = data[label]
+                    # Unwrap [[x, y, z]] if needed.
+                    if isinstance(value, list) and value and isinstance(value[0], list):
+                        value = value[0]
+                    # Use origin if the saved value is invalid.
+                    elif not isinstance(value, list):
+                        value = [0, 0, 0]
+                    x_line_edit.setText(str(value[0]))
+                    y_line_edit.setText(str(value[1]))
+                    z_line_edit.setText(str(value[2]))
+                    unit_picker.set_index(index)
+                elif self.data_units_labels[i][1] == Units.Heading:
+                    # Heading label only.
+                    pass
+                else:
+                    # Normal value field and unit picker.
+                    line_edit, unit_picker = self.data_fields[label]
+                    value, index = data[label]
+                    # Show None as an empty field.
+                    line_edit.setText("" if value is None else str(value))
+                    unit_picker.set_index(index)
+        finally:
+            # Restore signal behavior.
+            self.blockSignals(old_block_state)
     
     # TODO implement mark_save and changed_since_save
     def mark_save(self):

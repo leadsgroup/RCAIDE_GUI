@@ -49,6 +49,12 @@ data_units_labels = [
 
 cs_types = ["Aileron", "Slat", "Flap", "Elevator", "Rudder", "Spoiler"]
 
+_REQUIRED_PREVIEW_FIELDS = (
+    "Span Fraction Start",
+    "Span Fraction End",
+    "Chord Fraction",
+)
+
 
 class WingCSWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
@@ -123,6 +129,12 @@ class WingCSWidget(QWidget):
         self.cs_type = index
 
     def create_rcaide_structure(self, data):
+        # wing_planform expects these values to be numeric; skip incomplete
+        # control surfaces until the user fills enough fields for preview.
+        for field in _REQUIRED_PREVIEW_FIELDS:
+            if data.get(field, [None])[0] is None:
+                return None
+
         cs = None
         if self.cs_type == 0:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
@@ -141,7 +153,7 @@ class WingCSWidget(QWidget):
         cs.tag = data["CS name"]
         cs.span_fraction_start = data["Span Fraction Start"][0]
         cs.span_fraction_end = data["Span Fraction End"][0]
-        cs.deflection = data["Deflection"][0]
+        cs.deflection = data["Deflection"][0] or 0.0
         cs.chord_fraction = data["Chord Fraction"][0]
 
         if self.cs_type == 2:

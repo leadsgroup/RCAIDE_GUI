@@ -30,6 +30,49 @@ _TAB_TO_CONTAINER = {
     "Wings":        "wings",
 }
 
+_TAB_TO_BASE_CLASS = {
+    # Used to keep RCAIDE's internal component map pointed at rebuilt containers.
+    "Booms":        RCAIDE.Library.Components.Booms.Boom,
+    "Cargo Bays":   RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay,
+    "Fuselages":    RCAIDE.Library.Components.Fuselages.Fuselage,
+    "Landing Gear": RCAIDE.Library.Components.Landing_Gear.Landing_Gear,
+    "Wings":        RCAIDE.Library.Components.Wings.Wing,
+}
+
+
+def _replace_vehicle_component(vehicle, category_name, index, component):
+    """Replace one RCAIDE component without changing sibling component keys."""
+    # Find the vehicle container for this GUI category.
+    container_key = _TAB_TO_CONTAINER.get(category_name)
+    base_class = _TAB_TO_BASE_CLASS.get(category_name)
+    if container_key is None or base_class is None:
+        return
+
+    # Get the current RCAIDE container, such as vehicle.wings.
+    container = getattr(vehicle, container_key, None)
+    if container is None:
+        return
+
+    # Work with an ordered list so replacing one item keeps all siblings.
+    components = list(container)
+    if not 0 <= index < len(components):
+        return
+
+    # Replace only the selected component.
+    components[index] = component
+    # RCAIDE containers normalize tags during append; rebuilding keeps the
+    # key order and avoids stale keys that can hide or duplicate wings.
+    rebuilt = container.__class__()
+    for item in components:
+        rebuilt.append(item)
+
+    # Put the rebuilt container back on the vehicle.
+    setattr(vehicle, container_key, rebuilt)
+    root_map = getattr(vehicle, "_component_root_map", None)
+    if root_map is not None:
+        # Keep RCAIDE append/find logic pointed at the new container.
+        root_map[base_class] = rebuilt
+
 # ------------------------------------------------------------------------------
 # Geometry Widget
 # ------------------------------------------------------------------------------
@@ -276,14 +319,22 @@ class GeometryWidget(TabWidget):
                 # so we must replace the existing entry directly.)
                 container_key = _TAB_TO_CONTAINER.get(category_name)
                 if container_key and tab_index != 5:
-                    container = getattr(rcaide_io.vehicle, container_key, None)
-                    if container is not None:
-                        keys = list(container.keys())
-                        if index < len(keys):
-                            tmp = self.frames[tab_index]()
-                            tmp.load_data(data, index)
-                            container[keys[index]] = tmp.create_rcaide_structure()
-                            tmp.deleteLater()
+                    replacement_component = vehicle_component
+                    tmp = None
+                    if replacement_component is None:
+                        tmp = self.frames[tab_index]()
+                        tmp.load_data(data, index)
+                        replacement_component = tmp.create_rcaide_structure()
+
+                    _replace_vehicle_component(
+                        rcaide_io.vehicle,
+                        category_name,
+                        index,
+                        replacement_component,
+                    )
+                    if tmp is not None:
+                        tmp.deleteLater()
+                    vehicle_component = None
 
         if vehicle_component:
             if tab_index == 5:
