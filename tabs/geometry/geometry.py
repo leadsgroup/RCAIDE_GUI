@@ -97,6 +97,8 @@ class GeometryWidget(TabWidget):
         self.main_layout = QStackedLayout()
         # Gate preview redraws during bulk operations (e.g., load from file).
         self._preview_updates_enabled = True
+        # Prevent stacked preview redraws during rapid edits.
+        self._preview_refresh_pending = False
         # Ensure VTK cleanup runs only once during shutdown.
         self._preview_cleaned_up = False
 
@@ -129,7 +131,14 @@ class GeometryWidget(TabWidget):
         self.tree.expandAll()
 
         # Reuse the full Geometry Visualization widget as an embedded preview.
-        self.preview_widget = VisualizeGeometryWidget(show_lopa=False, show_fuel_tanks=False, show_cargo_bays=False)
+        self.preview_widget = VisualizeGeometryWidget(
+            # Show cabin/seat layout in Aircraft Preview.
+            show_lopa=True,
+            show_fuel_tanks=False,
+            show_cargo_bays=False,
+            # The embedded preview shares the Qt event loop.
+            start_interactor=False,
+        )
         # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
         if hasattr(self.preview_widget, "toolbar"):
             self.preview_widget.toolbar.hide()
@@ -344,7 +353,7 @@ class GeometryWidget(TabWidget):
 
         # Keep preview synced with current geometry edits.
         if self._preview_updates_enabled:
-            self.preview_widget.run_solve()
+            self._refresh_preview()
 
         # Write changes back to the loaded file when explicitly requested.
         if persist and getattr(rcaide_io, "current_file_path", ""):
@@ -364,7 +373,7 @@ class GeometryWidget(TabWidget):
         if not isinstance(rcaide_io.rcaide_vehicle, list):
             tag = getattr(rcaide_io.vehicle, "tag", "")
             self.vehicle_name_input.setText(str(tag))
-            self.preview_widget.run_solve()
+            self._refresh_preview()
             return
 
         # Avoid repeated expensive redraws while reconstructing full geometry tree.
@@ -399,12 +408,30 @@ class GeometryWidget(TabWidget):
 
         self._preview_updates_enabled = True
         # Single redraw after all loaded parts are in place.
-        self.preview_widget.run_solve()
+        self._refresh_preview()
         self.tree.expandAll()
 
     def update_layout(self):
         # Refresh preview when this tab becomes active.
-        self.preview_widget.run_solve()
+        self._refresh_preview()
+
+    def _refresh_preview(self):
+        # Queue one preview redraw at a time.
+        if (
+            not self._preview_updates_enabled
+            or self._preview_cleaned_up
+            or self._preview_refresh_pending
+        ):
+            return
+        self._preview_refresh_pending = True
+
+        def redraw():
+            self._preview_refresh_pending = False
+            if self._preview_cleaned_up or not self.preview_widget.isVisible():
+                return
+            self.preview_widget.run_solve()
+
+        QTimer.singleShot(0, redraw)
 
     def eventFilter(self, watched, event):
         watched_preview = watched in {
