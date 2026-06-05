@@ -204,13 +204,11 @@ class CustomPanInteractorStyle(vtkInteractorStyleTrackballCamera):
         interactor.GetRenderWindow().Render()  
 
 class VisualizeGeometryWidget(TabWidget):
-    def __init__(self, show_lopa=True, show_fuel_tanks=True, show_cargo_bays=True, start_interactor=True):
+    def __init__(self, show_lopa=True, show_fuel_tanks=True, show_cargo_bays=True):
         super(VisualizeGeometryWidget, self).__init__()
         self._show_lopa        = show_lopa
         self._show_fuel_tanks  = show_fuel_tanks
         self._show_cargo_bays  = show_cargo_bays
-        # Embedded previews should not start their own VTK event loop.
-        self._start_interactor = start_interactor
 
         base_layout = QHBoxLayout()
         tree_layout = QVBoxLayout()
@@ -646,9 +644,7 @@ class VisualizeGeometryWidget(TabWidget):
         # self.vtkWidget.show()
         # Start the VTK interactor
         self.render_window_interactor.Initialize()
-        # Full visualization starts VTK; embedded previews only render.
-        if self._start_interactor:
-            self.render_window_interactor.Start()
+        self.render_window_interactor.Start()
         self.get_camera=self.renderer.GetActiveCamera()
         self.update_toolbar()
         if rcaide_io.vehicle.wings:
