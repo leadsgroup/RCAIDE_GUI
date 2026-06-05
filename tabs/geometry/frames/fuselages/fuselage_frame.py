@@ -125,8 +125,10 @@ class FuselageFrame(GeometryFrame):
         entered_data, fuselage = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
+                # Update the live RCAIDE fuselage, including cabins.
                 self.index = self.save_function(
-                    tab_index=self.tab_index, index=self.index, data=entered_data, persist=True)
+                    tab_index=self.tab_index, index=self.index,
+                    vehicle_component=fuselage, data=entered_data, persist=True)
                 return
             else:
                 self.index = self.save_function(
@@ -177,10 +179,15 @@ class FuselageFrame(GeometryFrame):
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
         fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
+        fuselage.tag = self.name_line_edit.text()
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(fuselage, rcaide_label, data[user_label][0])
+
+        # Infer missing cabin length for LOPA.
+        if fuselage.lengths.cabin <= 0 and fuselage.lengths.total > fuselage.lengths.nose + fuselage.lengths.tail:
+            fuselage.lengths.cabin = fuselage.lengths.total - fuselage.lengths.nose - fuselage.lengths.tail
         
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
@@ -231,14 +238,18 @@ class FuselageFrame(GeometryFrame):
 
             fuselage_section = item.widget()
             if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
-                segment_data, segment = fuselage_section.get_data_values()
+                # Segment object was already appended.
+                segment_data, _ = fuselage_section.get_data_values()
                 data["segments"].append(segment_data)
-                fuselage.append_segment(segment)
 
         assert self.name_line_edit is not None
         data["name"] = self.name_line_edit.text()
+        if fuselage.lengths.cabin > 0:
+            data["Lengths Cabin"] = [fuselage.lengths.cabin, 0]
 
         data["cabins"] = []
+        if not hasattr(fuselage, "cabins"):
+            fuselage.cabins = RCAIDE.Library.Components.Fuselages.Cabins.Cabin.Container()
         for i in range(self.cabins_layout.count()):
             item = self.cabins_layout.itemAt(i)
             if item is None:
@@ -248,7 +259,11 @@ class FuselageFrame(GeometryFrame):
             if cabin_widget is not None and isinstance(cabin_widget, CabinWidget):
                 cabin_data, cabin = cabin_widget.get_data_values()
                 data["cabins"].append(cabin_data)
-                fuselage.cabins.append(cabin)
+                # Support both RCAIDE container APIs.
+                if hasattr(fuselage.cabins, "append_cabin"):
+                    fuselage.cabins.append_cabin(cabin)
+                else:
+                    fuselage.cabins.append(cabin)
         return data, fuselage
 
     def load_data(self, data, index):

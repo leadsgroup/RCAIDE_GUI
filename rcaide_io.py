@@ -486,6 +486,86 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             "segment_type":       fuselage_segment_type_label_for_ui(segment),
         }
 
+    # Preserve nested cabin/class data through GUI load/save.
+    def cabin_class_type_label_for_ui(class_dict):
+        # Get class type from saved RCAIDE type.
+        type_str = class_dict.get('__type__', '')
+        class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+        return class_name if class_name in {"Economy", "Business", "First"} else "Economy"
+
+    def cabin_class_to_ui(class_dict):
+        # Convert one cabin class to GUI data.
+        # RCAIDE may use either spelling.
+        seats_abreast = class_dict.get("number_of_seats_abrest", class_dict.get("number_of_seats_abreast", 0))
+        number_of_rows = class_dict.get("number_of_rows", 0)
+        number_of_seats = class_dict.get("number_of_seats", 0)
+        # Fill missing seat count.
+        if not number_of_seats and seats_abreast and number_of_rows:
+            number_of_seats = seats_abreast * number_of_rows
+
+        ui_class = {
+            "class_type":              cabin_class_type_label_for_ui(class_dict),
+            "Number of Passengers":    [class_dict.get("number_of_passengers", 0), 0],
+            "Number of Seats Abreast": [seats_abreast, 0],
+            "Number of Rows":          [number_of_rows, 0],
+            "Number of Seats":         [number_of_seats, 0],
+            "Seat Width":              [class_dict.get("seat_width", 0), 0],
+            "Seat Arm Rest Width":     [class_dict.get("seat_arm_rest_width", 0), 0],
+            "Seat Length":             [class_dict.get("seat_length", 0), 0],
+            "Seat Pitch":              [class_dict.get("seat_pitch", 0), 0],
+            "Aisle Width":             [class_dict.get("aisle_width", 0), 0],
+        }
+
+        # Keep hidden RCAIDE fields.
+        for key, value in class_dict.items():
+            if key not in ui_class and key != "__type__":
+                ui_class[key] = make_json_safe(value)
+        return ui_class
+
+    def cabin_type_label_for_ui(cabin_dict):
+        # Get cabin type from saved RCAIDE type.
+        type_str = cabin_dict.get('__type__', '')
+        class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+        return "Side" if class_name == "Side_Cabin" else "Regular"
+
+    def cabin_to_ui(cabin_dict):
+        # Convert one cabin to GUI data.
+        classes = cabin_dict.get("classes", {})
+        if isinstance(classes, dict):
+            class_list = [cabin_class_to_ui(c) for c in classes.values() if is_mapping(c)]
+        elif isinstance(classes, list):
+            class_list = [cabin_class_to_ui(c) for c in classes if is_mapping(c)]
+        else:
+            class_list = []
+
+        ui_cabin = {
+            "Cabin Name":                cabin_dict.get("tag", ""),
+            "cabin_type":                cabin_type_label_for_ui(cabin_dict),
+            "Number of Passengers":      [cabin_dict.get("number_of_passengers", 0), 0],
+            "Number of Seats":           [cabin_dict.get("number_of_seats", 0), 0],
+            "Type A Door Length":        [cabin_dict.get("type_a_door_length", 0), 0],
+            "Galley Lavatory Length":    [cabin_dict.get("galley_lavatory_length", 0), 0],
+            "Emergency Exit Seat Pitch": [cabin_dict.get("emergency_exit_seat_pitch", 0), 0],
+            "Length":                    [cabin_dict.get("length", 0), 0],
+            "Width":                     [cabin_dict.get("width", 0), 0],
+            "Height":                    [cabin_dict.get("height", 0), 0],
+            "Wide Body":                 [cabin_dict.get("wide_body", False), 0],
+            "classes":                   class_list,
+        }
+
+        for key, value in cabin_dict.items():
+            if key not in ui_cabin and key not in {"__type__", "classes"}:
+                ui_cabin[key] = make_json_safe(value)
+        return ui_cabin
+
+    def cabins_to_ui(cabins):
+        # Convert all cabins to GUI data.
+        if isinstance(cabins, dict):
+            return [cabin_to_ui(c) for c in cabins.values() if is_mapping(c)]
+        if isinstance(cabins, list):
+            return [cabin_to_ui(c) for c in cabins if is_mapping(c)]
+        return []
+
     def to_ui_format(component_dict, frame_class):
         ui_dict = {"name": component_dict.get("tag", component_dict.get("name", ""))}
         if hasattr(frame_class, 'data_units_labels'):
@@ -545,8 +625,8 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             else:
                 ui_dict["control_surfaces"] = []
 
-            ui_dict.setdefault("cabins", [])
-            ui_dict.setdefault("side_cabins", [])
+            ui_dict["cabins"] = cabins_to_ui(component_dict.get("cabins", {}))
+            ui_dict["side_cabins"] = cabins_to_ui(component_dict.get("side_cabins", {}))
 
         if frame_class.__name__ == 'FuselageFrame':
             segments = component_dict.get("segments", {})
@@ -557,7 +637,8 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             else:
                 ui_dict["segments"] = []
 
-            ui_dict.setdefault("cabins", [])
+            # Keep loaded cabins attached.
+            ui_dict["cabins"] = cabins_to_ui(component_dict.get("cabins", {}))
 
         return ui_dict
 
