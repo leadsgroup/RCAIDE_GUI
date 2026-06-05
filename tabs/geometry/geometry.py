@@ -129,7 +129,13 @@ class GeometryWidget(TabWidget):
         self.tree.expandAll()
 
         # Reuse the full Geometry Visualization widget as an embedded preview.
-        self.preview_widget = VisualizeGeometryWidget(show_lopa=False, show_fuel_tanks=False, show_cargo_bays=False)
+        self.preview_widget = VisualizeGeometryWidget(
+            show_lopa=False,
+            show_fuel_tanks=False,
+            show_cargo_bays=False,
+            # Embedded preview uses Qt's event loop.
+            start_interactor=False,
+        )
         # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
         if hasattr(self.preview_widget, "toolbar"):
             self.preview_widget.toolbar.hide()
