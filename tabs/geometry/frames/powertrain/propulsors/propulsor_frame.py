@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/powertrain/sources/energy_source_frame.py
+# RCAIDE_GUI/tabs/geometry/frames/powertrain/propulsors/propulsor_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 
@@ -14,9 +14,9 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 
 # RCAIDE GUI imports  
 from tabs.geometry.widgets.powertrain.propulsors.turbofan_widget import TurbofanWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
-import values
+import rcaide_io
 
 # --------------------------------------------------------------------------------------------------------------------- 
 #  Propulsor Frame 
@@ -73,7 +73,7 @@ class PropulsorFrame(QWidget):
         # Collect data from additional fuselage_widget
         data = []
         propulsors = []
-        values.propulsor_names = [[]]
+        rcaide_io.propulsor_names = [[]]
         for index in range(self.propulsor_sections_layout.count()):
             item = self.propulsor_sections_layout.itemAt(index)
             assert item is not None

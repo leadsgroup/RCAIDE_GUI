@@ -1,13 +1,44 @@
+# RCAIDE_GUI/tabs/geometry/widgets/fuselages/cabin_class_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
+import math
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame, QComboBox)
 
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class CabinClassWidget(QWidget):
+    # Visible fields; preserve everything else.
+    visible_data_keys = {
+        "class_type",
+        "Number of Passengers",
+        "Number of Seats Abreast",
+        "Number of Rows",
+        "Number of Seats",
+        "Seat Width",
+        "Seat Arm Rest Width",
+        "Seat Length",
+        "Seat Pitch",
+        "Aisle Width",
+        "number_of_passengers",
+        "number_of_seats_abrest",
+        "number_of_seats_abreast",
+        "number_of_rows",
+        "number_of_seats",
+        "seat_width",
+        "seat_arm_rest_width",
+        "seat_length",
+        "seat_pitch",
+        "aisle_width",
+    }
+
     def __init__(self, index, on_delete, section_data=None):
         # Initializing the CabinClassWidget
         super().__init__()
@@ -15,6 +46,8 @@ class CabinClassWidget(QWidget):
         self.on_delete = on_delete
         self.data_entry_widget: DataEntryWidget | None = None
         self.header_layout = QHBoxLayout()
+        # Hidden fields restored on save.
+        self.preserved_data = {}
         self.init_ui(section_data)
 
     # noinspection DuplicatedCode
@@ -80,16 +113,44 @@ class CabinClassWidget(QWidget):
 
         #setting all values from data entry to the rcaide structure
         classtype.number_of_passengers = int(data["Number of Passengers"][0])
-        classtype.number_of_seats_abreast = int(data["Number of Seats Abreast"][0])
-        classtype.number_of_rows = int(data["Number of Rows"][0])
-        classtype.number_of_seats = int(data["Number of Seats"][0])
+        seats_abreast = int(data["Number of Seats Abreast"][0])
+        number_of_rows = int(data["Number of Rows"][0])
+        number_of_seats = int(data["Number of Seats"][0])
+        # Infer missing seat/row counts for LOPA.
+        if number_of_seats <= 0 and seats_abreast > 0 and number_of_rows > 0:
+            number_of_seats = seats_abreast * number_of_rows
+        if number_of_rows <= 0 and seats_abreast > 0 and number_of_seats > 0:
+            number_of_rows = math.ceil(number_of_seats / seats_abreast)
+        if seats_abreast > 0 and number_of_seats > seats_abreast * number_of_rows:
+            number_of_rows = math.ceil(number_of_seats / seats_abreast)
+        # RCAIDE/LOPA reads `abrest`; keep both spellings.
+        classtype.number_of_seats_abrest = seats_abreast
+        classtype.number_of_seats_abreast = seats_abreast
+        classtype.number_of_rows = number_of_rows
+        classtype.number_of_seats = number_of_seats
         classtype.seat_width = data["Seat Width"][0]
         classtype.seat_arm_rest_width = data["Seat Arm Rest Width"][0]
         classtype.seat_length = data["Seat Length"][0]
         classtype.seat_pitch = data["Seat Pitch"][0]
         classtype.aisle_width = data["Aisle Width"][0]
 
+        # Restore hidden RCAIDE fields.
+        for key, value in data.items():
+            if key not in self.visible_data_keys:
+                setattr(classtype, key, self._unwrap_value(value))
+
         return classtype
+
+    @staticmethod
+    def _unwrap_value(value):
+        if (
+            isinstance(value, list)
+            and len(value) == 2
+            and isinstance(value[1], int)
+            and not isinstance(value[1], bool)
+        ):
+            return value[0]
+        return value
 
     def get_data_values(self):
         #getting data from data entry widget
@@ -99,11 +160,24 @@ class CabinClassWidget(QWidget):
         #setting class type in data
         data_si["class_type"] = selected_type
         data["class_type"] = selected_type
+        # Preserve hidden fields in both data forms.
+        data.update(self.preserved_data)
+        data_si.update(self.preserved_data)
         classtype = self.create_rcaide_structure(data_si)
+        data["Number of Rows"] = [classtype.number_of_rows, 0]
+        data["Number of Seats"] = [classtype.number_of_seats, 0]
+        data_si["Number of Rows"] = [classtype.number_of_rows, 0]
+        data_si["Number of Seats"] = [classtype.number_of_seats, 0]
         return data, classtype
 
     def load_data_values(self, section_data):
         #loading data into data entry widget and setting class type
+        # Save hidden fields for round-trip.
+        self.preserved_data = {
+            key: value
+            for key, value in section_data.items()
+            if key not in self.visible_data_keys
+        }
         self.data_entry_widget.load_data(section_data)
         if "class_type" in section_data:
             self.class_type_combo.setCurrentText(section_data["class_type"])

@@ -1,21 +1,17 @@
-# RCAIDE/Library/Plots/Performance/Aerodynamics/plot_rotor_conditions.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
- 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE_GUI/tabs/solve/plots/aerodynamics/plot_rotor_conditions.py
 
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------      
+# ------------------------------------------------------------------------------
+# Plot Rotor Conditions
+# ------------------------------------------------------------------------------
 def plot_rotor_conditions(results,
                         save_figure = False,
                         show_legend=True,

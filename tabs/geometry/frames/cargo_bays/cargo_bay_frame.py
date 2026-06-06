@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
 # RCAIDE GUI imports  
 from tabs.geometry.frames        import GeometryFrame 
 from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Cargo Bay Frame 
@@ -26,9 +26,8 @@ class CargoBayFrame(GeometryFrame):
         ("Length", Units.Unitless, "length"),
         ("Width", Units.Unitless, "width"),
         ("Height", Units.Length, "height"),
-        ("Cargo Mass", Units.Mass, "cargo.mass_properties.mass"), 
-        ("Baggage Mass", Units.Mass, "baggage.mass_properties.mass"), 
-        ("Container Mass", Units.Mass, "container.mass_properties.mass"), 
+        # RCAIDE Cargo_Bay stores cargo mass directly; it has no baggage/container subobjects.
+        ("Cargo Mass", Units.Mass, "mass_properties.mass"), 
         ("Center of Gravity", Units.Position, "mass_properties.center_of_gravity"),
         ("Origin", Units.Position, "origin"),
     ]
@@ -49,6 +48,7 @@ class CargoBayFrame(GeometryFrame):
 
         # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
+        self.wire_auto_save(self.data_entry_widget)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
  
@@ -102,11 +102,11 @@ class CargoBayFrame(GeometryFrame):
         if self.save_function:
             if self.index >= 0:
                 self.index = self.save_function(
-                    tab_index=self.tab_index, index=self.index, data=entered_data)
+                    tab_index=self.tab_index, index=self.index, data=entered_data, persist=True)
                 return
             else:
                 self.index = self.save_function(
-                    tab_index=self.tab_index, vehicle_component=cargo_bay, data=entered_data, new=True)
+                    tab_index=self.tab_index, vehicle_component=cargo_bay, data=entered_data, new=True, persist=True)
 
             show_popup("Data Saved!", self)
         else:

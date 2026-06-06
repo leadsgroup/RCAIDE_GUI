@@ -1,14 +1,46 @@
+# RCAIDE_GUI/tabs/geometry/widgets/fuselages/cabin_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame)
 
 from utilities import Units, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 from tabs.geometry.widgets.fuselages.cabin_class_widget import CabinClassWidget
 
 
 class CabinWidget(QWidget):
+    # Visible fields; preserve everything else.
+    visible_data_keys = {
+        "Cabin Name",
+        "cabin_type",
+        "Number of Passengers",
+        "Number of Seats",
+        "Type A Door Length",
+        "Galley Lavatory Length",
+        "Emergency Exit Seat Pitch",
+        "Length",
+        "Width",
+        "Height",
+        "Wide Body",
+        "classes",
+        "tag",
+        "number_of_passengers",
+        "number_of_seats",
+        "type_a_door_length",
+        "galley_lavatory_length",
+        "emergency_exit_seat_pitch",
+        "length",
+        "width",
+        "height",
+        "wide_body",
+    }
+
     def __init__(self, index, on_delete, section_data=None, cabin_type="Regular"):
         super(CabinWidget, self).__init__()
         self.index = index
@@ -17,6 +49,8 @@ class CabinWidget(QWidget):
         self.data_entry_widget: DataEntryWidget | None = None
         self.name_layout = QHBoxLayout()
         self.classes_layout = QVBoxLayout()
+        # Hidden fields restored on save.
+        self.preserved_data = {}
         self.init_ui(section_data)
 
     # noinspection DuplicatedCode
@@ -116,7 +150,23 @@ class CabinWidget(QWidget):
         cabin.height = data["Height"][0]
         cabin.wide_body = data["Wide Body"][0]
 
+        # Restore hidden RCAIDE fields.
+        for key, value in data.items():
+            if key not in self.visible_data_keys:
+                setattr(cabin, key, self._unwrap_value(value))
+
         return cabin
+
+    @staticmethod
+    def _unwrap_value(value):
+        if (
+            isinstance(value, list)
+            and len(value) == 2
+            and isinstance(value[1], int)
+            and not isinstance(value[1], bool)
+        ):
+            return value[0]
+        return value
 
     def get_data_values(self):
         data = self.data_entry_widget.get_values()
@@ -124,6 +174,10 @@ class CabinWidget(QWidget):
         data["Cabin Name"] = self.name_layout.itemAt(2).widget().text()
         data["cabin_type"] = self.cabin_type
         data_si["Cabin Name"] = self.name_layout.itemAt(2).widget().text()
+        data_si["cabin_type"] = self.cabin_type
+        # Preserve hidden fields in both data forms.
+        data.update(self.preserved_data)
+        data_si.update(self.preserved_data)
         cabin_object = self.create_rcaide_structure(data_si)
 
         data["classes"] = []
@@ -141,6 +195,12 @@ class CabinWidget(QWidget):
         return data, cabin_object
 
     def load_data_values(self, section_data):
+        # Save hidden fields for round-trip.
+        self.preserved_data = {
+            key: value
+            for key, value in section_data.items()
+            if key not in self.visible_data_keys
+        }
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["Cabin Name"])
         if "cabin_type" in section_data:

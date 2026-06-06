@@ -1,21 +1,18 @@
-# RCAIDE/Library/Plots/Performance/Mission/plot_flight_conditions.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+# RCAIDE_GUI/tabs/solve/plots/mission/plot_flight_conditions.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------
+# Plot Flight Conditions
+# ------------------------------------------------------------------------------
 def plot_flight_conditions(results,
                            save_figure = False,
                            show_legend = True,

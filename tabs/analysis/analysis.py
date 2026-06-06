@@ -1,18 +1,27 @@
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
-    QTreeWidgetItem, QHeaderView, QPushButton, QLabel, QGroupBox
+# RCAIDE_GUI/tabs/analysis/analysis.py
+
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
 from tabs.mission.widgets import MissionAnalysisWidget
 from tabs.analysis.widgets import *
 from tabs import TabWidget
 from utilities import create_scroll_area
-import values
-import RCAIDE
+import rcaide_io
 
+# PyQt imports
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
+    QTreeWidgetItem, QHeaderView, QPushButton, QLabel, QGroupBox
 
+# ------------------------------------------------------------------------------
+# Analysis Widget
+# ------------------------------------------------------------------------------
 class AnalysisWidget(TabWidget):
     def __init__(self):
         super().__init__()
-        
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 10, 10, 10)
 
@@ -36,10 +45,10 @@ class AnalysisWidget(TabWidget):
         self.save_btn = QPushButton("Save Analyses")
         self.save_btn.setStyleSheet("background-color:#141b29; color:#e5f0ff; padding: 8px;")
         self.save_btn.clicked.connect(self.save_analyses_to_values)
-        
+
         btn_row.addStretch()
         btn_row.addWidget(self.save_btn)
-        
+
         layout.addLayout(btn_row)
 
     def save_analyses_to_values(self):
@@ -53,7 +62,7 @@ class AnalysisWidget(TabWidget):
         self.save_notice.setVisible(True)
         QTimer.singleShot(2500, lambda: self.save_notice.setVisible(False))
 
-        # Print a readable summary of what was written into `values.rcaide_analyses`.
+        # Print a readable summary of what was written into `rcaide_io.rcaide_analyses`.
         print("\n[Analyses Saved]")
         print(f"Configs: {len(saved_configs)}")
         print(f"Names: {', '.join(saved_configs) if saved_configs else 'None'}")
@@ -78,6 +87,6 @@ class AnalysisWidget(TabWidget):
 
     def get_data(self):
         return self.analysis_content.get_data()
-    
+
 def get_widget() -> QWidget:
     return AnalysisWidget()

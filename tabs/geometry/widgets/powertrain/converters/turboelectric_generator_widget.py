@@ -1,8 +1,14 @@
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/converters/turboelectric_generator_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QPushButton, QLineEdit
 from RCAIDE.Library.Components.Powertrain.Converters import Turboelectric_Generator
 
 from tabs.geometry.widgets import GeometryDataWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class TurboelectricGeneratorWidget(GeometryDataWidget):

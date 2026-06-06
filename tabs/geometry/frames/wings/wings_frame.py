@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/geometry/frames/wings.py
+# RCAIDE_GUI/tabs/geometry/frames/wings/wings_frame.py
 # 
 # Created:  Dec 2025, M. Clarke 
 
@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QLineEdit, QSizePolicy, QVBoxL
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import WingCSWidget, WingSectionWidget, CabinWidget
 from utilities import show_popup, create_line_bar, Units, create_scroll_area, set_data, clear_layout
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Wing Frame 
@@ -71,6 +71,7 @@ class WingsFrame(GeometryFrame):
 
         # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
+        self.wire_auto_save(self.data_entry_widget)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -175,12 +176,15 @@ class WingsFrame(GeometryFrame):
         entered_data, wing = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
+                # Existing wing edits must replace the current RCAIDE wing,
+                # not append another one or rebuild through a stale frame.
                 self.index = self.save_function(
-                    tab_index=self.tab_index, index=self.index, data=entered_data)
+                    tab_index=self.tab_index, index=self.index,
+                    vehicle_component=wing, data=entered_data, persist=True)
                 return
             else:
                 self.index = self.save_function(
-                    tab_index=self.tab_index, vehicle_component=wing, data=entered_data, new=True)
+                    tab_index=self.tab_index, vehicle_component=wing, data=entered_data, new=True, persist=True)
 
             show_popup("Data Saved!", self)
 
@@ -353,7 +357,8 @@ class WingsFrame(GeometryFrame):
             widget = item.widget()
             if widget is not None and isinstance(widget, WingCSWidget):
                 _, cs = widget.get_data_values()
-                wing.append_control_surface(cs)
+                if cs is not None:
+                    wing.append_control_surface(cs)
  
         return wing
 
@@ -373,8 +378,8 @@ class WingsFrame(GeometryFrame):
 
             widget = item.widget()
             if widget is not None and isinstance(widget, WingSectionWidget):
-                section_data, wing_section = widget.get_data_values()
-                wing.append_segment(wing_section)
+                # create_rcaide_structure already added the segment to wing.
+                section_data, _ = widget.get_data_values()
                 data["sections"].append(section_data)
 
         data["control_surfaces"] = []
@@ -385,8 +390,8 @@ class WingsFrame(GeometryFrame):
 
             widget = item.widget()
             if widget is not None and isinstance(widget, WingCSWidget):
-                cs_data, cs = widget.get_data_values()
-                wing.append_control_surface(cs)
+                # create_rcaide_structure already added valid control surfaces.
+                cs_data, _ = widget.get_data_values()
                 data["control_surfaces"].append(cs_data)
         
         data["cabins"] = []
@@ -426,7 +431,11 @@ class WingsFrame(GeometryFrame):
         clear_layout(self.wing_sections_layout)
         clear_layout(self.wing_cs_layout)
         clear_layout(self.cabins_layout)
+        # The widget lists are separate from the Qt layouts; clear both so
+        # switching wings cannot carry stale sub-widgets into the next save.
+        self.cabin_widgets.clear()
         clear_layout(self.side_cabins_layout)
+        self.side_cabin_widgets.clear()
         
         for section in data["sections"]:
             self.wing_sections_layout.addWidget(WingSectionWidget(
@@ -436,11 +445,11 @@ class WingsFrame(GeometryFrame):
             self.wing_cs_layout.addWidget(WingCSWidget(
                 self.wing_cs_layout.count(), self.delete_control_surface, section))
             
-        if "cabins" in data:
+        if isinstance(data.get("cabins"), list):
             for cabin_data in data["cabins"]:
                 self.add_regular_cabin(cabin_data)
         
-        if "side_cabins" in data:
+        if isinstance(data.get("side_cabins"), list):
             for cabin_data in data["side_cabins"]:
                 self.add_side_cabin(cabin_data)
 

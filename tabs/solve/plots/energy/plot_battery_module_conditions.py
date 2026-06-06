@@ -1,23 +1,17 @@
-## @ingroup Library-Plots-Energy
-# RCAIDE/Library/Plots/Energy/plot_battery_module_conditions.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/energy/plot_battery_module_conditions.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
-
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
-## @ingroup Library-Plots-Energy
+# ------------------------------------------------------------------------------
+# Plot Battery Module Conditions
+# ------------------------------------------------------------------------------
 def plot_battery_module_conditions(results,
                                   save_figure = False,
                                   show_legend = True,

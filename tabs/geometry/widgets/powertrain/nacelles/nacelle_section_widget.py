@@ -1,17 +1,16 @@
-# RCAIDE_GUI/tabs/geometry/widgets/nacelle/nacelle_section_widget.py
-# 
-# Created:  Dec 2025, M. Clarke 
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/nacelles/nacelle_section_widget.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports   
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
 import RCAIDE
 
 from tabs.geometry.widgets import GeometryDataWidget
 # RCAIDE GUI imports
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQT imports  
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget, \

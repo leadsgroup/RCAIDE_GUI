@@ -1,3 +1,9 @@
+# RCAIDE_GUI/tabs/mission/widgets/mission_segment_widget.py
+
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 from PyQt6.QtCore import QEvent, QObject, Qt
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit,
@@ -10,9 +16,9 @@ from tabs.mission.widgets.mission_segment_helper import (
     segment_rcaide_classes,
 )
 from utilities import Units, set_data, convert_name
-import values
+import rcaide_io
 import RCAIDE
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 class _MissionComboWheelGuard(QObject):
@@ -100,16 +106,9 @@ class MissionSegmentWidget(QWidget):
         self.details_layout.addWidget(self.nested_dropdown)
 
         self.details_layout.addWidget(QLabel("Vehicle Configuration:"))
-        config_names = [
-            c.get("config name", "")
-            for c in values.config_data
-            if isinstance(c, dict)
-        ]
+        cfg_container = getattr(rcaide_io, "rcaide_configs", None)
+        config_names  = list(cfg_container.keys()) if hasattr(cfg_container, 'keys') else []
         self.details_layout.addWidget(QLabel("Segment Details:"))
-        if not config_names:
-            cfg_container = getattr(values, "rcaide_configs", None)
-            if isinstance(cfg_container, dict):
-                config_names = list(cfg_container.keys())
         self.config_selector.addItems([n for n in config_names if n])
         self.details_layout.addWidget(self.config_selector)
 
@@ -159,7 +158,7 @@ class MissionSegmentWidget(QWidget):
             self._on_segment_name_change
         )
 
-        self._apply_defaults()
+        #self._apply_defaults()
         self._install_combo_wheel_guards()
 
     # ============================================================
@@ -220,49 +219,15 @@ class MissionSegmentWidget(QWidget):
 
         # Add the subsegment fields to the UI
         self.details_layout.addWidget(self.subsegment_entry_widget)
-        self._install_combo_wheel_guards(self.subsegment_entry_widget)
-        
-        # Re-apply DOF and control defaults once subsegment exists
-        if self.dof_entry_widget and self.flight_controls_widget:
-            self._apply_defaults()
-
-    def _default_config_key(self, top_text, sub_text, name_text):
-        # Normalize all inputs so comparisons are consistent
-        top = convert_name(top_text)
-        name = convert_name(name_text)
-
-        # Hard-map RCAIDE mission_setup tags to correct configs
-        if name:
-            tag_map = {
-                "takeoff_ground_run": "takeoff",
-                "takeoff_climb": "takeoff",
-                "inital_climb": "cutback",
-                "initial_climb": "cutback",
-                "climb_to_cruise_1": "cutback",
-                "climb_to_cruise_4": "cruise",
-                "cruise": "cruise",
-                "descent_1": "cruise",
-                "approach": "landing",
-                "final_approach": "landing",
-                "level_off_touchdown": "landing",
-                "landing": "reverse_thrust" if top == "ground" else "landing",
-            }
-            if name in tag_map:
-                return tag_map[name]
-
-        # Fallback to base config if nothing matched
-        return "base"
-
+        self._install_combo_wheel_guards(self.subsegment_entry_widget) 
 
     def _apply_config_default(self, config_key):
-        # Do nothing if no configuration data exists
-        if not values.config_data:
+        cfg_container = getattr(rcaide_io, "rcaide_configs", None)
+        if not hasattr(cfg_container, 'keys') or not cfg_container:
             return
-
-        # Select the configuration matching the inferred key
-        for idx, cfg in enumerate(values.config_data):
-            if convert_name(cfg.get("config name", "")) == config_key:
-                self.config_selector.setCurrentIndex(idx)
+        for key in cfg_container.keys():
+            if convert_name(key) == config_key:
+                self.config_selector.setCurrentText(key)
                 break
 
     def _on_segment_name_change(self, _):
@@ -279,44 +244,7 @@ class MissionSegmentWidget(QWidget):
 
         # Apply the inferred configuration
         self._apply_config_default(config_key)
-
-
-    def _apply_defaults(self):
-        # Skip defaults when restoring saved missions
-        if self._suppress_defaults:
-            return
-
-        # Read current UI values
-        top_text = self.top_dropdown.currentText()
-        sub_text = self.nested_dropdown.currentText()
-        name_text = self.segment_name_input.text()
-
-        # Ground segments cannot be trimmed
-        needs_trim = convert_name(top_text) != "ground"
-
-        dof_defaults = {}
-
-        # Enable only the forces needed for longitudinal trim
-        for label, _, _ in self.dof_entry_widget.data_units_labels:
-            dof_defaults[label] = (
-                label in {"Forces in X axis", "Forces in Z axis"} and needs_trim,
-                0,
-            )
-
-        # Apply DOF defaults to the UI
-        self.dof_entry_widget.load_data(dof_defaults)
-
-        # Ensure trim has at least throttle and body angle
-        self.flight_controls_widget.set_defaults(
-            throttle=needs_trim,
-            body_angle=needs_trim,
-        )
-
-        # Select the correct aircraft configuration
-        self._apply_config_default(
-            self._default_config_key(top_text, sub_text, name_text)
-        )
-
+        
     def _install_combo_wheel_guards(self, root=None):
         root = root or self
         # Apply the guard to existing mission-tab combo boxes, including any
@@ -330,13 +258,13 @@ class MissionSegmentWidget(QWidget):
     def get_form_data(self):
         # Save only the UI-entered mission fields; do not build RCAIDE objects here.
         data = {
-            "Segment Name": self.segment_name_input.text(),
-            "top dropdown": self.top_dropdown.currentIndex(),
+            "Segment Name":   self.segment_name_input.text(),
+            "top dropdown":   self.top_dropdown.currentIndex(),
             "nested dropdown": self.nested_dropdown.currentText(),
-            "config": self.config_selector.currentIndex(),
+            "config":         self.config_selector.currentText(),
             "Control Points": int(self.ctrl_points.text()),
-            "Solver": "root" if self.solver_root.isChecked() else "optimize",
-            "flight forces": self.dof_entry_widget.get_values(),
+            "Solver":         "root" if self.solver_root.isChecked() else "optimize",
+            "flight forces":  self.dof_entry_widget.get_values(),
             "flight controls": self.flight_controls_widget.get_data(),
         }
         data.update(self.subsegment_entry_widget.get_values())
@@ -354,7 +282,11 @@ class MissionSegmentWidget(QWidget):
         self.top_dropdown.setCurrentIndex(data["top dropdown"])
         self.populate_nested_dropdown(data["top dropdown"])
         self.nested_dropdown.setCurrentText(data["nested dropdown"])
-        self.config_selector.setCurrentIndex(data["config"])
+        config_val = data.get("config", "")
+        if isinstance(config_val, int):
+            self.config_selector.setCurrentIndex(config_val)
+        else:
+            self.config_selector.setCurrentText(str(config_val))
         self.ctrl_points.setText(str(data.get("Control Points", 16)))
 
         if data.get("Solver", "root") == "root":
@@ -404,10 +336,10 @@ class MissionSegmentWidget(QWidget):
             set_data(seg, rcaide_label, dof_vals[label][0])
 
         cfg = convert_name(self.config_selector.currentText())
-        analyses = values.rcaide_analyses.get(cfg)
+        analyses = rcaide_io.rcaide_analyses.get(cfg)
         if analyses is None or (hasattr(analyses, "__len__") and len(analyses) == 0):
             fallback = None
-            for candidate in values.rcaide_analyses.values():
+            for candidate in rcaide_io.rcaide_analyses.values():
                 if hasattr(candidate, "__len__") and len(candidate) > 0:
                     fallback = candidate
                     break

@@ -1,10 +1,16 @@
+# RCAIDE_GUI/tabs/geometry/widgets/wings/wing_cs_widget.py
+
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 import RCAIDE
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
                              QVBoxLayout, QWidget, QFrame, QComboBox)
 
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 data_units_labels = [
     [
@@ -33,10 +39,21 @@ data_units_labels = [
         ("Span Fraction End", Units.Unitless),
         ("Deflection", Units.Angle),
         ("Chord Fraction", Units.Unitless),
+    ], [
+        ("Span Fraction Start", Units.Unitless),
+        ("Span Fraction End", Units.Unitless),
+        ("Deflection", Units.Angle),
+        ("Chord Fraction", Units.Unitless),
     ]
 ]
 
 cs_types = ["Aileron", "Slat", "Flap", "Elevator", "Rudder", "Spoiler"]
+
+_REQUIRED_PREVIEW_FIELDS = (
+    "Span Fraction Start",
+    "Span Fraction End",
+    "Chord Fraction",
+)
 
 
 class WingCSWidget(QWidget):
@@ -112,6 +129,12 @@ class WingCSWidget(QWidget):
         self.cs_type = index
 
     def create_rcaide_structure(self, data):
+        # wing_planform expects these values to be numeric; skip incomplete
+        # control surfaces until the user fills enough fields for preview.
+        for field in _REQUIRED_PREVIEW_FIELDS:
+            if data.get(field, [None])[0] is None:
+                return None
+
         cs = None
         if self.cs_type == 0:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
@@ -123,12 +146,14 @@ class WingCSWidget(QWidget):
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
         elif self.cs_type == 4:
             cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
+        elif self.cs_type == 5:
+            cs = RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler()
 
         assert cs is not None
         cs.tag = data["CS name"]
         cs.span_fraction_start = data["Span Fraction Start"][0]
         cs.span_fraction_end = data["Span Fraction End"][0]
-        cs.deflection = data["Deflection"][0]
+        cs.deflection = data["Deflection"][0] or 0.0
         cs.chord_fraction = data["Chord Fraction"][0]
 
         if self.cs_type == 2:

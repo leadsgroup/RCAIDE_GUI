@@ -1,15 +1,3 @@
-## @defgroup Library-Plots-Energy 
-# RCAIDE/Library/Plots/Energy/__init__.py
-# 
+# RCAIDE_GUI/tabs/solve/plots/emissions/__init__.py
 
-"""
-RCAIDE Emissions Plotting Package
-
-This module provides visualization tools for analyzing and displaying emissions-related 
-data from vehicle and mission simulations. It focuses on greenhouse gas emissions.
-"""
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-
-from .plot_emissions      import  plot_emissions
+from .plot_emissions      import plot_emissions

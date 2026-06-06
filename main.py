@@ -1,14 +1,17 @@
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import QFileInfo 
+from PyQt6.QtCore import QFileInfo
 from qt_material import apply_stylesheet
-import values
+import rcaide_io
 from tabs import *
 from tabs.visualize_geometry import visualize_geometry
 
 import sys
-import os 
+import os
+
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+_IMG  = os.path.join(_ROOT, "app_data", "images")
 
 if sys.platform == "win32":
     import ctypes
@@ -20,7 +23,7 @@ class App(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("RCAIDE GUI")
-        self.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))
+        self.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
 
         menubar = self.menuBar()
         if menubar is None:
@@ -30,7 +33,7 @@ class App(QMainWindow):
         file_menu = menubar.addMenu("File")
         if file_menu is None:
             return
-        
+
         load_action = QAction("Load", self)
         load_action.triggered.connect(self.load_all)
 
@@ -53,19 +56,19 @@ class App(QMainWindow):
 
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
-        self.widgets.append((geometry.get_widget(), "Vehicle Setup")) 
+        self.widgets.append((geometry.get_widget(), "Vehicle Setup"))
         self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
         self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
-        self.widgets.append((analysis.get_widget(), "Analyses Setup")) 
-        self.widgets.append((mission.get_widget(), "Mission Setup"))  
+        self.widgets.append((analysis.get_widget(), "Analyses Setup"))
+        self.widgets.append((mission.get_widget(), "Mission Setup"))
         self.widgets.append((solve.get_widget(), "Mission Simulation"))
-        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
+        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses"))
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
 
         self.setCentralWidget(self.tabs)
-        self.resize(1280, 720) 
+        self.resize(1280, 720)
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()
@@ -76,35 +79,37 @@ class App(QMainWindow):
     def save_all(self):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
-          
-        json_data = values.write_to_json()
-        separator = os.path.sep
-        name      = QFileDialog.getSaveFileName(self, 'Save File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
-        
+
+        json_data = rcaide_io.write_to_json()
+        name      = QFileDialog.getSaveFileName(self, 'Save As', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
+
+        if not name:
+            return
         if not QFileInfo(name).suffix():
             name += ".json"
-        
-        file = open(name,'w')
-        file.write(json_data)
-        file.close()
-    
+
+        with open(name, 'w') as f:
+            f.write(json_data)
+        rcaide_io.current_file_path = name
+
     def load_all(self):
-        separator = os.path.sep
-        name      = QFileDialog.getOpenFileName(self, 'Open File', "app_data" + separator + "aircraft" + separator, "JSON (*.json)")[0]
-        
+        name = QFileDialog.getOpenFileName(self, 'Open File', os.path.join(_ROOT, "app_data", "aircraft"), "JSON (*.json)")[0]
+
         try:
             file = open(name, 'r')
         except FileNotFoundError:
             return
-        
+
         data_str = file.read()
         file.close()
-        values.read_from_json(data_str)
+        rcaide_io.current_file_path = name
+        rcaide_io.read_from_json(data_str, source_dir=os.path.dirname(os.path.abspath(name)))
         # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
         for i, (widget, tab_name) in enumerate(self.widgets):
             if tab_name == "Vehicle Setup":
                 # Keep the loaded geometry data before rebuilding the widget
-                loaded_geometry = values.geometry_data
+                loaded_geometry = rcaide_io.rcaide_vehicle
+                loaded_vehicle = rcaide_io.vehicle
                 # Remembers which tab the user was on
                 current_index = self.tabs.currentIndex()
                 # Remove the old Geometry tab (it holds duplicated UI state)
@@ -112,7 +117,8 @@ class App(QMainWindow):
                 # Create a fresh Geometry widget
                 new_widget = geometry.get_widget()
                 # Restore the loaded geometry data for load_from_values()
-                values.geometry_data = loaded_geometry
+                rcaide_io.rcaide_vehicle = loaded_geometry
+                rcaide_io.vehicle = loaded_vehicle
                 # Insert the fresh tab back into the same position
                 self.tabs.insertTab(i, new_widget, tab_name)
                 # Update our cached widgets list.
@@ -136,7 +142,7 @@ class App(QMainWindow):
                 return
 
 app = QApplication(sys.argv)
-app.setWindowIcon(QIcon(os.path.join("app_data", "images", "logo.png")))
+app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
 window = App()
 extra = {
     'density_scale': '-2',
@@ -145,8 +151,7 @@ extra = {
     'menubar': '#021a32',
     'font_size': '15px'
 }
-separator = os.path.sep
-apply_stylesheet(app, theme= "app_data" + separator + "style_sheets" + separator + 'rcaide_dark_theme.xml', extra=extra)
+apply_stylesheet(app, theme=os.path.join(_ROOT, "app_data", "style_sheets", "rcaide_dark_theme.xml"), extra=extra)
 custom_qss = app.styleSheet() + """
     QPushButton {
         border: 1px solid;

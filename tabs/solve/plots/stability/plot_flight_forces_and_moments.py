@@ -1,20 +1,17 @@
-# RCAIDE/Library/Plots/Stability/plot_stability_forces_and_moments.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE_GUI/tabs/solve/plots/stability/plot_flight_forces_and_moments.py
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
+
+# Python imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------
+# Plot Flight Forces and Moments
+# ------------------------------------------------------------------------------
 def plot_flight_forces_and_moments(results,
                              save_figure = False,
                              show_legend = True,

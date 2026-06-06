@@ -1,11 +1,13 @@
-# ===================================
-# Gridline Overlay Toggle
-# ===================================
-# Simple grid overlay system for VTK render window, with a checkbox toggle in the toolbar
+# RCAIDE_GUI/tabs/visualize_geometry/features/grid.py
 
-from PyQt6.QtWidgets import QCheckBox
-import vtk
+# RCAIDE-GUI Imports
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
+
+# PyQt imports
+from PyQt6.QtWidgets import QCheckBox
+
+# Python imports
+import vtkmodules.all as vtk
 
 def add_fullscreen_grid(renderer, divisions=12):
     """Create a layer-1 overlay renderer that draws a 2D grid across the window.

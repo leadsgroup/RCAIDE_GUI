@@ -1,11 +1,22 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
+# RCAIDE_GUI/tabs/analysis/widgets/energy_widget.py
 
+# Created: May 2023, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+
+# RCAIDE-GUI imports
 from utilities import create_line_bar
 from tabs.analysis.widgets import AnalysisDataWidget
 
-import RCAIDE
+# PyQt imports
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
-
+# ------------------------------------------------------------------------------
+# Energy Widget
+# ------------------------------------------------------------------------------
 class EnergyWidget(AnalysisDataWidget):
     def __init__(self):
         super(EnergyWidget, self).__init__()

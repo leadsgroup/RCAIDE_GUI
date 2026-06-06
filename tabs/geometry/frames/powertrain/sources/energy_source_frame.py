@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, \
 
 # RCAIDE GUI imports
 from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget import FuelTankWidget
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 
 # --------------------------------------------------------------------------------------------------------------------- 

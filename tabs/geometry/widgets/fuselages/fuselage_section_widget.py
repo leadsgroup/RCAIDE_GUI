@@ -1,22 +1,21 @@
 # RCAIDE_GUI/tabs/geometry/widgets/fuselages/fuselage_section_widget.py
-# 
-# Created:  Dec 2025, M. Clarke 
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports   
+# Created: Dec 2025, M. Clarke
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+# RCAIDE imports
 import RCAIDE
 
 # RCAIDE GUI imports
 from utilities import Units
-from widgets import DataEntryWidget
+from common_widgets import DataEntryWidget
 
 # PyQT imports  
 from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame, QComboBox
 from PyQt6.QtCore import Qt
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Fuselage Section Widget 
+#  Fuselage Segment Widget
 # ---------------------------------------------------------------------------------------------------------------------- 
 class FuselageSectionWidget(QWidget):
     def __init__(self, index, on_delete, section_data=None):
@@ -67,7 +66,7 @@ class FuselageSectionWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
-        delete_button = QPushButton("Delete Section", self)
+        delete_button = QPushButton("Delete Segment", self)
         delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
         # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         # delete_button.setFixedWidth(150)
