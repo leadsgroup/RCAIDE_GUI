@@ -141,24 +141,28 @@ class App(QMainWindow):
                     current_widget.update_layout()
                 return
 
-app = QApplication(sys.argv)
-app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
-window = App()
-extra = {
-    'density_scale': '-2',
-    'delete': '#b0220c',
-    'save': '#0291de',
-    'menubar': '#021a32',
-    'font_size': '15px'
-}
-apply_stylesheet(app, theme=os.path.join(_ROOT, "app_data", "style_sheets", "rcaide_dark_theme.xml"), extra=extra)
-custom_qss = app.styleSheet() + """
-    QPushButton {
-        border: 1px solid;
-        border-radius: 4px;
-        border-color: #ffffff;
+def main():
+    app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
+    window = App()
+    extra = {
+        'density_scale': '-2',
+        'delete': '#b0220c',
+        'save': '#0291de',
+        'menubar': '#021a32',
+        'font_size': '15px'
     }
-"""
-app.setStyleSheet(custom_qss)
-window.show()
-sys.exit(app.exec())
+    apply_stylesheet(app, theme=os.path.join(_ROOT, "app_data", "style_sheets", "rcaide_dark_theme.xml"), extra=extra)
+    custom_qss = app.styleSheet() + """
+        QPushButton {
+            border: 1px solid;
+            border-radius: 4px;
+            border-color: #ffffff;
+        }
+    """
+    app.setStyleSheet(custom_qss)
+    window.show()
+    sys.exit(app.exec())
+
+if __name__ == '__main__':
+    main()
