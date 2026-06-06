@@ -7,9 +7,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE GUI Imports
 import RCAIDE
-import values
+import rcaide_io
 from tabs.mission.widgets.mission_analysis_widget import MissionAnalysisWidget
 from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
+from tabs.mission.mission import _extract_gui_segments
 from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
 
 # PtQT imports 
@@ -17,12 +18,22 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPus
 from PyQt6.QtCore import Qt, QSize, QObject, QThread, QTimer, pyqtSignal
 import pyqtgraph as pg
 
-# numpy imports 
+# numpy imports
 import numpy as np
 import re
 import traceback
 import os
 from datetime import datetime
+import matplotlib.colors as mcolors
+
+# Parula colormap (MATLAB default) — defined from its known anchor points.
+_PARULA_CMAP = mcolors.LinearSegmentedColormap.from_list("parula", [
+    [0.2081, 0.1663, 0.5292],
+    [0.0196, 0.4061, 0.8754],
+    [0.0762, 0.6631, 0.7859],
+    [0.3672, 0.7897, 0.3832],
+    [0.9764, 0.8431, 0.1255],
+])
 
 # gui imports 
 from tabs import TabWidget
@@ -230,6 +241,7 @@ class SolveWidget(TabWidget):
         for category, options in self.plot_options.items():
             category_item = QTreeWidgetItem([category])
             self.tree.addTopLevelItem(category_item)
+            category_item.setExpanded(True)
 
             for option in options:
                 option_item = QTreeWidgetItem([option])
@@ -242,37 +254,39 @@ class SolveWidget(TabWidget):
         # Use local imports to avoid extra startup/circular import issues.
 
         # Read mission built in Mission tab.
-        mission = getattr(values, "rcaide_mission", None)
-        if mission is None:
-            raise RuntimeError("No mission defined.")
+        mission = getattr(rcaide_io, "rcaide_mission", None)
 
         # Read saved aircraft configs, or build them from geometry if missing.
-        configs = getattr(values, "rcaide_configs", None)
-        if not isinstance(configs, dict) or not configs: 
-            # Save generated configs so other tabs can reuse them.
-            values.rcaide_configs = build_rcaide_configs_from_geometry()
-            configs = values.rcaide_configs
-            
-        # If mission has no segments, rebuild it from saved mission_data.
-        if not getattr(mission, "segments", []):
-            if values.mission_data:
+        # rcaide_configs is a Config.Container (not a plain dict), so only rebuild
+        # when it is genuinely absent or empty.
+        configs = getattr(rcaide_io, "rcaide_configs", None)
+        if not configs:
+            rcaide_io.rcaide_configs = build_rcaide_configs_from_geometry()
+            configs = rcaide_io.rcaide_configs
+
+        # If mission is missing or has no segments, rebuild it from saved mission_data.
+        if mission is None or not getattr(mission, "segments", []):
+            if rcaide_io.mission_data:
                 # Ensure analyses exist before rebuilding segments.
-                if not getattr(values, "rcaide_analyses", None):
+                if not getattr(rcaide_io, "rcaide_analyses", None):
                     MissionAnalysisWidget().save_analyses()
 
                 # Recreate mission and append each saved segment.
                 mission = RCAIDE.Framework.Mission.Sequential_Segments()
-                for seg_data in values.mission_data:
+                for seg_data in _extract_gui_segments(rcaide_io.mission_data):
                     seg = MissionSegmentWidget()
                     seg.load_data(seg_data)
                     _, rcaide_segment = seg.get_data()
                     mission.append_segment(rcaide_segment)
 
                 # Save rebuilt mission back to shared state.
-                values.rcaide_mission = mission
+                rcaide_io.rcaide_mission = mission
             else:
-                # No mission to run.
-                raise RuntimeError("No mission segments available. Save the mission first.")
+                QMessageBox.critical(
+                    self, "No Mission",
+                    "No mission segments found. Build and save a mission first."
+                )
+                return
 
         # Ignore click if a solve is already running.
         if self._solve_thread is not None and self._solve_thread.isRunning():
@@ -332,7 +346,7 @@ class SolveWidget(TabWidget):
             self.loading_dialog = None
 
     def _on_solve_finished(self, results, output):
-        import values
+        import rcaide_io
         # Parse and print solver warnings (if any).
         warnings = _summarize_solve_output(output)
         if warnings and not _warnings_already_reported(output):
@@ -342,7 +356,7 @@ class SolveWidget(TabWidget):
 
         # Store results and refresh plots.
         print("Completed Mission Simulation")
-        values.rcaide_results = results
+        rcaide_io.rcaide_results = results
         self.render_solve_plots(results)
         self._set_loading_state(False)
 
@@ -452,8 +466,8 @@ class SolveWidget(TabWidget):
 
     def _render_from_latest_results(self):
         # Rebuild plots from the latest saved mission results.
-        import values
-        results = getattr(values, "rcaide_results", None)
+        import rcaide_io
+        results = getattr(rcaide_io, "rcaide_results", None)
         # Only render when results exist.
         if results is not None:
             self.render_solve_plots(results)
@@ -747,12 +761,11 @@ class SolveWidget(TabWidget):
 
     def _build_plot_parameters(self, results):
         from RCAIDE.Framework.Core import Data
-        # Build shared style settings passed into plot functions.
         plot_parameters = Data()
         plot_parameters.line_width = 5
         plot_parameters.line_style = '-'
-        # Keep mission lines white.
-        plot_parameters.line_colors = np.tile(np.array([1.0, 1.0, 1.0, 1.0]), (len(results.segments), 1))
+        n = max(len(results.segments), 1)
+        plot_parameters.line_colors = np.array([_PARULA_CMAP(i / max(n - 1, 1)) for i in range(n)])
         plot_parameters.marker_size = 8
         plot_parameters.legend_font_size = 12
         plot_parameters.axis_font_size = 14
@@ -960,7 +973,7 @@ def _apply_solve_graph_skin(self):
     """
 
     for attr_name in dir(self):
-        widget = getattr(self, attr_name)
+        widget = getattr(self, attr_name, None)
 
         # Only affect graph containers (not plot logic or data)
         if not isinstance(widget, pg.PlotWidget):
@@ -1152,8 +1165,8 @@ def apply_plot_settings(self):
     if hasattr(self, "_dynamic_plot_widgets"):
         plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
     plots.extend([
-        getattr(self, name) for name in dir(self)
-        if isinstance(getattr(self, name), pg.PlotWidget)
+        getattr(self, name, None) for name in dir(self)
+        if isinstance(getattr(self, name, None), pg.PlotWidget)
     ])
 
     # De-duplicate while preserving order.
@@ -1392,8 +1405,8 @@ def toggle_plot_visibility(self, item, column):
         return
 
     # Re-render selected plots based on current tree state (debounced).
-    import values
-    results = getattr(values, "rcaide_results", None)
+    import rcaide_io
+    results = getattr(rcaide_io, "rcaide_results", None)
     if results is not None and hasattr(self, "_schedule_plot_render"):
         self._schedule_plot_render()
 

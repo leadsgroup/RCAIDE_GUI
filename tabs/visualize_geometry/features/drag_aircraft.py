@@ -157,6 +157,7 @@ def add_drag_button(self):
         # grab actor containers from the widget (whatever exists)
         groups = {
             "Fuselages": getattr(self, "fuselage_actors", None),
+            "Nacelles": getattr(self, "nacelle_actors", None),
             "Wings": getattr(self, "wing_actors", None), 
             "Rotors": getattr(self, "rotor_actors", None),
             "Booms": getattr(self, "boom_actors", None),

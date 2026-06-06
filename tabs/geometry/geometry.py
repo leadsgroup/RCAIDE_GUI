@@ -9,7 +9,7 @@ from tabs.geometry.frames import *
 from tabs import TabWidget
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
 from utilities import set_data
-import values
+import rcaide_io
 
 # PyQt imports
 from PyQt6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QTimer
@@ -17,7 +17,61 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStack
     QLabel, QLineEdit, QApplication
 
 # Python imports
+from typing import Type
 import vtk
+import os
+
+# Maps geometry tab name → rcaide_io.vehicle container attribute name.
+_TAB_TO_CONTAINER = {
+    "Booms":        "booms",
+    "Cargo Bays":   "cargo_bays",
+    "Fuselages":    "fuselages",
+    "Landing Gear": "landing_gears",
+    "Wings":        "wings",
+}
+
+_TAB_TO_BASE_CLASS = {
+    # Used to keep RCAIDE's internal component map pointed at rebuilt containers.
+    "Booms":        RCAIDE.Library.Components.Booms.Boom,
+    "Cargo Bays":   RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay,
+    "Fuselages":    RCAIDE.Library.Components.Fuselages.Fuselage,
+    "Landing Gear": RCAIDE.Library.Components.Landing_Gear.Landing_Gear,
+    "Wings":        RCAIDE.Library.Components.Wings.Wing,
+}
+
+
+def _replace_vehicle_component(vehicle, category_name, index, component):
+    """Replace one RCAIDE component without changing sibling component keys."""
+    # Find the vehicle container for this GUI category.
+    container_key = _TAB_TO_CONTAINER.get(category_name)
+    base_class = _TAB_TO_BASE_CLASS.get(category_name)
+    if container_key is None or base_class is None:
+        return
+
+    # Get the current RCAIDE container, such as vehicle.wings.
+    container = getattr(vehicle, container_key, None)
+    if container is None:
+        return
+
+    # Work with an ordered list so replacing one item keeps all siblings.
+    components = list(container)
+    if not 0 <= index < len(components):
+        return
+
+    # Replace only the selected component.
+    components[index] = component
+    # RCAIDE containers normalize tags during append; rebuilding keeps the
+    # key order and avoids stale keys that can hide or duplicate wings.
+    rebuilt = container.__class__()
+    for item in components:
+        rebuilt.append(item)
+
+    # Put the rebuilt container back on the vehicle.
+    setattr(vehicle, container_key, rebuilt)
+    root_map = getattr(vehicle, "_component_root_map", None)
+    if root_map is not None:
+        # Keep RCAIDE append/find logic pointed at the new container.
+        root_map[base_class] = rebuilt
 
 # ------------------------------------------------------------------------------
 # Geometry Widget
@@ -34,11 +88,8 @@ class GeometryWidget(TabWidget):
 
         options = ["Add Vehicle Component", "Add Boom", "Add Cargo Bay", "Add Fuselage", "Add Landing Gear" , "Add Powertrain", "Add Wing"]
 
-        values.geometry_data = []
-        values.vehicle = RCAIDE.Vehicle()
-
-        for _ in range(len(self.tabs)):
-            values.geometry_data.append([])
+        rcaide_io.rcaide_vehicle = rcaide_io.new_rcaide_vehicle_data()
+        rcaide_io.vehicle = RCAIDE.Vehicle()
 
         base_layout = QHBoxLayout()
         self.tree_frame_layout = QVBoxLayout()
@@ -78,7 +129,19 @@ class GeometryWidget(TabWidget):
         self.tree.expandAll()
 
         # Reuse the full Geometry Visualization widget as an embedded preview.
-        self.preview_widget = Core3DViewer()
+        self.preview_widget = VisualizeGeometryWidget(
+            show_lopa=False,
+            show_fuel_tanks=False,
+            show_cargo_bays=False,
+            # Embedded preview uses Qt's event loop.
+            start_interactor=False,
+        )
+        # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
+        if hasattr(self.preview_widget, "toolbar"):
+            self.preview_widget.toolbar.hide()
+        if hasattr(self.preview_widget, "colorbar_widget") and self.preview_widget.colorbar_widget:
+            self.preview_widget.colorbar_widget.hide()
+        self.preview_widget.setMinimumHeight(180)
 
         # Wrap preview in a titled box so users can identify it clearly.
         self.preview_container = QWidget()
@@ -130,8 +193,6 @@ class GeometryWidget(TabWidget):
         # Initially display the DefaultFrame
         self.main_layout.setCurrentIndex(0)
         self.setLayout(base_layout)
-
-
 
     def on_dropdown_change(self, index):
         """Change the index of the main layout based on the selected index of the dropdown.
@@ -194,9 +255,9 @@ class GeometryWidget(TabWidget):
             index = component_item.indexOfChild(item)
             frame = self.main_layout.currentWidget()
             assert isinstance(frame, GeometryFrame)
-            frame.load_data(values.geometry_data[tab_index][index], index)
+            frame.load_data(rcaide_io.rcaide_vehicle[tab_index][index], index)
 
-    def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False):
+    def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False, persist=False):
         """Save the entered data in a frame to the list.
 
         Args:
@@ -206,18 +267,19 @@ class GeometryWidget(TabWidget):
             vehicle_component: The vehicle component to be appended to the vehicle.
             data: The data to be saved.
             new: A flag to indicate if the data is of a new element.
+            persist: When True, write the updated data back to the currently loaded JSON file.
         """
         if data is None:
             return
 
         assert tab_index >= 0
         if tab_index == 0:
-            values.geometry_data[0] = data
-            values.vehicle.tag = data["name"]
+            rcaide_io.rcaide_vehicle[0] = data
+            rcaide_io.vehicle.tag = data["name"]
             for data_unit_label in VehicleFrame.data_units_labels:
                 rcaide_label = data_unit_label[-1]
                 user_label   = data_unit_label[0]
-                set_data(values.vehicle, rcaide_label, data[user_label][0])
+                set_data(rcaide_io.vehicle, rcaide_label, data[user_label][0])
         else:
             top_item = self.tree.topLevelItem(0)
             assert top_item is not None
@@ -226,20 +288,20 @@ class GeometryWidget(TabWidget):
             for i in range(top_item.childCount()):
                 child = top_item.child(i)
                 if child.text(0) == category_name:
-                    component_item = child #checking if the field like 'wings' or 'fuselages' already exists
+                    component_item = child
                     break
-            if component_item is None: #if the field doesnt exist, create it
+            if component_item is None:
                 component_item = QTreeWidgetItem([category_name])
                 component_item.setExpanded(True)
                 insert_index = 0
                 for i in range(1, tab_index):
-                    if values.geometry_data[i]:
+                    if rcaide_io.rcaide_vehicle[i]:
                         insert_index += 1
                 top_item.insertChild(insert_index, component_item)
 
             if new:
                 if index == -1:
-                    values.geometry_data[tab_index].append(data)
+                    rcaide_io.rcaide_vehicle[tab_index].append(data)
                 else:
                     frame : GeometryFrame = self.frames[tab_index]()
                     frame.load_data(data, -1)
@@ -251,23 +313,53 @@ class GeometryWidget(TabWidget):
                 child.setSelected(True)
                 index = component_item.indexOfChild(child)
             else:
-                values.geometry_data[tab_index][index] = data
+                rcaide_io.rcaide_vehicle[tab_index][index] = data
                 if tree_index == -1:
                     tree_index = index
                 child = component_item.child(tree_index)
                 if child:
                     child.setText(0, data["name"])
 
+                # Rebuild the RCAIDE component so run_solve sees the updated values.
+                # (vehicle_component is None on updates — append_component is not called,
+                # so we must replace the existing entry directly.)
+                container_key = _TAB_TO_CONTAINER.get(category_name)
+                if container_key and tab_index != 5:
+                    replacement_component = vehicle_component
+                    tmp = None
+                    if replacement_component is None:
+                        tmp = self.frames[tab_index]()
+                        tmp.load_data(data, index)
+                        replacement_component = tmp.create_rcaide_structure()
+
+                    _replace_vehicle_component(
+                        rcaide_io.vehicle,
+                        category_name,
+                        index,
+                        replacement_component,
+                    )
+                    if tmp is not None:
+                        tmp.deleteLater()
+                    vehicle_component = None
+
         if vehicle_component:
-            # Check if it is an energy network being added
             if tab_index == 5:
-                values.vehicle.append_energy_network(vehicle_component)
+                rcaide_io.vehicle.append_energy_network(vehicle_component)
             else:
-                values.vehicle.append_component(vehicle_component)
+                rcaide_io.vehicle.append_component(vehicle_component)
 
         # Keep preview synced with current geometry edits.
         if self._preview_updates_enabled:
             self.preview_widget.run_solve()
+
+        # Write changes back to the loaded file when explicitly requested.
+        if persist and getattr(rcaide_io, "current_file_path", ""):
+            try:
+                json_data = rcaide_io.write_to_json()
+                with open(rcaide_io.current_file_path, "w") as f:
+                    f.write(json_data)
+            except Exception as e:
+                print(f"Auto-save to file failed: {e}")
 
         self.tree.expandAll()
 
@@ -275,22 +367,42 @@ class GeometryWidget(TabWidget):
 
     def load_from_values(self):
         """Load the geometry data from the values file."""
+        if not isinstance(rcaide_io.rcaide_vehicle, list):
+            tag = getattr(rcaide_io.vehicle, "tag", "")
+            self.vehicle_name_input.setText(str(tag))
+            self.preview_widget.run_solve()
+            return
+
         # Avoid repeated expensive redraws while reconstructing full geometry tree.
         self._preview_updates_enabled = False
-        if values.geometry_data:
-            if values.geometry_data[0]:
-                self.vehicle_name_input.setText(values.geometry_data[0]["name"])
+        self.tree.clear()
+        vehicle_item = QTreeWidgetItem(["Vehicle"])
+        self.tree.addTopLevelItem(vehicle_item)
 
-            for tab_index, data_list in enumerate(values.geometry_data):
-                if tab_index == 0:
-                    self.save_data(tab_index=tab_index, data=data_list,
-                                   index=0, new=True)
-                    self.main_layout.widget(0).update_layout()
+        if rcaide_io.rcaide_vehicle:
+            # Load vehicle data (index 0) - it's already in UI format
+            if rcaide_io.rcaide_vehicle[0]:
+                vehicle_data = rcaide_io.rcaide_vehicle[0]
+                self.vehicle_name_input.setText(vehicle_data.get("name", ""))
+                # Update the vehicle frame
+                frame = self.main_layout.widget(0)
+                if isinstance(frame, GeometryFrame):
+                    frame.load_data(vehicle_data, 0)
+
+            # Build the component tree directly from the loaded values structure
+            for tab_index, data_list in enumerate(rcaide_io.rcaide_vehicle):
+                if tab_index == 0 or not data_list:
                     continue
 
+                category_name = self.tabs[tab_index]
+                component_item = QTreeWidgetItem([category_name])
+                component_item.setExpanded(True)
+                vehicle_item.addChild(component_item)
+
                 for index, data in enumerate(data_list):
-                    # tree_index = self.find_tree_index(tab_index)
-                    self.save_data(tab_index=tab_index, index=index, data=data, new=True)
+                    child = QTreeWidgetItem([data.get("name", f"Item {index}")])
+                    component_item.addChild(child)
+
         self._preview_updates_enabled = True
         # Single redraw after all loaded parts are in place.
         self.preview_widget.run_solve()
@@ -299,7 +411,6 @@ class GeometryWidget(TabWidget):
     def update_layout(self):
         # Refresh preview when this tab becomes active.
         self.preview_widget.run_solve()
-        pass
 
     def eventFilter(self, watched, event):
         watched_preview = watched in {
@@ -367,11 +478,11 @@ class GeometryWidget(TabWidget):
 
     # noinspection PyMethodMayBeStatic
     def find_tree_index(self, tab_index):
-        # Start from tab_index - 1 to account for values.geometry_data[0] being None
+        # Start from tab_index - 1 to account for rcaide_io.rcaide_vehicle[0] being None
         tree_index = tab_index - 1
-        # Start from 1 to skip values.geometry_data[0]
+        # Start from 1 to skip rcaide_io.rcaide_vehicle[0]
         for i in range(1, tab_index):
-            if not values.geometry_data[i]:
+            if not rcaide_io.rcaide_vehicle[i]:
                 tree_index -= 1
 
         tree_index = max(0, tree_index)
@@ -382,9 +493,9 @@ class GeometryWidget(TabWidget):
         tab_index = 0
         count = 0
 
-        # Start from 1 to skip values.geometry_data[0]
-        for i in range(1, len(values.geometry_data)):
-            if not values.geometry_data[i]:
+        # Start from 1 to skip rcaide_io.rcaide_vehicle[0]
+        for i in range(1, len(rcaide_io.rcaide_vehicle)):
+            if not rcaide_io.rcaide_vehicle[i]:
                 continue
             count += 1
             if count == tree_index + 1:

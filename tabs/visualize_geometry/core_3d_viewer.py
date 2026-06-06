@@ -6,11 +6,9 @@ from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Components.Airfoils import Airfoil
 from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
-from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
-from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform , compute_fuel_volume  
-from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations 
+from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform
  
  # RCAIDE-GUI imports
 from tabs import TabWidget
@@ -25,7 +23,7 @@ from PyQt6.QtGui import QIcon
 # python imports
 import matplotlib.colors as mcolors 
 import vtk
-import values
+import rcaide_io
 import os
 from copy import deepcopy 
 
@@ -118,7 +116,7 @@ class Core3DViewer(QWidget):
         self.part_actors.clear()
 
     def run_solve(self):
-        """Calculates and draws the geometry based on values.vehicle"""
+        """Calculates and draws the geometry based on rcaide_io.vehicle"""
         
         self.clear_scene()
 
@@ -126,13 +124,11 @@ class Core3DViewer(QWidget):
         fuselage_color      = 'grey'  
         nacelle_color       = 'grey' 
         boom_color          = 'grey' 
-        fuel_tank_color     = 'orange'  
-        rotor_color         = 'black'      
-        wing_opacity        = 0.5  
-        fuselage_opacity    = 0.5 
-        nacelle_opacity     = 1.0 
-        fuel_tank_opacity   = 0.5 
-        rotor_opacity       = 1.0  
+        rotor_color         = 'black'
+        wing_opacity        = 0.5
+        fuselage_opacity    = 0.5
+        nacelle_opacity     = 1.0
+        rotor_opacity       = 0.6
         number_of_airfoil_points    = 101 
         tessellation        = 96 
         boom_opacity        = 1.0
@@ -140,30 +136,25 @@ class Core3DViewer(QWidget):
         camera_eye_y  = -1 
         camera_eye_z  = 0.35  
         
-        fuel_tank_rgb_color = mcolors.to_rgb(fuel_tank_color)     
         wing_rgb_color      = mcolors.to_rgb(wing_color)
         fuselage_rgb_color  = mcolors.to_rgb(fuselage_color) 
         nacelle_rgb_color   = mcolors.to_rgb(nacelle_color) 
         rotor_rgb_color     = mcolors.to_rgb(rotor_color)
         boom_rgb_color      = mcolors.to_rgb(boom_color)
 
-        if not values.vehicle:
+        if not rcaide_io.vehicle:
             return # Don't try to draw if there's no vehicle
             
-        geometry = deepcopy(values.vehicle)
+        geometry = deepcopy(rcaide_io.vehicle)
 
     
         for wing in geometry.wings:   
             try: wing_planform(wing)
             except: pass # Bypass if not fully defined yet in GUI
                              
-        try: compute_fuel_volume(geometry)
-        except: pass
-
-        for fuselage in geometry.fuselages:               
+        for fuselage in geometry.fuselages:
             try:
-                compute_layout_of_passenger_accommodations(fuselage)
-                fuselage_planform(fuselage) 
+                fuselage_planform(fuselage)
             except: pass
 
         for wing in geometry.wings:
@@ -248,65 +239,6 @@ class Core3DViewer(QWidget):
                                 make_object(self.renderer,self.rotor_actors, GEOM, rotor_rgb_color,rotor_opacity) 
                     except: pass
     
-            for fuel_line in network.fuel_lines:        
-                for fuel_tank in fuel_line.fuel_tanks:   
-                    try:
-                        if fuel_tank.wing_tag != None:
-                            wing = geometry.wings[fuel_tank.wing_tag]
-                            if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                                GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
-                                make_object(self.renderer,self.fuel_tank_actors, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
-                                if wing.xz_plane_symmetric: 
-                                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                                    make_object(self.renderer,self.fuel_tank_actors, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
-                            
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                                segment_list = [] 
-                                segment_tags = list(wing.segments.keys())     
-                                for i in range(len(wing.segments) - 1):
-                                    seg =  wing.segments[segment_tags[i]]
-                                    next_seg =  wing.segments[segment_tags[i+1]]
-                                    if seg.has_fuel_tank:
-                                        if seg.tag not in segment_list:
-                                            segment_list.append(seg.tag)
-                                        if next_seg.tag not in segment_list:
-                                            segment_list.append(next_seg.tag) 
-        
-                                if len(wing.segments)>0: dim =  len(segment_list)
-                                else: dim = 2 
-        
-                                if  len(segment_list) == 0 and len(wing.segments) > 0:
-                                    print('Fuel tank defined on segmented wing but no segments have "tank" attribute = True') 
-                                else:   
-                                    GEOM = generate_integral_wing_tank_points(wing,5,dim,segment_list)
-                                    make_object(self.renderer, self.fuel_tank_actors,GEOM, fuel_tank_rgb_color, fuel_tank_opacity)  
-                                    if wing.xz_plane_symmetric:
-                                        GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                                        make_object(self.renderer,self.fuel_tank_actors, GEOM,fuel_tank_rgb_color, fuel_tank_opacity) 
-        
-                        elif fuel_tank.fuselage_tag != None:
-                            fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
-                                segment_list = [] 
-                                segment_tags = list(fuselage.segments.keys())     
-                                for i in range(len(fuselage.segments) - 1):
-                                    seg =  fuselage.segments[segment_tags[i]]
-                                    next_seg =  fuselage.segments[segment_tags[i+1]]
-                                    if seg.has_fuel_tank: 
-                                        segment_list.append(seg.tag)
-                                        if next_seg.tag not in segment_list:
-                                            segment_list.append(next_seg.tag)  
-        
-                                GEOM  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation )
-                                make_object(self.renderer,self.fuel_tank_actors, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
-        
-                            elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                                GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
-                                make_object(self.renderer,self.fuel_tank_actors, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
-                                if wing.xz_plane_symmetric: 
-                                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                                    make_object(self.renderer, self.fuel_tank_actors, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)        
-                    except: pass
 
         # Set camera and background
         camera = vtk.vtkCamera()

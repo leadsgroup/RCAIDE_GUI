@@ -120,9 +120,9 @@ class Units:
     # Temperature Units
     class Temperature:
         KELVIN = ("K", lambda x: x)
-        CELSIUS = ("\u00B0C", lambda x: x - 273.15)
-        FAHRENHEIT = ("\u00B0F", lambda x: (x - 32.0) * 9.0 / 5.0 + 273.15)
-        RANKINE = ("\u00B0R", lambda x: x * 1.8)
+        CELSIUS = ("\u00B0C", lambda x: x + 273.15)
+        FAHRENHEIT = ("\u00B0F", lambda x: (x - 32.0) * 5.0 / 9.0 + 273.15)
+        RANKINE = ("\u00B0R", lambda x: x / 1.8)
 
         unit_list = [KELVIN, CELSIUS, FAHRENHEIT, RANKINE]
 
@@ -232,7 +232,7 @@ class Units:
         RADIAN = ("rad", lambda x: x)
         DEGREE = ("deg", lambda x: np.deg2rad(x))
 
-        unit_list = [DEGREE, RADIAN]
+        unit_list = [RADIAN, DEGREE]
 
     # Intertia Units
     class Intertia:

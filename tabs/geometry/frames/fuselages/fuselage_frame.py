@@ -55,6 +55,7 @@ class FuselageFrame(GeometryFrame):
 
         # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
+        self.wire_auto_save(self.data_entry_widget)
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -124,12 +125,14 @@ class FuselageFrame(GeometryFrame):
         entered_data, fuselage = self.get_data_values()
         if self.save_function:
             if self.index >= 0:
+                # Update the live RCAIDE fuselage, including cabins.
                 self.index = self.save_function(
-                    tab_index=self.tab_index, index=self.index, data=entered_data)
+                    tab_index=self.tab_index, index=self.index,
+                    vehicle_component=fuselage, data=entered_data, persist=True)
                 return
             else:
                 self.index = self.save_function(
-                    tab_index=self.tab_index, vehicle_component=fuselage, data=entered_data, new=True)
+                    tab_index=self.tab_index, vehicle_component=fuselage, data=entered_data, new=True, persist=True)
 
             show_popup("Data Saved!", self)
         else:
@@ -176,10 +179,15 @@ class FuselageFrame(GeometryFrame):
         assert self.data_entry_widget is not None
         data = self.data_entry_widget.get_values_si()
         fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
+        fuselage.tag = self.name_line_edit.text()
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
             user_label = data_unit_label[0]
             set_data(fuselage, rcaide_label, data[user_label][0])
+
+        # Infer missing cabin length for LOPA.
+        if fuselage.lengths.cabin <= 0 and fuselage.lengths.total > fuselage.lengths.nose + fuselage.lengths.tail:
+            fuselage.lengths.cabin = fuselage.lengths.total - fuselage.lengths.nose - fuselage.lengths.tail
         
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
@@ -222,7 +230,7 @@ class FuselageFrame(GeometryFrame):
         data = self.data_entry_widget.get_values()
         fuselage = self.create_rcaide_structure()
 
-        data["sections"] = []
+        data["segments"] = []
         for i in range(self.fuselage_sections_layout.count()):
             item = self.fuselage_sections_layout.itemAt(i)
             if item is None:
@@ -230,14 +238,18 @@ class FuselageFrame(GeometryFrame):
 
             fuselage_section = item.widget()
             if fuselage_section is not None and isinstance(fuselage_section, FuselageSectionWidget):
-                segment_data, segment = fuselage_section.get_data_values()
-                data["sections"].append(segment_data)
-                fuselage.append_segment(segment)
+                # Segment object was already appended.
+                segment_data, _ = fuselage_section.get_data_values()
+                data["segments"].append(segment_data)
 
         assert self.name_line_edit is not None
         data["name"] = self.name_line_edit.text()
+        if fuselage.lengths.cabin > 0:
+            data["Lengths Cabin"] = [fuselage.lengths.cabin, 0]
 
         data["cabins"] = []
+        if not hasattr(fuselage, "cabins"):
+            fuselage.cabins = RCAIDE.Library.Components.Fuselages.Cabins.Cabin.Container()
         for i in range(self.cabins_layout.count()):
             item = self.cabins_layout.itemAt(i)
             if item is None:
@@ -247,7 +259,11 @@ class FuselageFrame(GeometryFrame):
             if cabin_widget is not None and isinstance(cabin_widget, CabinWidget):
                 cabin_data, cabin = cabin_widget.get_data_values()
                 data["cabins"].append(cabin_data)
-                fuselage.cabins.append(cabin)
+                # Support both RCAIDE container APIs.
+                if hasattr(fuselage.cabins, "append_cabin"):
+                    fuselage.cabins.append_cabin(cabin)
+                else:
+                    fuselage.cabins.append(cabin)
         return data, fuselage
 
     def load_data(self, data, index):
@@ -262,7 +278,8 @@ class FuselageFrame(GeometryFrame):
         
         clear_layout(self.fuselage_sections_layout)
 
-        for section in data["sections"]:
+        # New files use RCAIDE's "segments"; older GUI data may still say "sections".
+        for section in data.get("segments", data.get("sections", [])):
             self.fuselage_sections_layout.addWidget(FuselageSectionWidget(
                 self.fuselage_sections_layout.count(), self.delete_fuselage_section, section))
 

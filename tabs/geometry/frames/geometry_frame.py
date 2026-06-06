@@ -66,3 +66,26 @@ class GeometryFrame(QWidget):
         """Update the layout of the frame. Called when the frame is shown."""
         pass
 
+    def wire_auto_save(self, data_entry_widget):
+        """Connect data_entry_widget.data_changed to a silent save that refreshes the preview.
+
+        Call this once per DataEntryWidget after it is constructed in a subclass __init__.
+        The auto-save skips the user-facing popup and only fires for already-saved components
+        (index >= 0), so it never accidentally creates new tree entries.
+        """
+        data_entry_widget.data_changed.connect(self._on_auto_save)
+
+    def _on_auto_save(self):
+        """Silently persist field changes and trigger a preview refresh."""
+        if self.save_function is None:
+            return
+        # tab_index 0 is the vehicle (always present); others require an existing component.
+        if self.tab_index != 0 and self.index < 0:
+            return
+        try:
+            result = self.get_data_values()
+            data = result[0] if isinstance(result, tuple) else result
+        except Exception:
+            return
+        self.save_function(tab_index=self.tab_index, index=self.index, data=data)
+

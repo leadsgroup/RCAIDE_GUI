@@ -16,7 +16,7 @@ from tabs.mission.widgets.mission_segment_helper import (
     segment_rcaide_classes,
 )
 from utilities import Units, set_data, convert_name
-import values
+import rcaide_io
 import RCAIDE
 from common_widgets import DataEntryWidget
 
@@ -106,16 +106,9 @@ class MissionSegmentWidget(QWidget):
         self.details_layout.addWidget(self.nested_dropdown)
 
         self.details_layout.addWidget(QLabel("Vehicle Configuration:"))
-        config_names = [
-            c.get("config name", "")
-            for c in values.config_data
-            if isinstance(c, dict)
-        ]
+        cfg_container = getattr(rcaide_io, "rcaide_configs", None)
+        config_names  = list(cfg_container.keys()) if hasattr(cfg_container, 'keys') else []
         self.details_layout.addWidget(QLabel("Segment Details:"))
-        if not config_names:
-            cfg_container = getattr(values, "rcaide_configs", None)
-            if isinstance(cfg_container, dict):
-                config_names = list(cfg_container.keys())
         self.config_selector.addItems([n for n in config_names if n])
         self.details_layout.addWidget(self.config_selector)
 
@@ -229,14 +222,12 @@ class MissionSegmentWidget(QWidget):
         self._install_combo_wheel_guards(self.subsegment_entry_widget) 
 
     def _apply_config_default(self, config_key):
-        # Do nothing if no configuration data exists
-        if not values.config_data:
+        cfg_container = getattr(rcaide_io, "rcaide_configs", None)
+        if not hasattr(cfg_container, 'keys') or not cfg_container:
             return
-
-        # Select the configuration matching the inferred key
-        for idx, cfg in enumerate(values.config_data):
-            if convert_name(cfg.get("config name", "")) == config_key:
-                self.config_selector.setCurrentIndex(idx)
+        for key in cfg_container.keys():
+            if convert_name(key) == config_key:
+                self.config_selector.setCurrentText(key)
                 break
 
     def _on_segment_name_change(self, _):
@@ -267,13 +258,13 @@ class MissionSegmentWidget(QWidget):
     def get_form_data(self):
         # Save only the UI-entered mission fields; do not build RCAIDE objects here.
         data = {
-            "Segment Name": self.segment_name_input.text(),
-            "top dropdown": self.top_dropdown.currentIndex(),
+            "Segment Name":   self.segment_name_input.text(),
+            "top dropdown":   self.top_dropdown.currentIndex(),
             "nested dropdown": self.nested_dropdown.currentText(),
-            "config": self.config_selector.currentIndex(),
+            "config":         self.config_selector.currentText(),
             "Control Points": int(self.ctrl_points.text()),
-            "Solver": "root" if self.solver_root.isChecked() else "optimize",
-            "flight forces": self.dof_entry_widget.get_values(),
+            "Solver":         "root" if self.solver_root.isChecked() else "optimize",
+            "flight forces":  self.dof_entry_widget.get_values(),
             "flight controls": self.flight_controls_widget.get_data(),
         }
         data.update(self.subsegment_entry_widget.get_values())
@@ -291,7 +282,11 @@ class MissionSegmentWidget(QWidget):
         self.top_dropdown.setCurrentIndex(data["top dropdown"])
         self.populate_nested_dropdown(data["top dropdown"])
         self.nested_dropdown.setCurrentText(data["nested dropdown"])
-        self.config_selector.setCurrentIndex(data["config"])
+        config_val = data.get("config", "")
+        if isinstance(config_val, int):
+            self.config_selector.setCurrentIndex(config_val)
+        else:
+            self.config_selector.setCurrentText(str(config_val))
         self.ctrl_points.setText(str(data.get("Control Points", 16)))
 
         if data.get("Solver", "root") == "root":
@@ -341,10 +336,10 @@ class MissionSegmentWidget(QWidget):
             set_data(seg, rcaide_label, dof_vals[label][0])
 
         cfg = convert_name(self.config_selector.currentText())
-        analyses = values.rcaide_analyses.get(cfg)
+        analyses = rcaide_io.rcaide_analyses.get(cfg)
         if analyses is None or (hasattr(analyses, "__len__") and len(analyses) == 0):
             fallback = None
-            for candidate in values.rcaide_analyses.values():
+            for candidate in rcaide_io.rcaide_analyses.values():
                 if hasattr(candidate, "__len__") and len(candidate) > 0:
                     fallback = candidate
                     break

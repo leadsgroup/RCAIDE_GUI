@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, \
 from tabs.analysis.widgets import *
 from tabs import TabWidget
 from utilities import create_scroll_area
-import values
+import rcaide_io
 import RCAIDE
 
 # ============================================================
@@ -115,13 +115,13 @@ class MissionAnalysisWidget(TabWidget):
         widget.setVisible(item.checkState(1) == Qt.CheckState.Checked)
 
     def load_from_values(self):
-        if not values.analysis_data:
+        if not rcaide_io.analysis_data:
             self.save_analyses()
             return
 
         for index, widget in enumerate(self.widgets):
             assert isinstance(widget, AnalysisDataWidget)
-            widget.load_values(values.analysis_data[index])
+            widget.load_values(rcaide_io.analysis_data[index])
 
         self.save_analyses()
 
@@ -138,20 +138,20 @@ class MissionAnalysisWidget(TabWidget):
                 "Create a configuration in the Aircraft Configs tab."
             )
         if (not getattr(values, "rcaide_configs", None) or
-                not values.rcaide_configs):
+                not rcaide_io.rcaide_configs):
             from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
             try:
-                values.rcaide_configs = build_rcaide_configs_from_geometry()
+                rcaide_io.rcaide_configs = build_rcaide_configs_from_geometry()
             except Exception as exc:
                 raise RuntimeError(
                     "No RCAIDE configurations found. "
                     "Save a configuration in the Aircraft Configs tab."
                 ) from exc
-        values.analysis_data = []
-        values.rcaide_analyses = {}
+        rcaide_io.analysis_data = []
+        rcaide_io.rcaide_analyses = {}
 
         # Build and save one RCAIDE analysis container per aircraft configuration.   
-        for tag, config in values.rcaide_configs.items():
+        for tag, config in rcaide_io.rcaide_configs.items():
 
             analyses = RCAIDE.Framework.Analyses.Vehicle()
             analyses.vehicle = config  
@@ -162,5 +162,5 @@ class MissionAnalysisWidget(TabWidget):
                 if self.get_check_state(index):
                     analyses.append(widget.create_analysis(config)) 
 
-            values.rcaide_analyses[tag] = analyses
-            values.analysis_data.append(analyses)
+            rcaide_io.rcaide_analyses[tag] = analyses
+            rcaide_io.analysis_data.append(analyses)
