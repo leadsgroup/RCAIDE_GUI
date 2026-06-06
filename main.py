@@ -1,7 +1,7 @@
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import QFileInfo 
+from PyQt6.QtCore import QFileInfo
 from qt_material import apply_stylesheet
 import rcaide_io
 from tabs import *
@@ -33,7 +33,7 @@ class App(QMainWindow):
         file_menu = menubar.addMenu("File")
         if file_menu is None:
             return
-        
+
         load_action = QAction("Load", self)
         load_action.triggered.connect(self.load_all)
 
@@ -56,19 +56,19 @@ class App(QMainWindow):
 
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
-        self.widgets.append((geometry.get_widget(), "Vehicle Setup")) 
+        self.widgets.append((geometry.get_widget(), "Vehicle Setup"))
         self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
         self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
-        self.widgets.append((analysis.get_widget(), "Analyses Setup")) 
-        self.widgets.append((mission.get_widget(), "Mission Setup"))  
+        self.widgets.append((analysis.get_widget(), "Analyses Setup"))
+        self.widgets.append((mission.get_widget(), "Mission Setup"))
         self.widgets.append((solve.get_widget(), "Mission Simulation"))
-        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses")) 
+        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses"))
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
 
         self.setCentralWidget(self.tabs)
-        self.resize(1280, 720) 
+        self.resize(1280, 720)
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()
@@ -130,6 +130,16 @@ class App(QMainWindow):
         for widget, name in self.widgets:
             assert isinstance(widget, TabWidget)
             widget.load_from_values()
+        self._go_to_geometry_visualization_tab()
+
+    def _go_to_geometry_visualization_tab(self):
+        for index in range(self.tabs.count()):
+            if self.tabs.tabText(index).strip().lower() == "geometry visualization":
+                self.tabs.setCurrentIndex(index)
+                current_widget = self.tabs.widget(index)
+                if isinstance(current_widget, TabWidget):
+                    current_widget.update_layout()
+                return
 
 app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
