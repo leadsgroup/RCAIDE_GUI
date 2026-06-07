@@ -1,0 +1,94 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-version:
+    name: Version Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout Current Branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Read Version from Current Branch
+        id: current_version
+        run: |
+          if [ ! -f VERSION ]; then
+            echo "VERSION file not found in the current branch."
+            exit 1
+          fi
+          VERSION=$(cat VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if Base VERSION Exists
+        id: base_version_exists
+        run: |
+          BASE_BRANCH=${{ github.event.pull_request.base.ref }}
+          git fetch origin "$BASE_BRANCH" || true
+          if git rev-parse "origin/$BASE_BRANCH" &>/dev/null && \
+             git cat-file -e "origin/$BASE_BRANCH:VERSION" 2>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Read Version from Base Branch (if exists)
+        id: base_version
+        if: steps.base_version_exists.outputs.exists == 'true'
+        run: |
+          BASE_VERSION=$(git show "origin/${{ github.event.pull_request.base.ref }}:VERSION")
+          echo "version=$BASE_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare Versions
+        run: |
+          CURRENT_VERSION=${{ steps.current_version.outputs.version }}
+          echo "Current Version: $CURRENT_VERSION"
+
+          if [ "${{ steps.base_version_exists.outputs.exists }}" == "true" ]; then
+            BASE_VERSION=${{ steps.base_version.outputs.version }}
+            echo "Base Version: $BASE_VERSION"
+
+            CURRENT_NUM=$(echo $CURRENT_VERSION | tr -d '.')
+            BASE_NUM=$(echo $BASE_VERSION | tr -d '.')
+
+            if [ $CURRENT_NUM -le $BASE_NUM ]; then
+              echo "Error: New version must be greater than base version"
+              exit 1
+            fi
+          fi
+          echo "Version check passed: $CURRENT_VERSION"
+
+  publish:
+    name: Publish Package to PyPI
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade build
+
+      - name: Build Package
+        run: |
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
