@@ -5,7 +5,7 @@ import importlib
 import numpy as np
 import types as _types_module
 from collections import OrderedDict
-from RCAIDE.load import read_RCAIDE_json_dict
+from RCAIDE.Input_Output.load import read_RCAIDE_json_dict
 from RCAIDE.Framework.Core import Data, DataOrdered
 
 _ROOT         = os.path.dirname(os.path.abspath(__file__))
@@ -353,7 +353,7 @@ def _build_dict_r_with_types(v):
 
 
 def _build_dict_base_with_types(base):
-    """Top-level serialisation: like RCAIDE.save.build_dict_base but includes __type__."""
+    """Top-level serialisation: like RCAIDE.Input_Output.save.build_dict_base but includes __type__."""
     _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff')
     base_dict = {}
     for k in base.keys():
@@ -420,7 +420,7 @@ rcaide_mission  = RCAIDE.Framework.Mission.Sequential_Segments()
 
 def vehicle_to_ui_format(vehicle_obj):
     """Convert a RCAIDE vehicle object to UI format for display in frames."""
-    from RCAIDE.save import build_dict_base
+    from RCAIDE.Input_Output.save import build_dict_base
     from tabs.geometry.frames import VehicleFrame
 
     vehicle_dict = make_json_safe(build_dict_base(vehicle_obj))
@@ -770,7 +770,7 @@ def write_to_json():
 def read_from_json(data_str, source_dir=None):
     global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses
     from RCAIDE.Library.Components.Configs.Config import Config
-    from RCAIDE.import_rcaide_data import analyses_setup as _analyses_setup
+    from RCAIDE.Input_Output.import_data import analyses_setup as _analyses_setup
 
     data = json.loads(data_str, object_pairs_hook=OrderedDict)
     rcaide_vehicle_dict  = data["rcaide_vehicle"]
