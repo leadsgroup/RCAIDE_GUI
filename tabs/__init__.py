@@ -5,6 +5,8 @@ from . import analysis
 from . import geometry
 from . import home
 from . import mission
+# Exposes the post-simulation results browser as a main application tab.
+from . import results_viewer
 from . import solve
 from . import visualize_geometry
 

@@ -62,6 +62,8 @@ class App(QMainWindow):
         self.widgets.append((analysis.get_widget(), "Analyses Setup"))
         self.widgets.append((mission.get_widget(), "Mission Setup"))
         self.widgets.append((solve.get_widget(), "Mission Simulation"))
+        # Results Viewer reads the last mission.evaluate() output stored in rcaide_io.rcaide_results.
+        self.widgets.append((results_viewer.get_widget(), "Results Viewer"))
         # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses"))
 
         for widget, name in self.widgets:

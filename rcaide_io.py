@@ -412,6 +412,9 @@ rcaide_analyses = RCAIDE.Framework.Analyses.Analysis.Container()         # type:
 
 mission_data    = []
 rcaide_mission  = RCAIDE.Framework.Mission.Sequential_Segments()
+# Last in-memory mission output. Set by the Solve tab after mission.evaluate()
+# and browsed by the Results Viewer so users can inspect values without rerunning.
+rcaide_results  = None
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -768,7 +771,7 @@ def write_to_json():
 
 
 def read_from_json(data_str, source_dir=None):
-    global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses
+    global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses, rcaide_results
     from RCAIDE.Library.Components.Configs.Config import Config
     from RCAIDE.Input_Output.import_data import analyses_setup as _analyses_setup
 
@@ -806,6 +809,9 @@ def read_from_json(data_str, source_dir=None):
     config_data   = []
     analysis_data = data.get("analysis_data", [])
     mission_data  = data.get("mission_data",  [])
+    # Loaded aircraft files do not include runtime mission results; clear any
+    # previous run so the Results Viewer cannot show stale data for a new file.
+    rcaide_results = None
 
     rcaide_analyses = _analyses_setup(analysis_data, rcaide_configs)
 
