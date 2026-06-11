@@ -4,7 +4,6 @@
 import RCAIDE
 
 # RCAIDE-GUI imports
-from tabs.visualize_geometry.core_3d_viewer import Core3DViewer
 from tabs.geometry.frames import *
 from tabs import TabWidget
 from tabs.visualize_geometry.visualize_geometry import VisualizeGeometryWidget
@@ -19,7 +18,6 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStack
 # Python imports
 from typing import Type
 import vtk
-import os
 
 # Maps geometry tab name → rcaide_io.vehicle container attribute name.
 _TAB_TO_CONTAINER = {
