@@ -155,8 +155,8 @@ class MissionProfileWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         # Constrain the profile card so it remains readable in compact layouts.
-        self.setMinimumHeight(220)
-        self.setMaximumHeight(320)
+        self.setMinimumHeight(160)
+        self.setMaximumHeight(280)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         # Each phase entry is stored as (display_name, normalized_phase_type).
         self.phases = []
@@ -493,7 +493,7 @@ class MissionSummaryTable(QTableWidget):
                     self.setItem(r, c, item)
             row_h = self.rowHeight(0) if self.rowCount() else 26
             visible_rows = max(4, min(self.rowCount(), 8))
-            self.setMinimumHeight(self.horizontalHeader().height() + (row_h * visible_rows) + 10)
+            self.setMinimumHeight(min(self.horizontalHeader().height() + (row_h * visible_rows) + 10, 160))
             return
 
         if not segs:
@@ -505,7 +505,7 @@ class MissionSummaryTable(QTableWidget):
             self.setItem(0, 0, item)
             self.setSpan(0, 0, 1, 6)
             row_h = max(self.rowHeight(0), 26)
-            self.setMinimumHeight(self.horizontalHeader().height() + (row_h * 4) + 10)
+            self.setMinimumHeight(min(self.horizontalHeader().height() + (row_h * 4) + 10, 160))
             return
 
         rows = []
@@ -589,7 +589,7 @@ class MissionSummaryTable(QTableWidget):
         self.resizeRowsToContents()
         row_h = self.rowHeight(0) if rows else 26
         visible_rows = max(4, min(len(rows), 8))
-        self.setMinimumHeight(self.horizontalHeader().height() + (row_h * visible_rows) + 10)
+        self.setMinimumHeight(min(self.horizontalHeader().height() + (row_h * visible_rows) + 10, 160))
 
     def _row_clicked(self, row, col):
         # Navigate from summary row to the matching collapsible details panel.
@@ -788,9 +788,9 @@ class MissionWidget(TabWidget):
         right_v.addWidget(segments_box, 0)
         right_v.addWidget(details_box, 1)
 
-        left_col.setMinimumWidth(540)
+        left_col.setMinimumWidth(300)
         left_col.setMaximumWidth(780)
-        right_col.setMinimumWidth(760)
+        right_col.setMinimumWidth(400)
 
         content_splitter = QSplitter(Qt.Orientation.Horizontal)
         content_splitter.setChildrenCollapsible(False)
@@ -799,7 +799,7 @@ class MissionWidget(TabWidget):
         content_splitter.setStretchFactor(0, 1)
         content_splitter.setStretchFactor(1, 3)
         content_splitter.setHandleWidth(10)
-        content_splitter.setSizes([640, 1120])
+        content_splitter.setSizes([320, 960])
 
         main_layout.addWidget(content_splitter)
 

@@ -20,7 +20,7 @@ from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations
 
 # PyQt imports
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit, QScrollArea
 from PyQt6.QtCore import Qt
 from tabs import TabWidget
 from pyvistaqt import QtInteractor
@@ -303,7 +303,16 @@ class VisualizeGeometryWidget(TabWidget):
 
         self.colorbar_widget = ColorBar(self.part_actors, color_changed)
         self.colorbar_widget.setFixedWidth(180)
-        return self.colorbar_widget
+
+        scroll = QScrollArea()
+        scroll.setWidget(self.colorbar_widget)
+        scroll.setWidgetResizable(False)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setFixedWidth(200)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        self.colorbar_scroll = scroll
+        return scroll
 
     def add_toolbar(self):
         self.toolbar = QToolBar("Tools")
@@ -524,13 +533,15 @@ class VisualizeGeometryWidget(TabWidget):
                 GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
                 make_object(self.plotter, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
             if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-                GEOM = generate_3d_cabin_points(wing, number_of_airfoil_points, plot_centerline=False)
-                make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
-                GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
                 if self._show_lopa:
-                    lopa_geom = generate_3d_lopa_points(wing)
-                    add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+                    if len(wing.cabins) > 0 and len(list(wing.cabins.values())[0].segments_bounding_cabin) > 1:
+                        lopa_geom = generate_3d_lopa_points(wing)
+                        add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+                if len(wing.cabins) > 0:
+                    GEOM = generate_3d_cabin_points(wing, number_of_airfoil_points, plot_centerline=False)
+                    make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
+                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+                    make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
     
         # -------------------------------------------------------------------------  
         # Plot fuselage
@@ -538,8 +549,9 @@ class VisualizeGeometryWidget(TabWidget):
         for fuselage in geometry.fuselages:
             GEOM = generate_3d_fuselage_points(fuselage, tessellation)
             make_object(self.plotter, self.fuselage_actors, GEOM, fuselage_rgb_color, fuselage_opacity)
-            GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
-            make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
+            if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
+                GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
+                make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
             if self._show_lopa:
                 lopa_geom = generate_3d_lopa_points(fuselage)
                 add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)

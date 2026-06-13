@@ -70,7 +70,13 @@ class App(QMainWindow):
             self.tabs.addTab(widget, name)
 
         self.setCentralWidget(self.tabs)
-        self.resize(1280, 720)
+        screen = QApplication.primaryScreen()
+        if screen:
+            ag = screen.availableGeometry()
+            self.resize(min(1280, ag.width()), min(ag.height() - 30, 740))
+        else:
+            self.resize(1280, 740)
+        self.setMinimumSize(700, 480)
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()

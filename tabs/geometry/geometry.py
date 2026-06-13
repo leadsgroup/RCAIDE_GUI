@@ -11,7 +11,6 @@ from utilities import set_data
 import rcaide_io
 
 # PyQt imports
-from PyQt6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QTimer
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QStackedLayout, QTreeWidget, QTreeWidgetItem, \
     QLabel, QLineEdit, QApplication
 
@@ -123,7 +122,7 @@ class GeometryWidget(TabWidget):
 
         vehicle_item = QTreeWidgetItem(["Vehicle"])
         self.tree.addTopLevelItem(vehicle_item)
-        self.tree_frame_layout.addWidget(self.tree)
+        self.tree_frame_layout.addWidget(self.tree, 3)
         self.tree.expandAll()
 
         # Reuse the full Geometry Visualization widget as an embedded preview.
@@ -137,7 +136,9 @@ class GeometryWidget(TabWidget):
         # Hide advanced controls in Vehicle Setup; keep only the 3D viewport.
         if hasattr(self.preview_widget, "toolbar"):
             self.preview_widget.toolbar.hide()
-        if hasattr(self.preview_widget, "colorbar_widget") and self.preview_widget.colorbar_widget:
+        if hasattr(self.preview_widget, "colorbar_scroll"):
+            self.preview_widget.colorbar_scroll.hide()
+        elif hasattr(self.preview_widget, "colorbar_widget") and self.preview_widget.colorbar_widget:
             self.preview_widget.colorbar_widget.hide()
         self.preview_widget.setMinimumHeight(180)
 
@@ -160,27 +161,16 @@ class GeometryWidget(TabWidget):
                 font-weight: 600;
             }
         """)
-        # Keep preview compact by default and widen it on hover without re-parenting.
-        self._preview_hovered = False
-        self._preview_base_width = 300
-        self._preview_hover_width = 660
-        self.preview_container.setMinimumWidth(self._preview_base_width)
-        self.preview_container.setMaximumWidth(self._preview_hover_width)
-        self.preview_container.setMaximumHeight(300)
-        self._preview_width_anim = QPropertyAnimation(self.preview_container, b"minimumWidth", self)
-        self._preview_width_anim.setDuration(160)
-        self._preview_width_anim.setEasingCurve(QEasingCurve.Type.OutCubic)
-        self.preview_container.installEventFilter(self)
-        self.preview_widget.installEventFilter(self)
-        if hasattr(self.preview_widget, "vtkWidget"):
-            self.preview_widget.vtkWidget.installEventFilter(self)
+        self.preview_container.setMinimumWidth(250)
+        self.preview_container.setMinimumHeight(220)
+        self.preview_container.setMaximumHeight(350)
 
-        self.tree_frame_layout.addWidget(self.preview_container, 1)
         app = QApplication.instance()
         if app is not None:
             # Fallback cleanup hook in case closeEvent order differs by platform.
             app.aboutToQuit.connect(self._cleanup_preview)
 
+        self.tree_frame_layout.addWidget(self.preview_container, 2)
         self.right_layout.addLayout(self.main_layout)
         base_layout.addLayout(self.tree_frame_layout, 1)
         base_layout.addLayout(self.right_layout, 4)
@@ -409,39 +399,6 @@ class GeometryWidget(TabWidget):
     def update_layout(self):
         # Refresh preview when this tab becomes active.
         self.preview_widget.run_solve()
-
-    def eventFilter(self, watched, event):
-        watched_preview = watched in {
-            self.preview_container,
-            self.preview_widget,
-            getattr(self.preview_widget, "vtkWidget", None),
-        }
-        if watched_preview:
-            if event.type() == QEvent.Type.Enter:
-                self._set_preview_hover_state(True)
-            elif event.type() == QEvent.Type.Leave:
-                # Delay so transitions between child widgets don't collapse immediately.
-                QTimer.singleShot(0, self._sync_preview_hover_state)
-        return super().eventFilter(watched, event)
-
-    def _sync_preview_hover_state(self):
-        vtk_widget = getattr(self.preview_widget, "vtkWidget", None)
-        hovered = (
-            self.preview_container.underMouse()
-            or self.preview_widget.underMouse()
-            or (vtk_widget.underMouse() if vtk_widget else False)
-        )
-        self._set_preview_hover_state(hovered)
-
-    def _set_preview_hover_state(self, hovered: bool):
-        if self._preview_hovered == hovered:
-            return
-        self._preview_hovered = hovered
-        target = self._preview_hover_width if hovered else self._preview_base_width
-        self._preview_width_anim.stop()
-        self._preview_width_anim.setStartValue(self.preview_container.minimumWidth())
-        self._preview_width_anim.setEndValue(target)
-        self._preview_width_anim.start()
 
     def closeEvent(self, event):
         # Clean embedded VTK resources before QWidget teardown.
