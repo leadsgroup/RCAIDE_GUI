@@ -344,7 +344,7 @@ def _build_dict_r_with_types(v):
     if module and qualname and not qualname.startswith('<'):
         ret['__type__'] = f"{module}.{qualname}"
 
-    _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff')
+    _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff', 'vehicle')
     for k in keys:
         if k in _skip:
             continue
@@ -354,7 +354,7 @@ def _build_dict_r_with_types(v):
 
 def _build_dict_base_with_types(base):
     """Top-level serialisation: like RCAIDE.Input_Output.save.build_dict_base but includes __type__."""
-    _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff')
+    _skip = ('_component_root_map', '_energy_network_root_map', '_base', '_diff', 'vehicle')
     base_dict = {}
     for k in base.keys():
         if k in _skip:
@@ -705,6 +705,17 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
 _DIFF_SKIP = frozenset({'_component_root_map', '_energy_network_root_map', '_base', '_diff'})
 
 
+def _coerce_leaf(new_val, obj, key):
+    """Coerce a JSON list back to numpy array when the target attribute is already an ndarray."""
+    if isinstance(new_val, list):
+        try:
+            if isinstance(obj[key], np.ndarray):
+                return np.array(new_val)
+        except Exception:
+            pass
+    return new_val
+
+
 def _apply_diff_to_obj(obj, diff_dict):
     """Walk a stripped diff dict and apply every leaf value to obj via key navigation."""
     for key, value in diff_dict.items():
@@ -718,7 +729,7 @@ def _apply_diff_to_obj(obj, diff_dict):
                 pass
         else:
             try:
-                obj[key] = value
+                obj[key] = _coerce_leaf(value, obj, key)
             except (KeyError, TypeError, AttributeError):
                 pass
 

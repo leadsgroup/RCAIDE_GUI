@@ -671,7 +671,7 @@ class ResultsViewerWidget(TabWidget):
             "energy": 8,
             "tag": 99,
         }
-        return sorted(items, key=lambda item: (priority.get(str(item[0]), 20), str(item[0]).lower()))
+        return sorted(items, key=lambda item: priority.get(str(item[0]), 20))
 
     def _join_path(self, parent, child):
         # Build readable paths such as rcaide_results.segments.cruise.conditions.
