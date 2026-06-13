@@ -446,11 +446,11 @@ class VisualizeGeometryWidget(TabWidget):
         rotor_color          = 'black'
         cargo_bay_color      = 'blue'
         landing_gear_color   = 'grey'
-        cabin_color          = 'white'
+        cabin_color          = 'grey'
         systems_color        = 'black'
         wing_opacity         = 0.5
         fuselage_opacity     = 0.5
-        nacelle_opacity      = 1.0
+        nacelle_opacity      = 0.5
         fuel_tank_opacity    = 0.5
         rotor_opacity        = 0.6
         boom_opacity         = 1.0
@@ -502,7 +502,7 @@ class VisualizeGeometryWidget(TabWidget):
         for wing in geometry.wings:
             if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                 wing_planform(wing)
-                if self._show_lopa:
+                if len(wing.cabins) > 0:
                     compute_layout_of_passenger_accommodations(wing)
             else:
                 wing_planform(wing)
@@ -511,7 +511,7 @@ class VisualizeGeometryWidget(TabWidget):
             compute_fuel_volume(geometry)
 
         for fuselage in geometry.fuselages:
-            if self._show_lopa:
+            if len(fuselage.cabins) > 0:
                 compute_layout_of_passenger_accommodations(fuselage)
             fuselage_planform(fuselage)
     
@@ -553,8 +553,9 @@ class VisualizeGeometryWidget(TabWidget):
                 GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
                 make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
             if self._show_lopa:
-                lopa_geom = generate_3d_lopa_points(fuselage)
-                add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+                if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
+                    lopa_geom = generate_3d_lopa_points(fuselage)
+                    add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
 
         # -------------------------------------------------------------------------
         # Plot cargo bays

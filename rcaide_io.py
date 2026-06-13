@@ -99,7 +99,7 @@ def repair_local_file_paths(value, source_dir=None):
 
 
 def repair_airfoil_path(path, source_dir=None):
-    if not path or os.path.exists(path):
+    if not path:
         return path
     basename = os.path.basename(path)
     if source_dir:
@@ -110,7 +110,7 @@ def repair_airfoil_path(path, source_dir=None):
         candidate = os.path.join(search_dir, basename)
         if os.path.exists(candidate):
             return candidate
-    return path
+    return basename if basename else path
 
 
 # ----------------------------------------------------------------------------------------------------------------------

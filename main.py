@@ -73,9 +73,9 @@ class App(QMainWindow):
         screen = QApplication.primaryScreen()
         if screen:
             ag = screen.availableGeometry()
-            self.resize(min(1280, ag.width()), min(ag.height() - 30, 740))
+            self.resize(min(1280, ag.width()), min(ag.height() - 30, 836))
         else:
-            self.resize(1280, 740)
+            self.resize(1280, 836)
         self.setMinimumSize(700, 480)
 
     def on_tab_change(self, index: int):

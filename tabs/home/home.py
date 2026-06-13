@@ -240,7 +240,7 @@ class HomeWidget(TabWidget):
 """)
         body_bg.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         body_layout = QHBoxLayout(body_bg)
-        body_layout.setContentsMargins(30, 24, 30, 8)
+        body_layout.setContentsMargins(30, 40, 30, 40)
         body_layout.setSpacing(30)
         body_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
