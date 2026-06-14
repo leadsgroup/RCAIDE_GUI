@@ -11,7 +11,7 @@ from PyQt6.QtCore import qInstallMessageHandler
 from PyQt6.QtGui import QPixmap, QDesktopServices
 from PyQt6.QtWidgets import (
     QFrame, QGridLayout, QPushButton, QSizePolicy,
-    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect
+    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect, QStackedLayout
 )
 from PyQt6.QtWidgets import QApplication
 
@@ -30,7 +30,7 @@ def suppress_qt_warnings(mode, context, message):
     print(message)
 qInstallMessageHandler(suppress_qt_warnings)
 
-BANNER_HEIGHT = 320          # Default banner image height in pixels
+BANNER_HEIGHT = 400          # Default banner image height in pixels
 VERTICAL_FOCUS = 0.3         # Vertical offset ratio (0 = top, 1 = bottom crop focus)
 
 
@@ -207,6 +207,7 @@ class HomeWidget(TabWidget):
         # Layout that stacks title and subtitle vertically
         overlay_layout = QVBoxLayout()
         overlay_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        overlay_layout.setSpacing(4)
         overlay_layout.addWidget(self.rcaide_label)
         overlay_layout.addWidget(self.leads_label)
 
@@ -216,14 +217,11 @@ class HomeWidget(TabWidget):
         overlay_widget.setStyleSheet("background:transparent;")
 
         # --- Layout for the banner container ---
-        # Banner image first, then text overlay on top
+        # Banner image first, then text labels below it within the container
         banner_layout = QVBoxLayout(banner_container)
         banner_layout.setContentsMargins(0, 0, 0, 0)
         banner_layout.addWidget(self.banner)
-        banner_layout.addWidget(
-            overlay_widget,
-            alignment=Qt.AlignmentFlag.AlignCenter
-        )
+        banner_layout.addWidget(overlay_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Add banner section to the main layout
         base_layout.addLayout(header_layout)
@@ -240,10 +238,11 @@ class HomeWidget(TabWidget):
     border-top: 1px solid #11293C;
 }
 """)
+        body_bg.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         body_layout = QHBoxLayout(body_bg)
-        body_layout.setContentsMargins(60, 16, 100, 16)
+        body_layout.setContentsMargins(30, 40, 30, 40)
         body_layout.setSpacing(30)
-        body_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        body_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
     # --- Left Column: How To Use GUI Flowchart Image ---
         self.flowchart_frame = QFrame()
@@ -261,12 +260,13 @@ class HomeWidget(TabWidget):
 
         # Load High-Resolution Flowchart Image
         original_pix = QPixmap(os.path.join(_IMG, "flowchart.png"))
+        self._original_pix = original_pix
         if not original_pix.isNull():
             screen = QApplication.primaryScreen()
             dpr = screen.devicePixelRatio() if screen else 1.0
             highres_pix = original_pix.scaled(
                 int(620 * dpr),
-                int(320 * dpr),
+                int(200 * dpr),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation
             )
@@ -278,12 +278,10 @@ class HomeWidget(TabWidget):
         self.flowchart_image = QLabel()
         self.flowchart_image.setPixmap(highres_pix)
         self.flowchart_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.flowchart_image.setFixedSize(620, 320)
+        self.flowchart_image.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.flowchart_image.setStyleSheet("border:none; background:transparent;")
 
-        flowchart_layout.addStretch(1)
         flowchart_layout.addWidget(self.flowchart_image, alignment=Qt.AlignmentFlag.AlignCenter)
-        flowchart_layout.addStretch(1)
 
         # --- Right Column: Load Aircraft / Mission Or Start From Scratch ---
         self.mission_frame = QFrame()
@@ -318,8 +316,8 @@ QPushButton:hover {
 }
 """)
         mission_layout = QVBoxLayout(self.mission_frame)
-        mission_layout.setContentsMargins(45, 16, 45, 16)
-        mission_layout.setSpacing(14)
+        mission_layout.setContentsMargins(45, 8, 45, 8)
+        mission_layout.setSpacing(8)
         mission_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     # --- Mission Panel Title Section ---
@@ -375,7 +373,7 @@ QPushButton:hover {
         # Button to load a predefined aircraft and mission setup
         load_btn = QPushButton("Load Aircraft and Mission")
         load_btn.setMinimumWidth(230)
-        load_btn.setFixedHeight(42)
+        load_btn.setFixedHeight(36)
 
         # Add button to the same row
         load_row.addWidget(load_btn)
@@ -403,7 +401,7 @@ QPushButton:hover {
         # Button to start a new mission from scratch
         scratch_btn = QPushButton("Start from Scratch")
         scratch_btn.setMinimumWidth(250)
-        scratch_btn.setFixedHeight(42)
+        scratch_btn.setFixedHeight(36)
 
         scratch_container = QVBoxLayout()
         scratch_container.setContentsMargins(0, 0, 0, 0)
@@ -473,12 +471,13 @@ QPushButton:hover {
         scratch_btn.clicked.connect(handle_scratch_click)
 
         # Sizes
-        self._normal_flowchart_size = QSize(620, 320)
-        self._normal_mission_size = QSize(550, 310)
+        self._normal_flowchart_size = QSize(620, 200)
+        self._normal_mission_size = QSize(550, 200)
         self._fullscreen_scale = 1.55
 
-        self.flowchart_frame.setFixedSize(self._normal_flowchart_size)
-        self.mission_frame.setFixedSize(self._normal_mission_size)
+        self.flowchart_frame.setMinimumSize(self._normal_flowchart_size)
+        self.flowchart_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.mission_frame.setMinimumSize(self._normal_mission_size)
 
         body_layout.addWidget(self.flowchart_frame)
         body_layout.addWidget(self.mission_frame)
@@ -517,8 +516,22 @@ QPushButton:hover {
         mission_h = int(self._normal_mission_size.height() * scale)
 
         # Apply new sizes
-        self.flowchart_frame.setFixedSize(flow_w, flow_h)
-        self.mission_frame.setFixedSize(mission_w, mission_h)
+        self.flowchart_frame.setMinimumSize(flow_w, flow_h)
+        self.mission_frame.setMinimumSize(mission_w, mission_h)
+
+        # Rescale flowchart image to fill the actual frame height
+        actual_h = max(self.flowchart_frame.height(), flow_h)
+        if not self._original_pix.isNull():
+            screen = QApplication.primaryScreen()
+            dpr = screen.devicePixelRatio() if screen else 1.0
+            scaled = self._original_pix.scaled(
+                int(flow_w * dpr),
+                int(actual_h * dpr),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+            scaled.setDevicePixelRatio(dpr)
+            self.flowchart_image.setPixmap(scaled)
 
         # Refresh layout and redraw
         self.updateGeometry()

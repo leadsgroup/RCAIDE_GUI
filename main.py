@@ -62,13 +62,21 @@ class App(QMainWindow):
         self.widgets.append((analysis.get_widget(), "Analyses Setup"))
         self.widgets.append((mission.get_widget(), "Mission Setup"))
         self.widgets.append((solve.get_widget(), "Mission Simulation"))
+        # Results Viewer reads the last mission.evaluate() output stored in rcaide_io.rcaide_results.
+        self.widgets.append((results_viewer.get_widget(), "Results Viewer"))
         # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses"))
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
 
         self.setCentralWidget(self.tabs)
-        self.resize(1280, 720)
+        screen = QApplication.primaryScreen()
+        if screen:
+            ag = screen.availableGeometry()
+            self.resize(min(1280, ag.width()), min(ag.height() - 30, 836))
+        else:
+            self.resize(1280, 836)
+        self.setMinimumSize(700, 480)
 
     def on_tab_change(self, index: int):
         current_frame = self.tabs.currentWidget()

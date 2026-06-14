@@ -8,15 +8,19 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
+from RCAIDE.Library.Components                                   import Component
 from RCAIDE.Library.Plots.Geometry.generate_3d_cargo_bay_points import generate_3d_cargo_bay_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_torus_points     import generate_3d_torus_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points     import generate_3d_cabin_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points, generate_vtk_object
 from RCAIDE.Library.Plots.Geometry.plot_3d_vehicle              import add_lopa_seats
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform, compute_fuel_volume
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations
 
 # PyQt imports
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit, QScrollArea
 from PyQt6.QtCore import Qt
 from tabs import TabWidget
 from pyvistaqt import QtInteractor
@@ -57,13 +61,16 @@ class CustomInteractorStyle(vtkInteractorStyleTrackballCamera):
         self.GetInteractor().GetRenderWindow().Render()  # Render the changes
 
 _DEFAULT_OPACITY = {
-    "Fuselages":  0.5,
-    "Wings":      0.5,
-    "Nacelles":   1.0,
-    "Rotors":     0.6,
-    "Booms":      1.0,
-    "Fuel Tanks": 0.5,
-    "Cargo Bays": 0.6,
+    "Fuselages":    0.5,
+    "Wings":        0.5,
+    "Nacelles":     1.0,
+    "Rotors":       0.6,
+    "Booms":        1.0,
+    "Fuel Tanks":   0.5,
+    "Cargo Bays":   0.6,
+    "Landing Gear": 1.0,
+    "Cabins":       0.75,
+    "Systems":      0.8,
 }
 
 class ColorBar(QWidget):
@@ -225,13 +232,16 @@ class VisualizeGeometryWidget(TabWidget):
         self.get_camera = None
         self.pen_style = False
 
-        self.wing_actors = []
-        self.fuselage_actors = []
-        self.nacelle_actors = []
-        self.rotor_actors  = []
-        self.boom_actors = []
-        self.fuel_tank_actors = []
-        self.cargo_bay_actors = []
+        self.wing_actors         = []
+        self.fuselage_actors     = []
+        self.nacelle_actors      = []
+        self.rotor_actors        = []
+        self.boom_actors         = []
+        self.fuel_tank_actors    = []
+        self.cargo_bay_actors    = []
+        self.landing_gear_actors = []
+        self.cabin_actors        = []
+        self.system_actors       = []
 
         solve_button = QPushButton("Display")
         solve_button.clicked.connect(self.run_solve)
@@ -269,13 +279,16 @@ class VisualizeGeometryWidget(TabWidget):
         
     def colorbar(self):
         self.part_actors = {
-            "Fuselages": self.fuselage_actors,
-            "Wings": self.wing_actors,
-            "Nacelles": self.nacelle_actors,
-            "Rotors": self.rotor_actors,
-            "Booms": self.boom_actors,
-            "Fuel Tanks": self.fuel_tank_actors,
-            "Cargo Bays": self.cargo_bay_actors,
+            "Fuselages":    self.fuselage_actors,
+            "Wings":        self.wing_actors,
+            "Nacelles":     self.nacelle_actors,
+            "Rotors":       self.rotor_actors,
+            "Booms":        self.boom_actors,
+            "Fuel Tanks":   self.fuel_tank_actors,
+            "Cargo Bays":   self.cargo_bay_actors,
+            "Landing Gear": self.landing_gear_actors,
+            "Cabins":       self.cabin_actors,
+            "Systems":      self.system_actors,
         }
 
         def color_changed(part_name, color=None, opacity=None):
@@ -290,7 +303,16 @@ class VisualizeGeometryWidget(TabWidget):
 
         self.colorbar_widget = ColorBar(self.part_actors, color_changed)
         self.colorbar_widget.setFixedWidth(180)
-        return self.colorbar_widget
+
+        scroll = QScrollArea()
+        scroll.setWidget(self.colorbar_widget)
+        scroll.setWidgetResizable(False)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setFixedWidth(200)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        self.colorbar_scroll = scroll
+        return scroll
 
     def add_toolbar(self):
         self.toolbar = QToolBar("Tools")
@@ -416,35 +438,44 @@ class VisualizeGeometryWidget(TabWidget):
         self.selected_option = item.text(0)       
      
     def run_solve(self):
-        wing_color                  = 'grey'  
-        fuselage_color              = 'grey'  
-        nacelle_color               = 'grey' 
-        boom_color                  = 'grey' 
-        fuel_tank_color             = 'orange'
-        rotor_color                 = 'black'
-        cargo_bay_color             = 'blue'
-        wing_opacity                = 0.5
-        fuselage_opacity            = 0.5
-        nacelle_opacity             = 1.0
-        fuel_tank_opacity           = 0.5
-        rotor_opacity               = 0.6
-        number_of_airfoil_points    = 101
-        tessellation                = 96
-        boom_opacity                = 1.0
-        cargo_bay_opacity           = 0.6
-        lopa_opacity                = 1.0
-        camera_eye_x  = -1
-        camera_eye_y  = -1
-        camera_eye_z  = 0.35
+        wing_color           = 'grey'
+        fuselage_color       = 'grey'
+        nacelle_color        = 'grey'
+        boom_color           = 'grey'
+        fuel_tank_color      = 'orange'
+        rotor_color          = 'black'
+        cargo_bay_color      = 'blue'
+        landing_gear_color   = 'grey'
+        cabin_color          = 'grey'
+        systems_color        = 'black'
+        wing_opacity         = 0.5
+        fuselage_opacity     = 0.5
+        nacelle_opacity      = 0.5
+        fuel_tank_opacity    = 0.5
+        rotor_opacity        = 0.6
+        boom_opacity         = 1.0
+        cargo_bay_opacity    = 0.6
+        landing_gear_opacity = 1.0
+        cabin_opacity        = 0.75
+        systems_opacity      = 0.8
+        lopa_opacity         = 1.0
+        number_of_airfoil_points = 101
+        tessellation         = 96
+        camera_eye_x         = -1
+        camera_eye_y         = -1
+        camera_eye_z         = 0.35
 
-        fuel_tank_rgb_color         = mcolors.to_rgb(fuel_tank_color)
-        wing_rgb_color              = mcolors.to_rgb(wing_color)
-        fuselage_rgb_color          = mcolors.to_rgb(fuselage_color)
-        nacelle_rgb_color           = mcolors.to_rgb(nacelle_color)
-        rotor_rgb_color             = mcolors.to_rgb(rotor_color)
-        boom_rgb_color              = mcolors.to_rgb(boom_color)
-        cargo_bay_rgb_color         = mcolors.to_rgb(cargo_bay_color)
-        
+        fuel_tank_rgb_color    = mcolors.to_rgb(fuel_tank_color)
+        wing_rgb_color         = mcolors.to_rgb(wing_color)
+        fuselage_rgb_color     = mcolors.to_rgb(fuselage_color)
+        nacelle_rgb_color      = mcolors.to_rgb(nacelle_color)
+        rotor_rgb_color        = mcolors.to_rgb(rotor_color)
+        boom_rgb_color         = mcolors.to_rgb(boom_color)
+        cargo_bay_rgb_color    = mcolors.to_rgb(cargo_bay_color)
+        landing_gear_rgb_color = mcolors.to_rgb(landing_gear_color)
+        cabin_rgb_color        = mcolors.to_rgb(cabin_color)
+        system_rgb_color       = mcolors.to_rgb(systems_color)
+
         # Clear previous scene and actor lists
         if self.renderer is not None:
             self.renderer.RemoveAllViewProps()
@@ -455,6 +486,9 @@ class VisualizeGeometryWidget(TabWidget):
         self.boom_actors.clear()
         self.fuel_tank_actors.clear()
         self.cargo_bay_actors.clear()
+        self.landing_gear_actors.clear()
+        self.cabin_actors.clear()
+        self.system_actors.clear()
 
         self.renderer = self.plotter.renderer
         self.render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
@@ -468,7 +502,7 @@ class VisualizeGeometryWidget(TabWidget):
         for wing in geometry.wings:
             if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                 wing_planform(wing)
-                if self._show_lopa:
+                if len(wing.cabins) > 0:
                     compute_layout_of_passenger_accommodations(wing)
             else:
                 wing_planform(wing)
@@ -477,7 +511,7 @@ class VisualizeGeometryWidget(TabWidget):
             compute_fuel_volume(geometry)
 
         for fuselage in geometry.fuselages:
-            if self._show_lopa:
+            if len(fuselage.cabins) > 0:
                 compute_layout_of_passenger_accommodations(fuselage)
             fuselage_planform(fuselage)
     
@@ -498,9 +532,16 @@ class VisualizeGeometryWidget(TabWidget):
             if wing.xy_plane_symmetric:
                 GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
                 make_object(self.plotter, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
-            if self._show_lopa and isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-                lopa_geom = generate_3d_lopa_points(wing)
-                add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                if self._show_lopa:
+                    if len(wing.cabins) > 0 and len(list(wing.cabins.values())[0].segments_bounding_cabin) > 1:
+                        lopa_geom = generate_3d_lopa_points(wing)
+                        add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+                if len(wing.cabins) > 0:
+                    GEOM = generate_3d_cabin_points(wing, number_of_airfoil_points, plot_centerline=False)
+                    make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
+                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+                    make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
     
         # -------------------------------------------------------------------------  
         # Plot fuselage
@@ -508,9 +549,13 @@ class VisualizeGeometryWidget(TabWidget):
         for fuselage in geometry.fuselages:
             GEOM = generate_3d_fuselage_points(fuselage, tessellation)
             make_object(self.plotter, self.fuselage_actors, GEOM, fuselage_rgb_color, fuselage_opacity)
+            if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
+                GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
+                make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
             if self._show_lopa:
-                lopa_geom = generate_3d_lopa_points(fuselage)
-                add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+                if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
+                    lopa_geom = generate_3d_lopa_points(fuselage)
+                    add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
 
         # -------------------------------------------------------------------------
         # Plot cargo bays
@@ -527,22 +572,63 @@ class VisualizeGeometryWidget(TabWidget):
             GEOM = generate_3d_fuselage_points(boom, tessellation)
             make_object(self.plotter, self.boom_actors, GEOM, boom_rgb_color, boom_opacity)
     
-        # -------------------------------------------------------------------------  
-        # Plot Nacelle, Rotors and Fuel Tanks 
-        # ------------------------------------------------------------------------- 
-        # print(geometry.networks)
+        # -------------------------------------------------------------------------
+        # Plot systems
+        # -------------------------------------------------------------------------
+        for system in geometry.systems:
+            if isinstance(system, Component):
+                GEOM = generate_3d_cuboid_points(system)
+                make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
 
-        #plotting top-level nacelles (not attached to propulsors)
+        # -------------------------------------------------------------------------
+        # Plot landing gear
+        # -------------------------------------------------------------------------
+        for landing_gear in geometry.landing_gears:
+            N_t = landing_gear.number_of_gear_types_in_tandem
+            N_w = landing_gear.number_of_wheels_in_gear_type
+            D            = landing_gear.tire_diameter
+            d            = landing_gear.rim_diameter
+            w            = landing_gear.tire_width
+            strut_length = landing_gear.strut_length
+            gear_origin  = landing_gear.origin[0]
+
+            longitudinal_spacing = landing_gear.longitudinal_wheel_spacing * (N_t - 1) if N_t > 1 else 0
+            total_wheel_x_span   = D * (N_t - 1) + longitudinal_spacing
+            wheel_x_offsets      = np.linspace(-total_wheel_x_span / 2, total_wheel_x_span / 2, N_t) if N_t > 1 else np.array([0.0])
+
+            total_wheel_y_span   = w * (N_w - 1) + landing_gear.lateral_wheel_spacing * (N_w - 1) if N_w > 1 else 0
+            wheel_y_offsets      = np.linspace(-total_wheel_y_span / 2, total_wheel_y_span / 2, N_w) if N_w > 1 else np.array([0.0])
+
+            for i in range(N_t):
+                for j in range(N_w):
+                    wheel_origin = [
+                        gear_origin[0] + wheel_x_offsets[i],
+                        gear_origin[1] + wheel_y_offsets[j],
+                        gear_origin[2] - strut_length,
+                    ]
+                    pts = generate_3d_torus_points(wheel_origin, D, d, w, tessellation=24)
+                    make_pts_object(self.plotter, self.landing_gear_actors, pts, landing_gear_rgb_color, landing_gear_opacity)
+                    if landing_gear.xz_plane_symmetric:
+                        wheel_origin[1] = -wheel_origin[1]
+                        pts = generate_3d_torus_points(wheel_origin, D, d, w, tessellation=24)
+                        make_pts_object(self.plotter, self.landing_gear_actors, pts, landing_gear_rgb_color, landing_gear_opacity)
+
+        # -------------------------------------------------------------------------
+        # Plot top-level nacelles (not attached to a propulsor)
+        # -------------------------------------------------------------------------
         for nacelle in geometry.nacelles:
-            # if type(nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle:
-            #     GEOM = generate_3d_stack_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-            # elif type(nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle:
-            GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
-            # else:
-            #     GEOM = generate_3d_basic_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            if type(nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle:
+                GEOM = generate_3d_stack_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            elif type(nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle:
+                GEOM = generate_3d_BOR_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
+            else:
+                GEOM = generate_3d_basic_nacelle_points(nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
             make_object(self.plotter, self.nacelle_actors, GEOM, nacelle_rgb_color, nacelle_opacity)
-        
-        for network in geometry.networks: 
+
+        # -------------------------------------------------------------------------
+        # Plot Nacelles, Rotors and Fuel Tanks (network-attached)
+        # -------------------------------------------------------------------------
+        for network in geometry.networks:
             for propulsor in network.propulsors:  
                 if getattr(propulsor, "nacelle", None) is not None: 
                     if propulsor.nacelle !=  None: 
@@ -676,26 +762,23 @@ class VisualizeGeometryWidget(TabWidget):
 def get_widget() -> QWidget:
     return VisualizeGeometryWidget()
 
-def make_object(plotter, actor_group, GEOM, rgb_color, opacity):
-    mesh = generate_vtk_object(GEOM.PTS)
-
+def _add_mesh(plotter, actor_group, mesh, rgb_color, opacity):
     bright = tuple(min(1.0, c * 1.2) for c in rgb_color)
-    actor = plotter.add_mesh(
-        mesh,
-        color=bright,
-        opacity=opacity,
-        show_scalar_bar=False,
-        smooth_shading=True,
-    )
-
+    actor = plotter.add_mesh(mesh, color=bright, opacity=opacity,
+                             show_scalar_bar=False, smooth_shading=True)
     prop = actor.GetProperty()
     prop.SetDiffuse(0.8)
     prop.SetAmbient(0.4)
     prop.SetSpecular(0.3)
     prop.SetSpecularPower(20)
-
     actor_group.append(actor)
     return
+
+def make_object(plotter, actor_group, GEOM, rgb_color, opacity):
+    _add_mesh(plotter, actor_group, generate_vtk_object(GEOM.PTS), rgb_color, opacity)
+
+def make_pts_object(plotter, actor_group, pts, rgb_color, opacity):
+    _add_mesh(plotter, actor_group, generate_vtk_object(pts), rgb_color, opacity)
 
 def make_actuator_disc(plotter, inner_radius, outer_radius, origin, rot_x, rot_y, rot_z, rgb_color, opacity):
     disc = pv.Disc(
