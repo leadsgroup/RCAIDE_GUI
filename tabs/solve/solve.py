@@ -1,6 +1,6 @@
 # RCAIDE_GUI/tabs/solve/solve.py
 # 
-# Created: Oct 2024, Laboratory for Electric Aircraft Design and Sustainabiltiy
+# Created: Oct 2024, Laboratory for Emerging Aircraft Design and Systems
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
