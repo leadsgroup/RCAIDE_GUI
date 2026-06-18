@@ -260,7 +260,9 @@ class TurbofanWidget(QWidget):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["Propulsor Tag"] = title
+        data["Propulsor Type"] = "Turbofan"
         data_si["Propulsor Tag"] = title
+        data_si["Propulsor Type"] = "Turbofan"
 
         if self.nacelle_active:
             nacelle_data = self.nacelle_general_widget.get_values()
@@ -289,6 +291,7 @@ class TurbofanWidget(QWidget):
 
             data_si = self.data_entry_widget.get_values_si()
             data_si["Propulsor Tag"] = title
+            data_si["Propulsor Type"] = "Turbofan"
             
             nacelle_si = self.nacelle_general_widget.get_values_si()
             nacelle_si["Nacelle Type"] = self.nacelle_combo.currentText()
