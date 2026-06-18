@@ -19,7 +19,6 @@ from tabs.geometry.widgets.powertrain.propulsors.constant_speed_ice_widget impor
 from tabs.geometry.widgets.powertrain.propulsors.electric_ducted_fan_widget import ElectricDuctedFanWidget
 from tabs.geometry.widgets.powertrain.propulsors.electric_rotor_widget import ElectricRotorWidget
 from tabs.geometry.widgets.powertrain.propulsors.ice_widget import ICEWidget
-from tabs.geometry.widgets.powertrain.propulsors.propulsor_widget import PropulsorWidget
 from tabs.geometry.widgets.powertrain.propulsors.turbojet_widget import TurbojetWidget
 from tabs.geometry.widgets.powertrain.propulsors.turboprop_widget import TurbopropWidget
 from common_widgets import DataEntryWidget
@@ -32,7 +31,6 @@ PROPULSOR_WIDGETS = {
     "Electric Ducted Fan": ElectricDuctedFanWidget,
     "Electric Rotor": ElectricRotorWidget,
     "Internal Combustion Engine": ICEWidget,
-    "Propulsor": PropulsorWidget,
     "Turbojet": TurbojetWidget,
     "Turboprop": TurbopropWidget,
 }
@@ -65,11 +63,11 @@ class PropulsorFrame(QWidget):
             "Electric Ducted Fan",
             "Electric Rotor",
             "Internal Combustion Engine",
-            "Propulsor",
             "Turbofan",
             "Turbojet",
             "Turboprop",
         ]))
+        self.propulsor_type_dropdown.setMinimumWidth(390)
         self.propulsor_type_dropdown.currentTextChanged.connect(self.update_add_button_text)
         add_layout.addWidget(self.propulsor_type_dropdown)
 
@@ -79,7 +77,8 @@ class PropulsorFrame(QWidget):
             self,
         )
         self.add_propulsor_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        self.add_propulsor_button.setMaximumWidth(220)
+        self.add_propulsor_button.setMinimumWidth(430)
+        self.add_propulsor_button.setMaximumWidth(480)
         self.add_propulsor_button.clicked.connect(self.add_selected_propulsor)
         add_layout.addWidget(self.add_propulsor_button)
         add_layout.addStretch()
@@ -178,7 +177,6 @@ class PropulsorFrame(QWidget):
             "Electric_Ducted_Fan": "Electric Ducted Fan",
             "Electric_Rotor": "Electric Rotor",
             "Internal_Combustion_Engine": "Internal Combustion Engine",
-            "Propulsor": "Propulsor",
             "Turbofan": "Turbofan",
             "Turbojet": "Turbojet",
             "Turboprop": "Turboprop",

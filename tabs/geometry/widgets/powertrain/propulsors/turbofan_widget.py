@@ -96,7 +96,7 @@ class TurbofanWidget(QWidget):
         self.remove_nacelle_btn = QPushButton("Remove Nacelle", self)
         self.remove_nacelle_btn.clicked.connect(self.disable_nacelle_ui)
         self.remove_nacelle_btn.setStyleSheet("color: #ff6b6b; font-weight: bold;")
-        self.remove_nacelle_btn.setFixedWidth(120)
+        self.remove_nacelle_btn.setFixedWidth(150)
         header_layout.addWidget(self.remove_nacelle_btn)
         
         self.nacelle_layout.addLayout(header_layout)
