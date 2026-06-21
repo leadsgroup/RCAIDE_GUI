@@ -102,22 +102,6 @@ class SolveWidget(TabWidget):
         tree_layout = QVBoxLayout()
         main_layout = QVBoxLayout()
 
-        # Create and add a label to the main_layout
-        status_label = QLabel("Mission Plots")
-        status_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        status_label.setFixedHeight(24)
-        status_label.setStyleSheet("""
-        QLabel {
-            color: #9fb8ff;
-            background: transparent;
-            padding-left: 6px;
-            font-size: 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        """)
-
-        main_layout.addWidget(status_label)
-
         solve_button = QPushButton("Simulate Mission")
         solve_button.setFixedHeight(36)
         solve_button.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -1019,6 +1003,14 @@ def init_plot_settings_panel(self):
         lbl.setStyleSheet("font-weight: bold; color: white;")
         return lbl
 
+    # Panel header
+    panel_header = QLabel("Plot Parameters")
+    panel_header.setStyleSheet(
+        "color: #9fb8ff; font-size: 18px; font-weight: bold; "
+        "padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.08);"
+    )
+    layout.addWidget(panel_header)
+
     # Line appearance section
     layout.addWidget(header("Line Appearance"))
 
@@ -1452,27 +1444,18 @@ if not getattr(SolveWidget, "_LEADS_PATCHED", False):
 
         # Create the plot settings panel (fixed width)
         self.settings_panel = QWidget()
-        self.settings_panel.setFixedWidth(280)
+        self.settings_panel.setFixedWidth(320)
 
         # Add the settings panel as a 3rd column in the root layout
         layout = self.layout()
         if layout is not None:
             layout.addWidget(self.settings_panel)
 
-            # Reorder columns so: [settings_panel | plots | plot_options(tree)]
+            # Keep columns as: [tree+simulate | plots | settings_panel]
             if layout.count() >= 3:
-                left_item   = layout.takeAt(0)  # tree
-                center_item = layout.takeAt(0)  # graphs
-                right_item  = layout.takeAt(0)  # settings
-
-                layout.addItem(right_item)      # settings on left
-                layout.addItem(center_item)     # graphs in middle
-                layout.addItem(left_item)       # plot options tree on right
-
-                # Middle expands; sides stay compact
-                layout.setStretch(0, 1)
+                layout.setStretch(0, 2)
                 layout.setStretch(1, 4)
-                layout.setStretch(2, 2)
+                layout.setStretch(2, 1)
 
         # Build the settings UI into the panel
         init_plot_settings_panel(self)
