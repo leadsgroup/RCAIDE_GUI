@@ -415,6 +415,10 @@ rcaide_mission  = RCAIDE.Framework.Mission.Sequential_Segments()
 # Last in-memory mission output. Set by the Solve tab after mission.evaluate()
 # and browsed by the Results Viewer so users can inspect values without rerunning.
 rcaide_results  = None
+# Last raw result from the Performance tab. Set after each analysis run so the
+# Results Viewer can browse it (stability derivatives, polar arrays, etc.).
+last_performance_result = None
+last_performance_label  = ""
 
 
 # ----------------------------------------------------------------------------------------------------------------------

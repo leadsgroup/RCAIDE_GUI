@@ -26,6 +26,12 @@ import traceback
 from datetime import datetime
 
 
+class _NoScrollComboBox(QComboBox):
+    """ComboBox that ignores scroll-wheel to prevent accidental selection changes."""
+    def wheelEvent(self, event):
+        event.ignore()
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 #  Background worker
 # ──────────────────────────────────────────────────────────────────────────────
@@ -62,12 +68,12 @@ class MultiDisciplinaryWidget(TabWidget):
         self._current_result = None
 
         base_layout = QHBoxLayout(self)
-        base_layout.setContentsMargins(14, 14, 14, 14)
-        base_layout.setSpacing(14)
+        base_layout.setContentsMargins(8, 8, 8, 8)
+        base_layout.setSpacing(10)
 
         # ── Left panel: analysis setup (scrollable) ─────────────────────
         left_scroll = QScrollArea()
-        left_scroll.setFixedWidth(280)
+        left_scroll.setFixedWidth(340)
         left_scroll.setWidgetResizable(True)
         left_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         left_scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -89,7 +95,7 @@ class MultiDisciplinaryWidget(TabWidget):
             );
             border: 1.6px solid #5fb0ff;
             border-radius: 10px;
-            padding: 7px 20px;
+            padding: 7px 10px;
             color: #d9ecff;
             font-size: 13.5px;
             font-weight: 700;
@@ -113,25 +119,36 @@ class MultiDisciplinaryWidget(TabWidget):
 
         left_layout.addWidget(self._divider())
 
-        # Aircraft name
-        self.aircraft_label = QLabel("Aircraft: —")
-        self.aircraft_label.setStyleSheet("color: #d6e1ff; font-size: 14px; padding: 2px 0;")
-        left_layout.addWidget(self.aircraft_label)
-
-        # Configuration dropdown
-        left_layout.addWidget(QLabel("Configuration:"))
-        self.config_combo = QComboBox()
-        self.config_combo.setMinimumHeight(28)
-        left_layout.addWidget(self.config_combo)
-
-        # Analysis dropdown
+        # Analysis dropdown (first, so users pick what they're running before anything else)
         left_layout.addWidget(QLabel("Analysis:"))
-        self.analysis_combo = QComboBox()
+        self.analysis_combo = _NoScrollComboBox()
         self.analysis_combo.setMinimumHeight(28)
         for name in ANALYSIS_REGISTRY:
             self.analysis_combo.addItem(name)
         self.analysis_combo.currentIndexChanged.connect(self._on_analysis_type_changed)
         left_layout.addWidget(self.analysis_combo)
+
+        # Description label — updates when the analysis selection changes
+        self.analysis_desc_label = QLabel("")
+        self.analysis_desc_label.setWordWrap(True)
+        self.analysis_desc_label.setStyleSheet(
+            "color: #7a94cc; font-size: 13px; padding: 4px 0 2px 0;"
+        )
+        left_layout.addWidget(self.analysis_desc_label)
+
+        left_layout.addWidget(self._divider())
+
+        # Aircraft name
+        self.aircraft_label = QLabel("Aircraft: —")
+        self.aircraft_label.setStyleSheet("color: #d6e1ff; font-size: 14px; padding: 2px 0;")
+        left_layout.addWidget(self.aircraft_label)
+
+        # Configuration dropdown (used for analyses-based analyses only)
+        self.config_label = QLabel("Configuration:")
+        left_layout.addWidget(self.config_label)
+        self.config_combo = _NoScrollComboBox()
+        self.config_combo.setMinimumHeight(28)
+        left_layout.addWidget(self.config_combo)
 
         # Dynamic parameters label
         params_label = QLabel("Parameters:")
@@ -170,12 +187,13 @@ class MultiDisciplinaryWidget(TabWidget):
 
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 1)
+        splitter.setSizes([600, 300])
 
         base_layout.addWidget(splitter, 5)
 
         # ── Right panel: plot settings (scrollable, full height) ─────────
         right_scroll = QScrollArea()
-        right_scroll.setFixedWidth(360)
+        right_scroll.setFixedWidth(320)
         right_scroll.setWidgetResizable(True)
         right_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         right_scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -223,9 +241,9 @@ class MultiDisciplinaryWidget(TabWidget):
         self.config_combo.blockSignals(True)
         prev = self.config_combo.currentText()
         self.config_combo.clear()
-        configs = getattr(rcaide_io, "rcaide_configs", None)
-        if configs:
-            for tag, _ in configs.items():
+        analyses = getattr(rcaide_io, "rcaide_analyses", None)
+        if analyses:
+            for tag in analyses.keys():
                 self.config_combo.addItem(tag)
         idx = self.config_combo.findText(prev)
         if idx >= 0:
@@ -235,11 +253,51 @@ class MultiDisciplinaryWidget(TabWidget):
     # ──────────────────────────────────────────────────────────────────────
     #  Dynamic parameters
     # ──────────────────────────────────────────────────────────────────────
+    _ANALYSIS_DESCRIPTIONS = {
+        "Take-Off Field Length": (
+            "Estimates the minimum runway length required for the aircraft to safely lift off, "
+            "accounting for altitude, temperature, and weight. Optionally computes the "
+            "second-segment climb gradient for obstacle clearance certification."
+        ),
+        "Landing Field Length": (
+            "Estimates the minimum runway length required to bring the aircraft to a full stop "
+            "from the approach threshold speed. Accounts for altitude, temperature, and landing weight."
+        ),
+        "Stall Speed": (
+            "Calculates the minimum airspeed at which the aircraft can maintain controlled level "
+            "flight for a given weight, altitude, and maximum lift coefficient."
+        ),
+        "V-n Diagram": (
+            "Generates the structural flight envelope showing allowable load factors as a function "
+            "of airspeed, including the maneuvering and gust envelopes per FAR Part 23 or 25 regulations."
+        ),
+        "Payload-Range Diagram": (
+            "Maps the trade-off between payload weight and achievable range, identifying the maximum "
+            "payload range, the range at maximum fuel, and the ferry range at zero payload."
+        ),
+        "Aerodynamic Polars": (
+            "Sweeps angle of attack at a fixed Mach number and altitude to compute lift (CL), "
+            "drag (CD), and pitching moment (CM) coefficients across the specified range."
+        ),
+        "Load & Trim Diagram": (
+            "Traces the aircraft center-of-gravity (CG) position as passengers, cargo, and fuel "
+            "are loaded, verifying that the CG stays within the forward and aft limits up to MTOW."
+        ),
+    }
+
     def _on_analysis_type_changed(self, _index):
         analysis_name = self.analysis_combo.currentText()
         spec = ANALYSIS_REGISTRY.get(analysis_name)
+        self.analysis_desc_label.setText(
+            self._ANALYSIS_DESCRIPTIONS.get(analysis_name, "")
+        )
         if spec is None:
             return
+
+        # Show config dropdown only for analyses that need a specific config
+        needs_config = spec.get("requires_analyses", False)
+        self.config_label.setVisible(needs_config)
+        self.config_combo.setVisible(needs_config)
 
         self._clear_layout(self.param_layout)
         self._param_widgets = {}
@@ -248,7 +306,7 @@ class MultiDisciplinaryWidget(TabWidget):
             row = QHBoxLayout()
             row.setSpacing(8)
             lbl = QLabel(f"{label}:")
-            lbl.setFixedWidth(140)
+            lbl.setFixedWidth(120)
             row.addWidget(lbl)
 
             if widget_type == "float":
@@ -279,14 +337,23 @@ class MultiDisciplinaryWidget(TabWidget):
         vehicle = getattr(rcaide_io, "vehicle", None)
         if vehicle is None:
             return
+        mp = getattr(vehicle, "mass_properties", None)
         if "Vehicle Mass (kg)" in self._param_widgets:
-            mass = getattr(getattr(vehicle, "mass_properties", None), "takeoff", 0.0)
+            mass = getattr(mp, "takeoff", 0.0)
             if mass:
                 self._param_widgets["Vehicle Mass (kg)"].setValue(mass)
         if "Reference Area (m²)" in self._param_widgets:
             area = getattr(vehicle, "reference_area", 0.0)
             if area:
                 self._param_widgets["Reference Area (m²)"].setValue(area)
+        if "Takeoff Weight (kg)" in self._param_widgets:
+            mass = getattr(mp, "takeoff", 0.0)
+            if mass:
+                self._param_widgets["Takeoff Weight (kg)"].setValue(mass)
+        if "Landing Weight (kg)" in self._param_widgets:
+            mass = getattr(mp, "landing", 0.0)
+            if mass:
+                self._param_widgets["Landing Weight (kg)"].setValue(mass)
 
     def _collect_params(self):
         params = {}
@@ -304,17 +371,43 @@ class MultiDisciplinaryWidget(TabWidget):
     # ──────────────────────────────────────────────────────────────────────
     #  Validation
     # ──────────────────────────────────────────────────────────────────────
+    def _ensure_mission(self):
+        """Mirror solve.py: rebuild rcaide_mission from mission_data if it is missing or empty."""
+        import RCAIDE
+        from tabs.mission.mission import _extract_gui_segments
+        from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
+
+        mission = getattr(rcaide_io, "rcaide_mission", None)
+        if mission is not None and getattr(mission, "segments", None):
+            return
+
+        if not rcaide_io.mission_data or not getattr(rcaide_io, "rcaide_analyses", None):
+            return
+
+        try:
+            mission = RCAIDE.Framework.Mission.Sequential_Segments()
+            for seg_data in _extract_gui_segments(rcaide_io.mission_data):
+                seg = MissionSegmentWidget()
+                seg.load_data(seg_data)
+                _, rcaide_segment = seg.get_data()
+                mission.append_segment(rcaide_segment)
+            rcaide_io.rcaide_mission = mission
+            print("[Performance] Rebuilt mission from mission_data.")
+        except Exception as e:
+            print(f"[Performance] Could not rebuild mission: {e}")
+
     def _validate_prerequisites(self, spec):
         if spec.get("requires_analyses"):
             config_tag = self.config_combo.currentText()
             if not config_tag:
-                return "No configuration selected. Set up configurations in the Configurations Setup tab."
+                return "No configuration selected. Save analyses in the Analyses Setup tab first."
             analyses = getattr(rcaide_io, "rcaide_analyses", None)
             if not analyses or config_tag not in analyses:
                 return (f"Analyses not found for configuration '{config_tag}'. "
                         "Save analyses in the Analyses Setup tab first.")
 
         if spec.get("requires_mission"):
+            self._ensure_mission()
             mission = getattr(rcaide_io, "rcaide_mission", None)
             if mission is None or not getattr(mission, "segments", None):
                 return "No mission defined. Build and save a mission in the Mission Setup tab first."
@@ -338,7 +431,7 @@ class MultiDisciplinaryWidget(TabWidget):
             QMessageBox.warning(self, "Busy", "An analysis is already running.")
             return
 
-        config_tag = self.config_combo.currentText()
+        config_tag = self.config_combo.currentText() if self.config_combo.isVisible() else None
         params = self._collect_params()
 
         self.run_button.setEnabled(False)
@@ -366,6 +459,10 @@ class MultiDisciplinaryWidget(TabWidget):
         self._current_result = result
         self._set_loading_state(False)
 
+        # Publish result so the Results Viewer can browse it
+        rcaide_io.last_performance_result = result
+        rcaide_io.last_performance_label  = self.analysis_combo.currentText()
+
         # Clear old plots
         self._clear_dynamic_plots()
 
@@ -373,9 +470,19 @@ class MultiDisciplinaryWidget(TabWidget):
         plotter = spec.get("plotter")
         if plotter is not None:
             try:
-                plotter(result, self._new_plot_widget)
+                plotter(result, self._new_plot_widget, self._new_mpl_widget)
             except Exception:
                 traceback.print_exc()
+
+        # If no plot widget was produced, show a placeholder note
+        if not self._dynamic_plot_widgets:
+            placeholder = QLabel("No chart for this analysis — see results below.")
+            placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            placeholder.setStyleSheet(
+                "color: #6b7a99; font-style: italic; font-size: 13px; padding: 40px;"
+            )
+            self.plot_layout.addWidget(placeholder, alignment=Qt.AlignmentFlag.AlignHCenter)
+            self._dynamic_plot_widgets.append(placeholder)
 
         # Format and display results
         formatter = spec.get("formatter")
@@ -413,14 +520,17 @@ class MultiDisciplinaryWidget(TabWidget):
     # ──────────────────────────────────────────────────────────────────────
     def _new_plot_widget(self, title, y_label, x_label="", show_legend=True):
         widget = pg.PlotWidget()
-        widget.setFixedSize(QSize(620, 380))
+        widget.setFixedSize(QSize(620, 460))
         widget.setBackground("#0e141b")
         plot_item = widget.getPlotItem()
         plot_item.showGrid(x=True, y=True, alpha=0.15)
+        plot_item.layout.setContentsMargins(8, 8, 16, 10)
         for axis_name in ("left", "bottom"):
             axis = plot_item.getAxis(axis_name)
             axis.setPen(pg.mkPen("#4da3ff"))
             axis.setTextPen(pg.mkPen("#9fb8ff"))
+            axis.enableAutoSIPrefix(False)
+            axis.setStyle(tickTextOffset=4, autoExpandTextSpace=True)
         plot_item.getViewBox().setBorder(pg.mkPen("#1f2a36"))
         widget.setLabel("left", y_label, color="white", size="18px")
         widget.setLabel("bottom", x_label, color="white", size="18px")
@@ -436,10 +546,22 @@ class MultiDisciplinaryWidget(TabWidget):
         self._dynamic_plot_widgets.append(widget)
         return widget
 
+    def _new_mpl_widget(self, fig):
+        """Embed a matplotlib Figure as a Qt widget in the plot area."""
+        from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
+        canvas = FigureCanvasQTAgg(fig)
+        canvas.setFixedSize(QSize(820, 580))
+        self.plot_layout.addWidget(canvas, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self._dynamic_plot_widgets.append(canvas)
+        return canvas
+
     def _clear_dynamic_plots(self):
+        import matplotlib.pyplot as plt
         for w in self._dynamic_plot_widgets:
             self.plot_layout.removeWidget(w)
             w.setParent(None)
+            if hasattr(w, "figure"):
+                plt.close(w.figure)
             w.deleteLater()
         self._dynamic_plot_widgets.clear()
 
@@ -574,6 +696,9 @@ class MultiDisciplinaryWidget(TabWidget):
                     plot.plotItem.legend.hide()
 
             for curve in plot.listDataItems():
+                # ScatterPlotItem uses a different API; skip it here
+                if isinstance(curve, pg.ScatterPlotItem):
+                    continue
                 old_pen = curve.opts["pen"]
                 style_text = self.line_style_combo.currentText()
                 if style_text == "Dashed":
@@ -590,22 +715,25 @@ class MultiDisciplinaryWidget(TabWidget):
                     style=pen_style,
                 )
 
-                if self.marker_check.isChecked():
-                    symbol_map = {
-                        "^": "t1", "v": "t", "<": "t3", ">": "t2", "*": "star",
-                    }
-                    valid_symbols = {"o", "s", "t", "t1", "t2", "t3", "d", "+",
-                                     "x", "p", "h", "star", "|", "_"}
-                    selected = self.marker_style_combo.currentText()
-                    marker = symbol_map.get(selected, selected)
-                    if marker not in valid_symbols:
-                        marker = "o"
-                    curve.setSymbol(marker)
-                    curve.setSymbolSize(self.marker_size_spin.value())
-                    curve.setSymbolBrush(new_pen.color())
-                    curve.setSymbolPen(new_pen)
-                else:
-                    curve.setSymbol(None)
+                # PlotCurveItem (used for filled regions) has no symbol API
+                supports_symbols = hasattr(curve, "setSymbol")
+                if supports_symbols:
+                    if self.marker_check.isChecked():
+                        symbol_map = {
+                            "^": "t1", "v": "t", "<": "t3", ">": "t2", "*": "star",
+                        }
+                        valid_symbols = {"o", "s", "t", "t1", "t2", "t3", "d", "+",
+                                         "x", "p", "h", "star", "|", "_"}
+                        selected = self.marker_style_combo.currentText()
+                        marker = symbol_map.get(selected, selected)
+                        if marker not in valid_symbols:
+                            marker = "o"
+                        curve.setSymbol(marker)
+                        curve.setSymbolSize(self.marker_size_spin.value())
+                        curve.setSymbolBrush(new_pen.color())
+                        curve.setSymbolPen(new_pen)
+                    else:
+                        curve.setSymbol(None)
 
                 curve.setPen(new_pen)
 

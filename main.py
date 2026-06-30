@@ -60,8 +60,8 @@ class App(QMainWindow):
         self.widgets.append((visualize_geometry.get_widget(), "Geometry"))
         self.widgets.append((aircraft_configs.get_widget(), "Configurations"))
         self.widgets.append((analysis.get_widget(), "Analyses Setup"))
-        self.widgets.append((performance.get_widget(), "Aircraft Performance"))
         self.widgets.append((mission.get_widget(), "Mission Setup"))
+        self.widgets.append((performance.get_widget(), "Performance"))
         self.widgets.append((solve.get_widget(), "Run Mission"))
         self.widgets.append((results_viewer.get_widget(), "Results Viewer"))
 
