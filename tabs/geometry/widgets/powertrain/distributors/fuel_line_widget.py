@@ -3,21 +3,13 @@
 # Created: Dec 2025, M. Clarke
 
 import RCAIDE
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSizePolicy
 
 from tabs.geometry.widgets.powertrain.distributors.base_distributor_widget import BaseDistributorWidget
-
-
 from utilities import BTN_STYLE
 
+
 class FuelLineWidget(BaseDistributorWidget):
-    """Editor widget for a RCAIDE ``Fuel_Line`` distributor.
-
-    Displays the line name plus inline checkbox rows for connected propulsors
-    and fuel-tank sources.  Serialises to / from the ``distributor data`` list
-    inside the powertrain data dict.
-    """
-
     distributor_type = "Fuel Line"
 
     def __init__(self, index, on_delete, data_values=None):
@@ -37,8 +29,8 @@ class FuelLineWidget(BaseDistributorWidget):
         row.addWidget(del_btn)
         layout.addLayout(row)
 
-        self._build_connectivity_rows(layout)
         self.setLayout(layout)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
         if data_values:
             self.load_data_values(data_values)
@@ -48,13 +40,13 @@ class FuelLineWidget(BaseDistributorWidget):
             "distributor name": self.section_name_edit.text(),
             "distributor_type": "Fuel Line",
         }
-        data.update(self._connectivity_data())
         return data, self.create_rcaide_structure(data)
 
     def load_data_values(self, data):
         if "distributor name" in data:
             self.section_name_edit.setText(data["distributor name"])
-        self._load_connectivity(data)
+        self._loaded_propulsors = list(data.get("assigned_propulsors", []))
+        self._loaded_sources    = list(data.get("assigned_sources",    []))
 
     def create_rcaide_structure(self, data):
         line = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()

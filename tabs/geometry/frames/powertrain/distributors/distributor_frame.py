@@ -160,17 +160,6 @@ class DistributorFrame(QWidget):
             if isinstance(widget, BaseDistributorWidget):
                 widget.index = i
 
-    def refresh_connections(self, propulsor_names: list[str], source_names: list[str]):
-        """Push current propulsor and source names into each distributor's inline checkboxes."""
-        for i in range(self.distributor_sections_layout.count()):
-            item = self.distributor_sections_layout.itemAt(i)
-            if item is None:
-                continue
-            widget = item.widget()
-            if isinstance(widget, BaseDistributorWidget):
-                widget.set_propulsors(propulsor_names)
-                widget.set_sources(source_names)
-
     def set_save_function(self, function):
         self.save_function = function
 

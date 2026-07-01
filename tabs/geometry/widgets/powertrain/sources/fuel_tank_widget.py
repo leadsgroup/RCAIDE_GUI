@@ -5,7 +5,7 @@
 # Imports
 # ------------------------------------------------------------------------------
 import RCAIDE
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFrame, QSizePolicy
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets import GeometryDataWidget
@@ -54,6 +54,7 @@ class FuelTankWidget(GeometryDataWidget):
         main_section_layout.addWidget(line_bar)
 
         self.setLayout(main_section_layout)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
         if data_values:
             self.load_data_values(data_values)

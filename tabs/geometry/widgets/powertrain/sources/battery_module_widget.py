@@ -4,7 +4,7 @@
 
 import RCAIDE
 from PyQt6.QtWidgets import (QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-                              QPushButton, QComboBox, QFrame)
+                              QPushButton, QComboBox, QFrame, QSizePolicy)
 
 from tabs.geometry.widgets import GeometryDataWidget
 from common_widgets import DataEntryWidget
@@ -96,6 +96,7 @@ class BatteryModuleWidget(GeometryDataWidget):
         layout.addWidget(line)
 
         self.setLayout(layout)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
         if data_values:
             self.load_data_values(data_values)

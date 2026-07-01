@@ -3,7 +3,7 @@
 # Created: Jun 2026, M. Clarke
 
 import RCAIDE
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QFrame
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QFrame, QSizePolicy
 
 from tabs.geometry.widgets.powertrain.distributors.base_distributor_widget import BaseDistributorWidget
 from common_widgets import DataEntryWidget
@@ -11,17 +11,6 @@ from utilities import Units, BTN_STYLE
 
 
 class ElectricalBusWidget(BaseDistributorWidget):
-    """Editor widget for a RCAIDE ``Electrical_Bus`` distributor.
-
-    In addition to the standard inline connectivity checkboxes (propulsors and
-    battery-module sources), exposes the bus-level electrical parameters:
-    efficiency, voltage, power-split ratio, and charging C-rate.
-
-    Battery modules assigned to this bus are routed to
-    ``bus.battery_modules`` (not ``bus.fuel_tanks``) when the RCAIDE
-    structure is assembled by ``PowertrainWidget.create_rcaide_structure()``.
-    """
-
     distributor_type = "Electrical Bus"
 
     def __init__(self, index, on_delete, data_values=None):
@@ -30,7 +19,6 @@ class ElectricalBusWidget(BaseDistributorWidget):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # ── Name + delete ──────────────────────────────────────────────────
         row = QHBoxLayout()
         row.addWidget(QLabel("Bus Name:"))
         self.section_name_edit = QLineEdit(self)
@@ -42,7 +30,6 @@ class ElectricalBusWidget(BaseDistributorWidget):
         row.addWidget(del_btn)
         layout.addLayout(row)
 
-        # ── Bus-specific fields ────────────────────────────────────────────
         self.data_entry_widget = DataEntryWidget([
             ("Efficiency",        Units.Unitless),
             ("Voltage",           Units.Unitless),
@@ -56,8 +43,8 @@ class ElectricalBusWidget(BaseDistributorWidget):
         line.setFrameShadow(QFrame.Shadow.Sunken)
         layout.addWidget(line)
 
-        self._build_connectivity_rows(layout)
         self.setLayout(layout)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
         if data_values:
             self.load_data_values(data_values)
@@ -72,7 +59,6 @@ class ElectricalBusWidget(BaseDistributorWidget):
             "Power Split Ratio": fields.get("Power Split Ratio", [1.0, 0]),
             "Charging C-Rate":   fields.get("Charging C-Rate",   [1.0, 0]),
         }
-        data.update(self._connectivity_data())
         fields_si = self.data_entry_widget.get_values_si()
         return data, self.create_rcaide_structure(data, fields_si)
 
@@ -80,7 +66,8 @@ class ElectricalBusWidget(BaseDistributorWidget):
         if "distributor name" in data:
             self.section_name_edit.setText(data["distributor name"])
         self.data_entry_widget.load_data(data)
-        self._load_connectivity(data)
+        self._loaded_propulsors = list(data.get("assigned_propulsors", []))
+        self._loaded_sources    = list(data.get("assigned_sources",    []))
 
     def create_rcaide_structure(self, data, fields_si=None):
         bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()

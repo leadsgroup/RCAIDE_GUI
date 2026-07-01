@@ -4,7 +4,7 @@
 
 import RCAIDE
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                              QLineEdit, QPushButton, QFrame, QComboBox)
+                              QLineEdit, QPushButton, QFrame, QComboBox, QSizePolicy)
 from common_widgets import DataEntryWidget
 from utilities import Units
 
@@ -45,6 +45,7 @@ class SystemWidget(QWidget):
 
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
         # Type selector row
         type_row = QHBoxLayout()
