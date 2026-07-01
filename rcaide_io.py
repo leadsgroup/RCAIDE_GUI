@@ -445,6 +445,138 @@ def vehicle_to_ui_format(vehicle_obj):
     return ui_dict
 
 
+_NETWORK_TYPE_LABEL = {
+    'Fuel':      'Fuel',
+    'Electric':  'Electric',
+    'Hybrid':    'Hybrid',
+    'Hydrogen':  'Hydrogen',
+    'Fuel_Cell': 'Fuel Cell',
+}
+
+
+def _network_type_for_ui(network_dict):
+    type_str = network_dict.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    return _NETWORK_TYPE_LABEL.get(class_name, 'Fuel')
+
+
+def _propulsor_dict_to_ui(p):
+    """Convert a RCAIDE Turbofan JSON dict (unit-argument format) to TurbofanWidget GUI format."""
+    def g(d, *keys):
+        for k in keys[:-1]:
+            d = d.get(k, {}) if isinstance(d, dict) else {}
+        return d.get(keys[-1], [0, 0]) if isinstance(d, dict) else [0, 0]
+
+    return {
+        'Propulsor Tag':                      p.get('tag', ''),
+        'Origin':                             g(p, 'origin'),
+        'Engine Length':                      g(p, 'length'),
+        'Diameter':                           g(p, 'diameter'),
+        'Bypass Ratio':                       g(p, 'bypass_ratio'),
+        'Design Altitude':                    g(p, 'design_altitude'),
+        'Design Mach Number':                 g(p, 'design_mach_number'),
+        'Design Thrust':                      g(p, 'design_thrust'),
+        'Fan Polytropic Efficiency':          g(p, 'fan', 'polytropic_efficiency'),
+        'Fan Pressure Ratio':                 g(p, 'fan', 'pressure_ratio'),
+        'Inlet Nozzle Polytropic Efficiency': g(p, 'inlet_nozzle', 'polytropic_efficiency'),
+        'Inlet Nozzle Pressure Ratio':        g(p, 'inlet_nozzle', 'pressure_ratio'),
+        'LPC Polytropic Efficiency':          g(p, 'low_pressure_compressor', 'polytropic_efficiency'),
+        'LPC Pressure Ratio':                 g(p, 'low_pressure_compressor', 'pressure_ratio'),
+        'HPC Polytropic Efficiency':          g(p, 'high_pressure_compressor', 'polytropic_efficiency'),
+        'HPC Pressure Ratio':                 g(p, 'high_pressure_compressor', 'pressure_ratio'),
+        'LPT Mechanical Efficiency':          g(p, 'low_pressure_turbine', 'mechanical_efficiency'),
+        'LPT Polytropic Efficiency':          g(p, 'low_pressure_turbine', 'polytropic_efficiency'),
+        'HPT Mechanical Efficiency':          g(p, 'high_pressure_turbine', 'mechanical_efficiency'),
+        'HPT Polytropic Efficiency':          g(p, 'high_pressure_turbine', 'polytropic_efficiency'),
+        'Combustor Efficiency':               g(p, 'combustor', 'efficiency'),
+        'Combustor Pressure Loss Coeff':      g(p, 'combustor', 'alphac'),
+        'Combustor Turbine Inlet Temp':       g(p, 'combustor', 'turbine_inlet_temperature'),
+        'Combustor Pressure Ratio':           g(p, 'combustor', 'pressure_ratio'),
+        'Core Nozzle Polytropic Efficiency':  g(p, 'core_nozzle', 'polytropic_efficiency'),
+        'Core Nozzle Pressure Ratio':         g(p, 'core_nozzle', 'pressure_ratio'),
+        'Fan Nozzle Polytropic Efficiency':   g(p, 'fan_nozzle', 'polytropic_efficiency'),
+        'Fan Nozzle Pressure Ratio':          g(p, 'fan_nozzle', 'pressure_ratio'),
+    }
+
+
+def _distributor_dict_to_ui(fl):
+    """Convert a RCAIDE Fuel_Line/Bus/Coolant_Line JSON dict to distributor GUI format."""
+    assigned_raw = fl.get('assigned_propulsors', [])
+    if is_unit_argument_pair(assigned_raw):
+        assigned_raw = assigned_raw[0]
+    if assigned_raw and isinstance(assigned_raw[0], list):
+        assigned_propulsors = list(assigned_raw[0])
+    else:
+        assigned_propulsors = [x for x in assigned_raw if isinstance(x, str)]
+
+    tanks = fl.get('fuel_tanks', {})
+    assigned_sources = (
+        [k for k in tanks.keys() if k != '__type__']
+        if isinstance(tanks, dict) else []
+    )
+    return {
+        'distributor name':    fl.get('tag', ''),
+        'assigned_propulsors': assigned_propulsors,
+        'assigned_sources':    assigned_sources,
+    }
+
+
+def _fuel_tank_dict_to_ui(tank):
+    """Convert a RCAIDE Fuel_Tank JSON dict to FuelTankWidget GUI format."""
+    def g(d, key):
+        return d.get(key, [0, 0]) if isinstance(d, dict) else [0, 0]
+    return {
+        'Source Name':       tank.get('tag', ''),
+        'Fuel Tank Origin':  g(tank, 'origin'),
+        'Fuel Origin':       g(tank, 'fuel_origin'),
+        'Center of Gravity': g(tank, 'center_of_gravity'),
+        'Mass':              g(tank, 'mass_of_fuel'),
+        'Internal Volume':   g(tank, 'volume'),
+    }
+
+
+def _network_dict_to_ui(net_dict):
+    """Convert one RCAIDE network JSON dict to the PowertrainFrame GUI data format."""
+    net_type = _network_type_for_ui(net_dict)
+
+    propulsor_data = []
+    propulsors = net_dict.get('propulsors', {})
+    if isinstance(propulsors, dict):
+        for k, v in propulsors.items():
+            if k == '__type__' or not isinstance(v, dict):
+                continue
+            propulsor_data.append(_propulsor_dict_to_ui(v))
+
+    distributor_data = []
+    source_by_tag = {}
+    for container_key in ('fuel_lines', 'busses', 'coolant_lines'):
+        container = net_dict.get(container_key, {})
+        if not isinstance(container, dict):
+            continue
+        for k, fl in container.items():
+            if k == '__type__' or not isinstance(fl, dict):
+                continue
+            distributor_data.append(_distributor_dict_to_ui(fl))
+            tanks = fl.get('fuel_tanks', {})
+            if isinstance(tanks, dict):
+                for t_key, t_val in tanks.items():
+                    if t_key != '__type__' and isinstance(t_val, dict) and t_key not in source_by_tag:
+                        source_by_tag[t_key] = t_val
+
+    source_data = [_fuel_tank_dict_to_ui(v) for v in source_by_tag.values()]
+
+    return {
+        'energy network selected': net_type,
+        'powertrain': {
+            'distributor data': distributor_data,
+            'source data':      source_data,
+            'propulsor data':   propulsor_data,
+            'system data':      [],
+            'converter data':   [],
+        }
+    }
+
+
 def vehicle_dict_to_ui_list_structure(vehicle_dict):
     """Convert a stripped rcaide_vehicle dict to the 7-slot UI structure."""
     from tabs.geometry.frames.booms.boom_frame import BoomFrame
@@ -667,34 +799,10 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
     if "powertrains" in vehicle_dict and vehicle_dict["powertrains"]:
         ui_structure[5] = [to_ui_format(p, PowertrainFrame) for p in vehicle_dict["powertrains"].values() if is_mapping(p)]
     elif "networks" in vehicle_dict and vehicle_dict["networks"]:
-        for network in vehicle_dict["networks"].values():
-            if not is_mapping(network):
+        for k, network in vehicle_dict["networks"].items():
+            if k == "__type__" or not is_mapping(network):
                 continue
-            network_tag = network.get("tag", "Fuel").title()
-            propulsors  = network.get("propulsors", {})
-            if propulsors:
-                for propulsor in propulsors.values():
-                    if not is_mapping(propulsor):
-                        continue
-                    ui_structure[5].append({
-                        "name": propulsor.get("tag", network_tag),
-                        "energy network selected": network_tag,
-                        "powertrain": {
-                            "distributor data": [], "source data": [],
-                            "propulsor data":   [], "converter data": [],
-                            "connections":      [],
-                        }
-                    })
-            else:
-                ui_structure[5].append({
-                    "name": network_tag,
-                    "energy network selected": network_tag,
-                    "powertrain": {
-                        "distributor data": [], "source data": [],
-                        "propulsor data":   [], "converter data": [],
-                        "connections":      [],
-                    }
-                })
+            ui_structure[5].append(_network_dict_to_ui(network))
 
     if "wings" in vehicle_dict and vehicle_dict["wings"]:
         ui_structure[6] = [to_ui_format(w, WingsFrame) for w in vehicle_dict["wings"].values() if is_mapping(w)]

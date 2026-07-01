@@ -31,6 +31,7 @@ class TurbofanWidget(QWidget):
         data_units_labels = [
             ("Origin", Units.Position),
             ("Engine Length", Units.Length),
+            ("Diameter", Units.Length),
             ("Bypass Ratio", Units.Unitless),
             ("Design Altitude", Units.Length),
             ("Design Mach Number", Units.Unitless),
@@ -309,7 +310,8 @@ class TurbofanWidget(QWidget):
         turbofan = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
         turbofan.tag = data["Propulsor Tag"]
         turbofan.origin = data["Origin"][0]
-        turbofan.engine_length = data["Engine Length"][0]
+        turbofan.length = data["Engine Length"][0]
+        turbofan.diameter = data["Diameter"][0]
         turbofan.bypass_ratio = data["Bypass Ratio"][0]
         turbofan.design_altitude = data["Design Altitude"][0]
         turbofan.design_mach_number = data["Design Mach Number"][0]

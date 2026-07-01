@@ -575,12 +575,16 @@ class VisualizeGeometryWidget(TabWidget):
             make_object(self.plotter, self.boom_actors, GEOM, boom_rgb_color, boom_opacity)
     
         # -------------------------------------------------------------------------
-        # Plot systems
+        # Plot systems (stored on each network, not on vehicle directly)
         # -------------------------------------------------------------------------
-        for system in geometry.systems:
-            if isinstance(system, Component):
-                GEOM = generate_3d_cuboid_points(system)
-                make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
+        for network in geometry.networks:
+            for system in network.systems:
+                if isinstance(system, Component):
+                    try:
+                        GEOM = generate_3d_cuboid_points(system)
+                        make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
+                    except Exception:
+                        pass
 
         # -------------------------------------------------------------------------
         # Plot landing gear
@@ -633,11 +637,15 @@ class VisualizeGeometryWidget(TabWidget):
         for network in geometry.networks:
             for propulsor in network.propulsors:   
 
-                if type(propulsor) in (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
-                                      RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet,
-                                      RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
-                    GEOM = generate_3d_propulsor_points(propulsor, tessellation)
-                    make_object(self.plotter, self.propulsor_actors, GEOM, propulsor_rgb_color, propulsor_opacity)
+                if isinstance(propulsor, (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
+                                        RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet,
+                                        RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop)):
+                    try:
+                        if propulsor.length > 0 and propulsor.diameter > 0:
+                            GEOM = generate_3d_propulsor_points(propulsor, tessellation)
+                            make_object(self.plotter, self.propulsor_actors, GEOM, propulsor_rgb_color, propulsor_opacity)
+                    except Exception:
+                        pass
 
                 if getattr(propulsor, "nacelle", None) is not None: 
                     if propulsor.nacelle !=  None: 
