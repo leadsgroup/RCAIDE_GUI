@@ -100,11 +100,6 @@ class FlightControlsWidget(QWidget):
         return data
 
     def load_data(self, data):
-        if "Pitch" not in data and "Body Angle" in data:
-            data["Pitch"] = data["Body Angle"]
-        if "AOA" not in data and "Wind Angle" in data:
-            data["AOA"] = data["Wind Angle"]
-
         for widget in self.data_entry_widgets:
             assert isinstance(widget, DataEntryWidget)
             widget.load_data(data)
@@ -170,9 +165,9 @@ class FlightControlsWidget(QWidget):
 
     fields = {
         "Kinematics": [
-            ("Pitch", Units.Boolean, "assigned_control_variables.pitch_angle.active"),
+            ("Pitch Angle", Units.Boolean, "assigned_control_variables.pitch_angle.active"),
             ("Bank Angle", Units.Boolean, "assigned_control_variables.bank_angle.active"),
-            ("AOA", Units.Boolean, "assigned_control_variables.angle_of_attack.active"),
+            ("Angle of Attack", Units.Boolean, "assigned_control_variables.angle_of_attack.active"),
             ("Velocity", Units.Boolean, "assigned_control_variables.velocity.active"),
             ("Acceleration", Units.Boolean, "assigned_control_variables.acceleration.active"),
             ("Altitude", Units.Boolean, "assigned_control_variables.altitude.active"),

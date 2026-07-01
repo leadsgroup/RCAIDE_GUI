@@ -37,6 +37,7 @@ class FuselageFrame(GeometryFrame):
         ("Area Front Projected", Units.Area, "areas.front_projected"),
         ("Differential Pressure", Units.Pressure, "differential_pressure"),
         ("Effective Diameter", Units.Length, "effective_diameter"),
+        ("Operational Items Origin", Units.Position, "operational_items.origin"),
     ]
 
     def __init__(self):

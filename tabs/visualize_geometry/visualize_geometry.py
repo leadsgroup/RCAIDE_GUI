@@ -14,6 +14,7 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_
 from RCAIDE.Library.Plots.Geometry.generate_3d_torus_points     import generate_3d_torus_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points     import generate_3d_cabin_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_propulsor_points import generate_3d_propulsor_points
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points, generate_vtk_object
 from RCAIDE.Library.Plots.Geometry.plot_3d_vehicle              import add_lopa_seats
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform, compute_fuel_volume
@@ -64,7 +65,7 @@ _DEFAULT_OPACITY = {
     "Fuselages":    0.5,
     "Wings":        0.5,
     "Nacelles":     1.0,
-    "Rotors":       0.6,
+    "Propulsors":   0.5,
     "Booms":        1.0,
     "Fuel Tanks":   0.5,
     "Cargo Bays":   0.6,
@@ -235,7 +236,7 @@ class VisualizeGeometryWidget(TabWidget):
         self.wing_actors         = []
         self.fuselage_actors     = []
         self.nacelle_actors      = []
-        self.rotor_actors        = []
+        self.propulsor_actors    = []
         self.boom_actors         = []
         self.fuel_tank_actors    = []
         self.cargo_bay_actors    = []
@@ -282,7 +283,7 @@ class VisualizeGeometryWidget(TabWidget):
             "Fuselages":    self.fuselage_actors,
             "Wings":        self.wing_actors,
             "Nacelles":     self.nacelle_actors,
-            "Rotors":       self.rotor_actors,
+            "Propulsors":   self.propulsor_actors,
             "Booms":        self.boom_actors,
             "Fuel Tanks":   self.fuel_tank_actors,
             "Cargo Bays":   self.cargo_bay_actors,
@@ -441,9 +442,9 @@ class VisualizeGeometryWidget(TabWidget):
         wing_color           = 'grey'
         fuselage_color       = 'grey'
         nacelle_color        = 'grey'
+        propulsor_color      = 'grey'
         boom_color           = 'grey'
         fuel_tank_color      = 'orange'
-        rotor_color          = 'black'
         cargo_bay_color      = 'blue'
         landing_gear_color   = 'grey'
         cabin_color          = 'grey'
@@ -451,8 +452,8 @@ class VisualizeGeometryWidget(TabWidget):
         wing_opacity         = 0.5
         fuselage_opacity     = 0.5
         nacelle_opacity      = 0.5
+        propulsor_opacity    = 0.5
         fuel_tank_opacity    = 0.5
-        rotor_opacity        = 0.6
         boom_opacity         = 1.0
         cargo_bay_opacity    = 0.6
         landing_gear_opacity = 1.0
@@ -469,7 +470,7 @@ class VisualizeGeometryWidget(TabWidget):
         wing_rgb_color         = mcolors.to_rgb(wing_color)
         fuselage_rgb_color     = mcolors.to_rgb(fuselage_color)
         nacelle_rgb_color      = mcolors.to_rgb(nacelle_color)
-        rotor_rgb_color        = mcolors.to_rgb(rotor_color)
+        propulsor_rgb_color    = mcolors.to_rgb(propulsor_color)
         boom_rgb_color         = mcolors.to_rgb(boom_color)
         cargo_bay_rgb_color    = mcolors.to_rgb(cargo_bay_color)
         landing_gear_rgb_color = mcolors.to_rgb(landing_gear_color)
@@ -482,7 +483,8 @@ class VisualizeGeometryWidget(TabWidget):
         self.wing_actors.clear()
         self.fuselage_actors.clear()
         self.nacelle_actors.clear()
-        self.rotor_actors.clear()
+        self.propulsor_actors.clear()
+        self.propulsor_actors.clear()
         self.boom_actors.clear()
         self.fuel_tank_actors.clear()
         self.cargo_bay_actors.clear()
@@ -573,12 +575,16 @@ class VisualizeGeometryWidget(TabWidget):
             make_object(self.plotter, self.boom_actors, GEOM, boom_rgb_color, boom_opacity)
     
         # -------------------------------------------------------------------------
-        # Plot systems
+        # Plot systems (stored on each network, not on vehicle directly)
         # -------------------------------------------------------------------------
-        for system in geometry.systems:
-            if isinstance(system, Component):
-                GEOM = generate_3d_cuboid_points(system)
-                make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
+        for network in geometry.networks:
+            for system in network.systems:
+                if isinstance(system, Component):
+                    try:
+                        GEOM = generate_3d_cuboid_points(system)
+                        make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
+                    except Exception:
+                        pass
 
         # -------------------------------------------------------------------------
         # Plot landing gear
@@ -629,7 +635,18 @@ class VisualizeGeometryWidget(TabWidget):
         # Plot Nacelles, Rotors and Fuel Tanks (network-attached)
         # -------------------------------------------------------------------------
         for network in geometry.networks:
-            for propulsor in network.propulsors:  
+            for propulsor in network.propulsors:   
+
+                if isinstance(propulsor, (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
+                                        RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet,
+                                        RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop)):
+                    try:
+                        if propulsor.length > 0 and propulsor.diameter > 0:
+                            GEOM = generate_3d_propulsor_points(propulsor, tessellation)
+                            make_object(self.plotter, self.propulsor_actors, GEOM, propulsor_rgb_color, propulsor_opacity)
+                    except Exception:
+                        pass
+
                 if getattr(propulsor, "nacelle", None) is not None: 
                     if propulsor.nacelle !=  None: 
                         
@@ -648,12 +665,12 @@ class VisualizeGeometryWidget(TabWidget):
                     rot_z     = rot.orientation_euler_angles[2]
                     num_B     = int(rot.number_of_blades) 
                     if rot.radius_distribution is None:
-                        make_actuator_disc(self.plotter, rot.hub_radius, rot.tip_radius, rot.origin, rot_x,rot_y,rot_z, rotor_rgb_color,rotor_opacity) 
+                        make_actuator_disc(self.plotter, rot.hub_radius, rot.tip_radius, rot.origin, rot_x,rot_y,rot_z, propulsor_rgb_color,propulsor_opacity) 
                     else:
                         dim       = len(rot.radius_distribution) 
                         for i in range(num_B):
                             GEOM = generate_3d_blade_points(rot,number_of_airfoil_points,dim,i)
-                            make_object(self.plotter,self.rotor_actors,  GEOM, rotor_rgb_color,rotor_opacity) 
+                            make_object(self.plotter,self.propulsor_actors,  GEOM, propulsor_rgb_color,propulsor_opacity) 
     
                 if 'propeller' in propulsor:
                     prop      = propulsor.propeller
@@ -662,12 +679,12 @@ class VisualizeGeometryWidget(TabWidget):
                     rot_z     = prop.orientation_euler_angles[2]
                     num_B     = int(prop.number_of_blades) 
                     if prop.radius_distribution is None:
-                        make_actuator_disc(self.plotter, prop.hub_radius, prop.tip_radius, prop.origin, rot_x,rot_y,rot_z,rotor_rgb_color,rotor_opacity) 
+                        make_actuator_disc(self.plotter, prop.hub_radius, prop.tip_radius, prop.origin, rot_x,rot_y,rot_z,propulsor_rgb_color,propulsor_opacity) 
                     else:
                         dim       = len(prop.radius_distribution)
                         for i in range(num_B):
                             GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i) 
-                            make_object(self.plotter,self.rotor_actors, GEOM, rotor_rgb_color,rotor_opacity) 
+                            make_object(self.plotter,self.propulsor_actors, GEOM, propulsor_rgb_color,propulsor_opacity) 
     
             if self._show_fuel_tanks:
                 for fuel_line in network.fuel_lines:

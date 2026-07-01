@@ -16,6 +16,7 @@ class PowertrainConnectorWidget(QWidget):
         self.tab_widget.addTab(QWidget(), "Distributors")
         self.tab_widget.addTab(QWidget(), "Converters")
         self.tab_widget.addTab(QWidget(), "Sources")
+        self.tab_widget.addTab(QWidget(), "Systems")
 
         self.main_layout.addWidget(self.tab_widget)
         self.selector_layouts = []
@@ -27,12 +28,13 @@ class PowertrainConnectorWidget(QWidget):
         pass
 
     def update_selector(self, data):
-        distributor_names = [x["distributor name"] for x in data["distributor data"]]
-        propulsor_names = [x["Propulsor Tag"] for x in data["propulsor data"]]
-        converter_names = [x["Converter Name"] for x in data["converter data"]]
-        source_names = [x["Source Name"] for x in data["source data"]]
+        distributor_names = [x["distributor name"] for x in data.get("distributor data", [])]
+        propulsor_names = [x["Propulsor Tag"] for x in data.get("propulsor data", [])]
+        converter_names = [x["Converter Name"] for x in data.get("converter data", [])]
+        source_names = [x["Source Name"] for x in data.get("source data", [])]
+        system_names = [x["System Name"] for x in data.get("system data", [])]
 
-        self.names = [distributor_names, propulsor_names, converter_names, source_names]
+        self.names = [distributor_names, propulsor_names, converter_names, source_names, system_names]
 
         self.tab_widget.clear()
 
@@ -86,12 +88,13 @@ class PowertrainConnectorWidget(QWidget):
         self.tab_widget.addTab(widget, "Sources")
     
     def get_connections(self, data):
-        distributor_names = [x["distributor name"] for x in data["distributor data"]]
-        propulsor_names = [x["Propulsor Tag"] for x in data["propulsor data"]]
-        converter_names = [x["Converter Name"] for x in data["converter data"]]
-        source_names = [x["Source Name"] for x in data["source data"]]
+        distributor_names = [x["distributor name"] for x in data.get("distributor data", [])]
+        propulsor_names = [x["Propulsor Tag"] for x in data.get("propulsor data", [])]
+        converter_names = [x["Converter Name"] for x in data.get("converter data", [])]
+        source_names = [x["Source Name"] for x in data.get("source data", [])]
+        system_names = [x["System Name"] for x in data.get("system data", [])]
 
-        current_names = [distributor_names, propulsor_names, converter_names, source_names]
+        current_names = [distributor_names, propulsor_names, converter_names, source_names, system_names]
         if self.names != current_names:
             self.update_selector(data)
 

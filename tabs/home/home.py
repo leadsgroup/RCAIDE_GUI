@@ -189,7 +189,7 @@ class HomeWidget(TabWidget):
 
         # Main title and subtitle shown on top of the banner
         self.rcaide_label = QLabel("RCAIDE")
-        self.leads_label = QLabel("by L.E.A.D.S (UIUC)")
+        self.leads_label = QLabel("by Laboratory for Emerging Aircraft Design and Systems (LEADS), UIUC")
 
         # Center text and allow mouse events to pass through
         for lbl in (self.rcaide_label, self.leads_label):

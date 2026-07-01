@@ -298,6 +298,8 @@ class DataEntryWidget(QWidget):
         try:
             # Load each field based on its input type.
             for i, label in enumerate(self.data_fields.keys()):
+                if label not in data:
+                    continue
                 if self.data_units_labels[i][1] == Units.Boolean:
                     # Checkbox field.
                     self.data_fields[label].setChecked(data[label][0])

@@ -3,11 +3,13 @@ import os
 import re
 from collections.abc import Mapping
 import numpy as np
+import pyqtgraph as pg
 # Shared application state. The Solve tab stores the latest mission results here.
 import rcaide_io
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtWidgets import (
+    QComboBox,
     QFileDialog,
     QHBoxLayout,
     QHeaderView,
@@ -26,18 +28,32 @@ from PyQt6.QtWidgets import (
 
 from tabs import TabWidget
 
+# RCAIDE parula palette anchors (deep blue → royal blue → teal → green)
+_PLOT_COLORS = [
+    (5,   104, 223),   # royal blue
+    (19,  169, 200),   # teal
+    (94,  201, 98),    # green
+    (251, 189, 8),     # yellow
+    (180, 80,  180),   # purple
+]
+
 
 
 #  Results Viewer Tab
 class ResultsViewerWidget(TabWidget):
     """
-    The Solve tab stores mission.evaluate() output in rcaide_io.rcaide_results.
-    This widget renders that live RCAIDE object as a browsable tree and lets
-    users inspect exact paths such as rcaide_results.segments.cruise.conditions.
+    Browses rcaide_io.rcaide_results (mission simulation) or
+    rcaide_io.last_performance_result (latest Performance tab analysis).
+    The active source is chosen from a combo box; all tree, search, copy,
+    export, and plot capabilities work on whichever object is loaded.
     """
 
     _PATH_ROLE = Qt.ItemDataRole.UserRole
     _POPULATED_ROLE = Qt.ItemDataRole.UserRole + 1
+
+    # Source identifiers used internally
+    _SRC_MISSION     = "Mission Results"
+    _SRC_PERFORMANCE = "Performance Analysis"
 
     def __init__(self):
         super().__init__()
@@ -45,23 +61,18 @@ class ResultsViewerWidget(TabWidget):
         # ----------------------------------------------
         # Internal viewer state
         # ----------------------------------------------
-        # _nodes maps visible tree paths to the live Python/RCAIDE objects they represent.
         self._nodes = {}
-        # _root_data is the current rcaide_results object being browsed.
         self._root_data = None
-        # Track object identity so the tab does not rebuild the tree unnecessarily.
         self._loaded_object_id = None
-        # Tree nodes are loaded lazily so large result arrays do not freeze the UI.
         self._search_node_limit = 5000
-        # Copy/export buttons operate on the value currently displayed on the right.
         self._active_path = None
         self._active_value = None
+        # Root name used in path expressions (changes with source)
+        self._root_name = "rcaide_results"
 
         # ----------------------------------------------
         # Layout
         # ----------------------------------------------
-        # The screen is arranged vertically: title, action buttons, path inspector,
-        # status line, then a two-pane tree/details area.
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(10)
@@ -83,16 +94,31 @@ class ResultsViewerWidget(TabWidget):
         layout.addWidget(title)
 
         # ----------------------------------------------
+        # Source selector row
+        # ----------------------------------------------
+        source_row = QHBoxLayout()
+        source_row.setSpacing(8)
+        source_row.addWidget(QLabel("Source:"))
+        self.source_combo = QComboBox()
+        self.source_combo.addItems([self._SRC_MISSION, self._SRC_PERFORMANCE])
+        self.source_combo.setFixedWidth(220)
+        self.source_combo.currentIndexChanged.connect(self._on_source_changed)
+        source_row.addWidget(self.source_combo)
+        # Dynamic label shows the analysis name when performance source is active
+        self.source_detail_label = QLabel("")
+        self.source_detail_label.setStyleSheet("color: #7a94cc; font-size: 12px;")
+        source_row.addWidget(self.source_detail_label)
+        source_row.addStretch()
+        layout.addLayout(source_row)
+
+        # ----------------------------------------------
         # Action toolbar
         # ----------------------------------------------
-        # These buttons support the main results workflow:
-        # reload the latest run, copy a reusable path/value, or export data.
         controls = QHBoxLayout()
         controls.setSpacing(8)
 
-        # Reloads the latest rcaide_io.rcaide_results object after a mission run.
         self.refresh_button = QPushButton("Refresh")
-        self.refresh_button.setToolTip("Reload the latest mission results saved by the Mission Simulation tab.")
+        self.refresh_button.setToolTip("Reload the selected source.")
         self.refresh_button.clicked.connect(lambda: self.refresh_from_values(force=True))
         controls.addWidget(self.refresh_button)
 
@@ -198,6 +224,40 @@ class ResultsViewerWidget(TabWidget):
         self.table.setAlternatingRowColors(True)
         self.table.setVisible(False)
         details_layout.addWidget(self.table, 2)
+
+        # ------ plot controls ------
+        plot_ctrl_row = QHBoxLayout()
+        plot_ctrl_row.setSpacing(6)
+        plot_ctrl_row.addWidget(QLabel("X axis:"))
+        self.x_axis_combo = QComboBox()
+        self.x_axis_combo.addItems(["Time (s)", "Range (m)", "Altitude (m)", "Mach", "Index"])
+        self.x_axis_combo.setFixedWidth(130)
+        plot_ctrl_row.addWidget(self.x_axis_combo)
+        self.plot_button = QPushButton("Plot")
+        self.plot_button.setEnabled(False)
+        self.plot_button.setToolTip("Plot the selected array vs the chosen X axis.")
+        self.plot_button.clicked.connect(self._plot_selected)
+        plot_ctrl_row.addWidget(self.plot_button)
+        self.add_to_plot_button = QPushButton("Add")
+        self.add_to_plot_button.setEnabled(False)
+        self.add_to_plot_button.setToolTip("Overlay the selected array on the existing plot.")
+        self.add_to_plot_button.clicked.connect(lambda: self._plot_selected(overlay=True))
+        plot_ctrl_row.addWidget(self.add_to_plot_button)
+        self.clear_plot_button = QPushButton("Clear Plot")
+        self.clear_plot_button.setEnabled(False)
+        self.clear_plot_button.clicked.connect(self._clear_plot)
+        plot_ctrl_row.addWidget(self.clear_plot_button)
+        plot_ctrl_row.addStretch()
+        details_layout.addLayout(plot_ctrl_row)
+
+        # pyqtgraph PlotWidget — hidden until first Plot action.
+        self.plot_widget = pg.PlotWidget()
+        self._style_plot_widget(self.plot_widget)
+        self.plot_widget.setMinimumHeight(200)
+        self.plot_widget.setVisible(False)
+        self._plot_series_count = 0   # tracks overlay count for color cycling
+        details_layout.addWidget(self.plot_widget, 3)
+
         splitter.addWidget(details)
         splitter.setSizes([560, 640])
 
@@ -206,7 +266,7 @@ class ResultsViewerWidget(TabWidget):
 
 
     def update_layout(self):
-        # Called when the user switches to this tab; refresh in case a mission just finished.
+        # Called when the user switches to this tab; refresh in case results changed.
         self.refresh_from_values()
 
     def load_from_values(self):
@@ -214,48 +274,73 @@ class ResultsViewerWidget(TabWidget):
         self.refresh_from_values()
 
     # ----------------------------
+    #  Source selection
+    # ----------------------------
+    def _on_source_changed(self):
+        self.refresh_from_values(force=True)
+
+    def _active_source(self):
+        """Return (results_object, root_name, detail_text) for the chosen source."""
+        src = self.source_combo.currentText()
+        if src == self._SRC_PERFORMANCE:
+            result = getattr(rcaide_io, "last_performance_result", None)
+            label  = getattr(rcaide_io, "last_performance_label", "")
+            return result, "performance_result", label
+        else:
+            result = getattr(rcaide_io, "rcaide_results", None)
+            return result, "rcaide_results", ""
+
+    # ----------------------------
     #  Results loading / refresh
     # ----------------------------
     def refresh_from_values(self, force=False):
-        # rcaide_results is the handoff point from the solver to this viewer.
-        results = getattr(rcaide_io, "rcaide_results", None)
+        results, root_name, detail = self._active_source()
         object_id = id(results) if results is not None else None
-        if not force and object_id == self._loaded_object_id:
+
+        # Update the detail label (analysis name) regardless of reload decision
+        self.source_detail_label.setText(f"— {detail}" if detail else "")
+
+        if not force and object_id == self._loaded_object_id and root_name == self._root_name:
             return
-        if force and object_id == self._loaded_object_id:
-            self._set_status("Already showing the latest mission results.")
+        if force and object_id == self._loaded_object_id and root_name == self._root_name:
+            self._set_status("Already showing the latest results.")
             return
-        self.load_results(results, "rcaide_results")
+        self._root_name = root_name
+        self.load_results(results, root_name)
 
     def load_results(self, results, source_name="rcaide_results"):
         # Reset all UI/object caches before loading a new results object.
         self.tree.clear()
         self._nodes = {}
         self._root_data = results
+        self._root_name = source_name
         self._loaded_object_id = id(results) if results is not None else None
         self._active_path = None
         self._active_value = None
         self.table.clear()
         self.table.setVisible(False)
+        self._clear_plot()
 
-        # Empty state shown before any mission has been simulated.
+        src = self.source_combo.currentText()
         if results is None:
-            self.path_label.setText("No mission results loaded yet.")
-            self.value_preview.setPlainText(
-                "Run a mission simulation, then come back here to browse the full results object."
-            )
-            self._set_status("No results loaded. Run a mission first.", clear_after_ms=0)
+            if src == self._SRC_PERFORMANCE:
+                msg = "No performance analysis results yet. Run an analysis in the Performance tab first."
+                hint = "Run an analysis in the Performance tab, then refresh here."
+            else:
+                msg = "No mission results loaded yet."
+                hint = "Run a mission simulation, then come back here to browse the full results object."
+            self.path_label.setText(msg)
+            self.value_preview.setPlainText(hint)
+            self._set_status("No results loaded.", clear_after_ms=0)
             return
 
-        # Create the root node and immediately populate one level so users see
-        # the main RCAIDE fields without expanding first.
         root = self._make_item(source_name, results, source_name)
         self.tree.addTopLevelItem(root)
         self._add_placeholder_if_needed(root, results)
         root.setExpanded(True)
         self.populate_item_children(root)
         self.tree.setCurrentItem(root)
-        self._set_status("Loaded latest mission results.")
+        self._set_status(f"Loaded: {source_name}")
 
     # ------------------------------
     #  Tree expansion and selection
@@ -340,16 +425,16 @@ class ResultsViewerWidget(TabWidget):
         self._set_status(f"Exported {len(written)} file(s) to {export_dir}.")
 
     def export_all(self):
-        results = getattr(rcaide_io, "rcaide_results", None)
+        results = self._root_data
         if results is None:
-            self._set_status("No results loaded. Run a mission first.")
+            self._set_status("No results loaded.")
             return
         export_dir = self._choose_export_dir()
         if not export_dir:
             self._set_status("Export cancelled.")
             return
-        written = self._export_value(export_dir, "rcaide_results", results)
-        self._export_numeric_leaves(export_dir, "rcaide_results", results, written)
+        written = self._export_value(export_dir, self._root_name, results)
+        self._export_numeric_leaves(export_dir, self._root_name, results, written)
         self._set_status(f"Exported {len(written)} file(s) to {export_dir}.")
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -401,6 +486,7 @@ class ResultsViewerWidget(TabWidget):
         self.path_input.setText(path)
         self.value_preview.setPlainText(self._detail_text(value))
         self._populate_table(value)
+        self._update_plot_controls(value)
 
     def _current_path(self):
         return self._active_path
@@ -414,16 +500,18 @@ class ResultsViewerWidget(TabWidget):
     #  Path parsing and object navigation
     # ------------------------------------------------------------------------------------------------------------------
     def _resolve_expression(self, expression):
-        # Resolve dotted/bracket paths against the live RCAIDE results object.
-        # Supports both named containers and numeric list/array indexing.
+        # Resolve dotted/bracket paths against the currently loaded results object.
+        # Strips either known root prefix so typed paths work regardless of source.
         expression = expression.strip()
-        if expression.startswith("rcaide_results"):
-            expression = expression[len("rcaide_results"):]
+        for prefix in ("rcaide_results", "performance_result", self._root_name):
+            if expression.startswith(prefix):
+                expression = expression[len(prefix):]
+                break
         if expression.startswith("."):
             expression = expression[1:]
 
         value = self._root_data
-        path = "rcaide_results"
+        path = self._root_name
         if value is None:
             raise ValueError("no results object is loaded")
         for token in self._parse_tokens(expression):
@@ -854,6 +942,116 @@ class ResultsViewerWidget(TabWidget):
                 self.table.setItem(row, col, QTableWidgetItem(str(arr[row, col])))
 
         self.table.setVisible(True)
+
+
+    # ------------------------------------------------------------------------------------------------------------------
+    #  Plot helpers
+    # ------------------------------------------------------------------------------------------------------------------
+    def _style_plot_widget(self, w):
+        pi = w.getPlotItem()
+        for axis_name in ("bottom", "left", "top", "right"):
+            axis = pi.getAxis(axis_name)
+            if axis is not None:
+                axis.setPen(pg.mkPen("#4da3ff"))
+                axis.setTextPen(pg.mkPen("#9fb8ff"))
+        pi.getViewBox().setBorder(pg.mkPen("#1f2a36"))
+        w.setBackground("#0a0f1a")
+
+    def _update_plot_controls(self, value):
+        can_plot = self._is_plottable_series(value)
+        self.plot_button.setEnabled(can_plot)
+        self.add_to_plot_button.setEnabled(can_plot and self.plot_widget.isVisible())
+
+    def _is_plottable_series(self, value):
+        if not isinstance(value, np.ndarray):
+            return False
+        if value.size < 2:
+            return False
+        if value.ndim == 1:
+            return True
+        if value.ndim == 2 and value.shape[1] == 1:
+            return True
+        return False
+
+    def _segment_base_path(self, active_path):
+        # Returns e.g. 'rcaide_results.segments.cruise' from a deeper conditions path.
+        # Handles both dot-notation (named) and bracket-notation (indexed) segments.
+        m = re.match(r'(rcaide_results\.segments(?:\.[^.\[]+|\[\d+\]))', active_path or "")
+        return m.group(1) if m else None
+
+    def _get_x_data(self, x_label):
+        """Return (array_1d, label) for the chosen X axis, or (None, label) on failure."""
+        seg_base = self._segment_base_path(self._active_path)
+        if x_label == "Index" or seg_base is None:
+            n = np.asarray(self._active_value).flatten().size
+            return np.arange(n, dtype=float), "Index"
+
+        _x_suffixes = {
+            "Time (s)":     ".conditions.frames.inertial.time",
+            "Range (m)":    ".conditions.frames.inertial.aircraft_range",
+            "Altitude (m)": ".conditions.freestream.altitude",
+            "Mach":         ".conditions.freestream.mach_number",
+        }
+        suffix = _x_suffixes.get(x_label)
+        if suffix is None:
+            n = np.asarray(self._active_value).flatten().size
+            return np.arange(n, dtype=float), "Index"
+
+        try:
+            _, val = self._resolve_expression(seg_base + suffix)
+            return np.asarray(val).flatten(), x_label
+        except Exception:
+            n = np.asarray(self._active_value).flatten().size
+            return np.arange(n, dtype=float), "Index (X not found)"
+
+    def _plot_selected(self, overlay=False):
+        if not self._is_plottable_series(self._active_value):
+            self._set_status("Select a numeric array first.", clear_after_ms=5000)
+            return
+
+        y = np.asarray(self._active_value).flatten()
+        x_label = self.x_axis_combo.currentText()
+        x, x_label_used = self._get_x_data(x_label)
+
+        n = min(len(x), len(y))
+        x, y = x[:n], y[:n]
+
+        if not overlay:
+            self.plot_widget.clear()
+            self._plot_series_count = 0
+
+        # addLegend() reuses the existing LegendItem if one already exists.
+        legend = self.plot_widget.addLegend(offset=(10, 10))
+        legend.setBrush(pg.mkBrush(8, 12, 18, 180))
+        legend.setPen(pg.mkPen(120, 150, 210, 140))
+
+        color = _PLOT_COLORS[self._plot_series_count % len(_PLOT_COLORS)]
+        self._plot_series_count += 1
+
+        # Short label: last two dot-components of the path
+        parts = (self._active_path or "").split(".")
+        y_label = ".".join(parts[-2:]) if len(parts) >= 2 else parts[-1]
+
+        self.plot_widget.plot(
+            x, y,
+            pen=pg.mkPen(color=color, width=2),
+            name=y_label,
+        )
+        if not overlay:
+            self.plot_widget.setLabel("left", y_label, color="white", size="12px")
+        self.plot_widget.setLabel("bottom", x_label_used, color="white", size="12px")
+        self.plot_widget.setVisible(True)
+        self.clear_plot_button.setEnabled(True)
+        self.add_to_plot_button.setEnabled(True)
+        self._set_status(f"Plotted {self._active_path}")
+
+    def _clear_plot(self):
+        self.plot_widget.clear()
+        self.plot_widget.setVisible(False)
+        self.clear_plot_button.setEnabled(False)
+        self.add_to_plot_button.setEnabled(False)
+        self._plot_series_count = 0
+        self._set_status("Plot cleared.")
 
 
 def get_widget() -> QWidget:

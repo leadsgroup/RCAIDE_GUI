@@ -57,14 +57,13 @@ class App(QMainWindow):
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
         self.widgets.append((geometry.get_widget(), "Vehicle Setup"))
-        self.widgets.append((visualize_geometry.get_widget(), "Geometry Visualization"))
-        self.widgets.append((aircraft_configs.get_widget(), "Configurations Setup"))
+        self.widgets.append((visualize_geometry.get_widget(), "Geometry"))
+        self.widgets.append((aircraft_configs.get_widget(), "Configurations"))
         self.widgets.append((analysis.get_widget(), "Analyses Setup"))
         self.widgets.append((mission.get_widget(), "Mission Setup"))
-        self.widgets.append((solve.get_widget(), "Mission Simulation"))
-        # Results Viewer reads the last mission.evaluate() output stored in rcaide_io.rcaide_results.
+        self.widgets.append((performance.get_widget(), "Performance"))
+        self.widgets.append((solve.get_widget(), "Run Mission"))
         self.widgets.append((results_viewer.get_widget(), "Results Viewer"))
-        # self.widgets.append((shared_analysis_widget, "Multidisciplinary Analyses"))
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
@@ -142,7 +141,7 @@ class App(QMainWindow):
 
     def _go_to_geometry_visualization_tab(self):
         for index in range(self.tabs.count()):
-            if self.tabs.tabText(index).strip().lower() == "geometry visualization":
+            if self.tabs.tabText(index).strip().lower() == "geometry":
                 self.tabs.setCurrentIndex(index)
                 current_widget = self.tabs.widget(index)
                 if isinstance(current_widget, TabWidget):

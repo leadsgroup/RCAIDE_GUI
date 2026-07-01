@@ -1045,6 +1045,13 @@ class MissionWidget(TabWidget):
         print(f"Active segments: {len(rcaide_io.mission_data)}")
         print(f"Names: {', '.join(segment_names) if segment_names else 'None'}")
 
+        # Build and store the RCAIDE mission object if analyses are ready
+        if rcaide_io.rcaide_analyses:
+            try:
+                rcaide_io.rcaide_mission = self.create_rcaide_mission()
+            except Exception as e:
+                print(f"[Mission] Could not build RCAIDE mission object: {e}")
+
         # Notify the user that the mission was saved
         self._notify("Mission data saved")
         self.refresh_mission_overview()
@@ -1115,7 +1122,14 @@ class MissionWidget(TabWidget):
             item.setCheckState(0, Qt.CheckState.Checked)
             self.tree.addTopLevelItem(item)
 
-        # Defer mission build until analyses are saved to avoid load-time errors.
+        # If analyses are already available (e.g. after loading a JSON file),
+        # build the mission object now so performance analyses can use it immediately.
+        if rcaide_io.rcaide_analyses:
+            try:
+                rcaide_io.rcaide_mission = self.create_rcaide_mission()
+            except Exception as e:
+                print(f"[Mission] Could not build RCAIDE mission on load: {e}")
+
         self.refresh_mission_overview()
 
 
