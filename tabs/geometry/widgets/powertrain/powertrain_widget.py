@@ -7,18 +7,32 @@
 # RCAIDE imports
 import RCAIDE
 
+# Maps UI network type name → RCAIDE network class.
+_NETWORK_CLASS_MAP = {
+    "Fuel":      RCAIDE.Framework.Networks.Fuel,
+    "Electric":  RCAIDE.Framework.Networks.Electric,
+    "Hybrid":    RCAIDE.Framework.Networks.Hybrid,
+    "Hydrogen":  RCAIDE.Framework.Networks.Hydrogen,
+    "Fuel Cell": RCAIDE.Framework.Networks.Fuel_Cell,
+}
+
+def _distributor_container(distributor):
+    """Return the Network attribute name that holds this distributor type."""
+    if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+        return "busses"
+    if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+        return "coolant_lines"
+    return "fuel_lines"
+
 # PyQT imports
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QTabWidget
 
 # RCAIDE GUI Imports
-from tabs.geometry.widgets.powertrain.distributors import FuelLineWidget
-from tabs.geometry.widgets.powertrain.sources import EnergySourceSelectorWidget
-
 from tabs.geometry.frames.powertrain.sources import EnergySourceFrame
 from tabs.geometry.frames.powertrain.distributors import DistributorFrame
 from tabs.geometry.frames.powertrain.converters import ConverterFrame
 from tabs.geometry.frames.powertrain.propulsors import PropulsorFrame
-from tabs.geometry.widgets.powertrain.powertrain_connector_widget import PowertrainConnectorWidget
+from tabs.geometry.frames.powertrain.systems import SystemFrame
 from common_widgets import DataEntryWidget
 
 
@@ -29,178 +43,144 @@ class PowertrainWidget(QWidget):
     def __init__(self):
         super(PowertrainWidget, self).__init__()
 
+        self.network_type = "Fuel"
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None
 
-        self.fuellines_layout = QVBoxLayout()  # Define main_layout here
-        self.fuellines_layout.setContentsMargins(0, 0, 0, 0)
-
-        # Header
-        # header_layout = QHBoxLayout()
-
         layout = self.create_scroll_layout()
 
-        # add_section_button = QPushButton("Add Fuel Line Section", self)
-        # add_section_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        # add_section_button.setMaximumWidth(200)
-        # add_section_button.clicked.connect(self.add_fuelline_section)
-        # header_layout.addWidget(add_section_button)
-
-        # layout.addLayout(header_layout)
-
         name_layout = QHBoxLayout()
-
         layout.addLayout(name_layout)
 
-        # Add line above buttons
-        line_bar = QFrame()
-        line_bar.setFrameShape(QFrame.Shape.HLine)
-        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        line_bar.setStyleSheet("background-color: light grey;")
-
-        # Tab widget
+        # ── Tabs ───────────────────────────────────────────────────────────
         self.tab_widget = QTabWidget()
         layout.addWidget(self.tab_widget)
 
-        # Create Propulsors tab
         self.distributor_frame = DistributorFrame()
         self.tab_widget.addTab(self.distributor_frame, "Distributors")
 
         self.energy_source_frame = EnergySourceFrame()
-        self.tab_widget.addTab(
-            self.energy_source_frame, "Energy Sources")
+        self.tab_widget.addTab(self.energy_source_frame, "Energy Sources")
 
         self.propulsor_frame = PropulsorFrame()
         self.tab_widget.addTab(self.propulsor_frame, "Propulsors")
 
+        self.system_frame = SystemFrame()
+        self.tab_widget.addTab(self.system_frame, "Systems")
+
         self.converter_frame = ConverterFrame()
         self.tab_widget.addTab(self.converter_frame, "Converters")
 
+        # ── Refresh Connections button ─────────────────────────────────────
+        line_bar = QFrame()
+        line_bar.setFrameShape(QFrame.Shape.HLine)
+        line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         layout.addWidget(line_bar)
-        layout.addLayout(self.fuellines_layout)
 
-        update_selector_button = QPushButton(
-            "Update Propulsor-Source Connectivity")
-        update_selector_button.setStyleSheet(
-            "color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        update_selector_button.clicked.connect(self.update_fuel_selector)
-        layout.addWidget(update_selector_button)
+        refresh_btn = QPushButton("Refresh Connections")
+        refresh_btn.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        refresh_btn.setToolTip(
+            "Sync propulsor and source names into each distributor's inline checkboxes."
+        )
+        refresh_btn.clicked.connect(self._refresh_connections)
+        layout.addWidget(refresh_btn)
 
-        self.powertrain_connection_selector = PowertrainConnectorWidget()
-        # self.fuel_tank_selector.setTabPosition(QTabWidget.TabPosition.North)
-        layout.addWidget(self.powertrain_connection_selector)
+    # ── Connection refresh ─────────────────────────────────────────────────
 
-    def add_fuelline_section(self):
-        self.fuellines_layout.addWidget(
-            FuelLineWidget(self.fuellines_layout.count(), self.on_delete_button_pressed))
+    def _refresh_connections(self):
+        """Push current propulsor & source names into each distributor's inline checkboxes."""
+        propulsor_data, _ = self.propulsor_frame.get_data_values()
+        source_data,    _ = self.energy_source_frame.get_data_values()
+        propulsor_names = [d.get("Propulsor Tag", "") for d in propulsor_data]
+        source_names    = [d.get("Source Name", "")   for d in source_data]
+        self.distributor_frame.refresh_connections(propulsor_names, source_names)
 
-    def update_fuel_selector(self):
-        self.powertrain_connection_selector.clear()
-        data = self.get_data_values(just_data=True)
-        self.powertrain_connection_selector.update_selector(data)
-
-    def on_delete_button_pressed(self, index):
-        widget_item = self.fuellines_layout.itemAt(index)
-        if widget_item is not None:
-            widget = widget_item.widget()
-            self.fuellines_layout.removeWidget(widget)
-            self.fuellines_layout.update()
-            print("Deleted Fuel Line at Index:", index)
-
-            for i in range(index, self.fuellines_layout.count()):
-                widget_item = self.fuellines_layout.itemAt(i)
-                assert widget_item is not None
-                widget = widget_item.widget()
-                assert widget is not None and isinstance(
-                    widget, FuelLineWidget)
-
-                widget.index = i
-                print("Updated Index:", i)
-
-    def create_rcaide_structure(self, data):
-        data, connections, distributors, sources, propulsors, converters = data
-        net = RCAIDE.Framework.Networks.Fuel()
-
-        propulsor_connections = connections[0]
-        source_connections = connections[2]
-        
-        for i, propulsor in enumerate(propulsors): 
-            net.propulsors.append(propulsor)
-        
-        for i, distributor in enumerate(distributors):
-            assigned_propulsors = [[]]
-            for j, propulsor in enumerate(propulsors):
-                if propulsor_connections[i][j]:
-                    assigned_propulsors[0].append(propulsor.tag)
-
-            for j, source in enumerate(sources):
-                if source_connections[i][j]:
-                    distributor.fuel_tanks.append(source)
-
-            distributor.assigned_propulsors = assigned_propulsors
-            net.fuel_lines.append(distributor)
-            # source_names = [x.tag for x in distributor.fuel_tanks]
-
-        return net
+    # ── Data API ───────────────────────────────────────────────────────────
 
     def get_data_values(self, just_data=False):
-        """Retrieve the entered data values from both SourceFrame and PropulsorFrame."""
+        """Retrieve data from all tabs and build the RCAIDE network."""
         data = {}
 
-        # Get the name of the fuel line
-        # fuel_line_name = self.section_name_edit.text()
-        # data["name"] = fuel_line_name
-
-        # Get data values from Distributor tab
-        distributor_data = self.distributor_frame.get_data_values()
-        data["distributor data"], distributors = distributor_data
-
-        # Get data values from Sources tab
-        source_data = self.energy_source_frame.get_data_values()
-        data["source data"], sources = source_data
-
-        # Get data values from Propulsors tab
-        propulsor_data = self.propulsor_frame.get_data_values()
-        data["propulsor data"], propulsors = propulsor_data
-
-        # Get data values from Converters tab
-        converter_data = self.converter_frame.get_data_values()
-        data["converter data"], converters = converter_data
+        data["distributor data"], distributors = self.distributor_frame.get_data_values()
+        data["source data"],      sources      = self.energy_source_frame.get_data_values()
+        data["propulsor data"],   propulsors   = self.propulsor_frame.get_data_values()
+        data["system data"],      systems      = self.system_frame.get_data_values()
+        data["converter data"],   converters   = self.converter_frame.get_data_values()
 
         if just_data:
             return data
 
-        connections = self.powertrain_connection_selector.get_connections(data)
-        data["connections"] = connections
-
-        net = self.create_rcaide_structure(
-            (data, connections, distributors, sources, propulsors, converters))
+        net = self.create_rcaide_structure(data, distributors, sources, propulsors, converters, systems)
         return data, net
 
+    def create_rcaide_structure(self, data, distributors, sources, propulsors, converters, systems):
+        net_class = _NETWORK_CLASS_MAP.get(self.network_type, RCAIDE.Framework.Networks.Fuel)
+        net = net_class()
+
+        for propulsor in propulsors:
+            net.propulsors.append(propulsor)
+
+        source_by_tag = {s.tag: s for s in sources}
+        distributor_data_list = data.get("distributor data", [])
+
+        for d_data, distributor in zip(distributor_data_list, distributors):
+            assigned = d_data.get("assigned_propulsors", [])
+            distributor.assigned_propulsors = [assigned]  # RCAIDE expects [[tag, ...]]
+
+            for src_name in d_data.get("assigned_sources", []):
+                src = source_by_tag.get(src_name)
+                if src is not None:
+                    distributor.fuel_tanks.append(src)
+
+            getattr(net, _distributor_container(distributor)).append(distributor)
+
+        for converter in converters:
+            converter.assigned_propulsors = [[]]
+            net.converters.append(converter)
+
+        for system in systems:
+            net.systems.append(system)
+
+        return net
+
     def load_data_values(self, data, index=0):
-        distributor_data = data["distributor data"]
-        self.distributor_frame.load_data(distributor_data)
+        # Migrate old-style connections matrix to inline format so saved files load cleanly.
+        self._migrate_connections(data)
 
-        source_data = data["source data"]
-        self.energy_source_frame.load_data(source_data)
-
-        propulsor_data = data["propulsor data"]
-        self.propulsor_frame.load_data(propulsor_data)
-
-        converter_data = data["converter data"]
+        self.distributor_frame.load_data(data.get("distributor data", []))
+        self.energy_source_frame.load_data(data.get("source data", []))
+        self.propulsor_frame.load_data(data.get("propulsor data", []))
+        self.system_frame.load_data(data.get("system data", []))
+        converter_data = data.get("converter data", data.get("converter  data", []))
         self.converter_frame.load_data(converter_data)
 
-        self.powertrain_connection_selector.update_selector(data)
-        if "connections" in data:
-            self.powertrain_connection_selector.load_connections(
-                data["connections"])
+        # Auto-refresh so distributor checkboxes are populated immediately.
+        self._refresh_connections()
+
+    @staticmethod
+    def _migrate_connections(data):
+        """Convert old connections-matrix format into inline assigned_propulsors/assigned_sources."""
+        connections = data.get("connections")
+        if not connections:
+            return
+        propulsor_names = [d.get("Propulsor Tag", "") for d in data.get("propulsor data", [])]
+        source_names    = [d.get("Source Name",   "") for d in data.get("source data",    [])]
+        prop_conn = connections[0] if len(connections) > 0 else []
+        src_conn  = connections[2] if len(connections) > 2 else []
+        for i, d_item in enumerate(data.get("distributor data", [])):
+            if "assigned_propulsors" not in d_item:
+                row = prop_conn[i] if i < len(prop_conn) else []
+                d_item["assigned_propulsors"] = [
+                    propulsor_names[j] for j, checked in enumerate(row) if checked
+                ]
+            if "assigned_sources" not in d_item:
+                row = src_conn[i] if i < len(src_conn) else []
+                d_item["assigned_sources"] = [
+                    source_names[j] for j, checked in enumerate(row) if checked
+                ]
 
     def create_scroll_layout(self):
-        # Create a widget to contain the layout
         scroll_content = QWidget()
-        # Set the main layout inside the scroll content
         layout = QVBoxLayout(scroll_content)
-
-        # Set the main layout of the widget
         self.setLayout(layout)
         return layout

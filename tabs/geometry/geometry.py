@@ -197,6 +197,33 @@ class GeometryWidget(TabWidget):
             assert isinstance(frame, GeometryFrame)
             frame.update_layout()
 
+    # Sub-group definitions for the powertrain tree (label, data key, name key).
+    _POWERTRAIN_SUB_GROUPS = [
+        ("Distributors", "distributor data", "distributor name"),
+        ("Propulsors",   "propulsor data",   "Propulsor Tag"),
+        ("Systems",      "system data",      "System Name"),
+        ("Converters",   "converter data",   "Converter Name"),
+    ]
+
+    def _rebuild_powertrain_category(self, category_item: QTreeWidgetItem):
+        """Rebuild Distributors/Propulsors/Systems/Converters directly under category_item."""
+        while category_item.childCount():
+            category_item.removeChild(category_item.child(0))
+
+        # Merge components from all networks into shared sub-groups.
+        buckets: dict[str, list[str]] = {g: [] for g, _, _ in self._POWERTRAIN_SUB_GROUPS}
+        for net_data in rcaide_io.rcaide_vehicle[5]:
+            pt = net_data.get("powertrain", {})
+            for group_label, data_key, name_key in self._POWERTRAIN_SUB_GROUPS:
+                for comp in pt.get(data_key, []):
+                    buckets[group_label].append(comp.get(name_key, "?"))
+
+        for group_label, _, _ in self._POWERTRAIN_SUB_GROUPS:
+            group_item = QTreeWidgetItem([group_label])
+            category_item.addChild(group_item)
+            for comp_name in buckets[group_label]:
+                group_item.addChild(QTreeWidgetItem([comp_name]))
+
     def on_tree_item_clicked(self, item: QTreeWidgetItem, _col):
         """Change the index of the main layout based on the selected item in the tree.
 
@@ -231,7 +258,6 @@ class GeometryWidget(TabWidget):
             self.main_layout.setCurrentIndex(tab_index)
         if depth == 2:
             component_item = item.parent()
-
             assert component_item is not None
             top_item = component_item.parent()
             assert top_item is not None
@@ -240,10 +266,34 @@ class GeometryWidget(TabWidget):
             tab_index = self.find_tab_index(tree_index)
             self.main_layout.setCurrentIndex(tab_index)
 
-            index = component_item.indexOfChild(item)
-            frame = self.main_layout.currentWidget()
-            assert isinstance(frame, GeometryFrame)
-            frame.load_data(rcaide_io.rcaide_vehicle[tab_index][index], index)
+            if tab_index == 5:
+                # item is a sub-group label; load the first (usually only) network.
+                if rcaide_io.rcaide_vehicle[5]:
+                    frame = self.main_layout.currentWidget()
+                    assert isinstance(frame, GeometryFrame)
+                    frame.load_data(rcaide_io.rcaide_vehicle[5][0], 0)
+            else:
+                index = component_item.indexOfChild(item)
+                frame = self.main_layout.currentWidget()
+                assert isinstance(frame, GeometryFrame)
+                frame.load_data(rcaide_io.rcaide_vehicle[tab_index][index], index)
+
+        if depth == 3:
+            # individual component under a powertrain sub-group
+            sub_group_item = item.parent()
+            assert sub_group_item is not None
+            category_item = sub_group_item.parent()
+            assert category_item is not None
+            top_item = category_item.parent()
+            assert top_item is not None
+
+            tree_index = top_item.indexOfChild(category_item)
+            tab_index = self.find_tab_index(tree_index)
+            if tab_index == 5 and rcaide_io.rcaide_vehicle[5]:
+                self.main_layout.setCurrentIndex(tab_index)
+                frame = self.main_layout.currentWidget()
+                assert isinstance(frame, GeometryFrame)
+                frame.load_data(rcaide_io.rcaide_vehicle[5][0], 0)
 
     def save_data(self, tab_index, tree_index=-1, vehicle_component=None, index=-1, data=None, new=False, persist=False):
         """Save the entered data in a frame to the list.
@@ -296,17 +346,24 @@ class GeometryWidget(TabWidget):
                     vehicle_component = frame.create_rcaide_structure()
                     frame.deleteLater()
 
-                child = QTreeWidgetItem([data["name"]])
-                component_item.addChild(child)
-                child.setSelected(True)
-                index = component_item.indexOfChild(child)
+                if tab_index == 5:
+                    self._rebuild_powertrain_category(component_item)
+                    index = len(rcaide_io.rcaide_vehicle[5]) - 1
+                else:
+                    child = QTreeWidgetItem([data.get("name", "")])
+                    component_item.addChild(child)
+                    child.setSelected(True)
+                    index = component_item.indexOfChild(child)
             else:
                 rcaide_io.rcaide_vehicle[tab_index][index] = data
-                if tree_index == -1:
-                    tree_index = index
-                child = component_item.child(tree_index)
-                if child:
-                    child.setText(0, data["name"])
+                if tab_index == 5:
+                    self._rebuild_powertrain_category(component_item)
+                else:
+                    if tree_index == -1:
+                        tree_index = index
+                    child = component_item.child(tree_index)
+                    if child:
+                        child.setText(0, data.get("name", child.text(0)))
 
                 # Rebuild the RCAIDE component so run_solve sees the updated values.
                 # (vehicle_component is None on updates — append_component is not called,
@@ -387,9 +444,12 @@ class GeometryWidget(TabWidget):
                 component_item.setExpanded(True)
                 vehicle_item.addChild(component_item)
 
-                for index, data in enumerate(data_list):
-                    child = QTreeWidgetItem([data.get("name", f"Item {index}")])
-                    component_item.addChild(child)
+                if tab_index == 5:
+                    self._rebuild_powertrain_category(component_item)
+                else:
+                    for index, data in enumerate(data_list):
+                        child = QTreeWidgetItem([data.get("name", f"Item {index}")])
+                        component_item.addChild(child)
 
         self._preview_updates_enabled = True
         # Single redraw after all loaded parts are in place.

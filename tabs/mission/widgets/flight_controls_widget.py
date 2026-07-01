@@ -144,12 +144,12 @@ class FlightControlsWidget(QWidget):
                 if not segment.assigned_control_variables.throttle.initial_guess_values:
                     segment.assigned_control_variables.throttle.initial_guess_values = [[0.7]]
 
-        if getattr(segment.assigned_control_variables.body_angle, "active", False):
-            if hasattr(segment.assigned_control_variables.body_angle, "initial_guess_values"):
-                if not segment.assigned_control_variables.body_angle.initial_guess_values:
-                    segment.assigned_control_variables.body_angle.initial_guess_values = [[0.0]]
+        if getattr(segment.assigned_control_variables.pitch_angle, "active", False):
+            if hasattr(segment.assigned_control_variables.pitch_angle, "initial_guess_values"):
+                if not segment.assigned_control_variables.pitch_angle.initial_guess_values:
+                    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[0.0]]
 
-    def set_defaults(self, throttle=False, body_angle=False):
+    def set_defaults(self, throttle=False, pitch_angle=False):
         for widget in self.data_entry_widgets:
             assert isinstance(widget, DataEntryWidget)
             defaults = {}
@@ -158,16 +158,16 @@ class FlightControlsWidget(QWidget):
                 value = False
                 if "throttle.active" in label_lower:
                     value = throttle
-                elif "body_angle.active" in label_lower:
-                    value = body_angle
+                elif "pitch_angle.active" in label_lower:
+                    value = pitch_angle
                 defaults[label] = (value, 0)
             widget.load_data(defaults)
 
     fields = {
         "Kinematics": [
-            ("Body Angle", Units.Boolean, "assigned_control_variables.body_angle.active"),
+            ("Pitch Angle", Units.Boolean, "assigned_control_variables.pitch_angle.active"),
             ("Bank Angle", Units.Boolean, "assigned_control_variables.bank_angle.active"),
-            ("Wind Angle", Units.Boolean, "assigned_control_variables.wind_angle.active"),
+            ("Angle of Attack", Units.Boolean, "assigned_control_variables.angle_of_attack.active"),
             ("Velocity", Units.Boolean, "assigned_control_variables.velocity.active"),
             ("Acceleration", Units.Boolean, "assigned_control_variables.acceleration.active"),
             ("Altitude", Units.Boolean, "assigned_control_variables.altitude.active"),

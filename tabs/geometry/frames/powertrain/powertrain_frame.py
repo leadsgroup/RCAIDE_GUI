@@ -6,9 +6,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea, QSpacerItem, QSizePolicy, \
-    QPushButton, QLineEdit, QComboBox
+    QPushButton, QComboBox
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets.powertrain.powertrain_widget import PowertrainWidget
@@ -97,32 +96,18 @@ class PowertrainFrame(GeometryFrame):
             QWidget: The main powertrain widget."""
         main_powertrain_widget = QWidget()
         main_layout = QVBoxLayout()
-        name_layout = QHBoxLayout()
+        type_layout = QHBoxLayout()
 
-        # add spacing
-        spacer_left = QSpacerItem(
-            50, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacer_right = QSpacerItem(
-            200, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        name_layout.addItem(spacer_left)
-        name_layout.addWidget(QLabel("Name: "))
-        self.name_line_edit = QLineEdit(self)
-        name_layout.addWidget(self.name_line_edit)
-        name_layout.addItem(spacer_right)
-
-        # Energy Network
-        energy_label = QLabel("Energy Network Type:")
-        energy_label.setFixedWidth(100)  # Adjust width of label
-        name_layout.addWidget(energy_label)
+        type_layout.addWidget(QLabel("Energy Network Type:"))
         self.powertrain_combo = QComboBox()
-        self.powertrain_combo.addItems(["Select Network Type", "Fuel", "Electric", "Hybrid", "Hydrogen"])
-        self.powertrain_combo.setFixedWidth(400)  # Fix width of combo box
-        name_layout.addWidget(self.powertrain_combo, alignment=Qt.AlignmentFlag.AlignLeft)
+        self.powertrain_combo.addItems(["Select Network Type", "Fuel", "Electric", "Hybrid", "Hydrogen", "Fuel Cell"])
+        self.powertrain_combo.setFixedWidth(200)
+        type_layout.addWidget(self.powertrain_combo)
+        type_layout.addStretch()
 
-        # Connect signal
         self.powertrain_combo.currentIndexChanged.connect(self.display_selected_network)
 
-        main_layout.addLayout(name_layout)
+        main_layout.addLayout(type_layout)
         main_powertrain_widget.setLayout(main_layout)
         return main_powertrain_widget
 
@@ -132,37 +117,38 @@ class PowertrainFrame(GeometryFrame):
     def set_tab_index(self, index):
         self.tab_index = index
 
+    _VALID_NETWORKS = ("Fuel", "Electric", "Hybrid", "Hydrogen", "Fuel Cell")
+
     def get_data_values(self):
         """Retrieve the entered data values from the widgets."""
         selected_network = self.powertrain_combo.currentText()
         data = {"energy network selected": selected_network}
 
-        assert self.name_line_edit is not None
-        data["name"] = self.name_line_edit.text()
-
-        if selected_network == "Fuel":
-            # Add the data values from each fuel line widget to an array
+        if selected_network in self._VALID_NETWORKS:
             item = self.powertrain_layout.itemAt(0)
             assert item is not None
             widget = item.widget()
-            assert widget is not None and isinstance(widget,PowertrainWidget)
+            assert widget is not None and isinstance(widget, PowertrainWidget)
+            widget.network_type = selected_network
             data_values, net = widget.get_data_values()
 
             if isinstance(data_values, bool):
                 return False, False
 
-            # add the fuel line data to the main data
             data["powertrain"] = data_values
+        else:
+            return False, False
 
         return data, net
 
     def create_rcaide_structure(self):
         selected_network = self.powertrain_combo.currentText()
-        if selected_network == "Fuel":
+        if selected_network in self._VALID_NETWORKS:
             item = self.powertrain_layout.itemAt(0)
             assert item is not None
             widget = item.widget()
             assert widget is not None and isinstance(widget, PowertrainWidget)
+            widget.network_type = selected_network
             _, net = widget.get_data_values()
         else:
             return None
@@ -193,39 +179,26 @@ class PowertrainFrame(GeometryFrame):
             data: The data to be loaded into the widgets.
             index: The index of the data in the list.
         """
-
-        # Load the name into the name line edit
         self.index = index
-        assert self.name_line_edit is not None  
-        self.name_line_edit.setText(data["name"])
-
-        # Load the selected network into the combo box
         selected_network = data.get("energy network selected", "")
         network_index = self.powertrain_combo.findText(selected_network)
         if network_index != -1:
+            self.powertrain_combo.blockSignals(True)
             self.powertrain_combo.setCurrentIndex(network_index)
+            self.powertrain_combo.blockSignals(False)
 
-        # Clear existing sections before loading new ones
         clear_layout(self.powertrain_layout)
 
-        # Load sections based on the selected network
-        if selected_network == "Fuel":
+        if selected_network in self._VALID_NETWORKS:
             powertrain_widget = PowertrainWidget()
-            powertrain_widget.load_data_values(data["powertrain"])
+            powertrain_widget.network_type = selected_network
+            powertrain_widget.load_data_values(data.get("powertrain", {}))
             self.powertrain_layout.addWidget(powertrain_widget)
-        
+
         self.add_buttons_layout()
 
     def create_new_structure(self):
         """Create a new powertrain structure."""
-
-        # Clear the main data values
-        for data_field in self.data_fields.values():
-            line_edit, unit_picker = data_field
-            line_edit.clear()
-            unit_picker.set_index(0)
-
-        # Clear the name line edit
         while self.powertrain_layout.count():
             item = self.powertrain_layout.takeAt(0)
             assert item is not None
@@ -234,8 +207,6 @@ class PowertrainFrame(GeometryFrame):
             assert widget is not None
             widget.deleteLater()
 
-        assert self.name_line_edit is not None
-        self.name_line_edit.clear()
         self.index = -1
 
     def delete_data(self):
@@ -243,17 +214,11 @@ class PowertrainFrame(GeometryFrame):
 
     def display_selected_network(self, index):
         selected_network = self.powertrain_combo.currentText()
-        # Clear the layout first
         clear_layout(self.powertrain_layout)
 
-        if selected_network == "Fuel":
-            self.main_powertrain_widget = PowertrainWidget()
-            self.powertrain_layout.addWidget(self.main_powertrain_widget)
-        elif selected_network == "None Selected":
-            # Do nothing or add blank widget
-            pass
-        else:
-            # Handle other energy network options here
-            pass
+        if selected_network in self._VALID_NETWORKS:
+            widget = PowertrainWidget()
+            widget.network_type = selected_network
+            self.powertrain_layout.addWidget(widget)
 
         self.add_buttons_layout()
