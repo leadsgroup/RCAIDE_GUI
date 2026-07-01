@@ -220,6 +220,16 @@ class Units:
         unit_list = [PASCAL, KILOPASCAL, MEGAPASCAL,
                      BAR, ATMOSPHERE, POUND_PER_SQUARE_INCH, MILLIBAR, POUND_PER_SQUARE_FOOT]
 
+    # Power Units
+    class Power:
+        WATT = ("W", lambda x: x)
+        KILOWATT = ("kW", lambda x: x * 1000.0)
+        MEGAWATT = ("MW", lambda x: x * 1_000_000.0)
+        HORSEPOWER = ("hp", lambda x: x * 745.69987)
+        BTU_PER_HOUR = ("BTU/h", lambda x: x * 0.29307107)
+
+        unit_list = [WATT, KILOWATT, MEGAWATT, HORSEPOWER, BTU_PER_HOUR]
+
     # Unitless Units
     class Unitless:
         NONE = ("", lambda x: x)

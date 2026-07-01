@@ -584,6 +584,39 @@ def _network_type_for_ui(network_dict):
     return _NETWORK_TYPE_LABEL.get(class_name, 'Fuel')
 
 
+_NACELLE_TYPE_LABEL = {
+    'Body_of_Revolution_Nacelle': 'Body of Revolution',
+    'Generic_Nacelle':            'Generic Nacelle',
+    'Stack_Nacelle':              'Stack Nacelle',
+}
+
+
+def _nacelle_dict_to_ui(nacelle):
+    """Convert a stripped RCAIDE nacelle dict to the TurbofanWidget nacelle_data format."""
+    def g(d, key, default=0):
+        val = d.get(key, default) if isinstance(d, dict) else default
+        return [val, 0]
+
+    type_str = nacelle.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    nacelle_type = _NACELLE_TYPE_LABEL.get(class_name, 'Body of Revolution')
+
+    areas = nacelle.get('areas', {})
+    if not isinstance(areas, dict):
+        areas = {}
+
+    return {
+        'Nacelle Type':   nacelle_type,
+        'Nacelle Length': g(nacelle, 'length'),
+        'Inlet Diameter': g(nacelle, 'inlet_diameter'),
+        'Diameter':       g(nacelle, 'diameter'),
+        'Nacelle Origin': [nacelle.get('origin', [[0, 0, 0]]), 0],
+        'Wetted Area':    g(areas, 'wetted'),
+        'Flow Through':   [nacelle.get('flow_through', False), 0],
+        'Airfoil Type':   'None (Auto)',
+    }
+
+
 def _propulsor_dict_to_ui(p):
     """Convert a RCAIDE propulsor JSON dict to the GUI widget format for any propulsor type."""
     def g(d, *keys):
@@ -597,7 +630,7 @@ def _propulsor_dict_to_ui(p):
     propulsor_type = _PROPULSOR_TYPE_LABEL.get(class_name, 'Turbofan')
 
     if propulsor_type == 'Turbofan':
-        return {
+        result = {
             'Propulsor Tag':                      p.get('tag', ''),
             'Propulsor Type':                     'Turbofan',
             'Origin':                             g(p, 'origin'),
@@ -628,6 +661,10 @@ def _propulsor_dict_to_ui(p):
             'Fan Nozzle Polytropic Efficiency':   g(p, 'fan_nozzle', 'polytropic_efficiency'),
             'Fan Nozzle Pressure Ratio':          g(p, 'fan_nozzle', 'pressure_ratio'),
         }
+        nacelle = p.get('nacelle')
+        if isinstance(nacelle, dict):
+            result['nacelle_data'] = _nacelle_dict_to_ui(nacelle)
+        return result
 
     # Generic extraction for all BasePropulsorWidget subclasses
     field_specs = _PROPULSOR_FIELDS.get(propulsor_type, _COMMON_FIELDS)
