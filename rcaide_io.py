@@ -56,7 +56,12 @@ def strip_unit_arguments(value):
             clean[key] = strip_unit_arguments(item)
         return clean
     if is_unit_argument_pair(value):
-        return strip_unit_arguments(value[0])
+        inner = value[0]
+        # A flat list of scalars is raw data (e.g. [0, 1] for galley locations),
+        # not a nested unit pair — return it directly to avoid double-stripping.
+        if isinstance(inner, list) and not any(is_mapping(x) or isinstance(x, list) for x in inner):
+            return inner
+        return strip_unit_arguments(inner)
     if isinstance(value, list):
         return [strip_unit_arguments(item) for item in value]
     return value

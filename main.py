@@ -1,5 +1,5 @@
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog, QMessageBox
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QFileInfo
 from qt_material import apply_stylesheet
@@ -34,16 +34,23 @@ class App(QMainWindow):
         if file_menu is None:
             return
 
-        load_action = QAction("Load", self)
+        load_action = QAction("Open RCAIDE JSON...", self)
         load_action.triggered.connect(self.load_all)
 
-        save_action = QAction("Save", self)
+        save_action = QAction("Save RCAIDE JSON...", self)
         save_action.triggered.connect(self.save_all)
+
+        import_vsp_action = QAction("Import VSP...", self)
+        import_vsp_action.triggered.connect(self.import_vsp)
+
+        export_vsp_action = QAction("Export VSP...", self)
+        export_vsp_action.triggered.connect(self.export_vsp)
 
         file_menu.addAction(load_action)
         file_menu.addAction(save_action)
         file_menu.addSeparator()
-
+        file_menu.addAction(import_vsp_action)
+        file_menu.addAction(export_vsp_action)
         file_menu.addSeparator()
         file_menu.addAction("Quit")
 
@@ -62,7 +69,7 @@ class App(QMainWindow):
         self.widgets.append((analysis.get_widget(), "Analyses Setup"))
         self.widgets.append((mission.get_widget(), "Mission Setup"))
         self.widgets.append((performance.get_widget(), "Performance"))
-        self.widgets.append((solve.get_widget(), "Run Mission"))
+        self.widgets.append((run_mission.get_widget(), "Run Mission"))
         self.widgets.append((results_viewer.get_widget(), "Results Viewer"))
 
         for widget, name in self.widgets:
@@ -111,26 +118,83 @@ class App(QMainWindow):
         file.close()
         rcaide_io.current_file_path = name
         rcaide_io.read_from_json(data_str, source_dir=os.path.dirname(os.path.abspath(name)))
+        self._refresh_gui_after_load()
+
+    def import_vsp(self):
+        try:
+            import vsp  # noqa: F401
+        except ImportError:
+            try:
+                import openvsp  # noqa: F401
+            except ImportError:
+                QMessageBox.warning(self, "OpenVSP Not Available",
+                    "The openvsp Python package is not installed.\n"
+                    "Install it with:  pip install openvsp")
+                return
+
+        from RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle import import_vsp_vehicle
+
+        path = QFileDialog.getOpenFileName(self, 'Import OpenVSP Model', '', "OpenVSP (*.vsp3)")[0]
+        if not path:
+            return
+
+        try:
+            imported_vehicle = import_vsp_vehicle(path)
+        except Exception as exc:
+            QMessageBox.critical(self, "VSP Import Failed", str(exc))
+            return
+
+        # Serialise through the same pipeline that read_from_json uses so all
+        # type restoration and UI conversion runs identically to a normal load.
+        import json as _json
+        vehicle_dict = rcaide_io.make_json_safe(rcaide_io._build_dict_base_with_types(imported_vehicle))
+        json_str = _json.dumps({
+            "rcaide_vehicle": rcaide_io.add_default_unit_arguments(vehicle_dict),
+            "config_data":    [],
+            "analysis_data":  [],
+            "mission_data":   [],
+        })
+        rcaide_io.read_from_json(json_str, source_dir=os.path.dirname(os.path.abspath(path)))
+        self._refresh_gui_after_load()
+
+    def export_vsp(self):
+        try:
+            import vsp  # noqa: F401
+        except ImportError:
+            try:
+                import openvsp  # noqa: F401
+            except ImportError:
+                QMessageBox.warning(self, "OpenVSP Not Available",
+                    "The openvsp Python package is not installed.\n"
+                    "Install it with:  pip install openvsp")
+                return
+
+        from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle
+
+        path = QFileDialog.getSaveFileName(self, 'Export OpenVSP Model', '', "OpenVSP (*.vsp3)")[0]
+        if not path:
+            return
+
+        tag = path[:-5] if path.endswith('.vsp3') else path
+
+        try:
+            export_vsp_vehicle(rcaide_io.vehicle, tag)
+        except Exception as exc:
+            QMessageBox.critical(self, "VSP Export Failed", str(exc))
+
+    def _refresh_gui_after_load(self):
         # Recreate geometry tab on each load so the component tree doesn't append duplicates across reloads
         for i, (widget, tab_name) in enumerate(self.widgets):
             if tab_name == "Vehicle Setup":
-                # Keep the loaded geometry data before rebuilding the widget
                 loaded_geometry = rcaide_io.rcaide_vehicle
-                loaded_vehicle = rcaide_io.vehicle
-                # Remembers which tab the user was on
-                current_index = self.tabs.currentIndex()
-                # Remove the old Geometry tab (it holds duplicated UI state)
+                loaded_vehicle  = rcaide_io.vehicle
+                current_index   = self.tabs.currentIndex()
                 self.tabs.removeTab(i)
-                # Create a fresh Geometry widget
                 new_widget = geometry.get_widget()
-                # Restore the loaded geometry data for load_from_values()
                 rcaide_io.rcaide_vehicle = loaded_geometry
-                rcaide_io.vehicle = loaded_vehicle
-                # Insert the fresh tab back into the same position
+                rcaide_io.vehicle        = loaded_vehicle
                 self.tabs.insertTab(i, new_widget, tab_name)
-                # Update our cached widgets list.
                 self.widgets[i] = (new_widget, tab_name)
-                # Put the user back on the same tab if they were on Geometry
                 if current_index == i:
                     self.tabs.setCurrentIndex(i)
                 break

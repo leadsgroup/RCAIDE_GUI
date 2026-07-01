@@ -8098,11 +8098,11 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "base",
       "diff": {
-        "tag": "base",
         "avionics": {
           "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Avionics.Avionics",
           "tag": "avionics"
-        }
+        },
+        "tag": "base"
       }
     }
   ],
