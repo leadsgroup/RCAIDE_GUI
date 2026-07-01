@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
 
 from tabs.geometry.widgets.powertrain.systems import SystemWidget
 
+from utilities import BTN_STYLE
 
 class SystemFrame(QWidget):
     def __init__(self):
@@ -18,7 +19,7 @@ class SystemFrame(QWidget):
 
         header_layout = QVBoxLayout()
         add_btn = QPushButton("Add System", self)
-        add_btn.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        add_btn.setStyleSheet(BTN_STYLE)
         add_btn.setMaximumWidth(200)
         add_btn.clicked.connect(self.add_system)
         header_layout.addWidget(add_btn)

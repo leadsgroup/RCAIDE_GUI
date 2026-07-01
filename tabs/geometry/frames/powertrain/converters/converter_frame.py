@@ -11,7 +11,15 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFra
 from tabs.geometry.widgets.powertrain.converters import TurboelectricGeneratorWidget
 from common_widgets import DataEntryWidget
 
+from utilities import BTN_STYLE
+
 class ConverterFrame(QWidget):
+    """Frame that manages a list of converter widgets (currently Turboelectric Generator).
+
+    Converters sit between energy sources and propulsors — e.g. a turboelectric
+    generator extracts shaft power from a gas turbine and feeds an electrical bus.
+    """
+
     def __init__(self):
         super(ConverterFrame, self).__init__()
 
@@ -21,17 +29,13 @@ class ConverterFrame(QWidget):
         # List to store data values source_ sections
         self.converter_sections_layout = QVBoxLayout()
 
-        # Create a horizontal layout for the label and buttons
         header_layout = QVBoxLayout()
-        # label = QLabel("<u><b>source Frame</b></u>")
 
         layout = self.create_scroll_layout()
 
-        # header_layout.addWidget(label)
-
         # Add source_ Section Button
         add_turboelectric_generator_button = QPushButton("Add Turboelectric Generator", self)
-        add_turboelectric_generator_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        add_turboelectric_generator_button.setStyleSheet(BTN_STYLE)
         add_turboelectric_generator_button.setMaximumWidth(200)
         add_turboelectric_generator_button.clicked.connect(self.add_turboelectric_generator) 
         header_layout.addWidget(add_turboelectric_generator_button)
@@ -44,19 +48,14 @@ class ConverterFrame(QWidget):
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         line_bar.setStyleSheet("background-color: light grey;")
 
-        # Add the line bar to the main layout
         layout.addWidget(line_bar)
 
-        # Add the layout for additional source_ sections to the main layout
         layout.addLayout(self.converter_sections_layout)
 
-        # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
 
-        # Add the button layout to the main layout
         layout.addLayout(button_layout)
 
-        # Adds scroll function
         layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
@@ -90,7 +89,6 @@ class ConverterFrame(QWidget):
                 self.converter_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
-        # TODO Implement proper deletion of data
         pass
 
     def add_turboelectric_generator(self):
@@ -125,13 +123,10 @@ class ConverterFrame(QWidget):
         self.save_function = function
 
     def create_scroll_layout(self):
-        # Create a widget to contain the layout
         scroll_content = QWidget()
         
-        # Set the main layout inside the scroll content
         layout = QVBoxLayout(scroll_content)
 
-        # Set the main layout of the widget
         self.setLayout(layout)
 
         return layout

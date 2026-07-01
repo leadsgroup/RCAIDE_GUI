@@ -453,6 +453,130 @@ _NETWORK_TYPE_LABEL = {
     'Fuel_Cell': 'Fuel Cell',
 }
 
+# Maps RCAIDE propulsor class name → GUI type string (used by PropulsorFrame dispatch)
+_PROPULSOR_TYPE_LABEL = {
+    'Turbofan':                             'Turbofan',
+    'Turbojet':                             'Turbojet',
+    'Turboprop':                            'Turboprop',
+    'Electric_Rotor':                       'Electric Rotor',
+    'Electric_Ducted_Fan':                  'Electric Ducted Fan',
+    'Internal_Combustion_Engine':           'Internal Combustion Engine',
+    'Constant_Speed_Internal_Combustion_Engine': 'Constant Speed Internal Combustion Engine',
+}
+
+# Field specs as (label, rcaide_path) pairs — None path means heading/spacer, skip when reading.
+# These mirror the BasePropulsorWidget field_specs exactly (COMMON + type-specific).
+_COMMON_FIELDS = [
+    ('Origin',                  'origin'),
+    ('Active',                  'active'),
+    ('Wing Mounted',            'wing_mounted'),
+    ('Sea Level Static Thrust', 'sealevel_static_thrust'),
+    ('Diameter',                'diameter'),
+    ('Length',                  'length'),
+    ('Height',                  'height'),
+    ('X-Z Plane Symmetric',     'xz_plane_symmetric'),
+    ('X-Y Plane Symmetric',     'xy_plane_symmetric'),
+    ('Y-Z Plane Symmetric',     'yz_plane_symmetric'),
+]
+_ENGINE_FIELDS = [
+    ('Engine Sea Level Power',                  'engine.sea_level_power'),
+    ('Engine Flat Rate Altitude',               'engine.flat_rate_altitude'),
+    ('Engine Rated Speed',                      'engine.rated_speed'),
+    ('Engine Power Specific Fuel Consumption',  'engine.power_specific_fuel_consumption'),
+]
+_PROPELLER_FIELDS = [
+    ('Propeller Number of Blades',          'propeller.number_of_blades'),
+    ('Propeller Tip Radius',                'propeller.tip_radius'),
+    ('Propeller Hub Radius',                'propeller.hub_radius'),
+    ('Propeller Blade Pitch Command',       'propeller.blade_pitch_command'),
+    ('Propeller Blade Solidity',            'propeller.blade_solidity'),
+    ('Propeller Induced Power Factor',      'propeller.induced_power_factor'),
+    ('Propeller Profile Drag Coefficient',  'propeller.profile_drag_coefficient'),
+    ('Propeller Clockwise Rotation',        'propeller.clockwise_rotation'),
+    ('Propeller Ducted',                    'propeller.ducted'),
+]
+_MOTOR_FIELDS = [
+    ('Motor Diameter',      'motor.diameter'),
+    ('Motor Length',        'motor.length'),
+    ('Motor Resistance',    'motor.resistance'),
+    ('Motor No Load Current','motor.no_load_current'),
+    ('Motor Speed Constant','motor.speed_constant'),
+    ('Motor Efficiency',    'motor.efficiency'),
+]
+_ESC_FIELDS = [
+    ('ESC Bus Voltage', 'electronic_speed_controller.bus_voltage'),
+    ('ESC Efficiency',  'electronic_speed_controller.efficiency'),
+]
+_ROTOR_FIELDS = [
+    ('Rotor Number of Blades',          'rotor.number_of_blades'),
+    ('Rotor Tip Radius',                'rotor.tip_radius'),
+    ('Rotor Hub Radius',                'rotor.hub_radius'),
+    ('Rotor Blade Pitch Command',       'rotor.blade_pitch_command'),
+    ('Rotor Blade Solidity',            'rotor.blade_solidity'),
+    ('Rotor Induced Power Factor',      'rotor.induced_power_factor'),
+    ('Rotor Profile Drag Coefficient',  'rotor.profile_drag_coefficient'),
+    ('Rotor Clockwise Rotation',        'rotor.clockwise_rotation'),
+    ('Rotor Ducted',                    'rotor.ducted'),
+]
+_DUCTED_FAN_FIELDS = [
+    ('Ducted Fan Number of Radial Stations', 'ducted_fan.number_of_radial_stations'),
+    ('Ducted Fan Number of Rotor Blades',    'ducted_fan.number_of_rotor_blades'),
+    ('Ducted Fan Tip Radius',                'ducted_fan.tip_radius'),
+    ('Ducted Fan Hub Radius',                'ducted_fan.hub_radius'),
+    ('Ducted Fan Exit Radius',               'ducted_fan.exit_radius'),
+    ('Ducted Fan Blade Clearance',           'ducted_fan.blade_clearance'),
+    ('Ducted Fan Length',                    'ducted_fan.length'),
+    ('Ducted Fan Effectiveness',             'ducted_fan.fan_effectiveness'),
+]
+_TURBOJET_COMPONENT_FIELDS = [
+    ('Inlet Nozzle Polytropic Efficiency',  'inlet_nozzle.polytropic_efficiency'),
+    ('Inlet Nozzle Pressure Ratio',         'inlet_nozzle.pressure_ratio'),
+    ('LPC Polytropic Efficiency',           'low_pressure_compressor.polytropic_efficiency'),
+    ('LPC Pressure Ratio',                  'low_pressure_compressor.pressure_ratio'),
+    ('HPC Polytropic Efficiency',           'high_pressure_compressor.polytropic_efficiency'),
+    ('HPC Pressure Ratio',                  'high_pressure_compressor.pressure_ratio'),
+    ('LPT Mechanical Efficiency',           'low_pressure_turbine.mechanical_efficiency'),
+    ('LPT Polytropic Efficiency',           'low_pressure_turbine.polytropic_efficiency'),
+    ('HPT Mechanical Efficiency',           'high_pressure_turbine.mechanical_efficiency'),
+    ('HPT Polytropic Efficiency',           'high_pressure_turbine.polytropic_efficiency'),
+    ('Combustor Pressure Loss Coeff',       'combustor.alphac'),
+    ('Combustor Turbine Inlet Temp',        'combustor.turbine_inlet_temperature'),
+    ('Afterburner Pressure Loss Coeff',     'afterburner.alphac'),
+    ('Afterburner Turbine Inlet Temp',      'afterburner.turbine_inlet_temperature'),
+    ('Core Nozzle Polytropic Efficiency',   'core_nozzle.polytropic_efficiency'),
+    ('Core Nozzle Pressure Ratio',          'core_nozzle.pressure_ratio'),
+]
+_TURBOPROP_COMPONENT_FIELDS = [
+    ('Design Altitude',                 'design_altitude'),
+    ('Gearbox Gear Ratio',              'gearbox.gear_ratio'),
+    ('Gearbox Efficiency',              'gearbox.efficiency'),
+    ('Design Mach Number',              'design_mach_number'),
+    ('Design Freestream Velocity',      'design_freestream_velocity'),
+    ('Compressor Polytropic Efficiency','compressor.polytropic_efficiency'),
+    ('Compressor Pressure Ratio',       'compressor.pressure_ratio'),
+    ('Turbine Mechanical Efficiency',   'turbine.mechanical_efficiency'),
+    ('Turbine Polytropic Efficiency',   'turbine.polytropic_efficiency'),
+    ('Combustor Pressure Loss Coeff',   'combustor.alphac'),
+    ('Combustor Turbine Inlet Temp',    'combustor.turbine_inlet_temperature'),
+] + _PROPELLER_FIELDS
+
+# Full field specs per propulsor type (matching BasePropulsorWidget.field_specs exactly)
+_PROPULSOR_FIELDS = {
+    'Electric Rotor':
+        _COMMON_FIELDS + _MOTOR_FIELDS + _ROTOR_FIELDS + _ESC_FIELDS,
+    'Electric Ducted Fan':
+        _COMMON_FIELDS + _MOTOR_FIELDS + _DUCTED_FAN_FIELDS + _ESC_FIELDS,
+    'Internal Combustion Engine':
+        _COMMON_FIELDS + _ENGINE_FIELDS + _PROPELLER_FIELDS,
+    'Constant Speed Internal Combustion Engine':
+        _COMMON_FIELDS + _ENGINE_FIELDS + _PROPELLER_FIELDS,
+    'Turbojet': [
+        ('Design Altitude',     'design_altitude'),
+        ('Design Mach Number',  'design_mach_number'),
+    ] + _COMMON_FIELDS + _TURBOJET_COMPONENT_FIELDS,
+    'Turboprop': _COMMON_FIELDS + _TURBOPROP_COMPONENT_FIELDS,
+}
+
 
 def _network_type_for_ui(network_dict):
     type_str = network_dict.get('__type__', '')
@@ -461,45 +585,78 @@ def _network_type_for_ui(network_dict):
 
 
 def _propulsor_dict_to_ui(p):
-    """Convert a RCAIDE Turbofan JSON dict (unit-argument format) to TurbofanWidget GUI format."""
+    """Convert a RCAIDE propulsor JSON dict to the GUI widget format for any propulsor type."""
     def g(d, *keys):
         for k in keys[:-1]:
             d = d.get(k, {}) if isinstance(d, dict) else {}
         return d.get(keys[-1], [0, 0]) if isinstance(d, dict) else [0, 0]
 
-    return {
-        'Propulsor Tag':                      p.get('tag', ''),
-        'Origin':                             g(p, 'origin'),
-        'Engine Length':                      g(p, 'length'),
-        'Diameter':                           g(p, 'diameter'),
-        'Bypass Ratio':                       g(p, 'bypass_ratio'),
-        'Design Altitude':                    g(p, 'design_altitude'),
-        'Design Mach Number':                 g(p, 'design_mach_number'),
-        'Design Thrust':                      g(p, 'design_thrust'),
-        'Fan Polytropic Efficiency':          g(p, 'fan', 'polytropic_efficiency'),
-        'Fan Pressure Ratio':                 g(p, 'fan', 'pressure_ratio'),
-        'Inlet Nozzle Polytropic Efficiency': g(p, 'inlet_nozzle', 'polytropic_efficiency'),
-        'Inlet Nozzle Pressure Ratio':        g(p, 'inlet_nozzle', 'pressure_ratio'),
-        'LPC Polytropic Efficiency':          g(p, 'low_pressure_compressor', 'polytropic_efficiency'),
-        'LPC Pressure Ratio':                 g(p, 'low_pressure_compressor', 'pressure_ratio'),
-        'HPC Polytropic Efficiency':          g(p, 'high_pressure_compressor', 'polytropic_efficiency'),
-        'HPC Pressure Ratio':                 g(p, 'high_pressure_compressor', 'pressure_ratio'),
-        'LPT Mechanical Efficiency':          g(p, 'low_pressure_turbine', 'mechanical_efficiency'),
-        'LPT Polytropic Efficiency':          g(p, 'low_pressure_turbine', 'polytropic_efficiency'),
-        'HPT Mechanical Efficiency':          g(p, 'high_pressure_turbine', 'mechanical_efficiency'),
-        'HPT Polytropic Efficiency':          g(p, 'high_pressure_turbine', 'polytropic_efficiency'),
-        'Combustor Efficiency':               g(p, 'combustor', 'efficiency'),
-        'Combustor Pressure Loss Coeff':      g(p, 'combustor', 'alphac'),
-        'Combustor Turbine Inlet Temp':       g(p, 'combustor', 'turbine_inlet_temperature'),
-        'Combustor Pressure Ratio':           g(p, 'combustor', 'pressure_ratio'),
-        'Core Nozzle Polytropic Efficiency':  g(p, 'core_nozzle', 'polytropic_efficiency'),
-        'Core Nozzle Pressure Ratio':         g(p, 'core_nozzle', 'pressure_ratio'),
-        'Fan Nozzle Polytropic Efficiency':   g(p, 'fan_nozzle', 'polytropic_efficiency'),
-        'Fan Nozzle Pressure Ratio':          g(p, 'fan_nozzle', 'pressure_ratio'),
+    type_str = p.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    propulsor_type = _PROPULSOR_TYPE_LABEL.get(class_name, 'Turbofan')
+
+    if propulsor_type == 'Turbofan':
+        return {
+            'Propulsor Tag':                      p.get('tag', ''),
+            'Propulsor Type':                     'Turbofan',
+            'Origin':                             g(p, 'origin'),
+            'Engine Length':                      g(p, 'length'),
+            'Diameter':                           g(p, 'diameter'),
+            'Bypass Ratio':                       g(p, 'bypass_ratio'),
+            'Design Altitude':                    g(p, 'design_altitude'),
+            'Design Mach Number':                 g(p, 'design_mach_number'),
+            'Design Thrust':                      g(p, 'design_thrust'),
+            'Fan Polytropic Efficiency':          g(p, 'fan', 'polytropic_efficiency'),
+            'Fan Pressure Ratio':                 g(p, 'fan', 'pressure_ratio'),
+            'Inlet Nozzle Polytropic Efficiency': g(p, 'inlet_nozzle', 'polytropic_efficiency'),
+            'Inlet Nozzle Pressure Ratio':        g(p, 'inlet_nozzle', 'pressure_ratio'),
+            'LPC Polytropic Efficiency':          g(p, 'low_pressure_compressor', 'polytropic_efficiency'),
+            'LPC Pressure Ratio':                 g(p, 'low_pressure_compressor', 'pressure_ratio'),
+            'HPC Polytropic Efficiency':          g(p, 'high_pressure_compressor', 'polytropic_efficiency'),
+            'HPC Pressure Ratio':                 g(p, 'high_pressure_compressor', 'pressure_ratio'),
+            'LPT Mechanical Efficiency':          g(p, 'low_pressure_turbine', 'mechanical_efficiency'),
+            'LPT Polytropic Efficiency':          g(p, 'low_pressure_turbine', 'polytropic_efficiency'),
+            'HPT Mechanical Efficiency':          g(p, 'high_pressure_turbine', 'mechanical_efficiency'),
+            'HPT Polytropic Efficiency':          g(p, 'high_pressure_turbine', 'polytropic_efficiency'),
+            'Combustor Efficiency':               g(p, 'combustor', 'efficiency'),
+            'Combustor Pressure Loss Coeff':      g(p, 'combustor', 'alphac'),
+            'Combustor Turbine Inlet Temp':       g(p, 'combustor', 'turbine_inlet_temperature'),
+            'Combustor Pressure Ratio':           g(p, 'combustor', 'pressure_ratio'),
+            'Core Nozzle Polytropic Efficiency':  g(p, 'core_nozzle', 'polytropic_efficiency'),
+            'Core Nozzle Pressure Ratio':         g(p, 'core_nozzle', 'pressure_ratio'),
+            'Fan Nozzle Polytropic Efficiency':   g(p, 'fan_nozzle', 'polytropic_efficiency'),
+            'Fan Nozzle Pressure Ratio':          g(p, 'fan_nozzle', 'pressure_ratio'),
+        }
+
+    # Generic extraction for all BasePropulsorWidget subclasses
+    field_specs = _PROPULSOR_FIELDS.get(propulsor_type, _COMMON_FIELDS)
+    result = {
+        'Propulsor Tag':  p.get('tag', ''),
+        'Propulsor Type': propulsor_type,
     }
+    for label, path in field_specs:
+        parts = path.split('.')
+        result[label] = g(p, *parts)
+    return result
 
 
-def _distributor_dict_to_ui(fl):
+_DISTRIBUTOR_TYPE_LABEL = {
+    'Fuel_Line':      'Fuel Line',
+    'Electrical_Bus': 'Electrical Bus',
+    'Coolant_Line':   'Coolant Line',
+}
+
+_BATTERY_TYPE_LABEL = {
+    'Lithium_Ion_NMC':        'Lithium Ion NMC',
+    'Lithium_Ion_LFP':        'Lithium Ion LFP',
+    'Lithium_Sulfur':         'Lithium Sulfur',
+    'Aluminum_Air':           'Aluminum Air',
+    'Lithium_Air':            'Lithium Air',
+    'Generic_Battery_Module': 'Generic',
+}
+
+
+def _distributor_dict_to_ui(fl, container_key='fuel_lines'):
     """Convert a RCAIDE Fuel_Line/Bus/Coolant_Line JSON dict to distributor GUI format."""
     assigned_raw = fl.get('assigned_propulsors', [])
     if is_unit_argument_pair(assigned_raw):
@@ -509,16 +666,38 @@ def _distributor_dict_to_ui(fl):
     else:
         assigned_propulsors = [x for x in assigned_raw if isinstance(x, str)]
 
+    # Fuel tanks from fuel_tanks container
     tanks = fl.get('fuel_tanks', {})
     assigned_sources = (
         [k for k in tanks.keys() if k != '__type__']
         if isinstance(tanks, dict) else []
     )
-    return {
+    # Battery modules from battery_modules container (electrical buses)
+    batteries = fl.get('battery_modules', {})
+    if isinstance(batteries, dict):
+        assigned_sources += [k for k in batteries.keys() if k != '__type__']
+
+    type_str = fl.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    dist_type = _DISTRIBUTOR_TYPE_LABEL.get(class_name, {
+        'fuel_lines': 'Fuel Line',
+        'busses': 'Electrical Bus',
+        'coolant_lines': 'Coolant Line',
+    }.get(container_key, 'Fuel Line'))
+
+    result = {
         'distributor name':    fl.get('tag', ''),
+        'distributor_type':    dist_type,
         'assigned_propulsors': assigned_propulsors,
         'assigned_sources':    assigned_sources,
     }
+    # Preserve bus-specific fields when loading an electrical bus
+    if dist_type == 'Electrical Bus':
+        result['Efficiency']        = fl.get('efficiency',        [1.0, 0])
+        result['Voltage']           = fl.get('voltage',           [0.0, 0])
+        result['Power Split Ratio'] = fl.get('power_split_ratio', [1.0, 0])
+        result['Charging C-Rate']   = fl.get('charging_c_rate',   [1.0, 0])
+    return result
 
 
 def _fuel_tank_dict_to_ui(tank):
@@ -527,11 +706,39 @@ def _fuel_tank_dict_to_ui(tank):
         return d.get(key, [0, 0]) if isinstance(d, dict) else [0, 0]
     return {
         'Source Name':       tank.get('tag', ''),
+        'source_type':       'Fuel Tank',
         'Fuel Tank Origin':  g(tank, 'origin'),
         'Fuel Origin':       g(tank, 'fuel_origin'),
         'Center of Gravity': g(tank, 'center_of_gravity'),
         'Mass':              g(tank, 'mass_of_fuel'),
         'Internal Volume':   g(tank, 'volume'),
+    }
+
+
+def _battery_module_dict_to_ui(module):
+    """Convert a RCAIDE battery module JSON dict to BatteryModuleWidget GUI format."""
+    def g(d, *keys):
+        for k in keys[:-1]:
+            d = d.get(k, {}) if isinstance(d, dict) else {}
+        return d.get(keys[-1], [0, 0]) if isinstance(d, dict) else [0, 0]
+
+    type_str = module.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    chemistry = _BATTERY_TYPE_LABEL.get(class_name, 'Lithium Ion NMC')
+
+    return {
+        'Source Name':          module.get('tag', ''),
+        'source_type':          'Battery Module',
+        'Chemistry':            chemistry,
+        'Capacity':             module.get('capacity', [0.0, 0]),
+        'Length':               module.get('length', [0.0, 0]),
+        'Width':                module.get('width', [0.0, 0]),
+        'Height':               module.get('height', [0.0, 0]),
+        'Series Cells':         g(module, 'electrical_configuration', 'series'),
+        'Parallel Cells':       g(module, 'electrical_configuration', 'parallel'),
+        'Normal Cell Count':    g(module, 'geometric_configuration', 'normal_count'),
+        'Parallel Cell Count':  g(module, 'geometric_configuration', 'parallel_count'),
+        'Stacking Rows':        g(module, 'geometric_configuration', 'stacking_rows'),
     }
 
 
@@ -556,14 +763,28 @@ def _network_dict_to_ui(net_dict):
         for k, fl in container.items():
             if k == '__type__' or not isinstance(fl, dict):
                 continue
-            distributor_data.append(_distributor_dict_to_ui(fl))
+            distributor_data.append(_distributor_dict_to_ui(fl, container_key))
+
+            # Collect fuel tank sources
             tanks = fl.get('fuel_tanks', {})
             if isinstance(tanks, dict):
                 for t_key, t_val in tanks.items():
                     if t_key != '__type__' and isinstance(t_val, dict) and t_key not in source_by_tag:
-                        source_by_tag[t_key] = t_val
+                        source_by_tag[t_key] = ('fuel_tank', t_val)
 
-    source_data = [_fuel_tank_dict_to_ui(v) for v in source_by_tag.values()]
+            # Collect battery module sources (from electrical buses)
+            batteries = fl.get('battery_modules', {})
+            if isinstance(batteries, dict):
+                for b_key, b_val in batteries.items():
+                    if b_key != '__type__' and isinstance(b_val, dict) and b_key not in source_by_tag:
+                        source_by_tag[b_key] = ('battery', b_val)
+
+    source_data = []
+    for kind, v in source_by_tag.values():
+        if kind == 'battery':
+            source_data.append(_battery_module_dict_to_ui(v))
+        else:
+            source_data.append(_fuel_tank_dict_to_ui(v))
 
     return {
         'energy network selected': net_type,

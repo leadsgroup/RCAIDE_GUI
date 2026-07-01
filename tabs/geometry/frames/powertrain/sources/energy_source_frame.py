@@ -1,147 +1,171 @@
 # RCAIDE_GUI/tabs/geometry/frames/powertrain/sources/energy_source_frame.py
-# 
-# Created:  Dec 2025, M. Clarke 
+#
+# Created:  Dec 2025, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports
-import RCAIDE
+# ----------------------------------------------------------------------------------------------------------------------
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QHBoxLayout,
+                              QSpacerItem, QSizePolicy, QFrame, QComboBox)
 
-# PyQT Imports
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, \
-    QSpacerItem, QSizePolicy, QFrame
-
-# RCAIDE GUI imports
-from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget import FuelTankWidget
+from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget       import FuelTankWidget
+from tabs.geometry.widgets.powertrain.sources.battery_module_widget  import BatteryModuleWidget
 from common_widgets import DataEntryWidget
 
+_SOURCE_WIDGETS = {
+    "Fuel Tank":      FuelTankWidget,
+    "Battery Module": BatteryModuleWidget,
+}
 
-# --------------------------------------------------------------------------------------------------------------------- 
-#  Energy Source Frame 
+_TYPE_FROM_RCAIDE_CLASS = {
+    "Fuel_Tank":             "Fuel Tank",
+    "Generic_Battery_Module":"Battery Module",
+    "Lithium_Ion_NMC":       "Battery Module",
+    "Lithium_Ion_LFP":       "Battery Module",
+    "Lithium_Sulfur":        "Battery Module",
+    "Aluminum_Air":          "Battery Module",
+    "Lithium_Air":           "Battery Module",
+}
+
 # ----------------------------------------------------------------------------------------------------------------------
+#  Energy Source Frame
+# ----------------------------------------------------------------------------------------------------------------------
+from utilities import BTN_STYLE
+
 class EnergySourceFrame(QWidget):
+    """Frame that manages a list of energy-source widgets (Fuel Tank, Battery Module).
+
+    A type dropdown lets the user choose which source kind to add.
+    ``load_data()`` detects the saved type from ``"source_type"`` (or, for
+    files loaded from RCAIDE JSON, from ``"__type__"``) and instantiates the
+    correct widget.  Both widget types expose ``"Source Name"`` so that
+    ``PowertrainWidget._refresh_connections()`` can treat them uniformly when
+    populating distributor checkboxes.
+    """
+
     def __init__(self):
         super(EnergySourceFrame, self).__init__()
 
         self.save_function = None
         self.data_entry_widget: DataEntryWidget | None = None
 
-        # List to store data values source_ sections
         self.source_sections_layout = QVBoxLayout()
 
-        # Create a horizontal layout for the label and buttons
         header_layout = QVBoxLayout()
-        # label = QLabel("<u><b>source Frame</b></u>")
-
         layout = self.create_scroll_layout()
 
-        # header_layout.addWidget(label)
+        # ── Type dropdown + Add button ─────────────────────────────────────
+        add_layout = QHBoxLayout()
+        self.source_type_dropdown = QComboBox(self)
+        self.source_type_dropdown.addItems(["Fuel Tank", "Battery Module"])
+        self.source_type_dropdown.setMinimumWidth(200)
+        self.source_type_dropdown.currentTextChanged.connect(self._update_add_button_text)
+        add_layout.addWidget(self.source_type_dropdown)
 
-        # Add source_ Section Button
-        add_fuel_tank_button = QPushButton("Add Fuel Tank", self)
-        add_fuel_tank_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        add_fuel_tank_button.setMaximumWidth(200)
-        add_fuel_tank_button.clicked.connect(self.add_fuel_tank)
-
-        header_layout.addWidget(add_fuel_tank_button)
-
+        self.add_source_button = QPushButton("Add Fuel Tank", self)
+        self.add_source_button.setStyleSheet(BTN_STYLE)
+        self.add_source_button.setMinimumWidth(220)
+        self.add_source_button.setMaximumWidth(280)
+        self.add_source_button.clicked.connect(self.add_selected_source)
+        add_layout.addWidget(self.add_source_button)
+        add_layout.addStretch()
+        header_layout.addLayout(add_layout)
         layout.addLayout(header_layout)
 
-        # Create a horizontal line
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
-        line_bar.setStyleSheet("background-color: light grey;")
-
-        # Add the line bar to the main layout
         layout.addWidget(line_bar)
 
-        # Add the layout for additional source_ sections to the main layout
         layout.addLayout(self.source_sections_layout)
+        layout.addLayout(QHBoxLayout())
 
-        # Create a QHBoxLayout to contain the buttons
-        button_layout = QHBoxLayout()
-
-        # Add the button layout to the main layout
-        layout.addLayout(button_layout)
-
-        # Adds scroll function
         layout.addItem(QSpacerItem(
             20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
+
+    # ── Add / type dispatch ────────────────────────────────────────────────
+
+    def _update_add_button_text(self, source_type):
+        self.add_source_button.setText(f"Add {source_type}")
+
+    def add_selected_source(self):
+        src_type = self.source_type_dropdown.currentText()
+        self.source_sections_layout.addWidget(self._new_source_widget(src_type))
+
+    def _new_source_widget(self, src_type, data_values=None):
+        index = self.source_sections_layout.count()
+        cls = _SOURCE_WIDGETS.get(src_type, FuelTankWidget)
+        return cls(index, self.on_delete_button_pressed, data_values)
+
+    def _source_type_from_data(self, data):
+        explicit = data.get("source_type", "")
+        if explicit in _SOURCE_WIDGETS:
+            return explicit
+        type_str = data.get("__type__", "")
+        class_name = type_str.rsplit(".", 1)[-1] if type_str else ""
+        return _TYPE_FROM_RCAIDE_CLASS.get(class_name, "Fuel Tank")
+
+    # ── Data API ───────────────────────────────────────────────────────────
 
     def get_data_values(self):
         data = []
         sources = []
         for index in range(self.source_sections_layout.count()):
             item = self.source_sections_layout.itemAt(index)
-            assert item is not None
+            if item is None:
+                continue
             widget = item.widget()
-            assert widget is not None and isinstance(widget, FuelTankWidget)
-
-            source_data, fuel_tank = widget.get_data_values()
+            if not isinstance(widget, (FuelTankWidget, BatteryModuleWidget)):
+                continue
+            source_data, source = widget.get_data_values()
             data.append(source_data)
-            sources.append(fuel_tank)
-
+            sources.append(source)
         return data, sources
 
     def load_data(self, data):
         while self.source_sections_layout.count():
             widget_item = self.source_sections_layout.itemAt(0)
-            assert widget_item is not None
+            if widget_item is None:
+                break
             widget = widget_item.widget()
-            assert widget is not None
-
+            if widget is None:
+                break
             self.source_sections_layout.removeWidget(widget)
             widget.deleteLater()
 
         for section_data in data:
-            self.source_sections_layout.addWidget(FuelTankWidget(
-                self.source_sections_layout.count(), self.on_delete_button_pressed, section_data))
+            src_type = self._source_type_from_data(section_data)
+            self.source_sections_layout.addWidget(
+                self._new_source_widget(src_type, section_data)
+            )
 
     def delete_data(self):
-        # TODO Implement proper deletion of data
         pass
 
-    def add_fuel_tank(self):
-        self.source_sections_layout.addWidget(
-            FuelTankWidget(self.source_sections_layout.count(), self.on_delete_button_pressed))
-
     def on_delete_button_pressed(self, index):
-        tank = self.source_sections_layout.itemAt(index)
-        if tank is None:
+        item = self.source_sections_layout.itemAt(index)
+        if item is None:
             return
-
-        widget = tank.widget()
+        widget = item.widget()
         if widget is None:
             return
-
         widget.deleteLater()
         self.source_sections_layout.removeWidget(widget)
         self.source_sections_layout.update()
 
         for i in range(index, self.source_sections_layout.count()):
-            tank = self.source_sections_layout.itemAt(i)
-            if tank is None:
+            item = self.source_sections_layout.itemAt(i)
+            if item is None:
                 continue
-
-            widget = tank.widget()
-            if widget is None or not isinstance(widget, FuelTankWidget):
-                continue
-
-            widget.index = i
+            widget = item.widget()
+            if isinstance(widget, (FuelTankWidget, BatteryModuleWidget)):
+                widget.index = i
 
     def set_save_function(self, function):
         self.save_function = function
 
     def create_scroll_layout(self):
-        # Create a widget to contain the layout
         scroll_content = QWidget()
-
-        # Set the main layout inside the scroll content
         layout = QVBoxLayout(scroll_content)
-
-        # Set the main layout of the widget
         self.setLayout(layout)
-
         return layout

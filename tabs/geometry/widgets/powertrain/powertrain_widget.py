@@ -7,6 +7,8 @@
 # RCAIDE imports
 import RCAIDE
 
+_Battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
+
 # Maps UI network type name → RCAIDE network class.
 _NETWORK_CLASS_MAP = {
     "Fuel":      RCAIDE.Framework.Networks.Fuel,
@@ -15,6 +17,8 @@ _NETWORK_CLASS_MAP = {
     "Hydrogen":  RCAIDE.Framework.Networks.Hydrogen,
     "Fuel Cell": RCAIDE.Framework.Networks.Fuel_Cell,
 }
+
+from utilities import BTN_STYLE
 
 def _distributor_container(distributor):
     """Return the Network attribute name that holds this distributor type."""
@@ -40,6 +44,22 @@ from common_widgets import DataEntryWidget
 #  Powertrain Widget
 # ---------------------------------------------------------------------------------------------------------------------
 class PowertrainWidget(QWidget):
+    """Tab-based editor for a single RCAIDE energy network.
+
+    Contains five sub-tabs: Distributors, Energy Sources, Propulsors, Systems,
+    and Converters — each backed by its own frame class.  A "Refresh
+    Connections" button propagates current propulsor and source names into
+    every distributor's inline checkbox rows.
+
+    ``network_type`` must be set by the parent (``PowertrainFrame``) before
+    ``get_data_values()`` is called so the correct RCAIDE network class is
+    instantiated (``_NETWORK_CLASS_MAP``).
+
+    Backwards-compatible with old GUI saves that stored connectivity as a
+    matrix under ``"connections"``; ``_migrate_connections()`` converts these
+    on load.
+    """
+
     def __init__(self):
         super(PowertrainWidget, self).__init__()
 
@@ -78,7 +98,7 @@ class PowertrainWidget(QWidget):
         layout.addWidget(line_bar)
 
         refresh_btn = QPushButton("Refresh Connections")
-        refresh_btn.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        refresh_btn.setStyleSheet(BTN_STYLE)
         refresh_btn.setToolTip(
             "Sync propulsor and source names into each distributor's inline checkboxes."
         )
@@ -129,7 +149,11 @@ class PowertrainWidget(QWidget):
 
             for src_name in d_data.get("assigned_sources", []):
                 src = source_by_tag.get(src_name)
-                if src is not None:
+                if src is None:
+                    continue
+                if isinstance(src, _Battery):
+                    distributor.battery_modules.append(src)
+                else:
                     distributor.fuel_tanks.append(src)
 
             getattr(net, _distributor_container(distributor)).append(distributor)

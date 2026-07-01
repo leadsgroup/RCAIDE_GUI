@@ -22,7 +22,7 @@ from tabs.geometry.widgets.powertrain.propulsors.ice_widget import ICEWidget
 from tabs.geometry.widgets.powertrain.propulsors.turbojet_widget import TurbojetWidget
 from tabs.geometry.widgets.powertrain.propulsors.turboprop_widget import TurbopropWidget
 from common_widgets import DataEntryWidget
-from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout
+from utilities import show_popup, create_line_bar, set_data, Units, create_scroll_area, clear_layout, BTN_STYLE
 import rcaide_io
 
 # Non-turbofan propulsors are selected by display name and constructed here.
@@ -39,20 +39,26 @@ PROPULSOR_WIDGETS = {
 #  Propulsor Frame 
 # ----------------------------------------------------------------------------------------------------------------------
 class PropulsorFrame(QWidget):
+    """Frame that manages a list of propulsor widgets of any type.
+
+    A type dropdown (populated from ``PROPULSOR_WIDGETS`` plus "Turbofan")
+    controls which widget class is instantiated when the user clicks "Add".
+    ``load_data()`` detects the saved type via ``"Propulsor Type"`` or,
+    for legacy files, from ``"__type__"`` — see ``_propulsor_type_from_data()``.
+
+    Supported types: Turbofan, Turbojet, Turboprop, Electric Rotor,
+    Electric Ducted Fan, Internal Combustion Engine, Constant Speed ICE.
+    """
+
     def __init__(self):
         super(PropulsorFrame, self).__init__()
         self.data_entry_widget: DataEntryWidget | None = None
 
-        # List to store data values propulsor_ sections
         self.propulsor_sections_layout = QVBoxLayout()
 
-        # Create a horizontal layout for the label and buttons
         header_layout = QVBoxLayout()
-        # label = QLabel("<u><b>Propulsor Frame</b></u>")
 
         layout = self.create_scroll_layout()
-
-        # header_layout.addWidget(label)
 
         # Let the user choose which propulsor widget to add instead of always
         # creating a turbofan section.
@@ -76,7 +82,7 @@ class PropulsorFrame(QWidget):
             f"Add {self.propulsor_type_dropdown.currentText()}",
             self,
         )
-        self.add_propulsor_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        self.add_propulsor_button.setStyleSheet(BTN_STYLE)
         self.add_propulsor_button.setMinimumWidth(430)
         self.add_propulsor_button.setMaximumWidth(480)
         self.add_propulsor_button.clicked.connect(self.add_selected_propulsor)
@@ -92,19 +98,14 @@ class PropulsorFrame(QWidget):
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
         line_bar.setStyleSheet("background-color: light grey;")
 
-        # Add the line bar to the main layout
         layout.addWidget(line_bar)
 
-        # Add the layout for additional propulsor_ sections to the main layout
         layout.addLayout(self.propulsor_sections_layout)
 
-        # Create a QHBoxLayout to contain the buttons
         button_layout = QHBoxLayout()
 
-        # Add the button layout to the main layout
         layout.addLayout(button_layout)
 
-        # Adds scroll function
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding))
 
     def get_data_values(self):
@@ -211,11 +212,9 @@ class PropulsorFrame(QWidget):
         pass
 
     def create_scroll_layout(self):
-        # Create a widget to contain the layout
         scroll_content = QWidget()
         layout = QVBoxLayout(scroll_content)  # Set the main layout inside the scroll content
 
-        # Set the main layout of the widget
         self.setLayout(layout)
 
         return layout

@@ -2,6 +2,9 @@ import numpy as np
 import math
 from PyQt6.QtWidgets import QLayout, QMessageBox, QFrame, QScrollArea, QVBoxLayout, QWidget
 
+# Shared button style used across all powertrain and geometry editor widgets.
+BTN_STYLE = "color:#dbe7ff; font-weight:500; margin:0; padding:0;"
+
 
 def show_popup(message, parent):
     """Display a pop-up message for 2 seconds."""

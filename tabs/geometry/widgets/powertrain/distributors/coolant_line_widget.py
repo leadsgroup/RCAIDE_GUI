@@ -1,6 +1,6 @@
-# RCAIDE_GUI/tabs/geometry/widgets/powertrain/distributors/fuel_line_widget.py
+# RCAIDE_GUI/tabs/geometry/widgets/powertrain/distributors/coolant_line_widget.py
 
-# Created: Dec 2025, M. Clarke
+# Created: Jun 2026, M. Clarke
 
 import RCAIDE
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit
@@ -10,15 +10,15 @@ from tabs.geometry.widgets.powertrain.distributors.base_distributor_widget impor
 
 from utilities import BTN_STYLE
 
-class FuelLineWidget(BaseDistributorWidget):
-    """Editor widget for a RCAIDE ``Fuel_Line`` distributor.
+class CoolantLineWidget(BaseDistributorWidget):
+    """Editor widget for a RCAIDE ``Coolant_Line`` distributor.
 
-    Displays the line name plus inline checkbox rows for connected propulsors
-    and fuel-tank sources.  Serialises to / from the ``distributor data`` list
-    inside the powertrain data dict.
+    Provides the standard inline connectivity checkboxes (propulsors and
+    sources).  Used in hybrid-electric and hydrogen aircraft thermal-
+    management configurations.
     """
 
-    distributor_type = "Fuel Line"
+    distributor_type = "Coolant Line"
 
     def __init__(self, index, on_delete, data_values=None):
         super().__init__(index, on_delete)
@@ -27,7 +27,7 @@ class FuelLineWidget(BaseDistributorWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         row = QHBoxLayout()
-        row.addWidget(QLabel("Fuel Line Name:"))
+        row.addWidget(QLabel("Coolant Line Name:"))
         self.section_name_edit = QLineEdit(self)
         row.addWidget(self.section_name_edit)
         del_btn = QPushButton("Delete", self)
@@ -46,7 +46,7 @@ class FuelLineWidget(BaseDistributorWidget):
     def get_data_values(self):
         data = {
             "distributor name": self.section_name_edit.text(),
-            "distributor_type": "Fuel Line",
+            "distributor_type": "Coolant Line",
         }
         data.update(self._connectivity_data())
         return data, self.create_rcaide_structure(data)
@@ -57,6 +57,6 @@ class FuelLineWidget(BaseDistributorWidget):
         self._load_connectivity(data)
 
     def create_rcaide_structure(self, data):
-        line = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+        line = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line()
         line.tag = data["distributor name"]
         return line
