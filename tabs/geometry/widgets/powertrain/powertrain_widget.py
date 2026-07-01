@@ -108,12 +108,27 @@ class PowertrainWidget(QWidget):
     # ── Connection refresh ─────────────────────────────────────────────────
 
     def _refresh_connections(self):
-        """Push current propulsor & source names into each distributor's inline checkboxes."""
-        propulsor_data, _ = self.propulsor_frame.get_data_values()
-        source_data,    _ = self.energy_source_frame.get_data_values()
-        propulsor_names = [d.get("Propulsor Tag", "") for d in propulsor_data]
-        source_names    = [d.get("Source Name", "")   for d in source_data]
+        """Push current propulsor & source names into each distributor's inline checkboxes.
+
+        Reads names directly from each widget's name field to avoid triggering
+        expensive RCAIDE design calls (e.g. design_turbofan) just to get a tag.
+        """
+        propulsor_names = self._collect_names(self.propulsor_frame.propulsor_sections_layout)
+        source_names    = self._collect_names(self.energy_source_frame.source_sections_layout)
         self.distributor_frame.refresh_connections(propulsor_names, source_names)
+
+    @staticmethod
+    def _collect_names(layout):
+        """Return the section_name_edit text for every widget in *layout*."""
+        names = []
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            if item is None:
+                continue
+            widget = item.widget()
+            if widget is not None and hasattr(widget, "section_name_edit"):
+                names.append(widget.section_name_edit.text())
+        return names
 
     # ── Data API ───────────────────────────────────────────────────────────
 

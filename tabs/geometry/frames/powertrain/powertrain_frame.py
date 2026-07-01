@@ -203,8 +203,8 @@ class PowertrainFrame(GeometryFrame):
         if selected_network in self._VALID_NETWORKS:
             powertrain_widget = PowertrainWidget()
             powertrain_widget.network_type = selected_network
-            powertrain_widget.load_data_values(data.get("powertrain", {}))
             self.powertrain_layout.addWidget(powertrain_widget)
+            powertrain_widget.load_data_values(data.get("powertrain", {}))
 
         self.add_buttons_layout()
 

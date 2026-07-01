@@ -589,7 +589,8 @@ def _propulsor_dict_to_ui(p):
     def g(d, *keys):
         for k in keys[:-1]:
             d = d.get(k, {}) if isinstance(d, dict) else {}
-        return d.get(keys[-1], [0, 0]) if isinstance(d, dict) else [0, 0]
+        val = d.get(keys[-1], 0) if isinstance(d, dict) else 0
+        return [val, 0]
 
     type_str = p.get('__type__', '')
     class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
@@ -693,25 +694,30 @@ def _distributor_dict_to_ui(fl, container_key='fuel_lines'):
     }
     # Preserve bus-specific fields when loading an electrical bus
     if dist_type == 'Electrical Bus':
-        result['Efficiency']        = fl.get('efficiency',        [1.0, 0])
-        result['Voltage']           = fl.get('voltage',           [0.0, 0])
-        result['Power Split Ratio'] = fl.get('power_split_ratio', [1.0, 0])
-        result['Charging C-Rate']   = fl.get('charging_c_rate',   [1.0, 0])
+        result['Efficiency']        = [fl.get('efficiency',        1.0), 0]
+        result['Voltage']           = [fl.get('voltage',           0.0), 0]
+        result['Power Split Ratio'] = [fl.get('power_split_ratio', 1.0), 0]
+        result['Charging C-Rate']   = [fl.get('charging_c_rate',   1.0), 0]
     return result
 
 
 def _fuel_tank_dict_to_ui(tank):
     """Convert a RCAIDE Fuel_Tank JSON dict to FuelTankWidget GUI format."""
-    def g(d, key):
-        return d.get(key, [0, 0]) if isinstance(d, dict) else [0, 0]
+    def g(d, key, default=0):
+        val = d.get(key, default) if isinstance(d, dict) else default
+        return [val, 0]
+
+    fuel       = tank.get('fuel', {})       if isinstance(tank, dict) else {}
+    fuel_props = fuel.get('mass_properties', {}) if isinstance(fuel, dict) else {}
+
     return {
         'Source Name':       tank.get('tag', ''),
         'source_type':       'Fuel Tank',
-        'Fuel Tank Origin':  g(tank, 'origin'),
-        'Fuel Origin':       g(tank, 'fuel_origin'),
-        'Center of Gravity': g(tank, 'center_of_gravity'),
-        'Mass':              g(tank, 'mass_of_fuel'),
-        'Internal Volume':   g(tank, 'volume'),
+        'Fuel Tank Origin':  g(tank,       'origin',               [[0, 0, 0]]),
+        'Fuel Origin':       g(fuel,        'origin',               [[0, 0, 0]]),
+        'Center of Gravity': g(fuel_props,  'center_of_gravity',    [[0, 0, 0]]),
+        'Mass':              g(fuel_props,  'mass',                 0),
+        'Internal Volume':   g(fuel.get('volume_properties', {}), 'net_volume', 0),
     }
 
 
@@ -720,7 +726,8 @@ def _battery_module_dict_to_ui(module):
     def g(d, *keys):
         for k in keys[:-1]:
             d = d.get(k, {}) if isinstance(d, dict) else {}
-        return d.get(keys[-1], [0, 0]) if isinstance(d, dict) else [0, 0]
+        val = d.get(keys[-1], 0) if isinstance(d, dict) else 0
+        return [val, 0]
 
     type_str = module.get('__type__', '')
     class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
@@ -730,15 +737,15 @@ def _battery_module_dict_to_ui(module):
         'Source Name':          module.get('tag', ''),
         'source_type':          'Battery Module',
         'Chemistry':            chemistry,
-        'Capacity':             module.get('capacity', [0.0, 0]),
-        'Length':               module.get('length', [0.0, 0]),
-        'Width':                module.get('width', [0.0, 0]),
-        'Height':               module.get('height', [0.0, 0]),
+        'Capacity':             [module.get('capacity',  0.0), 0],
+        'Length':               [module.get('length',    0.0), 0],
+        'Width':                [module.get('width',     0.0), 0],
+        'Height':               [module.get('height',    0.0), 0],
         'Series Cells':         g(module, 'electrical_configuration', 'series'),
         'Parallel Cells':       g(module, 'electrical_configuration', 'parallel'),
-        'Normal Cell Count':    g(module, 'geometric_configuration', 'normal_count'),
-        'Parallel Cell Count':  g(module, 'geometric_configuration', 'parallel_count'),
-        'Stacking Rows':        g(module, 'geometric_configuration', 'stacking_rows'),
+        'Normal Cell Count':    g(module, 'geometric_configuration',  'normal_count'),
+        'Parallel Cell Count':  g(module, 'geometric_configuration',  'parallel_count'),
+        'Stacking Rows':        g(module, 'geometric_configuration',  'stacking_rows'),
     }
 
 
@@ -765,9 +772,9 @@ def _system_dict_to_ui(sys_dict):
     return {
         'System Type':      sys_type,
         'System Name':      sys_dict.get('tag', ''),
-        'Origin':           sys_dict.get('origin',           [[[0, 0, 0]], 0]),
-        'Power Draw':       sys_dict.get('power_draw',       [0.0, 0]),
-        'Uninstalled Mass': sys_dict.get('uninstalled_mass', [0.0, 0]),
+        'Origin':           [sys_dict.get('origin',           [[0, 0, 0]]), 0],
+        'Power Draw':       [sys_dict.get('power_draw',       0.0),         0],
+        'Uninstalled Mass': [sys_dict.get('uninstalled_mass', 0.0),         0],
     }
 
 

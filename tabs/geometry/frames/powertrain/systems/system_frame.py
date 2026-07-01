@@ -3,13 +3,34 @@
 # Created:  Jun 2026, M. Clarke
 
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-                              QFrame, QSizePolicy, QSpacerItem)
+                              QFrame, QSizePolicy, QSpacerItem, QComboBox)
 
 from tabs.geometry.widgets.powertrain.systems import SystemWidget
 
 from utilities import BTN_STYLE
 
+_SYSTEM_TYPES = [
+    "Avionics",
+    "Auxiliary Power Unit",
+    "Cabin Loads",
+    "Electrical",
+    "Environmental Controls",
+    "Flight Controls",
+    "Furnishings",
+    "Hydraulics",
+    "Ice Protection",
+    "Instruments",
+    "Water Tank",
+]
+
 class SystemFrame(QWidget):
+    """Frame that manages a list of system widgets.
+
+    A type dropdown lets the user choose which system kind to add before
+    clicking the Add button, mirroring the pattern used by PropulsorFrame
+    and DistributorFrame.
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -17,13 +38,21 @@ class SystemFrame(QWidget):
 
         layout = self._create_scroll_layout()
 
-        header_layout = QVBoxLayout()
-        add_btn = QPushButton("Add System", self)
-        add_btn.setStyleSheet(BTN_STYLE)
-        add_btn.setMaximumWidth(200)
-        add_btn.clicked.connect(self.add_system)
-        header_layout.addWidget(add_btn)
-        layout.addLayout(header_layout)
+        add_layout = QHBoxLayout()
+        self.system_type_dropdown = QComboBox(self)
+        self.system_type_dropdown.addItems(_SYSTEM_TYPES)
+        self.system_type_dropdown.setMinimumWidth(220)
+        self.system_type_dropdown.currentTextChanged.connect(self._update_add_button_text)
+        add_layout.addWidget(self.system_type_dropdown)
+
+        self.add_system_button = QPushButton(f"Add {_SYSTEM_TYPES[0]}", self)
+        self.add_system_button.setStyleSheet(BTN_STYLE)
+        self.add_system_button.setMinimumWidth(220)
+        self.add_system_button.setMaximumWidth(280)
+        self.add_system_button.clicked.connect(self.add_system)
+        add_layout.addWidget(self.add_system_button)
+        add_layout.addStretch()
+        layout.addLayout(add_layout)
 
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
@@ -36,9 +65,14 @@ class SystemFrame(QWidget):
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.MinimumExpanding,
                                    QSizePolicy.Policy.Expanding))
 
+    def _update_add_button_text(self, system_type):
+        self.add_system_button.setText(f"Add {system_type}")
+
     def add_system(self):
+        sys_type = self.system_type_dropdown.currentText()
         self.systems_layout.addWidget(
-            SystemWidget(self.systems_layout.count(), self._on_delete))
+            SystemWidget(self.systems_layout.count(), self._on_delete,
+                         {"System Type": sys_type}))
 
     def _on_delete(self, index):
         item = self.systems_layout.itemAt(index)
