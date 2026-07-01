@@ -11,7 +11,7 @@ import rcaide_io
 from tabs.mission.widgets.mission_analysis_widget import MissionAnalysisWidget
 from tabs.mission.widgets.mission_segment_widget import MissionSegmentWidget
 from tabs.mission.mission import _extract_gui_segments
-from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
+from tabs.configurations.configurations import build_rcaide_configs_from_geometry
 
 # PtQT imports 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox

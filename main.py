@@ -57,8 +57,8 @@ class App(QMainWindow):
         self.widgets = []
         self.widgets.append((home.get_widget(), "Home"))
         self.widgets.append((geometry.get_widget(), "Vehicle Setup"))
-        self.widgets.append((visualize_geometry.get_widget(), "Geometry"))
-        self.widgets.append((aircraft_configs.get_widget(), "Configurations"))
+        self.widgets.append((visualize_geometry.get_widget(), "Visualize Geometry"))
+        self.widgets.append((configurations.get_widget(), "Configurations"))
         self.widgets.append((analysis.get_widget(), "Analyses Setup"))
         self.widgets.append((mission.get_widget(), "Mission Setup"))
         self.widgets.append((performance.get_widget(), "Performance"))
@@ -141,7 +141,7 @@ class App(QMainWindow):
 
     def _go_to_geometry_visualization_tab(self):
         for index in range(self.tabs.count()):
-            if self.tabs.tabText(index).strip().lower() == "geometry":
+            if self.tabs.tabText(index).strip().lower() == "visualize geometry":
                 self.tabs.setCurrentIndex(index)
                 current_widget = self.tabs.widget(index)
                 if isinstance(current_widget, TabWidget):

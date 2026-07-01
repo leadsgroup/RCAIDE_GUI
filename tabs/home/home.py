@@ -438,7 +438,7 @@ QPushButton:hover {
                 except Exception:
                     idx = -1
             if idx == -1:
-                geometry_names = {"geometry", "geometry parameterization", "aircraft geometry"}
+                geometry_names = {"geometry", "geometry parameterization", "aircraft geometry", "visualize geometry"}
                 for i in range(tabs.count()):
                     title = tabs.tabText(i).strip().lower()
                     if any(name in title for name in geometry_names):

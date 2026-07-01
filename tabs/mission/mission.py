@@ -7,7 +7,7 @@ import RCAIDE
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs.mission.widgets import MissionAnalysisWidget
 from tabs import TabWidget
-from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
+from tabs.configurations.configurations import AircraftConfigsWidget
 import rcaide_io
 
 
