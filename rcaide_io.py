@@ -742,6 +742,35 @@ def _battery_module_dict_to_ui(module):
     }
 
 
+_SYSTEM_TYPE_LABEL = {
+    'Avionics':               'Avionics',
+    'Auxiliary_Power_Unit':   'Auxiliary Power Unit',
+    'Cabin_Loads':            'Cabin Loads',
+    'Electrical':             'Electrical',
+    'Environmental_Controls': 'Environmental Controls',
+    'Flight_Controls':        'Flight Controls',
+    'Furnishings':            'Furnishings',
+    'Hydraulics':             'Hydraulics',
+    'Ice_Protection':         'Ice Protection',
+    'Instruments':            'Instruments',
+    'Water_Tank':             'Water Tank',
+}
+
+
+def _system_dict_to_ui(sys_dict):
+    """Convert one RCAIDE system JSON dict to the SystemWidget data format."""
+    type_str = sys_dict.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    sys_type = _SYSTEM_TYPE_LABEL.get(class_name, 'Avionics')
+    return {
+        'System Type':      sys_type,
+        'System Name':      sys_dict.get('tag', ''),
+        'Origin':           sys_dict.get('origin',           [[[0, 0, 0]], 0]),
+        'Power Draw':       sys_dict.get('power_draw',       [0.0, 0]),
+        'Uninstalled Mass': sys_dict.get('uninstalled_mass', [0.0, 0]),
+    }
+
+
 def _network_dict_to_ui(net_dict):
     """Convert one RCAIDE network JSON dict to the PowertrainFrame GUI data format."""
     net_type = _network_type_for_ui(net_dict)
@@ -786,13 +815,21 @@ def _network_dict_to_ui(net_dict):
         else:
             source_data.append(_fuel_tank_dict_to_ui(v))
 
+    system_data = []
+    systems_container = net_dict.get('systems', {})
+    if isinstance(systems_container, dict):
+        for k, sys_val in systems_container.items():
+            if k == '__type__' or not isinstance(sys_val, dict):
+                continue
+            system_data.append(_system_dict_to_ui(sys_val))
+
     return {
         'energy network selected': net_type,
         'powertrain': {
             'distributor data': distributor_data,
             'source data':      source_data,
             'propulsor data':   propulsor_data,
-            'system data':      [],
+            'system data':      system_data,
             'converter data':   [],
         }
     }
