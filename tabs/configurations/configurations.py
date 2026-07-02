@@ -73,7 +73,7 @@ class AircraftConfigsWidget(TabWidget):
     @staticmethod
     def _find_by_tag(obj, outer_attr, inner_attr, tag):
         """Return the first nested item whose .tag matches, or None."""
-        for item in ConfigsWidget._iter_nested(obj, outer_attr, inner_attr):
+        for item in AircraftConfigsWidget._iter_nested(obj, outer_attr, inner_attr):
             if getattr(item, 'tag', None) == tag:
                 return item
         return None
