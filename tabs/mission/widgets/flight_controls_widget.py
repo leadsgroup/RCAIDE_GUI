@@ -139,6 +139,22 @@ class FlightControlsWidget(QWidget):
 
         segment.assigned_control_variables.throttle.assigned_propulsors = [selected]
 
+        if getattr(segment.assigned_control_variables.thrust_vector_angle, "active", False):
+            segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors = [selected]
+
+        if getattr(segment.assigned_control_variables.blade_pitch_command, "active", False):
+            rotor_tags = []
+            try:
+                for network in rcaide_io.rcaide_vehicle.networks:
+                    for prop in network.propulsors:
+                        rotor = getattr(prop, 'rotor', None)
+                        if rotor is not None and hasattr(rotor, 'tag'):
+                            rotor_tags.append(rotor.tag)
+            except Exception:
+                pass
+            if rotor_tags:
+                segment.assigned_control_variables.blade_pitch_command.assigned_rotors = [rotor_tags]
+
         if getattr(segment.assigned_control_variables.throttle, "active", False):
             if hasattr(segment.assigned_control_variables.throttle, "initial_guess_values"):
                 if not segment.assigned_control_variables.throttle.initial_guess_values:
