@@ -847,6 +847,7 @@ def _fuel_tank_dict_to_ui(tank):
         'External Width':            g(widths,    'external', 0),
         'External Height':           g(heights,   'external', 0),
         'External Diameter':         g(diameters, 'external', 0),
+        'Design Altitude':           g(tank,  'design_altitude',               0),
         'Design Inlet Temperature':  g(tank,  'design_inlet_temperature',      0),
         'Ullage Volume Fraction':    g(tank,  'ullage_volume_fraction',         0.07),
         'Safety Factor':             g(tank,  'safety_factor',                  1.6),

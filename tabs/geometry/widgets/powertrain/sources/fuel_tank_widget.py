@@ -119,6 +119,7 @@ class FuelTankWidget(GeometryDataWidget):
         self.cryo_label = QLabel("<b>Cryogenic Parameters</b>")
         layout.addWidget(self.cryo_label)
         cryo_labels = [
+            ("Design Altitude",          Units.Length),
             ("Design Inlet Temperature", Units.Temperature),
             ("Ullage Volume Fraction",   Units.Unitless),
             ("Safety Factor",            Units.Unitless),
@@ -250,6 +251,7 @@ class FuelTankWidget(GeometryDataWidget):
         tank.diameters.external = _first(data.get('External Diameter',  [0, 0]))
 
         if tank_type == 'Cryogenic Tank':
+            tank.design_altitude               = _first(data.get('Design Altitude',           [0, 0]))
             tank.design_inlet_temperature      = _first(data.get('Design Inlet Temperature',  [20, 0]))
             tank.ullage_volume_fraction        = _first(data.get('Ullage Volume Fraction',    [0.07, 0]))
             tank.safety_factor                 = _first(data.get('Safety Factor',             [1.6, 0]))
