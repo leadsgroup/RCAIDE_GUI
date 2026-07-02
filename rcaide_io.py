@@ -369,9 +369,10 @@ def _build_dict_base_with_types(base):
 
 
 _WING_TYPE_LABELS = {
-    'Main_Wing':       'Main Wing',
-    'Horizontal_Tail': 'Horizontal Tail',
-    'Vertical_Tail':   'Vertical Tail',
+    'Main_Wing':         'Main Wing',
+    'Horizontal_Tail':   'Horizontal Tail',
+    'Vertical_Tail':     'Vertical Tail',
+    'Blended_Wing_Body': 'Blended Wing Body',
 }
 
 _FUSELAGE_SEGMENT_TYPE_LABELS = {
@@ -381,6 +382,24 @@ _FUSELAGE_SEGMENT_TYPE_LABELS = {
     'Super_Ellipse_Segment':     'Super Ellipse Segment',
     'Segment':                   'Segment',
 }
+
+_BOOM_SEGMENT_TYPE_LABELS = _FUSELAGE_SEGMENT_TYPE_LABELS
+_NACELLE_SEGMENT_TYPE_LABELS = _FUSELAGE_SEGMENT_TYPE_LABELS
+
+
+def boom_segment_type_label_for_ui(segment_dict):
+    """Derive the GUI boom segment label from __type__, falling back to Ellipse Segment."""
+    type_str = segment_dict.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    return _BOOM_SEGMENT_TYPE_LABELS.get(class_name, 'Ellipse Segment')
+
+
+def nacelle_segment_type_label_for_ui(segment_dict):
+    """Derive the GUI nacelle segment label from __type__, falling back to Segment."""
+    type_str = segment_dict.get('__type__', '')
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    return _NACELLE_SEGMENT_TYPE_LABELS.get(class_name, 'Segment')
+
 
 def wing_type_label_for_ui(component_dict):
     """Derive the GUI wing-type label from __type__, falling back to 'Wing'."""
@@ -590,10 +609,22 @@ def _network_type_for_ui(network_dict):
 
 
 _NACELLE_TYPE_LABEL = {
+    'Nacelle':                    'Generic Nacelle',
     'Body_of_Revolution_Nacelle': 'Body of Revolution',
-    'Generic_Nacelle':            'Generic Nacelle',
     'Stack_Nacelle':              'Stack Nacelle',
 }
+
+
+def _nacelle_seg_to_ui(segment):
+    """Convert a raw RCAIDE nacelle segment dict to the NacelleSectionWidget data format."""
+    return {
+        "Segment Name":       segment.get("tag", ""),
+        "Percent X Location": [segment.get("percent_x_location", 0), 0],
+        "Percent Z Location": [segment.get("percent_z_location", 0), 0],
+        "Height":             [segment.get("height", 0), 0],
+        "Width":              [segment.get("width", 0), 0],
+        "segment_type":       nacelle_segment_type_label_for_ui(segment),
+    }
 
 
 def _nacelle_dict_to_ui(nacelle):
@@ -610,6 +641,14 @@ def _nacelle_dict_to_ui(nacelle):
     if not isinstance(areas, dict):
         areas = {}
 
+    sections_raw = nacelle.get('segments', {})
+    if isinstance(sections_raw, dict):
+        sections = [_nacelle_seg_to_ui(s) for s in sections_raw.values() if isinstance(s, dict)]
+    elif isinstance(sections_raw, list):
+        sections = [_nacelle_seg_to_ui(s) for s in sections_raw if isinstance(s, dict)]
+    else:
+        sections = []
+
     return {
         'Nacelle Type':   nacelle_type,
         'Nacelle Length': g(nacelle, 'length'),
@@ -619,6 +658,7 @@ def _nacelle_dict_to_ui(nacelle):
         'Wetted Area':    g(areas, 'wetted'),
         'Flow Through':   [nacelle.get('flow_through', False), 0],
         'Airfoil Type':   'None (Auto)',
+        'sections':       sections,
     }
 
 
@@ -743,23 +783,75 @@ def _distributor_dict_to_ui(fl, container_key='fuel_lines'):
     return result
 
 
+_FUEL_TANK_TYPE_LABEL = {
+    'Fuel_Tank':         'Fuel Tank',
+    'Non_Integral_Tank': 'Non-Integral Tank',
+    'Integral_Tank':     'Integral Tank',
+    'Cryogenic_Tank':    'Cryogenic Tank',
+}
+
+_FUEL_TYPE_LABEL = {
+    'Jet_A1':             'Jet A1',
+    'Jet_A':              'Jet A',
+    'JP7':                'JP7',
+    'Aviation_Gasoline':  'Aviation Gasoline',
+    'Liquid_Hydrogen':    'Liquid Hydrogen',
+    'Liquid_Natural_Gas': 'Liquid Natural Gas',
+}
+
+
 def _fuel_tank_dict_to_ui(tank):
     """Convert a RCAIDE Fuel_Tank JSON dict to FuelTankWidget GUI format."""
     def g(d, key, default=0):
+        """Return value from dict, preserving [value, unit_index] pairs as-is."""
         val = d.get(key, default) if isinstance(d, dict) else default
+        # If already a [value, unit_index] pair (list/tuple of length 2 with int tail), pass through
+        if isinstance(val, (list, tuple)) and len(val) == 2 and isinstance(val[-1], int):
+            return val
         return [val, 0]
 
-    fuel       = tank.get('fuel', {})       if isinstance(tank, dict) else {}
+    type_str   = tank.get('__type__', '') if isinstance(tank, dict) else ''
+    class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+    tank_type  = _FUEL_TANK_TYPE_LABEL.get(class_name, 'Fuel Tank')
+
+    fuel      = tank.get('fuel', {}) if isinstance(tank, dict) else {}
+    fuel_type_str   = fuel.get('__type__', '') if isinstance(fuel, dict) else ''
+    fuel_class_name = fuel_type_str.rsplit('.', 1)[-1] if fuel_type_str else ''
+    fuel_type       = _FUEL_TYPE_LABEL.get(fuel_class_name, 'Jet A1')
+
     fuel_props = fuel.get('mass_properties', {}) if isinstance(fuel, dict) else {}
+    vol_props  = tank.get('volume_properties', fuel.get('volume_properties', {}))
+
+    lengths   = tank.get('lengths',   {}) if isinstance(tank, dict) else {}
+    widths    = tank.get('widths',    {}) if isinstance(tank, dict) else {}
+    heights   = tank.get('heights',   {}) if isinstance(tank, dict) else {}
+    diameters = tank.get('diameters', {}) if isinstance(tank, dict) else {}
+
+    transverse_raw = tank.get('transverse_tank', False)
+    transverse_val = transverse_raw[0] if isinstance(transverse_raw, (list, tuple)) else transverse_raw
 
     return {
-        'Source Name':       tank.get('tag', ''),
-        'source_type':       'Fuel Tank',
-        'Fuel Tank Origin':  g(tank,       'origin',               [[0, 0, 0]]),
-        'Fuel Origin':       g(fuel,        'origin',               [[0, 0, 0]]),
-        'Center of Gravity': g(fuel_props,  'center_of_gravity',    [[0, 0, 0]]),
-        'Mass':              g(fuel_props,  'mass',                 0),
-        'Internal Volume':   g(fuel.get('volume_properties', {}), 'net_volume', 0),
+        'Source Name':               tank.get('tag', ''),
+        'source_type':               'Fuel Tank',
+        'tank_type':                 tank_type,
+        'fuel_type':                 fuel_type,
+        'Fuel Tank Origin':          g(tank,       'origin',            [[[0, 0, 0]], 0]),
+        'Fuel Origin':               g(fuel,       'origin',            [[[0, 0, 0]], 0]),
+        'Center of Gravity':         g(fuel_props, 'center_of_gravity', [[[0, 0, 0]], 0]),
+        'Mass':                      g(fuel_props, 'mass',              0),
+        'Internal Volume':           g(vol_props,  'net_volume',        0),
+        'wing_tag':                  tank.get('wing_tag', '') or '',
+        'geometry_type':             tank.get('geometry_type', 'cylindrical'),
+        'transverse_tank':           [transverse_val, 0],
+        'External Length':           g(lengths,   'external', 0),
+        'External Width':            g(widths,    'external', 0),
+        'External Height':           g(heights,   'external', 0),
+        'External Diameter':         g(diameters, 'external', 0),
+        'Design Inlet Temperature':  g(tank,  'design_inlet_temperature',      0),
+        'Ullage Volume Fraction':    g(tank,  'ullage_volume_fraction',         0.07),
+        'Safety Factor':             g(tank,  'safety_factor',                  1.6),
+        'Pressure Factor':           g(tank,  'pressure_factor',                5),
+        'Accessories Weight Factor': g(tank,  'tank_accesories_weight_factor',  1.5),
     }
 
 
@@ -894,17 +986,32 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
     from tabs.geometry.frames.wings.wings_frame import WingsFrame
 
     def wing_segment_to_ui(segment):
+        airfoil      = segment.get("airfoil", {}) or {}
+        af_type_str  = airfoil.get("__type__", "") if isinstance(airfoil, dict) else ""
+        af_class     = af_type_str.rsplit(".", 1)[-1] if af_type_str else ""
+        naca_code    = airfoil.get("NACA_4_Series_code", None) if isinstance(airfoil, dict) else None
+        coord_file   = airfoil.get("coordinate_file", None)    if isinstance(airfoil, dict) else None
+
+        if af_class == "NACA_4_Series_Airfoil" and naca_code:
+            af_ui_type = "NACA 4-Series"
+        elif coord_file:
+            af_ui_type = "Coordinate File"
+        else:
+            af_ui_type = None
+
         return {
-            "Segment Name":        segment.get("tag", ""),
+            "Segment Name":          segment.get("tag", ""),
             "Percent Span Location": [segment.get("percent_span_location", 0), 0],
-            "Twist":               [segment.get("twist", 0), 0],
-            "Root Chord Percent":  [segment.get("root_chord_percent", 0), 0],
-            "Thickness to Chord":  [segment.get("thickness_to_chord", 0), 0],
-            "Dihedral Outboard":   [segment.get("dihedral_outboard", 0), 0],
-            "Quarter Chord Sweep": [segment.get("sweeps", {}).get("quarter_chord", 0), 0],
-            "Has Fuel Tank":       [bool(segment.get("Fuel_Tank")), 0],
-            "Has Aft Fuel Tank":   [bool(segment.get("Aft_Fuel_Tank")), 0],
-            "Airfoil Type":        None,
+            "Twist":                 [segment.get("twist", 0), 0],
+            "Root Chord Percent":    [segment.get("root_chord_percent", 0), 0],
+            "Thickness to Chord":    [segment.get("thickness_to_chord", 0), 0],
+            "Dihedral Outboard":     [segment.get("dihedral_outboard", 0), 0],
+            "Quarter Chord Sweep":   [segment.get("sweeps", {}).get("quarter_chord", 0), 0],
+            "Has Fuel Tank":         [bool(segment.get("Fuel_Tank")), 0],
+            "Has Aft Fuel Tank":     [bool(segment.get("Aft_Fuel_Tank")), 0],
+            "Airfoil Type":          af_ui_type,
+            "Airfoil Code":          naca_code or "",
+            "Airfoil Coordinate File Path": coord_file or "",
         }
 
     def wing_control_surface_to_ui(cs):
@@ -930,6 +1037,26 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             "Height":             [segment.get("height", 0), 0],
             "Width":              [segment.get("width", 0), 0],
             "segment_type":       fuselage_segment_type_label_for_ui(segment),
+        }
+
+    def boom_segment_to_ui(segment):
+        return {
+            "Segment Name":       segment.get("tag", ""),
+            "Percent X Location": [segment.get("percent_x_location", 0), 0],
+            "Percent Z Location": [segment.get("percent_z_location", 0), 0],
+            "Height":             [segment.get("height", 0), 0],
+            "Width":              [segment.get("width", 0), 0],
+            "segment_type":       boom_segment_type_label_for_ui(segment),
+        }
+
+    def nacelle_segment_to_ui(segment):
+        return {
+            "Segment Name":       segment.get("tag", ""),
+            "Percent X Location": [segment.get("percent_x_location", 0), 0],
+            "Percent Z Location": [segment.get("percent_z_location", 0), 0],
+            "Height":             [segment.get("height", 0), 0],
+            "Width":              [segment.get("width", 0), 0],
+            "segment_type":       nacelle_segment_type_label_for_ui(segment),
         }
 
     # Preserve nested cabin/class data through GUI load/save.
@@ -1074,6 +1201,15 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
             ui_dict["cabins"] = cabins_to_ui(component_dict.get("cabins", {}))
             ui_dict["side_cabins"] = cabins_to_ui(component_dict.get("side_cabins", {}))
 
+        if frame_class.__name__ == 'BoomFrame':
+            segments = component_dict.get("segments", {})
+            if isinstance(segments, dict):
+                ui_dict["sections"] = [boom_segment_to_ui(s) for s in segments.values() if is_mapping(s)]
+            elif isinstance(segments, list):
+                ui_dict["sections"] = [boom_segment_to_ui(s) for s in segments if is_mapping(s)]
+            else:
+                ui_dict["sections"] = []
+
         if frame_class.__name__ == 'FuselageFrame':
             segments = component_dict.get("segments", {})
             if isinstance(segments, dict):
@@ -1100,8 +1236,21 @@ def vehicle_dict_to_ui_list_structure(vehicle_dict):
     if "fuselages" in vehicle_dict and vehicle_dict["fuselages"]:
         ui_structure[3] = [to_ui_format(f, FuselageFrame) for f in vehicle_dict["fuselages"].values() if is_mapping(f)]
 
+    _LG_TYPE_LABEL = {
+        'Landing_Gear':      'General Gear',
+        'Nose_Landing_Gear': 'Nose Gear',
+        'Main_Landing_Gear': 'Main Gear',
+    }
+
+    def _lg_to_ui(lg_dict):
+        ui = to_ui_format(lg_dict, LandingGearFrame)
+        type_str   = lg_dict.get('__type__', '')
+        class_name = type_str.rsplit('.', 1)[-1] if type_str else ''
+        ui['landing_gear_type'] = _LG_TYPE_LABEL.get(class_name, 'General Gear')
+        return ui
+
     if "landing_gears" in vehicle_dict and vehicle_dict["landing_gears"]:
-        ui_structure[4] = [to_ui_format(l, LandingGearFrame) for l in vehicle_dict["landing_gears"].values() if is_mapping(l)]
+        ui_structure[4] = [_lg_to_ui(l) for l in vehicle_dict["landing_gears"].values() if is_mapping(l)]
 
     if "powertrains" in vehicle_dict and vehicle_dict["powertrains"]:
         ui_structure[5] = [to_ui_format(p, PowertrainFrame) for p in vehicle_dict["powertrains"].values() if is_mapping(p)]

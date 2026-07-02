@@ -425,8 +425,13 @@ class TurbofanWidget(QWidget):
             else:
                 pass
             
+            if n_type == "Stack Nacelle":
+                for seg in n_data.get("section_objects", []):
+                    if seg is not None:
+                        nacelle.append_segment(seg)
+
             turbofan.nacelle = nacelle
-        
+
         # design turbofan
         design_turbofan(turbofan)
         

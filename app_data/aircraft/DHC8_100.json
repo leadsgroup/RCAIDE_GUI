@@ -9733,9 +9733,9 @@
               0
             ]
           },
-          "auxillary_power_unit": {
+          "auxiliary_power_unit": {
             "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit.Auxiliary_Power_Unit",
-            "tag": "auxillary_power_unit",
+            "tag": "auxiliary_power_unit",
             "mass_properties": {
               "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
               "mass": [

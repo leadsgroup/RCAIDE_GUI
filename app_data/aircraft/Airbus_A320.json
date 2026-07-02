@@ -8285,9 +8285,9 @@
               0
             ]
           },
-          "auxillary_power_unit": {
+          "auxiliary_power_unit": {
             "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit.Auxiliary_Power_Unit",
-            "tag": "auxillary_power_unit",
+            "tag": "auxiliary_power_unit",
             "mass_properties": {
               "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
               "mass": [
@@ -16486,24 +16486,24 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "idle",
       "diff": {
-        "tag": "idle",
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
           "main_gear": {
             "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
           }
-        }
+        },
+        "tag": "idle"
       }
     },
     {
@@ -16524,6 +16524,27 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
+        "V2_VS_ratio": [
+          1.21,
+          0
+        ],
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -16532,14 +16553,10 @@
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan",
-                "fan": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
-                  "angular_velocity": [
-                    363.3775502652194,
-                    0
-                  ],
-                  "rotation": [
-                    3470.0,
+                "core_nozzle": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
+                  "noise_speed": [
+                    415.0,
                     0
                   ]
                 },
@@ -16550,24 +16567,24 @@
                     0
                   ]
                 },
-                "core_nozzle": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
-                  "noise_speed": [
-                    415.0,
+                "fan": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
+                  "rotation": [
+                    3470.0,
+                    0
+                  ],
+                  "angular_velocity": [
+                    363.3775502652194,
                     0
                   ]
                 }
               },
               "port_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan",
-                "fan": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
-                  "angular_velocity": [
-                    363.3775502652194,
-                    0
-                  ],
-                  "rotation": [
-                    3470.0,
+                "core_nozzle": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
+                  "noise_speed": [
+                    415.0,
                     0
                   ]
                 },
@@ -16578,10 +16595,14 @@
                     0
                   ]
                 },
-                "core_nozzle": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
-                  "noise_speed": [
-                    415.0,
+                "fan": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
+                  "rotation": [
+                    3470.0,
+                    0
+                  ],
+                  "angular_velocity": [
+                    363.3775502652194,
                     0
                   ]
                 }
@@ -16589,7 +16610,6 @@
             }
           }
         },
-        "tag": "takeoff",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -16613,33 +16633,30 @@
             }
           }
         },
-        "V2_VS_ratio": [
-          1.21,
-          0
-        ],
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "takeoff"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -16648,14 +16665,10 @@
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan",
-                "fan": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
-                  "angular_velocity": [
-                    291.12091923265416,
-                    0
-                  ],
-                  "rotation": [
-                    2780.0,
+                "core_nozzle": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
+                  "noise_speed": [
+                    360.0,
                     0
                   ]
                 },
@@ -16666,24 +16679,24 @@
                     0
                   ]
                 },
-                "core_nozzle": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
-                  "noise_speed": [
-                    360.0,
+                "fan": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
+                  "rotation": [
+                    2780.0,
+                    0
+                  ],
+                  "angular_velocity": [
+                    291.12091923265416,
                     0
                   ]
                 }
               },
               "port_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan",
-                "fan": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
-                  "angular_velocity": [
-                    291.12091923265416,
-                    0
-                  ],
-                  "rotation": [
-                    2780.0,
+                "core_nozzle": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
+                  "noise_speed": [
+                    360.0,
                     0
                   ]
                 },
@@ -16694,10 +16707,14 @@
                     0
                   ]
                 },
-                "core_nozzle": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
-                  "noise_speed": [
-                    360.0,
+                "fan": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
+                  "rotation": [
+                    2780.0,
+                    0
+                  ],
+                  "angular_velocity": [
+                    291.12091923265416,
                     0
                   ]
                 }
@@ -16705,7 +16722,6 @@
             }
           }
         },
-        "tag": "cutback",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -16729,29 +16745,34 @@
             }
           }
         },
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "cutback"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
+        "Vref_VS_ratio": [
+          1.23,
+          0
+        ],
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -16760,14 +16781,10 @@
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan",
-                "fan": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
-                  "angular_velocity": [
-                    291.12091923265416,
-                    0
-                  ],
-                  "rotation": [
-                    2780.0,
+                "core_nozzle": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
+                  "noise_speed": [
+                    92.0,
                     0
                   ]
                 },
@@ -16778,24 +16795,24 @@
                     0
                   ]
                 },
-                "core_nozzle": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
-                  "noise_speed": [
-                    92.0,
+                "fan": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
+                  "rotation": [
+                    2780.0,
+                    0
+                  ],
+                  "angular_velocity": [
+                    291.12091923265416,
                     0
                   ]
                 }
               },
               "port_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan",
-                "fan": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
-                  "angular_velocity": [
-                    291.12091923265416,
-                    0
-                  ],
-                  "rotation": [
-                    2780.0,
+                "core_nozzle": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
+                  "noise_speed": [
+                    92.0,
                     0
                   ]
                 },
@@ -16806,10 +16823,14 @@
                     0
                   ]
                 },
-                "core_nozzle": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.Expansion_Nozzle",
-                  "noise_speed": [
-                    92.0,
+                "fan": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan",
+                  "rotation": [
+                    2780.0,
+                    0
+                  ],
+                  "angular_velocity": [
+                    291.12091923265416,
                     0
                   ]
                 }
@@ -16817,11 +16838,6 @@
             }
           }
         },
-        "Vref_VS_ratio": [
-          1.23,
-          0
-        ],
-        "tag": "landing",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -16845,29 +16861,34 @@
             }
           }
         },
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "landing"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "short_field_takeoff",
       "diff": {
+        "V2_VS_ratio": [
+          1.21,
+          0
+        ],
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -16897,7 +16918,6 @@
             }
           }
         },
-        "tag": "short_field_takeoff",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -16921,34 +16941,30 @@
             }
           }
         },
-        "V2_VS_ratio": [
-          1.21,
-          0
-        ],
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "short_field_takeoff"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "reverse_thrust",
       "diff": {
-        "tag": "reverse_thrust",
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -16972,23 +16988,7 @@
             }
           }
         },
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "reverse_thrust"
       }
     }
   ],

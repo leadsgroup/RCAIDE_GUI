@@ -8285,9 +8285,9 @@
               0
             ]
           },
-          "auxillary_power_unit": {
+          "auxiliary_power_unit": {
             "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit.Auxiliary_Power_Unit",
-            "tag": "auxillary_power_unit",
+            "tag": "auxiliary_power_unit",
             "mass_properties": {
               "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
               "mass": [
@@ -18446,58 +18446,74 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
-        "tag": "takeoff",
-        "wings": {
-          "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-          "main_wing": {
-            "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
-            "control_surfaces": {
-              "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "flap": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
-                "deflection": [
-                  0.17453292519943295,
-                  0
-                ]
-              },
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              }
-            }
-          }
-        },
         "V2_VS_ratio": [
           1.21,
           0
         ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
           "main_gear": {
             "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
           }
-        }
+        },
+        "wings": {
+          "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
+          "main_wing": {
+            "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
+            "control_surfaces": {
+              "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
+              "flap": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
+                "deflection": [
+                  0.17453292519943295,
+                  0
+                ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
+              }
+            }
+          }
+        },
+        "tag": "takeoff"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "transition",
       "diff": {
-        "tag": "transition",
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18521,30 +18537,13 @@
             }
           }
         },
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "transition"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "initial_climb",
       "diff": {
-        "tag": "initial_climb",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18567,14 +18566,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "initial_climb"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "accel",
       "diff": {
-        "tag": "accel",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18597,37 +18596,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "accel"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
-        "tag": "cutback",
-        "wings": {
-          "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-          "main_wing": {
-            "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
-            "control_surfaces": {
-              "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
-      "tag": "approach",
-      "diff": {
-        "tag": "approach",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18644,23 +18620,47 @@
             }
           }
         },
+        "tag": "cutback"
+      }
+    },
+    {
+      "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
+      "tag": "approach",
+      "diff": {
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
           "main_gear": {
             "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
           }
-        }
+        },
+        "wings": {
+          "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
+          "main_wing": {
+            "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
+            "control_surfaces": {
+              "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
+              }
+            }
+          }
+        },
+        "tag": "approach"
       }
     },
     {
@@ -18671,7 +18671,23 @@
           1.23,
           0
         ],
-        "tag": "landing",
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        },
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18695,23 +18711,7 @@
             }
           }
         },
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        }
+        "tag": "landing"
       }
     }
   ],

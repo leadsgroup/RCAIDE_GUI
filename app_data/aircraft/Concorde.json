@@ -16713,9 +16713,9 @@
               0
             ]
           },
-          "auxillary_power_unit": {
+          "auxiliary_power_unit": {
             "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit.Auxiliary_Power_Unit",
-            "tag": "auxillary_power_unit",
+            "tag": "auxiliary_power_unit",
             "mass_properties": {
               "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
               "mass": [
@@ -24509,6 +24509,13 @@
                   0
                 ]
               },
+              "outer_left_turbojet": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
+                "afterburner_active": [
+                  true,
+                  0
+                ]
+              },
               "outer_right_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
@@ -24522,18 +24529,10 @@
                   true,
                   0
                 ]
-              },
-              "outer_left_turbojet": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
-                "afterburner_active": [
-                  true,
-                  0
-                ]
               }
             }
           }
         },
-        "tag": "climb",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -24549,7 +24548,8 @@
               }
             }
           }
-        }
+        },
+        "tag": "climb"
       }
     },
     {
@@ -24569,6 +24569,13 @@
                   0
                 ]
               },
+              "outer_left_turbojet": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
+                "afterburner_active": [
+                  true,
+                  0
+                ]
+              },
               "outer_right_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
@@ -24582,18 +24589,10 @@
                   true,
                   0
                 ]
-              },
-              "outer_left_turbojet": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
-                "afterburner_active": [
-                  true,
-                  0
-                ]
               }
             }
           }
         },
-        "tag": "takeoff",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -24609,37 +24608,38 @@
               }
             }
           }
-        }
+        },
+        "tag": "takeoff"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
-        "tag": "landing",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "flap": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
-                "deflection": [
-                  0.5235987755982988,
-                  0
-                ]
-              },
               "slat": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
                 "deflection": [
                   0.4363323129985824,
                   0
                 ]
+              },
+              "flap": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
+                "deflection": [
+                  0.5235987755982988,
+                  0
+                ]
               }
             }
           }
-        }
+        },
+        "tag": "landing"
       }
     }
   ],
