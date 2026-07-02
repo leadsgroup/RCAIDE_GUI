@@ -253,7 +253,10 @@ class BasePropulsorWidget(QWidget):
     def _get_path_value(obj, path):
         value = obj
         for key in path.split("."):
-            value = value[key]
+            try:
+                value = value[key]
+            except (KeyError, TypeError):
+                return None
         return value
 
     @staticmethod

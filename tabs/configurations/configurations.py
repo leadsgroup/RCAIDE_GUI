@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/aircraft_configs/aircraft_configs.py
+# RCAIDE_GUI/tabs/configurations/configurations.py
 
 import RCAIDE
 from RCAIDE.Library.Components.Configs.Config import Config
@@ -64,62 +64,57 @@ class AircraftConfigsWidget(TabWidget):
     #  Vehicle traversal helpers
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _iter_nested(obj, outer_attr, inner_attr):
+        """Yield every item in obj.<outer_attr>[].<inner_attr>[]."""
+        for outer in getattr(obj, outer_attr, []):
+            yield from getattr(outer, inner_attr, [])
+
+    @staticmethod
+    def _find_by_tag(obj, outer_attr, inner_attr, tag):
+        """Return the first nested item whose .tag matches, or None."""
+        for item in ConfigsWidget._iter_nested(obj, outer_attr, inner_attr):
+            if getattr(item, 'tag', None) == tag:
+                return item
+        return None
+
     def _cs_names(self):
-        names = []
-        for wing in getattr(rcaide_io.vehicle, 'wings', []):
-            for cs in getattr(wing, 'control_surfaces', []):
-                tag = getattr(cs, 'tag', None)
-                if tag and tag not in names:
-                    names.append(tag)
-        return sorted(names)
+        tags = {getattr(cs, 'tag', None)
+                for cs in self._iter_nested(rcaide_io.vehicle, 'wings', 'control_surfaces')
+                if getattr(cs, 'tag', None)}
+        return sorted(tags)
 
     def _prop_names(self):
-        names = []
-        for network in getattr(rcaide_io.vehicle, 'networks', []):
-            for prop in getattr(network, 'propulsors', []):
-                tag = getattr(prop, 'tag', None)
-                if tag and tag not in names:
-                    names.append(tag)
-        return sorted(names)
+        tags = {getattr(p, 'tag', None)
+                for p in self._iter_nested(rcaide_io.vehicle, 'networks', 'propulsors')
+                if getattr(p, 'tag', None)}
+        return sorted(tags)
 
     def _get_cs_deflection(self, config, cs_name):
-        for wing in getattr(config, 'wings', []):
-            for cs in getattr(wing, 'control_surfaces', []):
-                if getattr(cs, 'tag', None) == cs_name:
-                    return getattr(cs, 'deflection', 0.0)
-        return 0.0
+        cs = self._find_by_tag(config, 'wings', 'control_surfaces', cs_name)
+        return getattr(cs, 'deflection', 0.0) if cs is not None else 0.0
 
     def _set_cs_deflection(self, config, cs_name, angle):
-        for wing in getattr(config, 'wings', []):
-            for cs in getattr(wing, 'control_surfaces', []):
-                if getattr(cs, 'tag', None) == cs_name:
-                    cs.deflection = angle
-                    return
+        cs = self._find_by_tag(config, 'wings', 'control_surfaces', cs_name)
+        if cs is not None:
+            cs.deflection = angle
 
     def _get_gear_extended(self, config):
-        for gear in getattr(config, 'landing_gears', []):
-            if getattr(gear, 'gear_extended', False):
-                return True
-        return False
+        return any(getattr(g, 'gear_extended', False)
+                   for g in getattr(config, 'landing_gears', []))
 
     def _set_gear_extended(self, config, value):
         for gear in getattr(config, 'landing_gears', []):
             gear.gear_extended = value
 
     def _get_prop_active(self, config, prop_name):
-        for network in getattr(config, 'networks', []):
-            for prop in getattr(network, 'propulsors', []):
-                if getattr(prop, 'tag', None) == prop_name:
-                    return getattr(prop, 'active', True)
-        return True
+        prop = self._find_by_tag(config, 'networks', 'propulsors', prop_name)
+        return getattr(prop, 'active', True) if prop is not None else True
 
     def _set_prop_active(self, config, prop_name, value):
-        for network in getattr(config, 'networks', []):
-            for prop in getattr(network, 'propulsors', []):
-                if getattr(prop, 'tag', None) == prop_name:
-                    if hasattr(prop, 'active'):
-                        prop.active = bool(value)
-                    return
+        prop = self._find_by_tag(config, 'networks', 'propulsors', prop_name)
+        if prop is not None and hasattr(prop, 'active'):
+            prop.active = bool(value)
 
     # ------------------------------------------------------------------
     #  Layout
@@ -231,6 +226,7 @@ class AircraftConfigsWidget(TabWidget):
             try:
                 config = rcaide_io.rcaide_configs[orig_tag]
             except (KeyError, TypeError):
+                print(f"[configurations] save_data: config '{orig_tag}' not found, skipping.")
                 continue
 
             new_name   = w["name"].text().strip() or name
@@ -266,7 +262,7 @@ class AircraftConfigsWidget(TabWidget):
         try:
             del rcaide_io.rcaide_configs[key]
         except (KeyError, TypeError, AttributeError):
-            pass
+            print(f"[configurations] delete_data: config '{key}' not found.")
         self._selected_tag = None
         self.update_layout()
 

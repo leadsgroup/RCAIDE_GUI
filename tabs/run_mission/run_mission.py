@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/solve/solve.py
+# RCAIDE_GUI/tabs/run_mission/run_mission.py
 # 
 # Created: Oct 2024, Laboratory for Emerging Aircraft Design and Systems
 
@@ -14,7 +14,7 @@ from tabs.mission.mission import _extract_gui_segments
 from tabs.configurations.configurations import build_rcaide_configs_from_geometry
 
 # PtQT imports 
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QColorDialog
 from PyQt6.QtCore import Qt, QSize, QObject, QThread, QTimer, pyqtSignal
 import pyqtgraph as pg
 
@@ -209,6 +209,24 @@ class SolveWidget(TabWidget):
         base_layout.addLayout(tree_layout, 3)
         base_layout.addLayout(main_layout, 7)
         self.setLayout(base_layout)
+
+        self._apply_solve_theme()
+        self._polish_solve_layout()
+        self._apply_solve_graph_skin()
+
+        self.settings_panel = QWidget()
+        self.settings_panel.setFixedWidth(320)
+        root_layout = self.layout()
+        if root_layout is not None:
+            root_layout.addWidget(self.settings_panel)
+            if root_layout.count() >= 3:
+                root_layout.setStretch(0, 2)
+                root_layout.setStretch(1, 4)
+                root_layout.setStretch(2, 1)
+
+        self.init_plot_settings_panel()
+        if hasattr(self, "tree"):
+            self.tree.itemChanged.connect(self.toggle_plot_visibility)
 
     def init_tree(self):
         # Two columns: option name + check state.
@@ -790,6 +808,454 @@ class SolveWidget(TabWidget):
         ],
     }
 
+    def _apply_solve_theme(self):
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #0e141b;
+            color: #d6e1ff;
+            font-family: "Segoe UI", "Inter", sans-serif;
+            font-size: 12px;
+        }
+
+        QLabel {
+            color: #d6e1ff;
+        }
+        QPushButton {
+            background-color: #141c26;
+            border: 1px solid #223044;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: #9fb8ff;
+        }
+
+        QPushButton:hover {
+            background-color: #1b2635;
+            border-color: #4da3ff;
+        }
+
+        QPushButton:pressed {
+            background-color: #223044;
+        }
+
+        QTreeWidget {
+            background-color: #10161d;
+            border: 1px solid #1f2a36;
+            border-radius: 6px;
+        }
+
+        QTreeWidget::item {
+            padding: 6px;
+        }
+
+        QTreeWidget::item:selected {
+            background-color: #1c2633;
+            color: #4da3ff;
+        }
+
+        QHeaderView::section {
+            background-color: #0e141b;
+            color: #9fb8ff;
+            border: none;
+            padding: 6px;
+        }
+
+        QScrollArea {
+            border: none;
+        }
+
+        QCheckBox {
+            spacing: 8px;
+        }
+
+        QComboBox, QDoubleSpinBox {
+            background-color: #141c26;
+            border: 1px solid #223044;
+            border-radius: 4px;
+            padding: 4px;
+        }
+    """)
+
+    def _polish_solve_layout(self):
+        layout = self.layout()
+        if layout is None:
+            return
+
+        layout.setContentsMargins(14, 14, 14, 14)
+        layout.setSpacing(14)
+
+        # Left column (tree + solve button)
+        if layout.count() >= 1:
+            left = layout.itemAt(0).layout()
+            if left:
+                left.setSpacing(10)
+
+        # Center column (plots)
+        if layout.count() >= 2:
+            center = layout.itemAt(1).layout()
+            if center:
+                center.setSpacing(12)
+
+        # Right column (settings, if present)
+        if layout.count() >= 3:
+            right = layout.itemAt(2).layout()
+            if right:
+                right.setSpacing(12)
+
+    def _apply_solve_graph_skin(self):
+        for attr_name in dir(self):
+            widget = getattr(self, attr_name, None)
+
+            # Only affect graph containers (not plot logic or data)
+            if not isinstance(widget, pg.PlotWidget):
+                continue
+
+            widget.setBackground("#0e141b")
+            plot_item = widget.getPlotItem()
+            plot_item.showGrid(x=True, y=True, alpha=0.15)
+
+            for axis_name in ("left", "bottom"):
+                axis = plot_item.getAxis(axis_name)
+                axis.setPen(pg.mkPen("#4da3ff"))
+                axis.setTextPen(pg.mkPen("#9fb8ff"))
+
+            plot_item.getViewBox().setBorder(pg.mkPen("#1f2a36"))
+
+    def init_plot_settings_panel(self):
+        layout = QVBoxLayout()
+        layout.setSpacing(8)
+
+        def header(text):
+            lbl = QLabel(text)
+            lbl.setStyleSheet("font-weight: bold; color: white;")
+            return lbl
+
+        panel_header = QLabel("Plot Parameters")
+        panel_header.setStyleSheet(
+            "color: #9fb8ff; font-size: 18px; font-weight: bold; "
+            "padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.08);"
+        )
+        layout.addWidget(panel_header)
+
+        layout.addWidget(header("Line Appearance"))
+
+        layout.addWidget(QLabel("Line Width"))
+        self.line_width_spin = QDoubleSpinBox()
+        self.line_width_spin.setRange(0.5, 10.0)
+        self.line_width_spin.setValue(2.0)
+        layout.addWidget(self.line_width_spin)
+
+        layout.addWidget(QLabel("Line Style"))
+        self.line_style_combo = QComboBox()
+        self.line_style_combo.addItems(["Solid", "Dashed", "Dotted"])
+        layout.addWidget(self.line_style_combo)
+
+        self.line_color_button = QPushButton("Select Line Color")
+        layout.addWidget(self.line_color_button)
+
+        layout.addWidget(header("Markers"))
+
+        self.marker_check = QCheckBox("Show Markers")
+        self.marker_check.setChecked(True)
+        layout.addWidget(self.marker_check)
+
+        layout.addWidget(QLabel("Marker Style"))
+        self.marker_style_combo = QComboBox()
+        self.marker_style_combo.addItems(['o', 's', '^', 'd', 'x', '+', '*'])
+        layout.addWidget(self.marker_style_combo)
+
+        layout.addWidget(QLabel("Marker Size"))
+        self.marker_size_spin = QDoubleSpinBox()
+        self.marker_size_spin.setRange(3, 20)
+        self.marker_size_spin.setValue(8)
+        layout.addWidget(self.marker_size_spin)
+
+        layout.addWidget(header("Axes"))
+
+        self.autoscale_check = QCheckBox("Autoscale Axes")
+        self.autoscale_check.setChecked(True)
+        layout.addWidget(self.autoscale_check)
+
+        layout.addWidget(QLabel("Axis Font Size"))
+        self.axis_font_spin = QDoubleSpinBox()
+        self.axis_font_spin.setRange(8, 24)
+        self.axis_font_spin.setValue(14)
+        layout.addWidget(self.axis_font_spin)
+
+        layout.addWidget(header("Grid / Legend"))
+
+        self.grid_check = QCheckBox("Show Grid")
+        self.grid_check.setChecked(True)
+        layout.addWidget(self.grid_check)
+
+        self.grid_color_button = QPushButton("Select Grid Color")
+        layout.addWidget(self.grid_color_button)
+
+        self.legend_check = QCheckBox("Show Legend")
+        self.legend_check.setChecked(True)
+        layout.addWidget(self.legend_check)
+
+        layout.addWidget(header("Export"))
+
+        self.save_plot_button = QPushButton("Save Plots")
+        self.save_plot_button.clicked.connect(self.save_current_plot)
+        layout.addWidget(self.save_plot_button)
+
+        layout.addStretch()
+        self.settings_panel.setLayout(layout)
+
+        self.selected_line_color = None
+        self.selected_grid_color = (150, 150, 150)
+
+        self.line_width_spin.valueChanged.connect(self.apply_plot_settings)
+        self.marker_size_spin.valueChanged.connect(self.apply_plot_settings)
+        self.axis_font_spin.valueChanged.connect(self.apply_plot_settings)
+        self.line_style_combo.currentIndexChanged.connect(self.apply_plot_settings)
+        self.marker_style_combo.currentIndexChanged.connect(self.apply_plot_settings)
+        self.marker_check.stateChanged.connect(self.apply_plot_settings)
+        self.autoscale_check.stateChanged.connect(self.apply_plot_settings)
+        self.grid_check.stateChanged.connect(self.apply_plot_settings)
+        self.legend_check.stateChanged.connect(self.apply_plot_settings)
+        self.line_color_button.clicked.connect(self.select_line_color)
+        self.grid_color_button.clicked.connect(self.select_grid_color)
+
+    def select_line_color(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.selected_line_color = color.name()
+            self.apply_plot_settings()
+
+    def select_grid_color(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.selected_grid_color = color.getRgb()[:3]
+            self.apply_plot_settings()
+
+    def apply_plot_settings(self):
+        plots = []
+        if hasattr(self, "_base_plot_widgets"):
+            plots.extend([p for p in self._base_plot_widgets if isinstance(p, pg.PlotWidget)])
+        if hasattr(self, "_dynamic_plot_widgets"):
+            plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
+        plots.extend([
+            getattr(self, name, None) for name in dir(self)
+            if isinstance(getattr(self, name, None), pg.PlotWidget)
+        ])
+
+        seen = set()
+        unique_plots = []
+        for plot in plots:
+            pid = id(plot)
+            if pid in seen:
+                continue
+            seen.add(pid)
+            unique_plots.append(plot)
+
+        for plot in unique_plots:
+            plot.showGrid(
+                x=self.grid_check.isChecked(),
+                y=self.grid_check.isChecked(),
+                alpha=0.3
+            )
+
+            plot.getAxis("bottom").setPen(self.selected_grid_color)
+            plot.getAxis("left").setPen(self.selected_grid_color)
+
+            if self.autoscale_check.isChecked():
+                viewbox = plot.getPlotItem().getViewBox()
+                viewbox.enableAutoRange(x=True, y=True)
+                viewbox.autoRange()
+
+            font = pg.QtGui.QFont()
+            font.setPointSizeF(self.axis_font_spin.value())
+            plot.getAxis("bottom").setTickFont(font)
+            plot.getAxis("left").setTickFont(font)
+
+            if self.legend_check.isChecked():
+                if not plot.plotItem.legend:
+                    plot.addLegend()
+                self._position_plot_legend(plot)
+                plot.plotItem.legend.show()
+            else:
+                if plot.plotItem.legend:
+                    plot.plotItem.legend.hide()
+
+            for curve in plot.listDataItems():
+                old_pen = curve.opts["pen"]
+
+                style = self.line_style_combo.currentText()
+                if style == "Dashed":
+                    pen_style = Qt.PenStyle.DashLine
+                elif style == "Dotted":
+                    pen_style = Qt.PenStyle.DotLine
+                else:
+                    pen_style = Qt.PenStyle.SolidLine
+
+                color = self.selected_line_color or old_pen.color()
+                new_pen = pg.mkPen(
+                    color=color,
+                    width=self.line_width_spin.value(),
+                    style=pen_style
+                )
+
+                if self.marker_check.isChecked():
+                    symbol_map = {
+                        '^': 't1', 'v': 't', '<': 't3', '>': 't2', '*': 'star',
+                    }
+                    valid_symbols = {'o', 's', 't', 't1', 't2', 't3', 'd', '+', 'x', 'p', 'h', 'star', '|', '_'}
+                    selected = self.marker_style_combo.currentText()
+                    marker_symbol = symbol_map.get(selected, selected)
+                    if marker_symbol not in valid_symbols:
+                        marker_symbol = 'o'
+                    curve.setSymbol(marker_symbol)
+                    curve.setSymbolSize(self.marker_size_spin.value())
+                    curve.setSymbolBrush(new_pen.color())
+                    curve.setSymbolPen(new_pen)
+                else:
+                    curve.setSymbol(None)
+
+                curve.setPen(new_pen)
+
+    def save_current_plot(self):
+        def _plot_has_real_data(plot_widget):
+            for curve in plot_widget.listDataItems():
+                try:
+                    x_data, y_data = curve.getData()
+                except Exception:
+                    continue
+                if x_data is None or y_data is None:
+                    continue
+                x = np.asarray(x_data).reshape(-1)
+                y = np.asarray(y_data).reshape(-1)
+                if x.size == 0 or y.size == 0:
+                    continue
+                if np.isfinite(x).any() and np.isfinite(y).any():
+                    return True
+            return False
+
+        plots = []
+        if hasattr(self, "_base_plot_widgets"):
+            plots.extend([p for p in self._base_plot_widgets if isinstance(p, pg.PlotWidget)])
+        if hasattr(self, "_dynamic_plot_widgets"):
+            plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
+        plots = [p for p in plots if p.isVisible() and _plot_has_real_data(p)]
+
+        if not plots:
+            QMessageBox.information(self, "Save Plots", "No visible plots with data to save.")
+            return
+
+        from PyQt6.QtWidgets import QApplication
+        parent_dir = QFileDialog.getExistingDirectory(
+            self, "Choose Folder to Save Mission Plots", os.getcwd(),
+        )
+        if not parent_dir:
+            return
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        export_dir = os.path.join(parent_dir, f"Mission Plots {timestamp}")
+        os.makedirs(export_dir, exist_ok=True)
+
+        def _sanitize_name(text):
+            text = re.sub(r"<[^>]*>", "", str(text)).strip()
+            text = re.sub(r"[^A-Za-z0-9._ -]", "_", text)
+            text = re.sub(r"\s+", "_", text).strip("_")
+            return text or "plot"
+
+        for idx, plot in enumerate(plots, start=1):
+            plot_item = plot.getPlotItem()
+            if plot_item is None:
+                continue
+
+            left_axis   = plot_item.getAxis("left")
+            bottom_axis = plot_item.getAxis("bottom")
+
+            old_bg               = plot.backgroundBrush()
+            old_bottom_pen       = bottom_axis.pen()
+            old_left_pen         = left_axis.pen()
+            old_bottom_text_pen  = bottom_axis.textPen()
+            old_left_text_pen    = left_axis.textPen()
+            old_border           = plot_item.getViewBox().border
+            old_left_show_values = left_axis.style.get("showValues", True)
+            old_bottom_show_values = bottom_axis.style.get("showValues", True)
+            old_left_width       = left_axis.width()
+
+            plot.setBackground("white")
+            bottom_axis.setPen(pg.mkPen("black"))
+            left_axis.setPen(pg.mkPen("black"))
+            bottom_axis.setTextPen(pg.mkPen("black"))
+            left_axis.setTextPen(pg.mkPen("black"))
+            left_axis.setStyle(showValues=True, autoExpandTextSpace=True)
+            bottom_axis.setStyle(showValues=True, autoExpandTextSpace=True)
+            left_axis.setWidth(max(int(old_left_width or 0), 75))
+            plot_item.getViewBox().setBorder(pg.mkPen("black"))
+
+            curve_state = []
+            for curve in plot.listDataItems():
+                old_pen         = curve.opts.get("pen")
+                old_symbol_pen  = curve.opts.get("symbolPen")
+                old_symbol_brush = curve.opts.get("symbolBrush")
+                curve_state.append((curve, old_pen, old_symbol_pen, old_symbol_brush))
+
+                pen_color = old_pen.color() if old_pen is not None else None
+                if pen_color is not None and pen_color.lightness() > 220:
+                    export_pen = pg.mkPen("black", width=old_pen.widthF() if hasattr(old_pen, "widthF") else 2)
+                    curve.setPen(export_pen)
+                    if curve.opts.get("symbol") is not None:
+                        curve.setSymbolPen(export_pen)
+                        curve.setSymbolBrush(pg.mkBrush("black"))
+
+            plot.repaint()
+            QApplication.processEvents()
+
+            title     = plot_item.titleLabel.text if plot_item.titleLabel else ""
+            base_name = _sanitize_name(title) if title else f"plot_{idx:02d}"
+            file_path = os.path.join(export_dir, f"{idx:02d}_{base_name}.png")
+            plot.grab().save(file_path, "PNG")
+
+            plot.setBackground(old_bg)
+            bottom_axis.setPen(old_bottom_pen)
+            left_axis.setPen(old_left_pen)
+            bottom_axis.setTextPen(old_bottom_text_pen)
+            left_axis.setTextPen(old_left_text_pen)
+            left_axis.setStyle(showValues=old_left_show_values, autoExpandTextSpace=True)
+            bottom_axis.setStyle(showValues=old_bottom_show_values, autoExpandTextSpace=True)
+            if old_left_width:
+                left_axis.setWidth(old_left_width)
+            plot_item.getViewBox().setBorder(old_border if old_border is not None else pg.mkPen(None))
+            for curve, old_pen, old_symbol_pen, old_symbol_brush in curve_state:
+                if old_pen is not None:
+                    curve.setPen(old_pen)
+                curve.setSymbolPen(old_symbol_pen)
+                curve.setSymbolBrush(old_symbol_brush)
+
+        QMessageBox.information(self, "Save Plots", f"Saved {len(plots)} plots to:\n{export_dir}")
+
+    def toggle_plot_visibility(self, item, column):
+        # Ignore category items; only act on leaf (actual plot) items
+        if item.childCount() > 0:
+            return
+
+        import rcaide_io
+        results = getattr(rcaide_io, "rcaide_results", None)
+        if results is not None:
+            self._schedule_plot_render()
+
+    def init_plot_options_panel(self):
+        panel = QWidget()
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setSpacing(8)
+
+        title = QLabel("Plot Options")
+        title.setStyleSheet("font-weight: bold; color: white;")
+        layout.addWidget(title)
+
+        if hasattr(self, "tree"):
+            layout.addWidget(self.tree)
+
+        layout.addStretch()
+        return panel
+
+
 def _summarize_solve_output(output):
     # Return empty list if solver produced no output
     if not output:
@@ -849,632 +1315,6 @@ def _warnings_already_reported(output):
         or "Error:" in output
     )
     
-# ---------------------------------------
-# SolveWidget Theming and Layout Polish
-# ---------------------------------------
-# --- Apply dark theme to SolveWidget ---
-def _apply_solve_theme(self):
-    self.setStyleSheet("""
-        QWidget {
-            background-color: #0e141b;
-            color: #d6e1ff;
-            font-family: "Segoe UI", "Inter", sans-serif;
-            font-size: 12px;
-        }
-                       
-        QLabel {
-            color: #d6e1ff;
-        }
-        QPushButton {
-            background-color: #141c26;
-            border: 1px solid #223044;
-            border-radius: 6px;
-            padding: 6px 12px;
-            color: #9fb8ff;
-        }
-                       
-        QPushButton:hover {
-            background-color: #1b2635;
-            border-color: #4da3ff;
-        }
-                       
-        QPushButton:pressed {
-            background-color: #223044;
-        }
-
-        QTreeWidget {
-            background-color: #10161d;
-            border: 1px solid #1f2a36;
-            border-radius: 6px;
-        }
-
-        QTreeWidget::item {
-            padding: 6px;
-        }
-
-        QTreeWidget::item:selected {
-            background-color: #1c2633;
-            color: #4da3ff;
-        }
-
-        QHeaderView::section {
-            background-color: #0e141b;
-            color: #9fb8ff;
-            border: none;
-            padding: 6px;
-        }
-
-        QScrollArea {
-            border: none;
-        }
-                       
-        QCheckBox {
-            spacing: 8px;
-        }
-
-        QComboBox, QDoubleSpinBox {
-            background-color: #141c26;
-            border: 1px solid #223044;
-            border-radius: 4px;
-            padding: 4px;
-        }
-    """)
-
-# --- Layout Polish ---
-def _polish_solve_layout(self):
-    layout = self.layout()
-    if layout is None:
-        return
-
-    layout.setContentsMargins(14, 14, 14, 14)
-    layout.setSpacing(14)
-
-    # Left column (tree + solve button)
-    if layout.count() >= 1:
-        left = layout.itemAt(0).layout()
-        if left:
-            left.setSpacing(10)
-
-    # Center column (plots)
-    if layout.count() >= 2:
-        center = layout.itemAt(1).layout()
-        if center:
-            center.setSpacing(12)
-
-    # Right column (settings, if present)
-    if layout.count() >= 3:
-        right = layout.itemAt(2).layout()
-        if right:
-            right.setSpacing(12)
-
-# --------------------------------------------------------------------------------------------------
-# Graph Coloring and Styling
-# --------------------------------------------------------------------------------------------------
-def _apply_solve_graph_skin(self):
-    """
-    Apply a dark theme and styling to all pyqtgraph PlotWidgets within the SolveWidget.
-    This includes background color, grid lines, axis colors, and frame styling.
-    """
-
-    for attr_name in dir(self):
-        widget = getattr(self, attr_name, None)
-
-        # Only affect graph containers (not plot logic or data)
-        if not isinstance(widget, pg.PlotWidget):
-            continue
-
-        # Dark graph canvas
-        widget.setBackground("#0e141b")
-        plot_item = widget.getPlotItem()
-
-        # Subtle grid for readability
-        plot_item.showGrid(x=True, y=True, alpha=0.15)
-
-        # Axis line + label coloring
-        for axis_name in ("left", "bottom"):
-            axis = plot_item.getAxis(axis_name)
-            axis.setPen(pg.mkPen("#4da3ff"))
-            axis.setTextPen(pg.mkPen("#9fb8ff"))
-
-        # Frame around the graph viewport
-        plot_item.getViewBox().setBorder(pg.mkPen("#1f2a36"))
-
-# ==================================================================================================
-# Plot Settings (Appearance, Save, Visibility)
-# ==================================================================================================
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton,
-    QCheckBox, QComboBox, QDoubleSpinBox,
-    QFileDialog, QColorDialog
-)
-from PyQt6.QtCore import Qt
-import pyqtgraph as pg
-import pyqtgraph.exporters as pg_exporters
-
-def init_plot_settings_panel(self):
-
-    # Main vertical layout for the settings panel
-    layout = QVBoxLayout()
-    layout.setSpacing(8)
-
-    # Helper function to create bold section labels
-    def header(text):
-        lbl = QLabel(text)
-        lbl.setStyleSheet("font-weight: bold; color: white;")
-        return lbl
-
-    # Panel header
-    panel_header = QLabel("Plot Parameters")
-    panel_header.setStyleSheet(
-        "color: #9fb8ff; font-size: 18px; font-weight: bold; "
-        "padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.08);"
-    )
-    layout.addWidget(panel_header)
-
-    # Line appearance section
-    layout.addWidget(header("Line Appearance"))
-
-    # Control for adjusting line width
-    layout.addWidget(QLabel("Line Width"))
-    self.line_width_spin = QDoubleSpinBox()
-    self.line_width_spin.setRange(0.5, 10.0)
-    self.line_width_spin.setValue(2.0)
-    layout.addWidget(self.line_width_spin)
-
-    # Control for selecting line style (solid, dashed, dotted)
-    layout.addWidget(QLabel("Line Style"))
-    self.line_style_combo = QComboBox()
-    self.line_style_combo.addItems(["Solid", "Dashed", "Dotted"])
-    layout.addWidget(self.line_style_combo)
-
-    # Button to open a color picker for the line color
-    self.line_color_button = QPushButton("Select Line Color")
-    layout.addWidget(self.line_color_button)
-
-    # Marker controls section
-    layout.addWidget(header("Markers"))
-
-    # Toggle to show or hide markers on the lines
-    self.marker_check = QCheckBox("Show Markers")
-    self.marker_check.setChecked(True)
-    layout.addWidget(self.marker_check)
-
-    # Dropdown to select marker symbol style
-    layout.addWidget(QLabel("Marker Style"))
-    self.marker_style_combo = QComboBox()
-    self.marker_style_combo.addItems(['o', 's', '^', 'd', 'x', '+', '*'])
-    layout.addWidget(self.marker_style_combo)
-
-    # Control for adjusting marker size
-    layout.addWidget(QLabel("Marker Size"))
-    self.marker_size_spin = QDoubleSpinBox()
-    self.marker_size_spin.setRange(3, 20)
-    self.marker_size_spin.setValue(8)
-    layout.addWidget(self.marker_size_spin)
-
-    # Axis-related controls
-    layout.addWidget(header("Axes"))
-
-    # Toggle to automatically scale axes based on data
-    self.autoscale_check = QCheckBox("Autoscale Axes")
-    self.autoscale_check.setChecked(True)
-    layout.addWidget(self.autoscale_check)
-
-    # Control for axis label and tick font size
-    layout.addWidget(QLabel("Axis Font Size"))
-    self.axis_font_spin = QDoubleSpinBox()
-    self.axis_font_spin.setRange(8, 24)
-    self.axis_font_spin.setValue(14)
-    layout.addWidget(self.axis_font_spin)
-
-    # Grid and legend controls
-    layout.addWidget(header("Grid / Legend"))
-
-    # Toggle to show or hide the grid
-    self.grid_check = QCheckBox("Show Grid")
-    self.grid_check.setChecked(True)
-    layout.addWidget(self.grid_check)
-
-    # Button to open a color picker for the grid color
-    self.grid_color_button = QPushButton("Select Grid Color")
-    layout.addWidget(self.grid_color_button)
-
-    # Toggle to show or hide the legend
-    self.legend_check = QCheckBox("Show Legend")
-    self.legend_check.setChecked(True)
-    layout.addWidget(self.legend_check)
-
-    # Export section
-    layout.addWidget(header("Export"))
-
-    # Button to save the currently visible plot(s)
-    self.save_plot_button = QPushButton("Save Plots")
-    self.save_plot_button.clicked.connect(self.save_current_plot)
-    layout.addWidget(self.save_plot_button)
-
-    # Push everything up and keep the panel compact
-    layout.addStretch()
-
-    # Attach the layout to the settings panel widget
-    self.settings_panel.setLayout(layout)
-
-    # Default values used when applying plot settings
-    self.selected_line_color = None
-    self.selected_grid_color = (150, 150, 150)
-
-    # Wire UI changes to re-apply plot appearance settings
-    self.line_width_spin.valueChanged.connect(self.apply_plot_settings)
-    self.marker_size_spin.valueChanged.connect(self.apply_plot_settings)
-    self.axis_font_spin.valueChanged.connect(self.apply_plot_settings)
-
-    self.line_style_combo.currentIndexChanged.connect(self.apply_plot_settings)
-    self.marker_style_combo.currentIndexChanged.connect(self.apply_plot_settings)
-
-    self.marker_check.stateChanged.connect(self.apply_plot_settings)
-    self.autoscale_check.stateChanged.connect(self.apply_plot_settings)
-    self.grid_check.stateChanged.connect(self.apply_plot_settings)
-    self.legend_check.stateChanged.connect(self.apply_plot_settings)
-
-    # Open color picker dialogs for line and grid colors
-    self.line_color_button.clicked.connect(self.select_line_color)
-    self.grid_color_button.clicked.connect(self.select_grid_color)
-
-# --- Line Color Selection ---
-def select_line_color(self):
-    # Open a color picker dialog for selecting the line color
-    color = QColorDialog.getColor()
-
-    # Only apply the color if the user selected a valid one
-    if color.isValid():
-        # Store the selected line color (as a hex string)
-        self.selected_line_color = color.name()
-
-        # Re-apply plot appearance settings using the new color
-        self.apply_plot_settings()
-
-# --- Grid Color Selection ---
-def select_grid_color(self):
-    # Open a color picker dialog for selecting the grid color
-    color = QColorDialog.getColor()
-
-    # Only apply the color if the user selected a valid one
-    if color.isValid():
-        # Store the selected grid color as an RGB tuple
-        self.selected_grid_color = color.getRgb()[:3]
-
-        # Re-apply plot appearance settings using the new color
-        self.apply_plot_settings()
-
-# --------------------------------------------------------------------------------------------------
-#  Apply Plot Settings
-# --------------------------------------------------------------------------------------------------
-def apply_plot_settings(self):
-
-    # Collect all plot widgets (base + dynamic + fallback attribute scan)
-    plots = []
-    if hasattr(self, "_base_plot_widgets"):
-        plots.extend([p for p in self._base_plot_widgets if isinstance(p, pg.PlotWidget)])
-    if hasattr(self, "_dynamic_plot_widgets"):
-        plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
-    plots.extend([
-        getattr(self, name, None) for name in dir(self)
-        if isinstance(getattr(self, name, None), pg.PlotWidget)
-    ])
-
-    # De-duplicate while preserving order.
-    seen = set()
-    unique_plots = []
-    for plot in plots:
-        pid = id(plot)
-        if pid in seen:
-            continue
-        seen.add(pid)
-        unique_plots.append(plot)
-
-    for plot in unique_plots:
-
-        # Show or hide grid lines based on the checkbox state
-        plot.showGrid(
-            x=self.grid_check.isChecked(),
-            y=self.grid_check.isChecked(),
-            alpha=0.3
-        )
-
-        # Update axis line color to match selected grid color
-        plot.getAxis("bottom").setPen(self.selected_grid_color)
-        plot.getAxis("left").setPen(self.selected_grid_color)
-
-        # Autoscale axes to fit the data when enabled
-        if self.autoscale_check.isChecked():
-            viewbox = plot.getPlotItem().getViewBox()
-            viewbox.enableAutoRange(x=True, y=True)
-            viewbox.autoRange()
-
-        # Update axis tick label font size
-        font = pg.QtGui.QFont()
-        font.setPointSizeF(self.axis_font_spin.value())
-        plot.getAxis("bottom").setTickFont(font)
-        plot.getAxis("left").setTickFont(font)
-
-        # Show or hide the legend
-        if self.legend_check.isChecked():
-            if not plot.plotItem.legend:
-                plot.addLegend()
-            if hasattr(self, "_position_plot_legend"):
-                self._position_plot_legend(plot)
-            plot.plotItem.legend.show()
-        else:
-            if plot.plotItem.legend:
-                plot.plotItem.legend.hide()
-
-        # Apply line and marker settings to each curve in the plot
-        for curve in plot.listDataItems():
-
-            # Get the existing pen for the curve
-            old_pen = curve.opts["pen"]
-
-            # Determine line style from dropdown selection
-            style = self.line_style_combo.currentText()
-            if style == "Dashed":
-                pen_style = Qt.PenStyle.DashLine
-            elif style == "Dotted":
-                pen_style = Qt.PenStyle.DotLine
-            else:
-                pen_style = Qt.PenStyle.SolidLine
-
-            # Use selected color if provided, otherwise keep existing color
-            color = self.selected_line_color or old_pen.color()
-
-            # Create a new pen with updated style and width
-            new_pen = pg.mkPen(
-                color=color,
-                width=self.line_width_spin.value(),
-                style=pen_style
-            )
-
-            # Sanitize marker symbol first so setPen can't fail on stale invalid symbols.
-            if self.marker_check.isChecked():
-                symbol_map = {
-                    '^': 't1',
-                    'v': 't',
-                    '<': 't3',
-                    '>': 't2',
-                    # pyqtgraph uses "star" (not "*") for star markers.
-                    '*': 'star',
-                }
-                valid_symbols = {'o', 's', 't', 't1', 't2', 't3', 'd', '+', 'x', 'p', 'h', 'star', '|', '_'}
-                selected = self.marker_style_combo.currentText()
-                marker_symbol = symbol_map.get(selected, selected)
-                if marker_symbol not in valid_symbols:
-                    marker_symbol = 'o'
-                curve.setSymbol(marker_symbol)
-                curve.setSymbolSize(self.marker_size_spin.value())
-                curve.setSymbolBrush(new_pen.color())
-                curve.setSymbolPen(new_pen)
-            else:
-                curve.setSymbol(None)
-
-            # Apply the new pen to the curve
-            curve.setPen(new_pen)
-
-# --------------------------------------------------------------------------------------------------
-#  Save Visible Plot
-# --------------------------------------------------------------------------------------------------
-def save_current_plot(self):
-    from PyQt6.QtWidgets import QFileDialog, QApplication
-
-    def _plot_has_real_data(plot_widget):
-        # Export only plots that actually contain finite data points.
-        for curve in plot_widget.listDataItems():
-            try:
-                x_data, y_data = curve.getData()
-            except Exception:
-                continue
-            if x_data is None or y_data is None:
-                continue
-            x = np.asarray(x_data).reshape(-1)
-            y = np.asarray(y_data).reshape(-1)
-            if x.size == 0 or y.size == 0:
-                continue
-            if np.isfinite(x).any() and np.isfinite(y).any():
-                return True
-        return False
-
-    # Collect visible plots in display order.
-    plots = []
-    if hasattr(self, "_base_plot_widgets"):
-        plots.extend([p for p in self._base_plot_widgets if isinstance(p, pg.PlotWidget)])
-    if hasattr(self, "_dynamic_plot_widgets"):
-        plots.extend([p for p in self._dynamic_plot_widgets if isinstance(p, pg.PlotWidget)])
-    plots = [p for p in plots if p.isVisible() and _plot_has_real_data(p)]
-
-    if not plots:
-        QMessageBox.information(self, "Save Plots", "No visible plots with data to save.")
-        return
-
-    # Choose parent directory where a new plots folder will be created.
-    parent_dir = QFileDialog.getExistingDirectory(
-        self,
-        "Choose Folder to Save Mission Plots",
-        os.getcwd(),
-    )
-    if not parent_dir:
-        return
-
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    export_dir = os.path.join(parent_dir, f"Mission Plots {timestamp}")
-    os.makedirs(export_dir, exist_ok=True)
-
-    def _sanitize_name(text):
-        text = re.sub(r"<[^>]*>", "", str(text)).strip()
-        text = re.sub(r"[^A-Za-z0-9._ -]", "_", text)
-        text = re.sub(r"\s+", "_", text).strip("_")
-        return text or "plot"
-
-    for idx, plot in enumerate(plots, start=1):
-        plot_item = plot.getPlotItem()
-        if plot_item is None:
-            continue
-
-        left_axis = plot_item.getAxis("left")
-        bottom_axis = plot_item.getAxis("bottom")
-
-        # Preserve current styling so we can restore after exporting.
-        old_bg = plot.backgroundBrush()
-        old_bottom_pen = bottom_axis.pen()
-        old_left_pen = left_axis.pen()
-        old_bottom_text_pen = bottom_axis.textPen()
-        old_left_text_pen = left_axis.textPen()
-        old_border = plot_item.getViewBox().border
-        old_left_show_values = left_axis.style.get("showValues", True)
-        old_bottom_show_values = bottom_axis.style.get("showValues", True)
-        old_left_width = left_axis.width()
-
-        # Ensure axes/labels remain visible on white export background.
-        plot.setBackground("white")
-        bottom_axis.setPen(pg.mkPen("black"))
-        left_axis.setPen(pg.mkPen("black"))
-        bottom_axis.setTextPen(pg.mkPen("black"))
-        left_axis.setTextPen(pg.mkPen("black"))
-        # Force tick value labels to render and reserve width on the left axis.
-        left_axis.setStyle(showValues=True, autoExpandTextSpace=True)
-        bottom_axis.setStyle(showValues=True, autoExpandTextSpace=True)
-        left_axis.setWidth(max(int(old_left_width or 0), 75))
-        plot_item.getViewBox().setBorder(pg.mkPen("black"))
-
-        # Ensure very light curves are visible on white export background.
-        curve_state = []
-        for curve in plot.listDataItems():
-            old_pen = curve.opts.get("pen")
-            old_symbol_pen = curve.opts.get("symbolPen")
-            old_symbol_brush = curve.opts.get("symbolBrush")
-            curve_state.append((curve, old_pen, old_symbol_pen, old_symbol_brush))
-
-            pen_color = old_pen.color() if old_pen is not None else None
-            if pen_color is not None and pen_color.lightness() > 220:
-                export_pen = pg.mkPen("black", width=old_pen.widthF() if hasattr(old_pen, "widthF") else 2)
-                curve.setPen(export_pen)
-                if curve.opts.get("symbol") is not None:
-                    curve.setSymbolPen(export_pen)
-                    curve.setSymbolBrush(pg.mkBrush("black"))
-
-        plot.repaint()
-        QApplication.processEvents()
-
-        title = plot_item.titleLabel.text if plot_item.titleLabel else ""
-        base_name = _sanitize_name(title) if title else f"plot_{idx:02d}"
-        file_path = os.path.join(export_dir, f"{idx:02d}_{base_name}.png")
-
-        # Capture exactly what the user sees in the plot widget.
-        plot.grab().save(file_path, "PNG")
-
-        # Restore UI styling.
-        plot.setBackground(old_bg)
-        bottom_axis.setPen(old_bottom_pen)
-        left_axis.setPen(old_left_pen)
-        bottom_axis.setTextPen(old_bottom_text_pen)
-        left_axis.setTextPen(old_left_text_pen)
-        left_axis.setStyle(showValues=old_left_show_values, autoExpandTextSpace=True)
-        bottom_axis.setStyle(showValues=old_bottom_show_values, autoExpandTextSpace=True)
-        if old_left_width:
-            left_axis.setWidth(old_left_width)
-        plot_item.getViewBox().setBorder(old_border if old_border is not None else pg.mkPen(None))
-        for curve, old_pen, old_symbol_pen, old_symbol_brush in curve_state:
-            if old_pen is not None:
-                curve.setPen(old_pen)
-            curve.setSymbolPen(old_symbol_pen)
-            curve.setSymbolBrush(old_symbol_brush)
-
-    QMessageBox.information(self, "Save Plots", f"Saved {len(plots)} plots to:\n{export_dir}")
-
-# --------------------------------------------------------------------------------------------------
-#  Plot Visibility Toggle (Tree)
-# --------------------------------------------------------------------------------------------------
-def toggle_plot_visibility(self, item, column):
-
-    # Ignore category items; only act on leaf (actual plot) items
-    if item.childCount() > 0:
-        return
-
-    # Re-render selected plots based on current tree state (debounced).
-    import rcaide_io
-    results = getattr(rcaide_io, "rcaide_results", None)
-    if results is not None and hasattr(self, "_schedule_plot_render"):
-        self._schedule_plot_render()
-
-def init_plot_options_panel(self):
-    # Create the container widget for plot options
-    panel = QWidget()
-
-    # Vertical layout for the panel
-    layout = QVBoxLayout(panel)
-    layout.setContentsMargins(8, 8, 8, 8)
-    layout.setSpacing(8)
-
-    # Panel title
-    title = QLabel("Plot Options")
-    title.setStyleSheet("font-weight: bold; color: white;")
-    layout.addWidget(title)
-
-    # Add the plot visibility tree if it exists
-    if hasattr(self, "tree"):
-        layout.addWidget(self.tree)
-
-    # Push content to the top
-    layout.addStretch()
-
-    return panel
-
-#------------------------------------------------
-# Patch SolveWidget to integrate new features 
-#------------------------------------------------
-# Prevents "stacked patch" recursion if the module is reloaded/imported twice.
-if not getattr(SolveWidget, "_LEADS_PATCHED", False):
-    SolveWidget._LEADS_PATCHED = True
-    _SOLVEWIDGET_BASE_INIT = SolveWidget.__init__
-
-    def _solvewidget_init(self, *args, **kwargs):
-        # Run the original SolveWidget initialization
-        _SOLVEWIDGET_BASE_INIT(self, *args, **kwargs)
-
-        # Apply Solve tab UI theme + spacing + plot skin
-        _apply_solve_theme(self)
-        _polish_solve_layout(self)
-        _apply_solve_graph_skin(self)
-
-        # Create the plot settings panel (fixed width)
-        self.settings_panel = QWidget()
-        self.settings_panel.setFixedWidth(320)
-
-        # Add the settings panel as a 3rd column in the root layout
-        layout = self.layout()
-        if layout is not None:
-            layout.addWidget(self.settings_panel)
-
-            # Keep columns as: [tree+simulate | plots | settings_panel]
-            if layout.count() >= 3:
-                layout.setStretch(0, 2)
-                layout.setStretch(1, 4)
-                layout.setStretch(2, 1)
-
-        # Build the settings UI into the panel
-        init_plot_settings_panel(self)
-
-        # Wire the tree checkbox to visibility toggles
-        if hasattr(self, "tree"):
-            self.tree.itemChanged.connect(self.toggle_plot_visibility)
-
-    # Replace SolveWidget.__init__ with the extended version
-    SolveWidget.__init__ = _solvewidget_init
-
-    # Attach helper methods to SolveWidget 
-    SolveWidget.apply_plot_settings      = apply_plot_settings
-    SolveWidget.save_current_plot        = save_current_plot
-    SolveWidget.toggle_plot_visibility   = toggle_plot_visibility
-    SolveWidget.select_line_color        = select_line_color
-    SolveWidget.select_grid_color        = select_grid_color
-    SolveWidget.init_plot_options_panel  = init_plot_options_panel  # optional utility
-
 def get_widget() -> QWidget:
     # Factory used by the tab system to construct the SolveWidget
     return SolveWidget()

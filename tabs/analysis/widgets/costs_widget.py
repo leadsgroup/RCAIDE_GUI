@@ -4,32 +4,21 @@
 # ------------------------------------------------------------------------------
 # Imports
 # ------------------------------------------------------------------------------
-# RCAIDE imports
-import RCAIDE
-
-# RCAIDE-GUI imports
+from PyQt6.QtWidgets import QLabel
+from tabs.analysis.widgets.analysis_data_widget import AnalysisDataWidget
 from utilities import create_line_bar
-from tabs.analysis.widgets import AnalysisDataWidget
-
-# PyQt imports
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QScrollArea, \
-    QFrame, QSpacerItem, QSizePolicy
 
 # ------------------------------------------------------------------------------
 # Costs Widget
 # ------------------------------------------------------------------------------
 class CostsWidget(AnalysisDataWidget):
-    def __init__(self):
-        super(CostsWidget, self).__init__()
-        self.main_layout = QVBoxLayout()
+    title = "Costs"
 
-        self.main_layout.addWidget(QLabel("<b>Costs</b>"))
-        self.main_layout.addWidget(create_line_bar())
-        self.main_layout.addWidget(
-            QLabel("Computes industrial and operating costs"))
+    def __init__(self):
+        super().__init__()
+        self.main_layout.addWidget(QLabel("Costs analysis is not yet available."))
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def create_analysis(self, vehicle):
-        costs = RCAIDE.Framework.Analyses.Costs.Costs() 
-        return costs
+    def create_analysis(self, _vehicle):
+        return None

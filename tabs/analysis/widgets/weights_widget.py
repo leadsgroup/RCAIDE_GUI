@@ -4,91 +4,90 @@
 # ------------------------------------------------------------------------------
 # Imports
 # ------------------------------------------------------------------------------
-# RCAIDE imports
 import RCAIDE
 
-# RCAIDE-GUI imports
-from utilities import create_line_bar, Units
-from tabs.analysis.widgets import AnalysisDataWidget
+from tabs.analysis.widgets.analysis_data_widget import AnalysisDataWidget
+from utilities import create_line_bar, Units, set_data
 from common_widgets import DataEntryWidget
 
-# PyQt imports
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QComboBox
-
-# Python imports
-import os
-import sys
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 
 # ------------------------------------------------------------------------------
 # Weights Widget
 # ------------------------------------------------------------------------------
 class WeightsWidget(AnalysisDataWidget):
+    title = "Weights"
+
+    _CLASS_MAP = {
+        "Conventional Transport":        RCAIDE.Framework.Analyses.Weights.Conventional_Transport,
+        "Conventional BWB":              RCAIDE.Framework.Analyses.Weights.Conventional_BWB,
+        "Conventional General Aviation": RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation,
+        "Electric Transport":            RCAIDE.Framework.Analyses.Weights.Electric_Transport,
+        "Electric General Aviation":     RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation,
+        "Electric VTOL":                 RCAIDE.Framework.Analyses.Weights.Electric_VTOL,
+        "Hybrid":                        RCAIDE.Framework.Analyses.Weights.Hybrid,
+        "Cryogenic Transport":           RCAIDE.Framework.Analyses.Weights.Cryogenic_Transport,
+        "Cryogenic BWB":                 RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB,
+    }
+
+    _SETTINGS_FIELDS = [
+        ("Run Weights Analysis",    Units.Boolean, "run_weights_analysis"),
+        ("Overwrite OEW",           Units.Boolean, "overwrite_operating_empty_weight"),
+        ("Run CG Analysis",         Units.Boolean, "run_center_of_gravity_analysis"),
+        ("Run MOI Analysis",        Units.Boolean, "run_moments_of_inertia_analysis"),
+        ("Write Mass Properties",   Units.Boolean, "write_mass_properties"),
+        ("Iterate MTOW",            Units.Boolean, "iterate_mtow"),
+    ]
+
+    _defaults = {
+        "Run Weights Analysis":  [True,  0],
+        "Overwrite OEW":         [True,  0],
+        "Run CG Analysis":       [False, 0],
+        "Run MOI Analysis":      [False, 0],
+        "Write Mass Properties": [False, 0],
+        "Iterate MTOW":          [False, 0],
+    }
+
     def __init__(self):
-        super(WeightsWidget, self).__init__()
-        self.main_layout = QVBoxLayout()
+        super().__init__()
 
-        self.main_layout.addWidget(QLabel("<b>Weights</b>"))
-        self.main_layout.addWidget(create_line_bar())
-        self.weight_options = [
-            # "No selection",
-            "Conventional",
-            "Conventional BWB",
-            "Conventional General Aviation",
-            "Conventional_Transport",
-            "Electric",
-            "Electric_General_Aviation",
-            "Electric_VTOL",
-            "Hybrid",
-            "Hydrogen",
-            "Hydrogen_Transport"
-        ]
-        weight_selector_layout = QHBoxLayout()
-        weight_selector_layout.addWidget(QLabel("Weight Selection Option:"))
+        selector_row = QHBoxLayout()
+        selector_row.addWidget(QLabel("Weight Method:"))
         self.weight_selection = QComboBox()
-        self.weight_selection.addItems(self.weight_options)
-        self.weight_selection.currentIndexChanged.connect(self.on_weights_changed)
-        weight_selector_layout.addWidget(self.weight_selection)
-        weight_selector_layout.addStretch()
-        self.main_layout.addLayout(weight_selector_layout)
+        self.weight_selection.addItems(list(self._CLASS_MAP.keys()))
+        selector_row.addWidget(self.weight_selection)
+        selector_row.addStretch()
+        self.main_layout.addLayout(selector_row)
 
-        self.dynamic_weight_container = QWidget()
-        self.dynamic_weight_layout = QVBoxLayout(self.dynamic_weight_container)
-        self.dynamic_weight_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.addWidget(self.dynamic_weight_container)
+        self.data_entry_widget = DataEntryWidget(
+            [(lbl, units) for lbl, units, _ in self._SETTINGS_FIELDS]
+        )
+        self.data_entry_widget.load_data(self._defaults)
+        self.main_layout.addWidget(self.data_entry_widget)
 
         self.main_layout.addStretch()
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def on_weights_changed(self, index):
-        self.clear_dynamic_weights_layout()
-        selected_option = self.weight_selection.currentText()
-        if selected_option == "Conventional":
-            self.add_conventional_fields()
-
-    def add_conventional_fields(self):
-        conventional_data_units_labels = [
-            ("Update Center of Gravity", Units.Boolean),
-            ("Update Moment of Inertia", Units.Boolean),
-            ("Weight Correction: Structural Paint", Units.Count),
-            ("Weight Correction: Operational Items ETOPS", Units.Count),
-            ("Update Mass Properties", Units.Boolean),
-            ("FLOPS Fidelity", Units.Unitless)
-        ]
-        conventional_widget = DataEntryWidget(conventional_data_units_labels)
-        self.dynamic_weight_layout.addWidget(conventional_widget)
-
-    def clear_dynamic_weights_layout(self):
-        if self.dynamic_weight_layout is not None:
-            while self.dynamic_weight_layout.count():
-                item = self.dynamic_weight_layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-
-    def create_analysis(self, vehicle: RCAIDE.Vehicle):
-        selected_option = self.weight_selection.currentText()
-        # if selected_option == "No selection":
-        #     return None
-        weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
+    def create_analysis(self, _vehicle):
+        cls = self._CLASS_MAP.get(self.weight_selection.currentText())
+        if cls is None:
+            return None
+        weights = cls()
+        values = self.data_entry_widget.get_values()
+        for label, _units, rcaide_attr in self._SETTINGS_FIELDS:
+            if label in values and values[label] is not None:
+                set_data(weights.settings, rcaide_attr, values[label][0])
         return weights
+
+    def get_values(self):
+        data = self.data_entry_widget.get_values()
+        data["weight_method"] = self.weight_selection.currentText()
+        return data
+
+    def load_values(self, values):
+        super().load_values(values)
+        method = values.get("weight_method", "Conventional Transport")
+        if method in self._CLASS_MAP:
+            self.weight_selection.setCurrentText(method)
+        self.data_entry_widget.load_data(values)

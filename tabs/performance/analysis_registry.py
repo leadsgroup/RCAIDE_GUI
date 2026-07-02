@@ -349,7 +349,7 @@ def plot_load_trim(result, new_plot_widget, new_mpl_widget=None):
                     float(mass_axis.max() - mass_axis.min()))
         img.setLevels([SM_MIN, SM_MAX])
         img.setColorMap(pg_cmap)
-        img.setOpacity(140 / 255.0)
+        img.setOpacity(0.95)
         w.addItem(img)
 
         # Isocurve lines — parented to image so they share its pixel→scene transform
@@ -357,7 +357,7 @@ def plot_load_trim(result, new_plot_widget, new_mpl_widget=None):
         SM_N   = len(levels)
         for level in levels:
             iso = pg.IsocurveItem(data=sm_img, level=float(level),
-                                  pen=pg.mkPen(color=(60, 60, 60, 90), width=0.5))
+                                  pen=pg.mkPen(color=(50, 50, 50, 140), width=0.7))
             iso.setParentItem(img)
 
         # Contour labels via TextItem — only every other level to avoid clutter

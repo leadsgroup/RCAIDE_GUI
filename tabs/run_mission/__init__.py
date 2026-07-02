@@ -1,4 +1,4 @@
-# RCAIDE_GUI/tabs/solve/__init__.py
+# RCAIDE_GUI/tabs/run_mission/__init__.py
 
 from . import plots
-from .solve import * 
+from .run_mission import *

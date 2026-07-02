@@ -123,7 +123,7 @@ def _extract_gui_segments(mission_data):
     if not mission_data:
         return []
 
-    first = mission_data[0] if mission_data else {}
+    first = mission_data[0]
 
     # Old GUI format — items are already GUI dicts
     if isinstance(first, dict) and "Segment Name" in first:
