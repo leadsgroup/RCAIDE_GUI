@@ -18483,7 +18483,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -18881,7 +18882,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -19279,7 +19281,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -19677,7 +19680,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -20075,7 +20079,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -20473,7 +20478,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -20871,7 +20877,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -21261,7 +21268,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -21659,7 +21667,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Ground.Landing.Landing",
@@ -22056,7 +22065,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         }
       ]
     }

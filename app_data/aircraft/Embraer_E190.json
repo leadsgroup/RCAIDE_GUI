@@ -17095,15 +17095,15 @@
       "diff": {
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
           },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
@@ -17119,15 +17119,15 @@
       "diff": {
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
           },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
@@ -17141,6 +17141,7 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "descent",
       "diff": {
+        "tag": "descent",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -17156,8 +17157,7 @@
               }
             }
           }
-        },
-        "tag": "descent"
+        }
       }
     },
     {
@@ -17166,15 +17166,15 @@
       "diff": {
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
           },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
@@ -17190,15 +17190,15 @@
       "diff": {
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
             "gear_extended": [
               true,
               0
             ]
           },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_extended": [
               true,
               0
@@ -17926,7 +17926,8 @@
             0.0,
             0
           ],
-          "config_tag": "takeoff"
+          "config_tag": "takeoff",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -18320,7 +18321,8 @@
             0.0,
             0
           ],
-          "config_tag": "takeoff"
+          "config_tag": "takeoff",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -18714,7 +18716,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -19108,7 +19111,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -19498,7 +19502,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -19892,7 +19897,8 @@
             0.0,
             0
           ],
-          "config_tag": "descent"
+          "config_tag": "descent",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -20290,7 +20296,8 @@
             0.0,
             0
           ],
-          "config_tag": "descent"
+          "config_tag": "descent",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -20684,7 +20691,8 @@
             0.0,
             0
           ],
-          "config_tag": "landing"
+          "config_tag": "landing",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -21078,7 +21086,8 @@
             0.0,
             0
           ],
-          "config_tag": "landing"
+          "config_tag": "landing",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_Speed_Constant_Rate.Constant_Speed_Constant_Rate",
@@ -21472,7 +21481,8 @@
             0.0,
             0
           ],
-          "config_tag": "landing"
+          "config_tag": "landing",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Ground.Landing.Landing",
@@ -21869,7 +21879,8 @@
             0.0,
             0
           ],
-          "config_tag": "landing"
+          "config_tag": "landing",
+          "solver_type": "root_finder"
         }
       ]
     }

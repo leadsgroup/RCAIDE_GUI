@@ -1350,6 +1350,28 @@ def write_to_json():
     return json.dumps(data, indent=4)
 
 
+def _patch_cryogenic_tank_defaults(vehicle):
+    """Fill None fields on Cryogenic_Tanks that were missing from old JSONs."""
+    from RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks import Cryogenic_Tank as _CryoTank
+    default_alt = (getattr(getattr(vehicle, 'flight_envelope', None),
+                           'design_cruise_altitude', None) or 0.0)
+    _CRYO_DEFAULTS = {
+        'design_altitude':           default_alt,
+        'design_inlet_temperature':  20.0,    # K — liquid hydrogen boiling point
+        'design_heat_flux':          20.0,    # W/m²
+        'design_total_heat_transfer': 2000.0, # W
+        'ullage_volume_fraction':    0.07,
+    }
+    for net in getattr(vehicle, 'networks', {}).values():
+        for fl in getattr(net, 'fuel_lines', {}).values():
+            for tank in getattr(fl, 'fuel_tanks', {}).values():
+                if not isinstance(tank, _CryoTank):
+                    continue
+                for attr, default in _CRYO_DEFAULTS.items():
+                    if getattr(tank, attr, None) is None:
+                        setattr(tank, attr, default)
+
+
 def read_from_json(data_str, source_dir=None):
     global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses, rcaide_results
     from RCAIDE.Library.Components.Configs.Config import Config
@@ -1366,6 +1388,7 @@ def read_from_json(data_str, source_dir=None):
         restore_vehicle_components(vehicle)    # rebuilds all top-level containers
         restore_airfoil_components(vehicle)    # fixes embedded airfoil objects
         restore_typed_subcomponents(vehicle)   # fixes Fan, Combustor, Fuel_Line, etc.
+        _patch_cryogenic_tank_defaults(vehicle)
 
     if "geometry_data" in data and data["geometry_data"]:
         rcaide_vehicle = data["geometry_data"]

@@ -94,13 +94,14 @@ def _rcaide_seg_to_gui(seg_dict):
         assigned_propulsors = []
     flight_controls["assigned_propulsors"] = assigned_propulsors
 
+    solver_type = seg_dict.get("solver_type", "root_finder")
     gui_data = {
         "Segment Name":    seg_dict.get("tag", ""),
         "top dropdown":    top_idx,
         "nested dropdown": sub_name,
         "config":          seg_dict.get("config_tag", ""),
         "Control Points":  cp,
-        "Solver":          "root",
+        "Solver":          "root" if solver_type == "root_finder" else "optimize",
         "flight forces":   flight_forces,
         "flight controls": flight_controls,
     }

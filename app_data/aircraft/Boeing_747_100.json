@@ -24101,10 +24101,6 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
-        "V2_VS_ratio": [
-          1.21,
-          0
-        ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "main_wing_gear": {
@@ -24129,30 +24125,34 @@
             ]
           }
         },
+        "tag": "takeoff",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "flap": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
-                "deflection": [
-                  0.17453292519943295,
-                  0
-                ]
-              },
               "slat": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
                 "deflection": [
                   0.4363323129985824,
                   0
                 ]
+              },
+              "flap": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
+                "deflection": [
+                  0.17453292519943295,
+                  0
+                ]
               }
             }
           }
         },
-        "tag": "takeoff"
+        "V2_VS_ratio": [
+          1.21,
+          0
+        ]
       }
     },
     {
@@ -24183,96 +24183,97 @@
             ]
           }
         },
+        "tag": "transition",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "flap": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
-                "deflection": [
-                  0.17453292519943295,
-                  0
-                ]
-              },
               "slat": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
                 "deflection": [
                   0.4363323129985824,
                   0
                 ]
+              },
+              "flap": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
+                "deflection": [
+                  0.17453292519943295,
+                  0
+                ]
               }
             }
           }
-        },
-        "tag": "transition"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "initial_climb",
       "diff": {
+        "tag": "initial_climb",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "flap": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
-                "deflection": [
-                  0.17453292519943295,
-                  0
-                ]
-              },
               "slat": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
                 "deflection": [
                   0.4363323129985824,
                   0
                 ]
+              },
+              "flap": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
+                "deflection": [
+                  0.17453292519943295,
+                  0
+                ]
               }
             }
           }
-        },
-        "tag": "initial_climb"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "accel",
       "diff": {
+        "tag": "accel",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
+              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
-              },
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
               }
             }
           }
-        },
-        "tag": "accel"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
+        "tag": "cutback",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -24288,8 +24289,7 @@
               }
             }
           }
-        },
-        "tag": "cutback"
+        }
       }
     },
     {
@@ -24320,6 +24320,7 @@
             ]
           }
         },
+        "tag": "approach",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -24335,18 +24336,13 @@
               }
             }
           }
-        },
-        "tag": "approach"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
-        "Vref_VS_ratio": [
-          1.23,
-          0
-        ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "main_wing_gear": {
@@ -24371,30 +24367,34 @@
             ]
           }
         },
+        "tag": "landing",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "flap": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
-                "deflection": [
-                  0.17453292519943295,
-                  0
-                ]
-              },
               "slat": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
                 "deflection": [
                   0.4363323129985824,
                   0
                 ]
+              },
+              "flap": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
+                "deflection": [
+                  0.17453292519943295,
+                  0
+                ]
               }
             }
           }
         },
-        "tag": "landing"
+        "Vref_VS_ratio": [
+          1.23,
+          0
+        ]
       }
     }
   ],
@@ -25493,7 +25493,8 @@
             0.0,
             0
           ],
-          "config_tag": "takeoff"
+          "config_tag": "takeoff",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -25889,7 +25890,8 @@
             0.0,
             0
           ],
-          "config_tag": "transition"
+          "config_tag": "transition",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -26285,7 +26287,8 @@
             0.0,
             0
           ],
-          "config_tag": "initial_climb"
+          "config_tag": "initial_climb",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Acceleration_Constant_Altitude.Constant_Acceleration_Constant_Altitude",
@@ -26681,7 +26684,8 @@
             0.0,
             0
           ],
-          "config_tag": "accel"
+          "config_tag": "accel",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -27086,7 +27090,8 @@
             0.0,
             0
           ],
-          "config_tag": "cutback"
+          "config_tag": "cutback",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -27491,7 +27496,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -27896,7 +27902,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -28301,7 +28308,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -28706,7 +28714,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Mach_Constant_Rate.Linear_Mach_Constant_Rate",
@@ -29106,7 +29115,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -29502,7 +29512,8 @@
             0.8,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -29902,7 +29913,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter.Constant_Speed_Constant_Altitude_Loiter",
@@ -30294,7 +30306,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -30690,7 +30703,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Ground.Landing.Landing",
@@ -31087,7 +31101,8 @@
             0.0,
             0
           ],
-          "config_tag": "landing"
+          "config_tag": "landing",
+          "solver_type": "optimize"
         }
       ]
     }
