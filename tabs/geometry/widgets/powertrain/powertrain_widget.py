@@ -33,6 +33,7 @@ from tabs.geometry.frames.powertrain.converters   import ConverterFrame
 from tabs.geometry.frames.powertrain.propulsors   import PropulsorFrame
 from tabs.geometry.frames.powertrain.systems      import SystemFrame
 from tabs.geometry.frames.powertrain.connections  import ConnectionMatrixFrame
+from tabs.geometry.frames.powertrain.connections.powertrain_diagram import PowertrainDiagramWidget
 from tabs.geometry.widgets.powertrain.distributors.base_distributor_widget import BaseDistributorWidget
 from common_widgets import DataEntryWidget
 
@@ -84,6 +85,11 @@ class PowertrainWidget(QWidget):
         self.connection_matrix_frame = ConnectionMatrixFrame()
         self.tab_widget.addTab(self.connection_matrix_frame, "Connections")
 
+        # Show the same network data as a node-and-edge diagram.  The diagram
+        # is refreshed alongside the connection matrix in _refresh_matrix().
+        self.powertrain_diagram = PowertrainDiagramWidget()
+        self.tab_widget.addTab(self.powertrain_diagram, "Network Diagram")
+
         # Auto-refresh matrix when the user switches to the Connections tab
         self.tab_widget.currentChanged.connect(self._on_tab_changed)
 
@@ -115,9 +121,24 @@ class PowertrainWidget(QWidget):
         propulsor_names  = self._collect_names(self.propulsor_frame.propulsor_sections_layout)
         source_names     = self._collect_names(self.energy_source_frame.source_sections_layout)
         distributor_names, connectivity = self._collect_distributor_info()
+        converter_names = self._collect_names(self.converter_frame.converter_sections_layout)
+        system_names = self._collect_names(self.system_frame.systems_layout)
 
+        # Preserve each component's concrete editor type so the diagram can
+        # distinguish components that share the same broad powertrain group.
+        component_types = {}
+        component_types.update(self._collect_types(self.energy_source_frame.source_sections_layout))
+        component_types.update(self._collect_types(self.distributor_frame.distributor_sections_layout))
+        component_types.update(self._collect_types(self.propulsor_frame.propulsor_sections_layout))
+
+        # Keep the editable matrix and its visual representation synchronized
+        # from one snapshot of the current component names and connections.
         self.connection_matrix_frame.refresh(
             propulsor_names, source_names, distributor_names, connectivity
+        )
+        self.powertrain_diagram.refresh(
+            propulsor_names, source_names, distributor_names, connectivity,
+            converter_names, system_names, component_types,
         )
 
     def _collect_distributor_info(self) -> tuple[list[str], dict]:
@@ -151,15 +172,45 @@ class PowertrainWidget(QWidget):
 
     @staticmethod
     def _collect_names(layout) -> list[str]:
+        """Return displayed names for all component editors in a layout.
+
+        Component widgets are not fully uniform: most expose
+        ``section_name_edit``, while some use ``name_edit`` instead.
+        """
         names = []
         for i in range(layout.count()):
             item = layout.itemAt(i)
             if item is None:
                 continue
             widget = item.widget()
-            if widget is not None and hasattr(widget, "section_name_edit"):
-                names.append(widget.section_name_edit.text())
+            if widget is None:
+                continue
+            name_field = getattr(widget, "section_name_edit", None)
+            if name_field is None:
+                name_field = getattr(widget, "name_edit", None)
+            if name_field is not None:
+                names.append(name_field.text())
         return names
+
+    @staticmethod
+    def _collect_types(layout) -> dict[str, str]:
+        """Map displayed component names to their concrete editor widget type.
+
+        The widget class name is used as lightweight type metadata by the
+        network diagram; the underlying component objects are not needed.
+        """
+        result = {}
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            widget = item.widget() if item is not None else None
+            if widget is None:
+                continue
+            name_field = getattr(widget, "section_name_edit", None)
+            if name_field is None:
+                name_field = getattr(widget, "name_edit", None)
+            if name_field is not None:
+                result[name_field.text()] = type(widget).__name__
+        return result
 
     # ── Data API ───────────────────────────────────────────────────────────
 
