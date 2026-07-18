@@ -21,6 +21,7 @@ if sys.platform == "win32":
 class App(QMainWindow):
     def __init__(self):
         super().__init__()
+        self._vtk_shutdown = False
 
         self.setWindowTitle("RCAIDE GUI")
         self.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
@@ -52,7 +53,8 @@ class App(QMainWindow):
         file_menu.addAction(import_vsp_action)
         file_menu.addAction(export_vsp_action)
         file_menu.addSeparator()
-        file_menu.addAction("Quit")
+        quit_action = file_menu.addAction("Quit")
+        quit_action.triggered.connect(QApplication.quit)
 
         menubar.addMenu("Documentation")
 
@@ -74,6 +76,10 @@ class App(QMainWindow):
 
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
+
+        app = QApplication.instance()
+        if app is not None:
+            app.aboutToQuit.connect(self.shutdown_vtk)
 
         self.setCentralWidget(self.tabs)
         screen = QApplication.primaryScreen()
@@ -189,7 +195,11 @@ class App(QMainWindow):
                 loaded_geometry = rcaide_io.rcaide_vehicle
                 loaded_vehicle  = rcaide_io.vehicle
                 current_index   = self.tabs.currentIndex()
+                cleanup = getattr(widget, "_cleanup_preview", None)
+                if callable(cleanup):
+                    cleanup()
                 self.tabs.removeTab(i)
+                widget.deleteLater()
                 new_widget = geometry.get_widget()
                 rcaide_io.rcaide_vehicle = loaded_geometry
                 rcaide_io.vehicle        = loaded_vehicle
@@ -211,6 +221,23 @@ class App(QMainWindow):
                 if isinstance(current_widget, TabWidget):
                     current_widget.update_layout()
                 return
+
+    def shutdown_vtk(self):
+        """Release every VTK context before Qt destroys native child windows."""
+        if self._vtk_shutdown:
+            return
+        self._vtk_shutdown = True
+        for widget, _ in self.widgets:
+            cleanup = getattr(widget, "_cleanup_preview", None)
+            if callable(cleanup):
+                cleanup()
+            shutdown = getattr(widget, "shutdown_vtk", None)
+            if callable(shutdown):
+                shutdown()
+
+    def closeEvent(self, event):
+        self.shutdown_vtk()
+        super().closeEvent(event)
 
 def main():
     app = QApplication(sys.argv)
