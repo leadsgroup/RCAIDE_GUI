@@ -20461,23 +20461,28 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
+        "tag": "takeoff",
+        "V2_VS_ratio": [
+          1.21,
+          0
+        ],
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Blended_Wing_Body.Blended_Wing_Body",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
+                  0
+                ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
                   0
                 ]
               }
@@ -20500,35 +20505,31 @@
               0
             ]
           }
-        },
-        "V2_VS_ratio": [
-          1.21,
-          0
-        ],
-        "tag": "takeoff"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "transition",
       "diff": {
+        "tag": "transition",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Blended_Wing_Body.Blended_Wing_Body",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
+                  0
+                ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
                   0
                 ]
               }
@@ -20551,74 +20552,74 @@
               0
             ]
           }
-        },
-        "tag": "transition"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "initial_climb",
       "diff": {
+        "tag": "initial_climb",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Blended_Wing_Body.Blended_Wing_Body",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
-        },
-        "tag": "initial_climb"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "accel",
       "diff": {
+        "tag": "accel",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Blended_Wing_Body.Blended_Wing_Body",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
-        },
-        "tag": "accel"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
+        "tag": "cutback",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -20634,14 +20635,14 @@
               }
             }
           }
-        },
-        "tag": "cutback"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "approach",
       "diff": {
+        "tag": "approach",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -20674,37 +20675,41 @@
               0
             ]
           }
-        },
-        "tag": "approach"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
+        "tag": "landing",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Blended_Wing_Body.Blended_Wing_Body",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
         },
+        "Vref_VS_ratio": [
+          1.23,
+          0
+        ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "nose_gear": {
@@ -20721,12 +20726,7 @@
               0
             ]
           }
-        },
-        "Vref_VS_ratio": [
-          1.23,
-          0
-        ],
-        "tag": "landing"
+        }
       }
     }
   ],
