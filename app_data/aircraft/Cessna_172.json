@@ -18011,7 +18011,7 @@
               0
             ],
             "segments_bounding_cabin": [],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0
@@ -20646,11 +20646,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]
@@ -20685,11 +20685,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]
@@ -20724,11 +20724,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]
@@ -20763,11 +20763,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]
@@ -20802,11 +20802,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]
@@ -20841,11 +20841,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]
@@ -20880,11 +20880,11 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "drag_distribution_func": [
+                        "lift_distribution_func": [
                           null,
                           0
                         ],
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ]

@@ -4776,7 +4776,7 @@
               0
             ],
             "segments_bounding_cabin": [],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0

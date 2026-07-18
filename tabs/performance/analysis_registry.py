@@ -116,6 +116,12 @@ def run_aero_polars(params, config_tag):
 def run_load_trim(params, config_tag):
     from RCAIDE.Library.Methods.Performance import compute_load_and_trim_diagram
     mission = deepcopy(rcaide_io.rcaide_mission)
+    for seg in mission.segments:
+        if getattr(seg.analyses, 'stability', None) is None:
+            raise ValueError(
+                "Load & Trim diagram requires a Stability analysis.\n"
+                "Enable 'Stability' in the Analyses Setup tab and re-save analyses."
+            )
     return compute_load_and_trim_diagram(
         mission=mission,
         cruise_segment_tag=params["Cruise Segment Tag"],

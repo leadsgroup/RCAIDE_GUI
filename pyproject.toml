@@ -70,6 +70,12 @@ version = {file = "VERSION"}
 where = ["."]
 include = ["tabs*", "common_widgets*"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (full mission evaluations) — deselect with -m 'not slow'",
+]
+
 [tool.setuptools.package-data]
 "*" = [
     "app_data/images/*",

@@ -11674,7 +11674,7 @@
               ],
               0
             ],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0
@@ -17204,7 +17204,6 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "descent",
       "diff": {
-        "tag": "descent",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -17220,25 +17219,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "descent"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_condition": "down"
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_condition": "down"
-          }
-        },
-        "tag": "takeoff",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -17262,17 +17250,28 @@
             }
           }
         },
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_condition": "down"
+          },
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_condition": "down"
+          }
+        },
         "V2_VS_ratio": [
           1.258,
           0
-        ]
+        ],
+        "tag": "takeoff"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
-        "tag": "cutback",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -17295,25 +17294,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "cutback"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_condition": "down"
-          },
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_condition": "down"
-          }
-        },
-        "tag": "landing",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -17337,26 +17325,6 @@
             }
           }
         },
-        "Vref_VS_ratio": [
-          1.207,
-          0
-        ]
-      }
-    },
-    {
-      "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
-      "tag": "reverse_thrust",
-      "diff": {
-        "networks": {
-          "__type__": "RCAIDE.Framework.Networks.Network.Container",
-          "fuel": {
-            "__type__": "RCAIDE.Framework.Networks.Fuel.Fuel",
-            "reverse_thrust": [
-              true,
-              0
-            ]
-          }
-        },
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "nose_gear": {
@@ -17368,7 +17336,17 @@
             "gear_condition": "down"
           }
         },
-        "tag": "reverse_thrust",
+        "Vref_VS_ratio": [
+          1.207,
+          0
+        ],
+        "tag": "landing"
+      }
+    },
+    {
+      "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
+      "tag": "reverse_thrust",
+      "diff": {
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -17392,10 +17370,32 @@
             }
           }
         },
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_condition": "down"
+          },
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_condition": "down"
+          }
+        },
+        "networks": {
+          "__type__": "RCAIDE.Framework.Networks.Network.Container",
+          "fuel": {
+            "__type__": "RCAIDE.Framework.Networks.Fuel.Fuel",
+            "reverse_thrust": [
+              true,
+              0
+            ]
+          }
+        },
         "Vref_VS_ratio": [
           1.207,
           0
-        ]
+        ],
+        "tag": "reverse_thrust"
       }
     }
   ],
@@ -22446,404 +22446,6 @@
             0
           ],
           "config_tag": "descent",
-          "solver_type": "root_finder"
-        },
-        {
-          "__type__": "RCAIDE.Framework.Mission.Segments.Ground.Landing.Landing",
-          "tag": "landing",
-          "features": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data"
-          },
-          "settings": {
-            "__type__": "RCAIDE.Framework.Analyses.Settings.Settings",
-            "tag": "settings",
-            "verbose_process": [
-              false,
-              0
-            ]
-          },
-          "temperature_deviation": [
-            0.0,
-            0
-          ],
-          "sideslip_angle": [
-            0.0,
-            0
-          ],
-          "crosswind_speed": [
-            0.0,
-            0
-          ],
-          "angle_of_attack": [
-            0.017453292519943295,
-            0
-          ],
-          "bank_angle": [
-            0.0,
-            0
-          ],
-          "hybrid_power_split_ratio": [
-            null,
-            0
-          ],
-          "battery_fuel_cell_power_split_ratio": [
-            null,
-            0
-          ],
-          "lift_coefficient": [
-            null,
-            0
-          ],
-          "flight_dynamics": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data",
-            "force_x": [
-              true,
-              0
-            ],
-            "force_y": [
-              false,
-              0
-            ],
-            "force_z": [
-              false,
-              0
-            ],
-            "moment_x": [
-              false,
-              0
-            ],
-            "moment_y": [
-              false,
-              0
-            ],
-            "moment_z": [
-              false,
-              0
-            ],
-            "final_velocity_error": [
-              true,
-              0
-            ]
-          },
-          "assigned_control_variables": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data",
-            "pitch_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "bank_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "angle_of_attack": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "sideslip_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "elapsed_time": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                true,
-                0
-              ],
-              "initial_guess_values": [
-                [
-                  [
-                    30.0
-                  ]
-                ],
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "velocity": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "ground_velocity": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                true,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "acceleration": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "altitude": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "throttle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_propulsors": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "elevator_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "rudder_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "flap_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "slat_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "aileron_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "thrust_vector_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_propulsors": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "blade_pitch_command": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_rotors": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            }
-          },
-          "velocity_start": [
-            77.1666,
-            0
-          ],
-          "velocity_end": [
-            15.43332,
-            0
-          ],
-          "friction_coefficient": [
-            0.4,
-            0
-          ],
-          "throttle": [
-            0.3,
-            0
-          ],
-          "altitude": [
-            0.0,
-            0
-          ],
-          "true_course": [
-            0.0,
-            0
-          ],
-          "config_tag": "reverse_thrust",
           "solver_type": "root_finder"
         }
       ]
