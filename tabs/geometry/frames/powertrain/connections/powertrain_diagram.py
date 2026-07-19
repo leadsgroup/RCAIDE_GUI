@@ -23,31 +23,42 @@ _SYMBOL_DIR = (
 _SYMBOL_CACHE: dict[str, str] = {}
 
 
+_SYMBOL_PLACEHOLDER = (
+    '<rect x="1" y="1" width="54" height="56" fill="#eaf2f8" '
+    'stroke="#526d82" stroke-width="1.5"/>'
+)
+
+
 def _svg_symbol(filename):
     """Return an icon fragment fitted into a 56 by 58 diagram cell.
 
     Qt supports SVG Tiny and ignores SVG documents nested inside another SVG.
     The asset root is therefore removed and its body is wrapped in a scaled
-    ``<g>`` element instead.
+    ``<g>`` element instead.  Returns a grey placeholder rectangle if the
+    asset is missing or malformed so one bad file cannot crash the diagram.
     """
     if filename not in _SYMBOL_CACHE:
-        # Read the source coordinate system and markup inside its root element.
-        source = (_SYMBOL_DIR / filename).read_text(encoding="utf-8")
-        view_box = re.search(r'viewBox="([^"]+)"', source)
-        body = re.search(r"<svg\b[^>]*>(.*)</svg>\s*$", source, re.DOTALL)
-        if view_box is None or body is None:
-            raise ValueError(f"Invalid SVG icon: {filename}")
-        # Scale uniformly, then center the unused space on both sides.
-        _, _, source_w, source_h = (
-            float(value) for value in view_box.group(1).split()
-        )
-        scale = min(54.0 / source_w, 56.0 / source_h)
-        offset_x = 1.0 + (54.0 - source_w * scale) / 2.0
-        offset_y = 1.0 + (56.0 - source_h * scale) / 2.0
-        _SYMBOL_CACHE[filename] = (
-            f'<g transform="translate({offset_x:.3f} {offset_y:.3f}) '
-            f'scale({scale:.6f})">{body.group(1)}</g>'
-        )
+        try:
+            # Read the source coordinate system and markup inside its root element.
+            source = (_SYMBOL_DIR / filename).read_text(encoding="utf-8")
+            view_box = re.search(r'viewBox="([^"]+)"', source)
+            body = re.search(r"<svg\b[^>]*>(.*)</svg>\s*$", source, re.DOTALL)
+            if view_box is None or body is None:
+                raise ValueError(f"Missing viewBox or body in {filename}")
+            vals = view_box.group(1).split()
+            if len(vals) != 4:
+                raise ValueError(f"Expected 4 viewBox values in {filename}, got {len(vals)}")
+            _, _, source_w, source_h = (float(v) for v in vals)
+            # Scale uniformly, then center the unused space on both sides.
+            scale = min(54.0 / source_w, 56.0 / source_h)
+            offset_x = 1.0 + (54.0 - source_w * scale) / 2.0
+            offset_y = 1.0 + (56.0 - source_h * scale) / 2.0
+            _SYMBOL_CACHE[filename] = (
+                f'<g transform="translate({offset_x:.3f} {offset_y:.3f}) '
+                f'scale({scale:.6f})">{body.group(1)}</g>'
+            )
+        except Exception:
+            _SYMBOL_CACHE[filename] = _SYMBOL_PLACEHOLDER
     return _SYMBOL_CACHE[filename]
 
 
@@ -113,12 +124,12 @@ class PowertrainDiagramWidget(QWidget):
         distributors = distributors or ["UNASSIGNED DISTRIBUTOR"]
         propulsors = propulsors or ["UNASSIGNED PROPULSOR"]
 
-        # Primary drawing dimensions. SVG units map directly to widget pixels.
+        # Drawing geometry — all values are SVG user units (= screen pixels at 1×).
         width = 1200
-        row_gap, box_w, box_h = 108, 210, 58
-        dist_box_w = 300
-        prop_box_w = 300
-        top = 145
+        row_gap, box_w, box_h = 108, 210, 58   # row pitch, source card width/height
+        dist_box_w = 300                         # wider cards for distribution column
+        prop_box_w = 300                         # wider cards for propulsion column
+        top = 145                                # y-coordinate of first component row
         main_rows = max(len(sources), len(distributors), len(propulsors))
         # Auxiliary equipment is packed into three columns below the main flow.
         aux_items = (

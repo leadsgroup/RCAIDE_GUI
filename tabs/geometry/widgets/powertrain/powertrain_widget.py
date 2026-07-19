@@ -171,12 +171,16 @@ class PowertrainWidget(QWidget):
         return names, connectivity
 
     @staticmethod
-    def _collect_names(layout) -> list[str]:
-        """Return displayed names for all component editors in a layout.
+    def _name_field(widget):
+        """Return the name QLineEdit for a component editor widget, or None.
 
-        Component widgets are not fully uniform: most expose
-        ``section_name_edit``, while some use ``name_edit`` instead.
+        Most editors expose ``section_name_edit``; a few use ``name_edit``.
         """
+        return getattr(widget, "section_name_edit", None) or getattr(widget, "name_edit", None)
+
+    @staticmethod
+    def _collect_names(layout) -> list[str]:
+        """Return displayed names for all component editors in a layout."""
         names = []
         for i in range(layout.count()):
             item = layout.itemAt(i)
@@ -185,11 +189,9 @@ class PowertrainWidget(QWidget):
             widget = item.widget()
             if widget is None:
                 continue
-            name_field = getattr(widget, "section_name_edit", None)
-            if name_field is None:
-                name_field = getattr(widget, "name_edit", None)
-            if name_field is not None:
-                names.append(name_field.text())
+            field = PowertrainWidget._name_field(widget)
+            if field is not None:
+                names.append(field.text())
         return names
 
     @staticmethod
@@ -205,11 +207,9 @@ class PowertrainWidget(QWidget):
             widget = item.widget() if item is not None else None
             if widget is None:
                 continue
-            name_field = getattr(widget, "section_name_edit", None)
-            if name_field is None:
-                name_field = getattr(widget, "name_edit", None)
-            if name_field is not None:
-                result[name_field.text()] = type(widget).__name__
+            field = PowertrainWidget._name_field(widget)
+            if field is not None:
+                result[field.text()] = type(widget).__name__
         return result
 
     # ── Data API ───────────────────────────────────────────────────────────
