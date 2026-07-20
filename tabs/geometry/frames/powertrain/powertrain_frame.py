@@ -11,10 +11,21 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, Q
 
 from tabs.geometry.frames import GeometryFrame
 from tabs.geometry.widgets.powertrain.powertrain_widget import PowertrainWidget
-from utilities import show_popup, clear_layout
+from utilities import show_popup, clear_layout, BTN_STYLE
 
 
 class PowertrainFrame(GeometryFrame):
+    """Top-level frame for a single energy network entry in the geometry tree.
+
+    Presents an "Energy Network Type" combo that, when changed, replaces the
+    inner ``PowertrainWidget`` with a fresh instance configured for the chosen
+    network type (Fuel, Electric, Hybrid, Hydrogen, Fuel Cell).
+
+    ``get_data_values()`` returns the combined GUI data dict and the assembled
+    RCAIDE network object.  ``load_data()`` restores a previously saved
+    powertrain from a dict in either GUI or native RCAIDE JSON format.
+    """
+
     def __init__(self):
         super(PowertrainFrame, self).__init__()
 
@@ -74,9 +85,9 @@ class PowertrainFrame(GeometryFrame):
     def add_buttons_layout(self):
         # define buttons
         save_button = QPushButton("Save Energy Network Data", self)
-        # save_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        # save_button.setStyleSheet(BTN_STYLE)
         delete_button = QPushButton("Clear Energy Network", self)
-        delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        delete_button.setStyleSheet(BTN_STYLE)
 
         # define action of buttons
         save_button.clicked.connect(self.save_data)
@@ -192,8 +203,8 @@ class PowertrainFrame(GeometryFrame):
         if selected_network in self._VALID_NETWORKS:
             powertrain_widget = PowertrainWidget()
             powertrain_widget.network_type = selected_network
-            powertrain_widget.load_data_values(data.get("powertrain", {}))
             self.powertrain_layout.addWidget(powertrain_widget)
+            powertrain_widget.load_data_values(data.get("powertrain", {}))
 
         self.add_buttons_layout()
 

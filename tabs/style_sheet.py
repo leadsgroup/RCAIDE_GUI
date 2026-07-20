@@ -2,7 +2,7 @@
 
 # PyQt imports
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTreeWidget, QTreeWidgetItem, QFrame, QMainWindow, QApplication, QMainWindow, QTabWidget, QFileDialog, QMenu
+from PyQt6.QtWidgets import QFrame, QLabel, QMainWindow, QApplication, QMenu
 
 # ------------------------------------------------------------------------------
 # Style Sheet Utilities
@@ -30,10 +30,7 @@ def add_line(shape = "HLine", shadow = "Sunken", color = "gray", height = "20"):
         raise TypeError("Have problem in shadow format, shadow should be 'Plain , Raised and Sunken'" )
     #shadow:Plain , Raised and Sunken
     line.setFrameShadow(shadow_dict[shadow])
-    try:
-        line.setStyleSheet(f"background-color: {color}; height: {height}px;")
-    except:
-        raise TypeError("Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )
+    line.setStyleSheet(f"background-color: {color}; height: {height}px;")
     return line
 
 def add_title(text, font_weight="bold", color = "black", font_size="20", Alignment="AlignLeft"):
@@ -52,10 +49,7 @@ def add_title(text, font_weight="bold", color = "black", font_size="20", Alignme
         raise TypeError("Have problem in Alignment format, Alignment should be 'AlignLeft, AlignRight, AlignHCenter, AlignJustify, AlignTop, AlignBottom, AlignVCenter, AlignBaseline'" )
     else:
         title.setAlignment(Alignment_dict[Alignment])
-    try:
-        title.setStyleSheet(f"font-size: {font_size}px; font-weight: {font_weight}; color: {color};")
-    except:
-        raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )
+    title.setStyleSheet(f"font-size: {font_size}px; font-weight: {font_weight}; color: {color};")
     return title
 
 def add_subtitle(text, font_weight="bold", color = "black", font_size="15", Alignment="AlignLeft"):
@@ -74,10 +68,7 @@ def add_subtitle(text, font_weight="bold", color = "black", font_size="15", Alig
         raise TypeError("Have problem in Alignment format, Alignment should be 'AlignLeft, AlignRight, AlignHCenter, AlignJustify, AlignTop, AlignBottom, AlignVCenter, AlignBaseline'" )
     else:
         subtitle.setAlignment(Alignment_dict[Alignment])
-    try:
-        subtitle.setStyleSheet(f"font-size: {font_size}px; font-weight: {font_weight}; color: {color};")
-    except:
-        raise TypeError("font-size format:integer, font-weight format:'bold',Makes the text bold, Color format:1.Specific color like:red, blue, lightblue. 2.Hex Code like: #FF5733. 3. RGB like: rgb(255, 87, 51)." )
+    subtitle.setStyleSheet(f"font-size: {font_size}px; font-weight: {font_weight}; color: {color};")
     return subtitle
 
 

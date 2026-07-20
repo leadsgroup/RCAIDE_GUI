@@ -445,7 +445,9 @@ class VisualizeGeometryWidget(TabWidget):
         propulsor_color      = 'grey'
         boom_color           = 'grey'
         fuel_tank_color      = 'orange'
+        rotor_color          = 'black'
         cargo_bay_color      = 'blue'
+        battery_color        = 'green'
         landing_gear_color   = 'grey'
         cabin_color          = 'grey'
         systems_color        = 'black'
@@ -454,8 +456,10 @@ class VisualizeGeometryWidget(TabWidget):
         nacelle_opacity      = 0.5
         propulsor_opacity    = 0.5
         fuel_tank_opacity    = 0.5
+        rotor_opacity        = 0.6
         boom_opacity         = 1.0
         cargo_bay_opacity    = 0.6
+        battery_opacity      = 1.0
         landing_gear_opacity = 1.0
         cabin_opacity        = 0.75
         systems_opacity      = 0.8
@@ -471,8 +475,10 @@ class VisualizeGeometryWidget(TabWidget):
         fuselage_rgb_color     = mcolors.to_rgb(fuselage_color)
         nacelle_rgb_color      = mcolors.to_rgb(nacelle_color)
         propulsor_rgb_color    = mcolors.to_rgb(propulsor_color)
+        rotor_rgb_color        = mcolors.to_rgb(rotor_color)
         boom_rgb_color         = mcolors.to_rgb(boom_color)
         cargo_bay_rgb_color    = mcolors.to_rgb(cargo_bay_color)
+        battery_rgb_color      = mcolors.to_rgb(battery_color)
         landing_gear_rgb_color = mcolors.to_rgb(landing_gear_color)
         cabin_rgb_color        = mcolors.to_rgb(cabin_color)
         system_rgb_color       = mcolors.to_rgb(systems_color)
@@ -521,9 +527,7 @@ class VisualizeGeometryWidget(TabWidget):
         # Plot wings
         # -------------------------------------------------------------------------
         for wing in geometry.wings:
-            n_segments = len(wing.segments)
-            dim        = n_segments if n_segments > 0 else 2
-            GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
+            GEOM = generate_3d_wing_points(wing, number_of_airfoil_points, plot_centerline=False)
             make_object(self.plotter, self.wing_actors, GEOM, wing_rgb_color, wing_opacity)
             if wing.yz_plane_symmetric:
                 GEOM.PTS[:, :, 0] = -GEOM.PTS[:, :, 0]
@@ -544,10 +548,10 @@ class VisualizeGeometryWidget(TabWidget):
                     make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                     make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
-    
-        # -------------------------------------------------------------------------  
+
+        # -------------------------------------------------------------------------
         # Plot fuselage
-        # -------------------------------------------------------------------------  
+        # -------------------------------------------------------------------------
         for fuselage in geometry.fuselages:
             GEOM = generate_3d_fuselage_points(fuselage, tessellation)
             make_object(self.plotter, self.fuselage_actors, GEOM, fuselage_rgb_color, fuselage_opacity)
@@ -555,9 +559,8 @@ class VisualizeGeometryWidget(TabWidget):
                 GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
                 make_object(self.plotter, self.cabin_actors, GEOM, cabin_rgb_color, cabin_opacity)
             if self._show_lopa:
-                if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
-                    lopa_geom = generate_3d_lopa_points(fuselage)
-                    add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
+                lopa_geom = generate_3d_lopa_points(fuselage)
+                add_lopa_seats(self.plotter, lopa_geom, lopa_opacity)
 
         # -------------------------------------------------------------------------
         # Plot cargo bays
@@ -575,16 +578,13 @@ class VisualizeGeometryWidget(TabWidget):
             make_object(self.plotter, self.boom_actors, GEOM, boom_rgb_color, boom_opacity)
     
         # -------------------------------------------------------------------------
-        # Plot systems (stored on each network, not on vehicle directly)
+        # Plot systems — check both vehicle-level and per-network containers
         # -------------------------------------------------------------------------
-        for network in geometry.networks:
-            for system in network.systems:
-                if isinstance(system, Component):
-                    try:
-                        GEOM = generate_3d_cuboid_points(system)
-                        make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
-                    except Exception:
-                        pass
+        _all_systems = list(geometry.systems) + [s for net in geometry.networks for s in net.systems]
+        for system in _all_systems:
+            if isinstance(system, Component):
+                GEOM = generate_3d_cuboid_points(system)
+                make_object(self.plotter, self.system_actors, GEOM, system_rgb_color, systems_opacity)
 
         # -------------------------------------------------------------------------
         # Plot landing gear
@@ -658,49 +658,52 @@ class VisualizeGeometryWidget(TabWidget):
                             GEOM= generate_3d_basic_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
                         make_object(self.plotter,self.nacelle_actors,  GEOM, nacelle_rgb_color,nacelle_opacity)
                         
-                if 'rotor' in propulsor:  
-                    rot       = propulsor.rotor
-                    rot_x     = rot.orientation_euler_angles[0]
-                    rot_y     = rot.orientation_euler_angles[1]
-                    rot_z     = rot.orientation_euler_angles[2]
-                    num_B     = int(rot.number_of_blades) 
+                if 'rotor' in propulsor:
+                    rot   = propulsor.rotor
+                    rot_x = rot.orientation_euler_angles[0]
+                    rot_y = rot.orientation_euler_angles[1]
+                    rot_z = rot.orientation_euler_angles[2]
+                    num_B = int(rot.number_of_blades)
                     if rot.radius_distribution is None:
-                        make_actuator_disc(self.plotter, rot.hub_radius, rot.tip_radius, rot.origin, rot_x,rot_y,rot_z, propulsor_rgb_color,propulsor_opacity) 
+                        make_actuator_disc(self.plotter, rot.hub_radius, rot.tip_radius, rot.origin, rot_x, rot_y, rot_z, rotor_rgb_color, rotor_opacity)
                     else:
-                        dim       = len(rot.radius_distribution) 
+                        rot_y += np.pi / 2
+                        dim = len(rot.radius_distribution)
                         for i in range(num_B):
-                            GEOM = generate_3d_blade_points(rot,number_of_airfoil_points,dim,i)
-                            make_object(self.plotter,self.propulsor_actors,  GEOM, propulsor_rgb_color,propulsor_opacity) 
-    
+                            GEOM = generate_3d_blade_points(rot, number_of_airfoil_points, dim, i)
+                            make_object(self.plotter, self.propulsor_actors, GEOM, rotor_rgb_color, rotor_opacity)
+
                 if 'propeller' in propulsor:
-                    prop      = propulsor.propeller
-                    rot_x     = prop.orientation_euler_angles[0]
-                    rot_y     = np.pi / 2 +  prop.orientation_euler_angles[1]
-                    rot_z     = prop.orientation_euler_angles[2]
-                    num_B     = int(prop.number_of_blades) 
+                    prop  = propulsor.propeller
+                    rot_x = prop.orientation_euler_angles[0]
+                    rot_y = prop.orientation_euler_angles[1]
+                    rot_z = prop.orientation_euler_angles[2]
+                    num_B = int(prop.number_of_blades)
                     if prop.radius_distribution is None:
-                        make_actuator_disc(self.plotter, prop.hub_radius, prop.tip_radius, prop.origin, rot_x,rot_y,rot_z,propulsor_rgb_color,propulsor_opacity) 
+                        make_actuator_disc(self.plotter, prop.hub_radius, prop.tip_radius, prop.origin, rot_x, rot_y, rot_z, rotor_rgb_color, rotor_opacity)
                     else:
-                        dim       = len(prop.radius_distribution)
+                        dim = len(prop.radius_distribution)
                         for i in range(num_B):
-                            GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i) 
-                            make_object(self.plotter,self.propulsor_actors, GEOM, propulsor_rgb_color,propulsor_opacity) 
+                            GEOM = generate_3d_blade_points(prop, number_of_airfoil_points, dim, i)
+                            make_object(self.plotter, self.propulsor_actors, GEOM, rotor_rgb_color, rotor_opacity)
     
             if self._show_fuel_tanks:
+                _Cryo        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank
+                _NonIntegral = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank
+                _Integral    = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank
                 for fuel_line in network.fuel_lines:
                     for fuel_tank in fuel_line.fuel_tanks:
-                        if fuel_tank.wing_tag != None:
+                        if fuel_tank.wing_tag is not None:
                             wing = geometry.wings[fuel_tank.wing_tag]
 
-                            if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                                LH2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank
-                                if issubclass(type(fuel_tank), LH2) and getattr(fuel_tank, 'geometry_type', None) == 'conformal' and getattr(fuel_tank, 'bwb_aft_tank', False):
-                                    seg_bounds = fuel_tank.aft_tank_root_chord_bounds
+                            if issubclass(type(fuel_tank), _NonIntegral):
+                                if issubclass(type(fuel_tank), _Cryo) and getattr(fuel_tank, 'geometry_type', None) == 'conformal' and getattr(fuel_tank, 'transverse_tank', False):
+                                    seg_bounds = fuel_tank.transverse_tank_chord_bounds
                                     GEOM = generate_aft_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
                                     make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                                elif issubclass(type(fuel_tank), LH2) and getattr(fuel_tank, 'geometry_type', None) == 'conformal':
+                                elif issubclass(type(fuel_tank), _Cryo) and getattr(fuel_tank, 'geometry_type', None) == 'conformal':
                                     seg_bounds = fuel_tank.segments_bounding_tank
-                                    GEOM = generate_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
+                                    GEOM = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank)
                                     make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
                                     if wing.xz_plane_symmetric:
                                         GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
@@ -712,28 +715,30 @@ class VisualizeGeometryWidget(TabWidget):
                                         GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                                         make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
 
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
+                            if type(fuel_tank) == _Integral:
                                 seg_bounds = fuel_tank.segments_bounding_tank
-                                GEOM = generate_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
+                                GEOM = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank, plot_centerline=False)
                                 make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
                                 if wing.xz_plane_symmetric:
                                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                                     make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
 
-                        elif fuel_tank.fuselage_tag != None:
+                        elif fuel_tank.fuselage_tag is not None:
                             fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
+                            if type(fuel_tank) == _Integral:
                                 seg_bounds = fuel_tank.segments_bounding_tank
                                 GEOM = generate_integral_fuel_tank_points(fuselage, fuel_tank, seg_bounds, tessellation)
                                 make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
 
-                        elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                        elif issubclass(type(fuel_tank), _NonIntegral):
                             GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
                             make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                            if wing.xz_plane_symmetric:
-                                GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                                make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                        
+
+            for bus in network.busses:
+                for battery in bus.battery_modules:
+                    GEOM = generate_3d_cuboid_points(battery)
+                    make_object(self.plotter, self.system_actors, GEOM, battery_rgb_color, battery_opacity)
+
         # Set camera and background
         cam = self.renderer.GetActiveCamera()
         cam.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)

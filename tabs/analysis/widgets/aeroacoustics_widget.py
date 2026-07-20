@@ -23,12 +23,10 @@ import os
 # Aeroacoustics Widget
 # ------------------------------------------------------------------------------
 class AeroacousticsWidget(AnalysisDataWidget):
-    def __init__(self):
-        super(AeroacousticsWidget, self).__init__()
-        self.main_layout = QVBoxLayout()
+    title = "Acoustics"
 
-        self.main_layout.addWidget(QLabel("<b>Acoustics</b>"))
-        self.main_layout.addWidget(create_line_bar())
+    def __init__(self):
+        super().__init__()
 
         self.analysis_selector = QComboBox()
         self.analysis_selector.addItems(self.analyses)

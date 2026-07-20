@@ -139,7 +139,7 @@ class MissionAnalysisWidget(TabWidget):
             )
         if (not getattr(values, "rcaide_configs", None) or
                 not rcaide_io.rcaide_configs):
-            from tabs.aircraft_configs.aircraft_configs import build_rcaide_configs_from_geometry
+            from tabs.configurations.configurations import build_rcaide_configs_from_geometry
             try:
                 rcaide_io.rcaide_configs = build_rcaide_configs_from_geometry()
             except Exception as exc:

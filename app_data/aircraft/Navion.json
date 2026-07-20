@@ -4776,7 +4776,7 @@
               0
             ],
             "segments_bounding_cabin": [],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0
@@ -8098,11 +8098,11 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "base",
       "diff": {
-        "tag": "base",
         "avionics": {
           "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Avionics.Avionics",
           "tag": "avionics"
-        }
+        },
+        "tag": "base"
       }
     }
   ],
@@ -8545,7 +8545,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         }
       ]
     }

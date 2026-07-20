@@ -256,6 +256,10 @@ class GeometryWidget(TabWidget):
             tab_index = self.find_tab_index(tree_index)
 
             self.main_layout.setCurrentIndex(tab_index)
+            if tab_index == 5 and rcaide_io.rcaide_vehicle[5]:
+                frame = self.main_layout.currentWidget()
+                assert isinstance(frame, GeometryFrame)
+                frame.load_data(rcaide_io.rcaide_vehicle[5][0], 0)
         if depth == 2:
             component_item = item.parent()
             assert component_item is not None

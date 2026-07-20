@@ -1,6 +1,6 @@
 # RCAIDE_GUI/tabs/analysis/widgets/__init__.py
 
-from tabs.analysis.widgets.analysis_data_widget import AnalysisDataWidget
+from tabs.analysis.widgets.analysis_data_widget import AnalysisDataWidget, ComboBoxAnalysisWidget
 from tabs.analysis.widgets.aerodynamics_widget  import AerodynamicsWidget
 from tabs.analysis.widgets.atmosphere_widget    import AtmosphereWidget
 from tabs.analysis.widgets.costs_widget         import CostsWidget

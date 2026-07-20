@@ -152,51 +152,55 @@ class HomeWidget(TabWidget):
         base_layout.setSpacing(0)
         base_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Header
-        header_layout = QGridLayout()
-        website_btn = QPushButton("Website")
-        github_btn = QPushButton("GitHub")
-        docs_btn = QPushButton("Documentation")
-        contribute_btn = QPushButton("Contribute")
-        contact_btn = QPushButton("Contact")
+        base_layout.addLayout(self._build_header())
+        base_layout.addWidget(self._build_banner())
+        base_layout.addWidget(create_line_bar())
+        base_layout.addWidget(self._build_body())
+        base_layout.addWidget(self._build_footer())
 
-        header_layout.addWidget(website_btn, 0, 0)
-        header_layout.addWidget(github_btn, 0, 1)
-        header_layout.addWidget(docs_btn, 0, 2)
+        self.setup_fade_animations()
+
+    def _build_header(self):
+        header_layout = QGridLayout()
+        website_btn    = QPushButton("Website")
+        github_btn     = QPushButton("GitHub")
+        docs_btn       = QPushButton("Documentation")
+        contribute_btn = QPushButton("Contribute")
+        contact_btn    = QPushButton("Contact")
+
+        header_layout.addWidget(website_btn,    0, 0)
+        header_layout.addWidget(github_btn,     0, 1)
+        header_layout.addWidget(docs_btn,       0, 2)
         header_layout.addWidget(contribute_btn, 0, 3)
-        header_layout.addWidget(contact_btn, 0, 4)
+        header_layout.addWidget(contact_btn,    0, 4)
         header_layout.setContentsMargins(12, 12, 12, 0)
         header_layout.setSpacing(10)
 
-        # --- Tab URLs ---
-        website_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com")))
-        github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/leadsgroup")))
-        docs_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.docs.rcaide.leadsresearchgroup.com")))
+        website_btn.clicked.connect(   lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com")))
+        github_btn.clicked.connect(    lambda: QDesktopServices.openUrl(QUrl("https://github.com/leadsgroup")))
+        docs_btn.clicked.connect(      lambda: QDesktopServices.openUrl(QUrl("https://www.docs.rcaide.leadsresearchgroup.com")))
         contribute_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
-        contact_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
+        contact_btn.clicked.connect(   lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
 
-        # --- Banner Section ---
-        # Container for the banner image and overlay text
+        return header_layout
+
+    def _build_banner(self):
         banner_container = QFrame()
         banner_container.setFixedHeight(BANNER_HEIGHT)
         banner_container.setStyleSheet("border:none; background:transparent;")
 
-        # Background banner image
         self.banner = BannerImage(
             os.path.join(_IMG, "background.jpg"),
             height=BANNER_HEIGHT
         )
 
-        # Main title and subtitle shown on top of the banner
         self.rcaide_label = QLabel("RCAIDE")
-        self.leads_label = QLabel("by Laboratory for Emerging Aircraft Design and Systems (LEADS), UIUC")
+        self.leads_label  = QLabel("by Laboratory for Emerging Aircraft Design and Systems (LEADS), UIUC")
 
-        # Center text and allow mouse events to pass through
         for lbl in (self.rcaide_label, self.leads_label):
             lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
             lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
-        # Styling for banner text
         self.rcaide_label.setStyleSheet(
             "color:#00BFFF; font-size:46px; font-weight:800; letter-spacing:2px;"
         )
@@ -204,47 +208,26 @@ class HomeWidget(TabWidget):
             "color:white; font-size:20px; font-weight:500;"
         )
 
-        # Layout that stacks title and subtitle vertically
         overlay_layout = QVBoxLayout()
         overlay_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         overlay_layout.setSpacing(4)
         overlay_layout.addWidget(self.rcaide_label)
         overlay_layout.addWidget(self.leads_label)
 
-        # Widget that holds the overlay text (transparent background)
         overlay_widget = QWidget()
         overlay_widget.setLayout(overlay_layout)
         overlay_widget.setStyleSheet("background:transparent;")
 
-        # --- Layout for the banner container ---
-        # Banner image first, then text labels below it within the container
         banner_layout = QVBoxLayout(banner_container)
         banner_layout.setContentsMargins(0, 0, 0, 0)
         banner_layout.addWidget(self.banner)
         banner_layout.addWidget(overlay_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # Add banner section to the main layout
-        base_layout.addLayout(header_layout)
-        base_layout.addWidget(banner_container)
-        base_layout.addWidget(create_line_bar())
+        return banner_container
 
-        # Body Background
-        body_bg = QFrame()
-        body_bg.setObjectName("bodyBg")
-        body_bg.setStyleSheet("""
-#bodyBg {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #0B1D2C, stop:1 #051018);
-    border-top: 1px solid #11293C;
-}
-""")
-        body_bg.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        body_layout = QHBoxLayout(body_bg)
-        body_layout.setContentsMargins(30, 40, 30, 40)
-        body_layout.setSpacing(30)
-        body_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+    def _build_flowchart_column(self):
+        self._normal_flowchart_size = QSize(620, 200)
 
-    # --- Left Column: How To Use GUI Flowchart Image ---
         self.flowchart_frame = QFrame()
         self.flowchart_frame.setStyleSheet("""
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -258,15 +241,14 @@ class HomeWidget(TabWidget):
         flowchart_layout.setSpacing(0)
         flowchart_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Load High-Resolution Flowchart Image
         original_pix = QPixmap(os.path.join(_IMG, "flowchart.png"))
         self._original_pix = original_pix
         if not original_pix.isNull():
             screen = QApplication.primaryScreen()
             dpr = screen.devicePixelRatio() if screen else 1.0
+            w, h = self._normal_flowchart_size.width(), self._normal_flowchart_size.height()
             highres_pix = original_pix.scaled(
-                int(620 * dpr),
-                int(200 * dpr),
+                int(w * dpr), int(h * dpr),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation
             )
@@ -274,16 +256,21 @@ class HomeWidget(TabWidget):
         else:
             highres_pix = original_pix
 
-        # Center Flowchart Within Container
         self.flowchart_image = QLabel()
         self.flowchart_image.setPixmap(highres_pix)
         self.flowchart_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.flowchart_image.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.flowchart_image.setStyleSheet("border:none; background:transparent;")
-
         flowchart_layout.addWidget(self.flowchart_image, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # --- Right Column: Load Aircraft / Mission Or Start From Scratch ---
+        self.flowchart_frame.setMinimumSize(self._normal_flowchart_size)
+        self.flowchart_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+        return self.flowchart_frame
+
+    def _build_mission_panel(self):
+        self._normal_mission_size = QSize(550, 200)
+
         self.mission_frame = QFrame()
         self.mission_frame.setObjectName("missionPanel")
         self.mission_frame.setStyleSheet("""
@@ -320,12 +307,10 @@ QPushButton:hover {
         mission_layout.setSpacing(8)
         mission_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-    # --- Mission Panel Title Section ---
         title_container = QVBoxLayout()
         title_container.setSpacing(6)
         title_container.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Main section title text
         mission_label = QLabel("Get Started")
         mission_label.setFixedHeight(40)
         mission_label.setStyleSheet("""
@@ -337,7 +322,6 @@ QPushButton:hover {
             padding-bottom: 6px;
         """)
 
-        # Decorative underline below the title
         underline = QFrame()
         underline.setFixedHeight(5)
         underline.setFixedWidth(180)
@@ -354,32 +338,24 @@ QPushButton:hover {
             }
         """)
 
-        # Add title and underline to vertical layout
         title_container.addWidget(mission_label, alignment=Qt.AlignmentFlag.AlignCenter)
-        title_container.addWidget(underline, alignment=Qt.AlignmentFlag.AlignCenter)
+        title_container.addWidget(underline,     alignment=Qt.AlignmentFlag.AlignCenter)
         mission_layout.addLayout(title_container)
 
-        # Subtitle text under the title
         subtitle = QLabel("Quickly set up or define your aircraft mission.")
         subtitle.setStyleSheet("color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 400;")
         mission_layout.addWidget(subtitle, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # Buttons
-        # Horizontal layout for the load row
         load_row = QHBoxLayout()
         load_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         load_row.setSpacing(15)
 
-        # Button to load a predefined aircraft and mission setup
         load_btn = QPushButton("Load Aircraft and Mission")
         load_btn.setMinimumWidth(230)
         load_btn.setFixedHeight(36)
-
-        # Add button to the same row
         load_row.addWidget(load_btn)
         mission_layout.addLayout(load_row)
 
-        # Divider line between the load and scratch sections
         divider = QFrame()
         divider.setFixedHeight(2)
         divider.setStyleSheet("""
@@ -398,7 +374,6 @@ QPushButton:hover {
         """)
         mission_layout.addWidget(divider)
 
-        # Button to start a new mission from scratch
         scratch_btn = QPushButton("Start from Scratch")
         scratch_btn.setMinimumWidth(250)
         scratch_btn.setFixedHeight(36)
@@ -408,12 +383,9 @@ QPushButton:hover {
         scratch_container.addWidget(scratch_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         mission_layout.addLayout(scratch_container)
 
-        # Navigation Handler
         def go_to_geometry_tab():
-            # Find the TabWidget that contains this HomeWidget
             parent = self.window()
             tabs = None
-            # Try possible parent-paths
             if hasattr(parent, "tabs"):
                 tabs = parent.tabs
             elif hasattr(parent, "tab_widget"):
@@ -430,7 +402,6 @@ QPushButton:hover {
                 print("[Home] No TabWidget found in parent chain.")
                 return
 
-            # Locate Geometry tab by attribute or title
             idx = -1
             if hasattr(tabs, "geometry_tab"):
                 try:
@@ -438,7 +409,7 @@ QPushButton:hover {
                 except Exception:
                     idx = -1
             if idx == -1:
-                geometry_names = {"geometry", "geometry parameterization", "aircraft geometry"}
+                geometry_names = {"geometry", "geometry parameterization", "aircraft geometry", "visualize geometry"}
                 for i in range(tabs.count()):
                     title = tabs.tabText(i).strip().lower()
                     if any(name in title for name in geometry_names):
@@ -448,7 +419,6 @@ QPushButton:hover {
                 print("[Home] Geometry tab not found.")
                 return
 
-            # Switch and initialize
             tabs.setCurrentIndex(idx)
             w = tabs.widget(idx)
             if hasattr(w, "update_layout"):
@@ -457,38 +427,42 @@ QPushButton:hover {
                 except Exception as e:
                     print(f"[Home] Geometry tab update error: {e}")
 
-        # Button Logic
-        def handle_load_click():
-            parent = self.window()
-            if hasattr(parent, "load_all"):
-                parent.load_all()
-                return
+        load_btn.clicked.connect(lambda: self.window().load_all() if hasattr(self.window(), "load_all") else None)
+        scratch_btn.clicked.connect(go_to_geometry_tab)
 
-        def handle_scratch_click():
-            go_to_geometry_tab()
-
-        load_btn.clicked.connect(handle_load_click)
-        scratch_btn.clicked.connect(handle_scratch_click)
-
-        # Sizes
-        self._normal_flowchart_size = QSize(620, 200)
-        self._normal_mission_size = QSize(550, 200)
-        self._fullscreen_scale = 1.55
-
-        self.flowchart_frame.setMinimumSize(self._normal_flowchart_size)
-        self.flowchart_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.mission_frame.setMinimumSize(self._normal_mission_size)
 
-        body_layout.addWidget(self.flowchart_frame)
-        body_layout.addWidget(self.mission_frame)
-        base_layout.addWidget(body_bg)
+        return self.mission_frame
 
-        # Footer
+    def _build_body(self):
+        body_bg = QFrame()
+        body_bg.setObjectName("bodyBg")
+        body_bg.setStyleSheet("""
+#bodyBg {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #0B1D2C, stop:1 #051018);
+    border-top: 1px solid #11293C;
+}
+""")
+        body_bg.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        body_layout = QHBoxLayout(body_bg)
+        body_layout.setContentsMargins(30, 40, 30, 40)
+        body_layout.setSpacing(30)
+        body_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+        body_layout.addWidget(self._build_flowchart_column())
+        body_layout.addWidget(self._build_mission_panel())
+        self._fullscreen_scale = 1.55
+
+        return body_bg
+
+    def _build_footer(self):
         footer = QFrame()
         footer.setFixedHeight(12)
-        footer.setStyleSheet("background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #004080, stop:1 #001A33);")
-        base_layout.addWidget(footer)
-        self.setup_fade_animations()
+        footer.setStyleSheet(
+            "background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #004080, stop:1 #001A33);"
+        )
+        return footer
 
     def resizeEvent(self, event):
         # Called when the widget is resized

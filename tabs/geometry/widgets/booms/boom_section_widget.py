@@ -11,17 +11,36 @@ import RCAIDE
 from utilities import Units
 from common_widgets import DataEntryWidget
 
-# PyQT imports  
-from PyQt6.QtWidgets import QHBoxLayout, QLabel,QLineEdit, QPushButton, QSizePolicy, QSpacerItem,QVBoxLayout, QWidget, QFrame
+# PyQT imports
+from PyQt6.QtWidgets import (
+    QHBoxLayout, QLabel, QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget, QFrame, QComboBox,
+)
+from PyQt6.QtCore import Qt
 
-# ---------------------------------------------------------------------------------------------------------------------- 
-#  Boom Section Widget 
+# ----------------------------------------------------------------------------------------------------------------------
+#  Boom Section Widget
 # ----------------------------------------------------------------------------------------------------------------------
 class BoomSectionWidget(QWidget):
+    _SEGMENT_TYPES = [
+        "Circle Segment",
+        "Ellipse Segment",
+        "Rounded Rectangle Segment",
+        "Super Ellipse Segment",
+        "Segment",
+    ]
+
+    _RCAIDE_SEGMENT_CLASS = {
+        "Circle Segment":            lambda: RCAIDE.Library.Components.Booms.Segments.Circle_Segment(),
+        "Ellipse Segment":           lambda: RCAIDE.Library.Components.Booms.Segments.Ellipse_Segment(),
+        "Rounded Rectangle Segment": lambda: RCAIDE.Library.Components.Booms.Segments.Rounded_Rectangle_Segment(),
+        "Super Ellipse Segment":     lambda: RCAIDE.Library.Components.Booms.Segments.Super_Ellipse_Segment(),
+        "Segment":                   lambda: RCAIDE.Library.Components.Booms.Segments.Segment(),
+    }
+
     def __init__(self, index, on_delete, section_data=None):
         super(BoomSectionWidget, self).__init__()
 
-        # self.data_fields = {}
         self.coordinate_filename = ""
         self.index = index
         self.on_delete = on_delete
@@ -30,20 +49,29 @@ class BoomSectionWidget(QWidget):
         self.name_layout = QHBoxLayout()
         self.init_ui(section_data)
 
-    # noinspection DuplicatedCode
     def init_ui(self, section_data):
         main_layout = QVBoxLayout()
-        # add spacing
-        spacer_left = QSpacerItem(80, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        spacer_left  = QSpacerItem(80,  5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         spacer_right = QSpacerItem(300, 5, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         self.name_layout.addItem(spacer_left)
         self.name_layout.addWidget(QLabel("Segment Name: "))
-        self.name_layout.addWidget(QLineEdit(self))
+        self.segment_name_input = QLineEdit(self)
+        self.segment_name_input.setFixedWidth(200)
+        self.name_layout.addWidget(self.segment_name_input)
         self.name_layout.addItem(spacer_right)
+
+        segment_label = QLabel("Segment Type:")
+        segment_label.setFixedWidth(100)
+        self.name_layout.addWidget(segment_label)
+        self.segment_type_combo = QComboBox()
+        self.segment_type_combo.addItems(self._SEGMENT_TYPES)
+        self.segment_type_combo.setCurrentText("Ellipse Segment")
+        self.segment_type_combo.setFixedWidth(300)
+        self.name_layout.addWidget(self.segment_type_combo, alignment=Qt.AlignmentFlag.AlignLeft)
 
         main_layout.addLayout(self.name_layout)
 
-        # List of data labels
         data_units_labels = [
             ("Percent X Location", Units.Unitless),
             ("Percent Z Location", Units.Unitless),
@@ -52,12 +80,11 @@ class BoomSectionWidget(QWidget):
         ]
 
         self.data_entry_widget = DataEntryWidget(data_units_labels)
+
         delete_button = QPushButton("Delete Section", self)
         delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
-        # delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        # delete_button.setFixedWidth(150)
         delete_button.clicked.connect(self.delete_button_pressed)
-        # center delete button
+
         delete_button_layout = QHBoxLayout()
         delete_button_layout.addItem(QSpacerItem(50, 5, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         delete_button_layout.addWidget(delete_button)
@@ -66,7 +93,6 @@ class BoomSectionWidget(QWidget):
         main_layout.addWidget(self.data_entry_widget)
         main_layout.addLayout(delete_button_layout)
 
-        # Add horizontal bar
         line_bar = QFrame()
         line_bar.setFrameShape(QFrame.Shape.HLine)
         line_bar.setFrameShadow(QFrame.Shadow.Sunken)
@@ -78,32 +104,38 @@ class BoomSectionWidget(QWidget):
         self.setLayout(main_layout)
 
     def create_rcaide_structure(self, data):
-        segment = RCAIDE.Library.Components.Booms.Segments.Ellipse_Segment()
-
+        selected = self.segment_type_combo.currentText()
+        factory  = self._RCAIDE_SEGMENT_CLASS.get(selected, self._RCAIDE_SEGMENT_CLASS["Ellipse Segment"])
+        segment  = factory()
         segment.percent_x_location = data["Percent X Location"][0]
         segment.percent_z_location = data["Percent Z Location"][0]
-        segment.height = data["Height"][0]
-        segment.width = data["Width"][0]
-        segment.tag = data["Segment Name"]
-
+        segment.height             = data["Height"][0]
+        segment.width              = data["Width"][0]
+        segment.tag                = data["Segment Name"]
         return segment
 
     def get_data_values(self):
-        data = self.data_entry_widget.get_values()
+        data    = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
-        data["Segment Name"] = self.name_layout.itemAt(2).widget().text()
-        data_si["Segment Name"] = self.name_layout.itemAt(2).widget().text()
-
+        name = self.segment_name_input.text()
+        seg_type = self.segment_type_combo.currentText()
+        data["Segment Name"]    = name
+        data["segment_type"]    = seg_type
+        data_si["Segment Name"] = name
+        data_si["segment_type"] = seg_type
         segment = self.create_rcaide_structure(data_si)
         return data, segment
 
     def load_data_values(self, section_data):
         self.data_entry_widget.load_data(section_data)
-        self.name_layout.itemAt(2).widget().setText(section_data["Segment Name"])
+        self.segment_name_input.setText(section_data.get("Segment Name", ""))
+        seg_type = section_data.get("segment_type", "Ellipse Segment")
+        idx = self.segment_type_combo.findText(seg_type)
+        if idx >= 0:
+            self.segment_type_combo.setCurrentIndex(idx)
 
-    def delete_button_pressed(self): 
+    def delete_button_pressed(self):
         if self.on_delete is None:
             print("on_delete is None")
             return
-
         self.on_delete(self.index)

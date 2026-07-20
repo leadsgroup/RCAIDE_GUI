@@ -97,7 +97,7 @@ class TurbofanWidget(QWidget):
         self.remove_nacelle_btn = QPushButton("Remove Nacelle", self)
         self.remove_nacelle_btn.clicked.connect(self.disable_nacelle_ui)
         self.remove_nacelle_btn.setStyleSheet("color: #ff6b6b; font-weight: bold;")
-        self.remove_nacelle_btn.setFixedWidth(120)
+        self.remove_nacelle_btn.setFixedWidth(150)
         header_layout.addWidget(self.remove_nacelle_btn)
         
         self.nacelle_layout.addLayout(header_layout)
@@ -261,7 +261,9 @@ class TurbofanWidget(QWidget):
         data = self.data_entry_widget.get_values()
         data_si = self.data_entry_widget.get_values_si()
         data["Propulsor Tag"] = title
+        data["Propulsor Type"] = "Turbofan"
         data_si["Propulsor Tag"] = title
+        data_si["Propulsor Type"] = "Turbofan"
 
         if self.nacelle_active:
             nacelle_data = self.nacelle_general_widget.get_values()
@@ -290,6 +292,7 @@ class TurbofanWidget(QWidget):
 
             data_si = self.data_entry_widget.get_values_si()
             data_si["Propulsor Tag"] = title
+            data_si["Propulsor Type"] = "Turbofan"
             
             nacelle_si = self.nacelle_general_widget.get_values_si()
             nacelle_si["Nacelle Type"] = self.nacelle_combo.currentText()
@@ -422,8 +425,13 @@ class TurbofanWidget(QWidget):
             else:
                 pass
             
+            if n_type == "Stack Nacelle":
+                for seg in n_data.get("section_objects", []):
+                    if seg is not None:
+                        nacelle.append_segment(seg)
+
             turbofan.nacelle = nacelle
-        
+
         # design turbofan
         design_turbofan(turbofan)
         

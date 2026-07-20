@@ -18011,7 +18011,7 @@
               0
             ],
             "segments_bounding_cabin": [],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0
@@ -20630,7 +20630,6 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "base",
       "diff": {
-        "tag": "base",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20662,14 +20661,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "base"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cruise",
       "diff": {
-        "tag": "cruise",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20701,14 +20700,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "cruise"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
-        "tag": "takeoff",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20740,14 +20739,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "takeoff"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
-        "tag": "cutback",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20779,14 +20778,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "cutback"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "descent",
       "diff": {
-        "tag": "descent",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20818,14 +20817,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "descent"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
-        "tag": "landing",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20857,14 +20856,14 @@
               }
             }
           }
-        }
+        },
+        "tag": "landing"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "short_field_takeoff",
       "diff": {
-        "tag": "short_field_takeoff",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "fuel": {
@@ -20896,7 +20895,8 @@
               }
             }
           }
-        }
+        },
+        "tag": "short_field_takeoff"
       }
     }
   ],
@@ -21609,7 +21609,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "root_finder"
         }
       ]
     }

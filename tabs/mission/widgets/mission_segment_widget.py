@@ -317,9 +317,6 @@ class MissionSegmentWidget(QWidget):
                 if self.solver_root.isChecked()
                 else "optimize"
             )
-            # Force cruise to use root_finder for better trim convergence
-            if top == 1:
-                solver = "root_finder"
             if hasattr(seg.state.numerics, "solver"):
                 seg.state.numerics.solver.type = solver
 

@@ -9,6 +9,8 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidge
 
 from common_widgets import DataEntryWidget
 
+from utilities import BTN_STYLE
+
 class ESCWidget(QWidget):
     def __init__(self, index, on_delete, data_values=None):
         super(ESCWidget, self).__init__()
@@ -29,7 +31,7 @@ class ESCWidget(QWidget):
         layout.addLayout(self.name_layout) 
 
         #delete_button = QPushButton("Delete Electronic Speed Controller", self)
-        #delete_button.setStyleSheet("color:#dbe7ff; font-weight:500; margin:0; padding:0;")
+        #delete_button.setStyleSheet(BTN_STYLE)
         #delete_button.clicked.connect(self.delete_button_pressed)
 
         #layout.addWidget(delete_button)

@@ -101904,7 +101904,7 @@
               0
             ],
             "segments_bounding_cabin": [],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0
@@ -105668,193 +105668,12 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "base",
       "diff": {
-        "tag": "base",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
-            "busses": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "bus": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
-                "battery_modules": {
-                  "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "nmc_module_2": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_1": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "front_starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -105923,21 +105742,390 @@
                     }
                   }
                 }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "busses": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "bus": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
+                "battery_modules": {
+                  "__type__": "RCAIDE.Library.Components.Component.Container",
+                  "nmc_module_2": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_1": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
               }
             }
           }
-        }
+        },
+        "tag": "base"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "vertical_flight",
       "diff": {
-        "tag": "vertical_flight",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
+            "propulsors": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "front_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.5707963267948966,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.5707963267948966,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "front_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.5707963267948966,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.5707963267948966,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.5707963267948966,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.5707963267948966,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              }
+            },
             "busses": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "bus": {
@@ -105962,23 +106150,6 @@
                     }
                   },
                   "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
@@ -106029,6 +106200,23 @@
                       }
                     }
                   },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
                   "nmc_module_6": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
@@ -106048,209 +106236,233 @@
                   }
                 }
               }
-            },
-            "propulsors": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.5707963267948966,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.5707963267948966,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.5707963267948966,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.5707963267948966,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.5707963267948966,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.5707963267948966,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
-        }
+        },
+        "tag": "vertical_flight"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "transition_setting_1",
       "diff": {
-        "tag": "transition_setting_1",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
+            "propulsors": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "front_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.15707626686039136,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.4835298641951802,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.15707626686039136,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.4835298641951802,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "front_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.15707626686039136,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.4835298641951802,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.15707626686039136,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.4835298641951802,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.15707626686039136,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.4835298641951802,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.15707626686039136,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.4835298641951802,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              }
+            },
             "busses": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "bus": {
@@ -106275,23 +106487,6 @@
                     }
                   },
                   "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
@@ -106342,6 +106537,23 @@
                       }
                     }
                   },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
                   "nmc_module_6": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
@@ -106361,233 +106573,209 @@
                   }
                 }
               }
-            },
-            "propulsors": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.15707626686039136,
-                    0
-                  ],
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.4835298641951802,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.15707626686039136,
-                    0
-                  ],
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.4835298641951802,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.15707626686039136,
-                    0
-                  ],
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.4835298641951802,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.15707626686039136,
-                    0
-                  ],
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.4835298641951802,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.15707626686039136,
-                    0
-                  ],
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.4835298641951802,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.15707626686039136,
-                    0
-                  ],
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.4835298641951802,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
-        }
+        },
+        "tag": "transition_setting_1"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "transition_setting_2",
       "diff": {
-        "tag": "transition_setting_2",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
+            "propulsors": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "front_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.3089969389957472,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.3089969389957472,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "front_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.3089969389957472,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.3089969389957472,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.3089969389957472,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.3089969389957472,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              }
+            },
             "busses": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "bus": {
@@ -106612,23 +106800,6 @@
                     }
                   },
                   "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
@@ -106679,6 +106850,23 @@
                       }
                     }
                   },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
                   "nmc_module_6": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
@@ -106698,403 +106886,22 @@
                   }
                 }
               }
-            },
-            "propulsors": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.3089969389957472,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.3089969389957472,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.3089969389957472,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.3089969389957472,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.3089969389957472,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.3089969389957472,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
-        }
+        },
+        "tag": "transition_setting_2"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "transition_setting_3",
       "diff": {
-        "tag": "transition_setting_3",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
-            "busses": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "bus": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
-                "battery_modules": {
-                  "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "nmc_module_2": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_1": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.3141525337207827,
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.3141525337207827,
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.3141525337207827,
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "front_starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -107175,21 +106982,402 @@
                     }
                   }
                 }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.3141525337207827,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.3141525337207827,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.3141525337207827,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "busses": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "bus": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
+                "battery_modules": {
+                  "__type__": "RCAIDE.Library.Components.Component.Container",
+                  "nmc_module_2": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_1": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
               }
             }
           }
-        }
+        },
+        "tag": "transition_setting_3"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "low_speed_transition",
       "diff": {
-        "tag": "low_speed_transition",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
+            "propulsors": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "front_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.2217304763960306,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.2217304763960306,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "front_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.2217304763960306,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.2217304763960306,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.2217304763960306,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      1.2217304763960306,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              }
+            },
             "busses": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "bus": {
@@ -107214,23 +107402,6 @@
                     }
                   },
                   "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
@@ -107281,6 +107452,23 @@
                       }
                     }
                   },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
                   "nmc_module_6": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
@@ -107300,209 +107488,209 @@
                   }
                 }
               }
-            },
-            "propulsors": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.2217304763960306,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.2217304763960306,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.2217304763960306,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.2217304763960306,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.2217304763960306,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      1.2217304763960306,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
-        }
+        },
+        "tag": "low_speed_transition"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "medium_speed_transition",
       "diff": {
-        "tag": "medium_speed_transition",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
+            "propulsors": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "front_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "front_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              }
+            },
             "busses": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "bus": {
@@ -107527,23 +107715,6 @@
                     }
                   },
                   "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
@@ -107594,6 +107765,23 @@
                       }
                     }
                   },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
                   "nmc_module_6": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
@@ -107613,209 +107801,209 @@
                   }
                 }
               }
-            },
-            "propulsors": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
-        }
+        },
+        "tag": "medium_speed_transition"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "high_speed_transition",
       "diff": {
-        "tag": "high_speed_transition",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
+            "propulsors": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "front_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "front_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "orientation_euler_angles": [
+                    [
+                      0,
+                      0.3490658503988659,
+                      0
+                    ],
+                    0
+                  ]
+                }
+              }
+            },
             "busses": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
               "bus": {
@@ -107840,23 +108028,6 @@
                     }
                   },
                   "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
@@ -107907,6 +108078,23 @@
                       }
                     }
                   },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
                   "nmc_module_6": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
@@ -107926,403 +108114,22 @@
                   }
                 }
               }
-            },
-            "propulsors": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "front_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "orientation_euler_angles": [
-                    [
-                      0,
-                      0.3490658503988659,
-                      0
-                    ],
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
-        }
+        },
+        "tag": "high_speed_transition"
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cruise",
       "diff": {
-        "tag": "cruise",
         "networks": {
           "__type__": "RCAIDE.Framework.Networks.Network.Container",
           "electric": {
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
-            "busses": {
-              "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "bus": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
-                "battery_modules": {
-                  "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "nmc_module_2": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_4": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_1": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "nmc_module_6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "outboard_port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.6283050674415654,
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "rear_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.6283050674415654,
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "outboard_starboard_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
-                  "blade_pitch_command": [
-                    0.6283050674415654,
-                    0
-                  ],
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "airfoil": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "front_starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -108403,10 +108210,203 @@
                     }
                   }
                 }
+              },
+              "outboard_port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.6283050674415654,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "outboard_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.6283050674415654,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "rear_starboard_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor",
+                  "blade_pitch_command": [
+                    0.6283050674415654,
+                    0
+                  ],
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "airfoil": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "drag_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "busses": {
+              "__type__": "RCAIDE.Framework.Networks.Network.Container",
+              "bus": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
+                "battery_modules": {
+                  "__type__": "RCAIDE.Library.Components.Component.Container",
+                  "nmc_module_2": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_1": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "nmc_module_6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Temperature": [
+                          null,
+                          0
+                        ],
+                        "Voltage": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
               }
             }
           }
-        }
+        },
+        "tag": "cruise"
       }
     }
   ],
@@ -109267,7 +109267,8 @@
             1.0,
             0
           ],
-          "config_tag": "vertical_flight"
+          "config_tag": "vertical_flight",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Acceleration_Constant_Altitude.Constant_Acceleration_Constant_Altitude",
@@ -109710,7 +109711,8 @@
             0.0,
             0
           ],
-          "config_tag": "transition_setting_1"
+          "config_tag": "transition_setting_1",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -110112,7 +110114,8 @@
             0.0,
             0
           ],
-          "config_tag": "transition_setting_2"
+          "config_tag": "transition_setting_2",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.Curved_Constant_Radius_Constant_Speed_Constant_Altitude",
@@ -110514,7 +110517,8 @@
             0.0,
             0
           ],
-          "config_tag": "transition_setting_2"
+          "config_tag": "transition_setting_2",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -110939,7 +110943,8 @@
             1.5707963267948966,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -111333,7 +111338,8 @@
             1.5707963267948966,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -111735,7 +111741,8 @@
             1.5707963267948966,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "root_finder"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -112146,7 +112153,8 @@
             1.5707963267948966,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.Curved_Constant_Radius_Constant_Speed_Constant_Altitude",
@@ -112544,7 +112552,8 @@
             1.5707963267948966,
             0
           ],
-          "config_tag": "transition_setting_2"
+          "config_tag": "transition_setting_2",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Linear_Speed_Constant_Rate.Linear_Speed_Constant_Rate",
@@ -112973,7 +112982,8 @@
             0.0,
             0
           ],
-          "config_tag": "low_speed_transition"
+          "config_tag": "low_speed_transition",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Acceleration_Constant_Altitude.Constant_Acceleration_Constant_Altitude",
@@ -113384,7 +113394,8 @@
             0.0,
             0
           ],
-          "config_tag": "low_speed_transition"
+          "config_tag": "low_speed_transition",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Vertical_Flight.Descent.Descent",
@@ -113778,7 +113789,8 @@
             3.141592653589793,
             0
           ],
-          "config_tag": "vertical_flight"
+          "config_tag": "vertical_flight",
+          "solver_type": "root_finder"
         }
       ]
     }

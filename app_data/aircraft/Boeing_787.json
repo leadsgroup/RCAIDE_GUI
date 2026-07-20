@@ -1,6 +1,6 @@
 {
   "rcaide_vehicle": {
-    "tag": "Boeing_787_8",
+    "tag": "Boeing_787-8",
     "networks": {
       "__type__": "RCAIDE.Framework.Networks.Network.Container",
       "fuel": {
@@ -202,7 +202,7 @@
             "origin": [
               [
                 [
-                  18,
+                  17.818,
                   10.0,
                   -0.953
                 ]
@@ -368,12 +368,12 @@
                   0
                 ],
                 "wetted": [
-                  48.25486315913922,
+                  54.74036703320999,
                   0
                 ]
               },
               "diameter": [
-                3.2,
+                3.556,
                 0
               ],
               "inlet_diameter": [
@@ -381,7 +381,7 @@
                 0
               ],
               "length": [
-                4.8,
+                4.9,
                 0
               ],
               "flow_through": [
@@ -556,7 +556,7 @@
               0
             ],
             "length": [
-              6.0,
+              4.928,
               0
             ],
             "height": [
@@ -3161,7 +3161,7 @@
             "origin": [
               [
                 [
-                  18.0,
+                  17.818,
                   -10.0,
                   -0.953
                 ]
@@ -3327,12 +3327,12 @@
                   0
                 ],
                 "wetted": [
-                  48.25486315913922,
+                  54.74036703320999,
                   0
                 ]
               },
               "diameter": [
-                3.2,
+                3.556,
                 0
               ],
               "inlet_diameter": [
@@ -3340,7 +3340,7 @@
                 0
               ],
               "length": [
-                4.8,
+                4.9,
                 0
               ],
               "flow_through": [
@@ -3515,7 +3515,7 @@
               0
             ],
             "length": [
-              6.0,
+              4.928,
               0
             ],
             "height": [
@@ -7883,11 +7883,11 @@
               "diameters": {
                 "__type__": "RCAIDE.Framework.Core.Data.Data",
                 "external": [
-                  0.015875,
+                  0.0,
                   0
                 ],
                 "internal": [
-                  0.014097,
+                  0.0,
                   0
                 ]
               }
@@ -7998,1188 +7998,7 @@
           "__type__": "RCAIDE.Framework.Networks.Network.Container"
         },
         "systems": {
-          "__type__": "RCAIDE.Framework.Networks.Network.Container",
-          "avionics": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Avionics.Avionics",
-            "tag": "avionics",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  5.0,
-                  0,
-                  0
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ],
-            "uninstalled_mass": [
-              0.0,
-              0
-            ]
-          },
-          "flight_controls": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls.Flight_Controls",
-            "tag": "flight_controls",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  30.0,
-                  0,
-                  0
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ]
-          },
-          "auxillary_power_unit": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit.Auxiliary_Power_Unit",
-            "tag": "auxillary_power_unit",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  54.0,
-                  0,
-                  0
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ]
-          },
-          "electrical": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Electrical.Electrical",
-            "tag": "electrical",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  18.3,
-                  0,
-                  -0.8
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ]
-          },
-          "hydraulic": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Hydraulics.Hydraulics",
-            "tag": "hydraulic",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  28.0,
-                  0,
-                  -0.8
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ],
-            "left_system": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "number_of_pumps": [
-                1,
-                0
-              ],
-              "flowspeed": [
-                140.0,
-                0
-              ],
-              "system_power": [
-                204.0,
-                0
-              ]
-            },
-            "right_system": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "number_of_pumps": [
-                1,
-                0
-              ],
-              "flowspeed": [
-                140.0,
-                0
-              ],
-              "system_power": [
-                204.0,
-                0
-              ]
-            },
-            "central_system": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "number_of_pumps": [
-                1,
-                0
-              ],
-              "flowspeed": [
-                23.0,
-                0
-              ],
-              "system_power": [
-                196.0,
-                0
-              ]
-            }
-          },
-          "environmental_controls": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls.Environmental_Controls",
-            "tag": "environmental_controls",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  21.9,
-                  0,
-                  -1.0
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ],
-            "cabin_compressor_efficiency": [
-              0.85,
-              0
-            ]
-          },
-          "instruments": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Instruments.Instruments",
-            "tag": "instruments",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  5.0,
-                  0,
-                  0
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ]
-          },
-          "furnishings": {
-            "__type__": "RCAIDE.Library.Components.Powertrain.Systems.Furnishings.Furnishings",
-            "tag": "furnishings",
-            "mass_properties": {
-              "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-              "mass": [
-                0,
-                0
-              ],
-              "center_of_gravity": [
-                [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ]
-                ],
-                0
-              ],
-              "moments_of_inertia": {
-                "__type__": "RCAIDE.Framework.Core.Data.Data",
-                "center": [
-                  [
-                    0.0,
-                    0.0,
-                    0.0
-                  ],
-                  0
-                ],
-                "tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ],
-                "non_dimensional_tensor": [
-                  [
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ],
-                    [
-                      0.0,
-                      0.0,
-                      0.0
-                    ]
-                  ],
-                  0
-                ]
-              },
-              "calculated_flag": [
-                false,
-                0
-              ]
-            },
-            "volume_properties": {
-              "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-              "net_volume": [
-                0.0,
-                0
-              ],
-              "gross_volume": [
-                0.0,
-                0
-              ]
-            },
-            "origin": [
-              [
-                [
-                  28.0,
-                  0,
-                  0
-                ]
-              ],
-              0
-            ],
-            "orientation_euler_angles": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "xz_plane_symmetric": [
-              false,
-              0
-            ],
-            "xy_plane_symmetric": [
-              false,
-              0
-            ],
-            "yz_plane_symmetric": [
-              false,
-              0
-            ],
-            "power_draw": [
-              0.0,
-              0
-            ],
-            "length": [
-              0,
-              0
-            ],
-            "width": [
-              0,
-              0
-            ],
-            "height": [
-              0,
-              0
-            ],
-            "control": [
-              null,
-              0
-            ],
-            "accessories": [
-              null,
-              0
-            ]
-          }
+          "__type__": "RCAIDE.Framework.Networks.Network.Container"
         },
         "identical_propulsors": [
           true,
@@ -12212,9 +11031,9 @@
             "origin": [
               [
                 [
-                  4.5,
-                  0,
-                  0.5
+                  0.0,
+                  0.0,
+                  0.0
                 ]
               ],
               0
@@ -12254,7 +11073,7 @@
               ],
               0
             ],
-            "filled_seats_arrangement": "ascending",
+            "filled_seats_arrangement": "random",
             "type_A_door_length": [
               0.9144,
               0
@@ -12280,7 +11099,7 @@
               0
             ],
             "wide_body": [
-              true,
+              false,
               0
             ],
             "tail": {
@@ -12412,7 +11231,7 @@
                   0
                 ],
                 "number_of_seats_abrest": [
-                  4,
+                  6,
                   0
                 ],
                 "number_of_passengers": [
@@ -12420,23 +11239,23 @@
                   0
                 ],
                 "number_of_rows": [
-                  7,
+                  6,
                   0
                 ],
                 "number_of_seats": [
-                  0,
+                  36,
                   0
                 ],
                 "seat_width": [
-                  0.889,
+                  0.635,
                   0
                 ],
                 "seat_arm_rest_width": [
-                  0.07619999999999999,
+                  0.0508,
                   0
                 ],
                 "seat_length": [
-                  1.143,
+                  1.016,
                   0
                 ],
                 "seat_pitch": [
@@ -12448,13 +11267,17 @@
                   0
                 ],
                 "galley_lavatory_percent_x_locations": [
-                  0,
-                  1
+                  [
+                    0
+                  ],
+                  0
                 ],
                 "emergency_exit_percent_x_locations": [],
                 "type_A_exit_percent_x_locations": [
-                  0,
-                  1
+                  [
+                    0.01
+                  ],
+                  0
                 ],
                 "y_offset_distance": [
                   0,
@@ -12582,19 +11405,19 @@
                   0
                 ],
                 "number_of_rows": [
-                  4,
+                  8,
                   0
                 ],
                 "number_of_seats": [
-                  0,
+                  64,
                   0
                 ],
                 "seat_width": [
-                  0.43179999999999996,
+                  0.4572,
                   0
                 ],
                 "seat_arm_rest_width": [
-                  0.1016,
+                  0.0508,
                   0
                 ],
                 "seat_length": [
@@ -12606,7 +11429,7 @@
                   0
                 ],
                 "aisle_width": [
-                  0.4572,
+                  0.381,
                   0
                 ],
                 "galley_lavatory_percent_x_locations": [],
@@ -12734,15 +11557,15 @@
                   0
                 ],
                 "number_of_seats_abrest": [
-                  9,
+                  10,
                   0
                 ],
                 "number_of_rows": [
-                  26,
+                  15,
                   0
                 ],
                 "number_of_seats": [
-                  0,
+                  150,
                   0
                 ],
                 "seat_width": [
@@ -12767,16 +11590,20 @@
                 ],
                 "galley_lavatory_percent_x_locations": [
                   [
-                    0.35,
-                    1.0
+                    1
                   ],
                   0
                 ],
-                "emergency_exit_percent_x_locations": [],
+                "emergency_exit_percent_x_locations": [
+                  [
+                    0.1,
+                    0.15
+                  ],
+                  0
+                ],
                 "type_A_exit_percent_x_locations": [
                   [
-                    0.35,
-                    1.0
+                    0.99
                   ],
                   0
                 ],
@@ -12876,9 +11703,9 @@
           "origin": [
             [
               [
-                34.02,
-                0,
-                0
+                0.0,
+                0.0,
+                0.0
               ]
             ],
             0
@@ -12904,10 +11731,6 @@
             0
           ]
         },
-        "number_coach_seats": [
-          248,
-          0
-        ],
         "seats_abreast": [
           9,
           0
@@ -13143,7 +11966,7 @@
         "twists": {
           "__type__": "RCAIDE.Framework.Core.Data.Data",
           "root": [
-            0.06981317007977318,
+            0.061086523819801536,
             0
           ],
           "tip": [
@@ -13298,7 +12121,7 @@
               0
             ],
             "twist": [
-              0.06981317007977318,
+              0.061086523819801536,
               0
             ],
             "taper": [
@@ -13637,7 +12460,7 @@
               0
             ],
             "twist": [
-              0.03368485456349056,
+              0.02796890126320914,
               0
             ],
             "taper": [
@@ -13976,7 +12799,7 @@
               0
             ],
             "twist": [
-              -0.029670597283903602,
+              -0.03010692959690217,
               0
             ],
             "taper": [
@@ -14315,7 +13138,7 @@
               0
             ],
             "twist": [
-              -0.0349065850398866,
+              -0.034906585039886584,
               0
             ],
             "taper": [
@@ -15742,7 +14565,7 @@
               0
             ],
             "thickness_to_chord": [
-              0.1,
+              0.12,
               0
             ],
             "ignore_segment": [
@@ -16986,7 +15809,7 @@
               0
             ],
             "thickness_to_chord": [
-              0.1,
+              0.11,
               0
             ],
             "ignore_segment": [
@@ -17191,7 +16014,7 @@
               0
             ],
             "thickness_to_chord": [
-              0.1,
+              0.11,
               0
             ],
             "ignore_segment": [
@@ -17525,9 +16348,9 @@
         "origin": [
           [
             [
-              28,
-              5.335,
-              -1.5
+              0.0,
+              0.0,
+              0.0
             ]
           ],
           0
@@ -17702,9 +16525,9 @@
         "origin": [
           [
             [
-              7.0,
-              0,
-              -1.5
+              0.0,
+              0.0,
+              0.0
             ]
           ],
           0
@@ -17734,15 +16557,15 @@
           0
         ],
         "rim_diameter": [
-          0.4572,
+          0.4064,
           0
         ],
         "tire_width": [
-          0.3937,
+          0.4064,
           0
         ],
         "strut_length": [
-          1.6764000000000001,
+          2.7432000000000003,
           0
         ],
         "wheels": [
@@ -17799,7 +16622,7 @@
         "mass_properties": {
           "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
           "mass": [
-            1850,
+            0,
             0
           ],
           "center_of_gravity": [
@@ -17878,9 +16701,9 @@
         "origin": [
           [
             [
-              5.82,
-              0,
-              -0.6
+              0.0,
+              0.0,
+              0.0
             ]
           ],
           0
@@ -17906,148 +16729,15 @@
           0
         ],
         "length": [
-          10,
+          1.0,
           0
         ],
         "width": [
-          2.6923999999999997,
+          1.0,
           0
         ],
         "height": [
-          1.7018,
-          0
-        ],
-        "density": [
-          0.0,
-          0
-        ],
-        "power_draw": [
-          0.0,
-          0
-        ]
-      },
-      "cargo_bay2": {
-        "__type__": "RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay.Cargo_Bay",
-        "tag": "cargo_bay2",
-        "mass_properties": {
-          "__type__": "RCAIDE.Library.Components.Mass_Properties.Mass_Properties",
-          "mass": [
-            1440,
-            0
-          ],
-          "center_of_gravity": [
-            [
-              [
-                0.0,
-                0.0,
-                0.0
-              ]
-            ],
-            0
-          ],
-          "moments_of_inertia": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data",
-            "center": [
-              [
-                0.0,
-                0.0,
-                0.0
-              ],
-              0
-            ],
-            "tensor": [
-              [
-                [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                [
-                  0.0,
-                  0.0,
-                  0.0
-                ]
-              ],
-              0
-            ],
-            "non_dimensional_tensor": [
-              [
-                [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                [
-                  0.0,
-                  0.0,
-                  0.0
-                ]
-              ],
-              0
-            ]
-          }
-        },
-        "volume_properties": {
-          "__type__": "RCAIDE.Library.Components.Volume_Properties.Volume_Properties",
-          "net_volume": [
-            0.0,
-            0
-          ],
-          "gross_volume": [
-            0.0,
-            0
-          ]
-        },
-        "origin": [
-          [
-            [
-              30,
-              0,
-              -0.6
-            ]
-          ],
-          0
-        ],
-        "orientation_euler_angles": [
-          [
-            0.0,
-            0.0,
-            0.0
-          ],
-          0
-        ],
-        "xz_plane_symmetric": [
-          false,
-          0
-        ],
-        "xy_plane_symmetric": [
-          false,
-          0
-        ],
-        "yz_plane_symmetric": [
-          false,
-          0
-        ],
-        "length": [
-          10,
-          0
-        ],
-        "width": [
-          2.6923999999999997,
-          0
-        ],
-        "height": [
-          1.7018,
+          1.0,
           0
         ],
         "density": [
@@ -18145,7 +16835,7 @@
         0
       ],
       "landing": [
-        172000,
+        null,
         0
       ],
       "max_cargo": [
@@ -18181,7 +16871,7 @@
         0
       ],
       "fuel": [
-        57500.0,
+        0,
         0
       ],
       "max_zero_fuel": [
@@ -18314,8 +17004,14 @@
         0.0,
         0
       ],
-      "category": "transport",
-      "FAR_part_number": "25",
+      "category": [
+        null,
+        0
+      ],
+      "FAR_part_number": [
+        null,
+        0
+      ],
       "alt_vc": [
         0.0,
         0
@@ -18341,11 +17037,11 @@
         0
       ],
       "maximum_lift_coefficient": [
-        1.5,
+        null,
         0
       ],
       "minimum_lift_coefficient": [
-        -1.0,
+        -1.5,
         0
       ],
       "maneuver": {
@@ -18446,164 +17142,165 @@
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "takeoff",
       "diff": {
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        },
+        "tag": "takeoff",
+        "V2_VS_ratio": [
+          1.21,
+          0
+        ],
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
         },
-        "tag": "takeoff",
-        "V2_VS_ratio": [
-          1.21,
-          0
-        ]
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "transition",
       "diff": {
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        },
+        "tag": "transition",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
         },
-        "tag": "transition"
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "initial_climb",
       "diff": {
+        "tag": "initial_climb",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
-        },
-        "tag": "initial_climb"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "accel",
       "diff": {
+        "tag": "accel",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
-        },
-        "tag": "accel"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "cutback",
       "diff": {
+        "tag": "cutback",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18619,31 +17316,14 @@
               }
             }
           }
-        },
-        "tag": "cutback"
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "approach",
       "diff": {
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        },
+        "tag": "approach",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
@@ -18660,58 +17340,74 @@
             }
           }
         },
-        "tag": "approach"
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        }
       }
     },
     {
       "__type__": "RCAIDE.Library.Components.Configs.Config.Config",
       "tag": "landing",
       "diff": {
-        "landing_gears": {
-          "__type__": "RCAIDE.Library.Components.Component.Container",
-          "main_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          },
-          "nose_gear": {
-            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
-            "gear_extended": [
-              true,
-              0
-            ]
-          }
-        },
+        "tag": "landing",
         "wings": {
           "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
           "main_wing": {
             "__type__": "RCAIDE.Library.Components.Wings.Main_Wing.Main_Wing",
             "control_surfaces": {
               "__type__": "RCAIDE.Library.Components.Wings.Wing.Container",
-              "slat": {
-                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
-                "deflection": [
-                  0.4363323129985824,
-                  0
-                ]
-              },
               "flap": {
                 "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Flap.Flap",
                 "deflection": [
                   0.17453292519943295,
                   0
                 ]
+              },
+              "slat": {
+                "__type__": "RCAIDE.Library.Components.Wings.Control_Surfaces.Slat.Slat",
+                "deflection": [
+                  0.4363323129985824,
+                  0
+                ]
               }
             }
           }
         },
-        "tag": "landing",
         "Vref_VS_ratio": [
           1.23,
           0
-        ]
+        ],
+        "landing_gears": {
+          "__type__": "RCAIDE.Library.Components.Component.Container",
+          "nose_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear.Nose_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          },
+          "main_gear": {
+            "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
+            "gear_extended": [
+              true,
+              0
+            ]
+          }
+        }
       }
     }
   ],
@@ -20008,7 +18704,8 @@
             0.0,
             0
           ],
-          "config_tag": "takeoff"
+          "config_tag": "takeoff",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -20402,7 +19099,8 @@
             0.0,
             0
           ],
-          "config_tag": "transition"
+          "config_tag": "transition",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -20796,7 +19494,8 @@
             0.0,
             0
           ],
-          "config_tag": "initial_climb"
+          "config_tag": "initial_climb",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Acceleration_Constant_Altitude.Constant_Acceleration_Constant_Altitude",
@@ -21190,7 +19889,8 @@
             0.0,
             0
           ],
-          "config_tag": "accel"
+          "config_tag": "accel",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -21595,7 +20295,8 @@
             0.0,
             0
           ],
-          "config_tag": "cutback"
+          "config_tag": "cutback",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -22000,7 +20701,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -22405,7 +21107,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -22810,7 +21513,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -23215,7 +21919,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -23620,7 +22325,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -24025,7 +22731,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Linear_Mach_Constant_Rate.Linear_Mach_Constant_Rate",
@@ -24423,7 +23130,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -24817,7 +23525,8 @@
             0.8,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -25204,14 +23913,15 @@
             0
           ],
           "calibrated_air_speed": [
-            100.0,
+            154.3332,
             0
           ],
           "true_course": [
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter.Constant_Speed_Constant_Altitude_Loiter",
@@ -25601,7 +24311,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -25995,7 +24706,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -26389,7 +25101,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter.Constant_Speed_Constant_Altitude_Loiter",
@@ -26779,7 +25492,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -27173,7 +25887,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -27567,7 +26282,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -27961,7 +26677,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude.Constant_Speed_Constant_Altitude",
@@ -28351,7 +27068,8 @@
             0.0,
             0
           ],
-          "config_tag": "base"
+          "config_tag": "base",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -28745,7 +27463,8 @@
             0.0,
             0
           ],
-          "config_tag": "cruise"
+          "config_tag": "cruise",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -29139,7 +27858,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.Constant_Throttle_Constant_Speed",
@@ -29533,7 +28253,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter.Constant_Speed_Constant_Altitude_Loiter",
@@ -29923,7 +28644,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         },
         {
           "__type__": "RCAIDE.Framework.Mission.Segments.Descent.Constant_CAS_Constant_Rate.Constant_CAS_Constant_Rate",
@@ -30317,404 +29039,8 @@
             0.0,
             0
           ],
-          "config_tag": "approach"
-        },
-        {
-          "__type__": "RCAIDE.Framework.Mission.Segments.Ground.Landing.Landing",
-          "tag": "landing",
-          "features": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data"
-          },
-          "settings": {
-            "__type__": "RCAIDE.Framework.Analyses.Settings.Settings",
-            "tag": "settings",
-            "verbose_process": [
-              false,
-              0
-            ]
-          },
-          "temperature_deviation": [
-            0.0,
-            0
-          ],
-          "sideslip_angle": [
-            0.0,
-            0
-          ],
-          "crosswind_speed": [
-            0.0,
-            0
-          ],
-          "angle_of_attack": [
-            0.017453292519943295,
-            0
-          ],
-          "bank_angle": [
-            0.0,
-            0
-          ],
-          "hybrid_power_split_ratio": [
-            null,
-            0
-          ],
-          "battery_fuel_cell_power_split_ratio": [
-            null,
-            0
-          ],
-          "lift_coefficient": [
-            null,
-            0
-          ],
-          "flight_dynamics": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data",
-            "force_x": [
-              true,
-              0
-            ],
-            "force_y": [
-              false,
-              0
-            ],
-            "force_z": [
-              false,
-              0
-            ],
-            "moment_x": [
-              false,
-              0
-            ],
-            "moment_y": [
-              false,
-              0
-            ],
-            "moment_z": [
-              false,
-              0
-            ],
-            "final_velocity_error": [
-              true,
-              0
-            ]
-          },
-          "assigned_control_variables": {
-            "__type__": "RCAIDE.Framework.Core.Data.Data",
-            "pitch_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "bank_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "angle_of_attack": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "sideslip_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "elapsed_time": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                true,
-                0
-              ],
-              "initial_guess_values": [
-                [
-                  [
-                    30.0
-                  ]
-                ],
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "velocity": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "ground_velocity": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                true,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "acceleration": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "altitude": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "throttle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_propulsors": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "elevator_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "rudder_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "flap_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "slat_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "aileron_deflection": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_surfaces": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "thrust_vector_angle": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_propulsors": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            },
-            "blade_pitch_command": {
-              "__type__": "RCAIDE.Framework.Core.Data.Data",
-              "active": [
-                false,
-                0
-              ],
-              "assigned_rotors": [
-                null,
-                0
-              ],
-              "initial_guess_values": [
-                null,
-                0
-              ],
-              "bounds": [
-                null,
-                0
-              ]
-            }
-          },
-          "velocity_start": [
-            77.1666,
-            0
-          ],
-          "velocity_end": [
-            10.28888,
-            0
-          ],
-          "friction_coefficient": [
-            0.4,
-            0
-          ],
-          "throttle": [
-            0.3,
-            0
-          ],
-          "altitude": [
-            0.0,
-            0
-          ],
-          "true_course": [
-            0.0,
-            0
-          ],
-          "config_tag": "landing"
+          "config_tag": "approach",
+          "solver_type": "optimize"
         }
       ]
     }

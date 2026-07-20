@@ -7,7 +7,7 @@ import RCAIDE
 from tabs.mission.widgets import MissionSegmentWidget
 from tabs.mission.widgets import MissionAnalysisWidget
 from tabs import TabWidget
-from tabs.aircraft_configs.aircraft_configs import AircraftConfigsWidget
+from tabs.configurations.configurations import AircraftConfigsWidget
 import rcaide_io
 
 
@@ -94,13 +94,14 @@ def _rcaide_seg_to_gui(seg_dict):
         assigned_propulsors = []
     flight_controls["assigned_propulsors"] = assigned_propulsors
 
+    solver_type = seg_dict.get("solver_type", "root_finder")
     gui_data = {
         "Segment Name":    seg_dict.get("tag", ""),
         "top dropdown":    top_idx,
         "nested dropdown": sub_name,
         "config":          seg_dict.get("config_tag", ""),
         "Control Points":  cp,
-        "Solver":          "root",
+        "Solver":          "root" if solver_type == "root_finder" else "optimize",
         "flight forces":   flight_forces,
         "flight controls": flight_controls,
     }
@@ -123,7 +124,7 @@ def _extract_gui_segments(mission_data):
     if not mission_data:
         return []
 
-    first = mission_data[0] if mission_data else {}
+    first = mission_data[0]
 
     # Old GUI format — items are already GUI dicts
     if isinstance(first, dict) and "Segment Name" in first:

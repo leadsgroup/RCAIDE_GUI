@@ -229,7 +229,7 @@ class BoomFrame(GeometryFrame):
         
         clear_layout(self.boom_sections_layout)
 
-        for section in data["sections"]:
+        for section in data.get("sections", data.get("segments", [])):
             self.boom_sections_layout.addWidget(BoomSectionWidget(
                 self.boom_sections_layout.count(), self.delete_boom_section, section))
 
