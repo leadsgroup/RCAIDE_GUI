@@ -72,16 +72,23 @@ flowchart LR
     AS["Analyses"]
     MS["Mission Setup"]
     SIM["Mission Simulation"]
+    RV["Results Viewer"]
+    PF["Performance"]
 
     VS --> GV
     GV --> CS
     CS --> AS
     AS --> MS
     MS --> SIM
+    SIM --> RV
+    AS --> PF
 
     classDef workflow fill:#FFFFFF,stroke:#0891B2,stroke-width:2px,color:#111827;
-    class VS,GV,CS,AS,MS,SIM workflow;
+    classDef analysis fill:#FFFFFF,stroke:#059669,stroke-width:2px,color:#111827;
+    class VS,GV,CS,MS,SIM,RV workflow;
+    class AS,PF analysis;
     linkStyle default stroke:#0891B2,stroke-width:2px;
+    linkStyle 6 stroke:#059669,stroke-width:2px,stroke-dasharray:5 5;
 ```
 
 ## Application Tour
@@ -161,6 +168,13 @@ flowchart LR
     </td>
   </tr>
 </table>
+
+## Roadmap
+
+| Module | Status | Description |
+| --- | --- | --- |
+| Optimization | Coming soon | A dedicated optimization tab for running multi-variable design studies and trade-space exploration directly from the GUI, integrated with RCAIDE's optimization framework. |
+| AI Agent | Coming soon | A conversational AI assistant embedded in the GUI that can interpret design goals, suggest configurations, flag analysis anomalies, and help users navigate the RCAIDE workflow. |
 
 ## Why Use It?
 
