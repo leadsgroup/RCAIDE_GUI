@@ -1,5 +1,20 @@
 <p align="center">
-  <img src="app_data/images/logo.png" alt="RCAIDE GUI logo" width="140">
+  <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/RCAIDE_Logo_No_Background.png" width=25% height=25%>
+</p>
+
+<p align="center">
+  <a href="https://aerospace.illinois.edu">
+    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/Illinois_logo_fullcolor_rgb.png" height="90">
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.leadsresearchgroup.com">
+    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/LEADS_logo_1.png" height="90">
+  </a>
+</p>
+
+<p align="center">
+  Developed at the <strong>University of Illinois Urbana-Champaign</strong><br>
+  <a href="https://www.leadsresearchgroup.com"><strong>Laboratory for Emerging Aircraft Design and Systems (LEADS)</strong></a>
 </p>
 
 <h1 align="center">RCAIDE GUI</h1>
@@ -30,7 +45,7 @@
 </p>
 
 <p align="center">
-  <img src="app_data/images/Home%20(3).png" alt="RCAIDE GUI home screen" width="92%">
+  <img src="app_data/images/Home_Tab.png" alt="RCAIDE GUI home screen" width="92%">
 </p>
 
 ## What is RCAIDE GUI?
@@ -72,16 +87,23 @@ flowchart LR
     AS["Analyses"]
     MS["Mission Setup"]
     SIM["Mission Simulation"]
+    RV["Results Viewer"]
+    PF["Performance"]
 
     VS --> GV
     GV --> CS
     CS --> AS
     AS --> MS
     MS --> SIM
+    SIM --> RV
+    AS --> PF
 
     classDef workflow fill:#FFFFFF,stroke:#0891B2,stroke-width:2px,color:#111827;
-    class VS,GV,CS,AS,MS,SIM workflow;
+    classDef analysis fill:#FFFFFF,stroke:#059669,stroke-width:2px,color:#111827;
+    class VS,GV,CS,MS,SIM,RV workflow;
+    class AS,PF analysis;
     linkStyle default stroke:#0891B2,stroke-width:2px;
+    linkStyle 6 stroke:#059669,stroke-width:2px,stroke-dasharray:5 5;
 ```
 
 ## Application Tour
@@ -94,12 +116,12 @@ flowchart LR
 </p>
     </td>
     <td width="50%">
-      <img src="app_data/images/Vehicle%20Setup%20(1).png" alt="Vehicle Setup tab">
+      <img src="app_data/images/Vehicle_Setup_Tab.png" alt="Vehicle Setup tab">
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <img src="app_data/images/Geometry_Visualization%20(1).png" alt="Geometry Visualization tab">
+      <img src="app_data/images/Geometry_Visualization_Tab.png" alt="Geometry Visualization tab">
     </td>
     <td width="50%">
       <h3>Geometry Visualization</h3>
@@ -112,12 +134,12 @@ flowchart LR
       <p>The Configurations Setup tab allows users to define aircraft operating states for different phases of flight, including takeoff, cruise, landing, and custom mission conditions. Users can configure control surface deflections, landing gear deployment, and active propulsion systems while maintaining a clear connection to the baseline vehicle geometry. These configurations are later used throughout the mission and analysis workflow.</p>
     </td>
     <td width="50%">
-      <img src="app_data/images/Configurations%20(1).png" alt="Configurations Setup tab">
+      <img src="app_data/images/Configurations_Tab.png" alt="Configurations Setup tab">
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <img src="app_data/images/Mission%20Analysis%20(1).png" alt="Analyses Setup tab">
+      <img src="app_data/images/Mission_Analysis_Tab.png" alt="Analyses Setup tab">
     </td>
     <td width="50%">
       <h3>Analyses Setup</h3>
@@ -130,19 +152,44 @@ flowchart LR
       <p>The Mission Setup tab enables users to create complete flight profiles through an intuitive visual workflow. Mission segments such as takeoff, climb, cruise, descent, and landing can be added and customized with specific operating conditions, solver settings, and control points. Each segment can also be linked to previously defined vehicle configurations and analyses, creating a fully integrated mission definition process.</p>
     </td>
     <td width="50%">
-      <img src="app_data/images/Mission%20Setup%20(1).png" alt="Mission Setup tab">
+      <img src="app_data/images/Mission_Setup_Tab.png" alt="Mission Setup tab">
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <img src="app_data/images/Mission%20Simulation%20(1).png" alt="Mission Simulation tab">
+      <img src="app_data/images/Mission_Simulation_Tab.png" alt="Mission Simulation tab">
     </td>
     <td width="50%">
       <h3>Mission Simulation</h3>
       <p>The Mission Simulation tab is where aircraft designs are evaluated using RCAIDE's analysis framework. Once the vehicle, configurations, analyses, and mission profile have been defined, simulations can be executed directly from the GUI. Results are presented through plots and numerical outputs, including performance metrics, fuel burn, range, energy consumption, flight time, and stability characteristics, which can be exported for further analysis.</p>
     </td>
   </tr>
+  <tr>
+    <td width="50%">
+      <h3>Performance</h3>
+      <p>The Performance tab provides dedicated tools for evaluating aircraft-level performance metrics independent of a full mission simulation. Users can generate payload-range diagrams, V-n diagrams, takeoff and landing field length estimates, and aerodynamic polar sweeps directly from the GUI, enabling rapid design-space exploration without constructing a complete mission profile.</p>
+    </td>
+    <td width="50%">
+      <img src="app_data/images/Performance_Tab.png" alt="Performance tab">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="app_data/images/Results_Viewer_Tab.png" alt="Results Viewer tab">
+    </td>
+    <td width="50%">
+      <h3>Results Viewer</h3>
+      <p>The Results Viewer tab allows users to open and inspect saved mission simulation outputs without re-running the solver. Working like a structured data browser, it lets users navigate result variables, review mission output traces, and examine stored data from previous runs, making it easy to compare designs and revisit earlier results.</p>
+    </td>
+  </tr>
 </table>
+
+## Roadmap
+
+| Module | Status | Description |
+| --- | --- | --- |
+| Optimization | Coming soon | A dedicated optimization tab for running multi-variable design studies and trade-space exploration directly from the GUI, integrated with RCAIDE's optimization framework. |
+| AI Agent | Coming soon | A conversational AI assistant embedded in the GUI that can interpret design goals, suggest configurations, flag analysis anomalies, and help users navigate the RCAIDE workflow. |
 
 ## Why Use It?
 
