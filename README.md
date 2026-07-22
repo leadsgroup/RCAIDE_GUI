@@ -1,4 +1,23 @@
 <p align="center">
+  <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/RCAIDE_Logo_No_Background.png" width=25% height=25%>
+</p>
+
+<p align="center">
+  <a href="https://aerospace.illinois.edu">
+    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/Illinois_logo_fullcolor_rgb.png" height="90">
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.leadsresearchgroup.com">
+    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/LEADS_logo_1.png" height="90">
+  </a>
+</p>
+
+<p align="center">
+  Developed at the <strong>University of Illinois Urbana-Champaign</strong><br>
+  <a href="https://www.leadsresearchgroup.com"><strong>Laboratory for Emerging Aircraft Design and Systems (LEADS)</strong></a>
+</p>
+
+<p align="center">
   <img src="app_data/images/logo.png" alt="RCAIDE GUI logo" width="140">
 </p>
 
