@@ -15,15 +15,56 @@ from common_widgets import DataEntryWidget
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox
 
-# Python imports
-import json
-import os
-
 # ------------------------------------------------------------------------------
 # Aeroacoustics Widget
 # ------------------------------------------------------------------------------
 class AeroacousticsWidget(AnalysisDataWidget):
     title = "Acoustics"
+
+    _defaults = [
+        {
+            "Print Noise Output":                        [False,  0],
+            "Mean Sea Level Altitude":                   [True,   0],
+            "Aircraft Departure Location":               [[[0, 0, 0]], 0],
+            "Aircraft Destination Location":             [[[0, 0, 0]], 0],
+            "Microphone X Resolution":                   [100,    0],
+            "Microphone Y Resolution":                   [100,    0],
+            "Microphone Min X":                          [0,      0],
+            "Microphone Max X":                          [5000,   0],
+            "Microphone Min Y":                          [1e-6,   0],
+            "Microphone Max Y":                          [450,    0],
+            "Noise Hemisphere":                          [False,  0],
+            "Noise Hemisphere Radius":                   [20,     0],
+            "Noise Hemisphere Microphone Resolution":    [20,     0],
+            "Noise Hemisphere Phi Upper Bound":          [180,    0],
+            "Noise Hemisphere Phi Lower Bound":          [0,      0],
+            "Noise Hemisphere Theta Upper Bound":        [360,    0],
+            "Noise Hemisphere Theta Lower Bound":        [0,      0],
+        },
+        {
+            "Flyover":                                   [False,  0],
+            "Approach":                                  [False,  0],
+            "Sideline":                                  [False,  0],
+            "Sideline X Position":                       [0,      0],
+            "Print Noise Output":                        [False,  0],
+            "Mean Sea Level Altitude":                   [True,   0],
+            "Aircraft Departure Location":               [[[0, 0, 0]], 0],
+            "Aircraft Destination Location":             [[[0, 0, 0]], 0],
+            "Microphone X Resolution":                   [100,    0],
+            "Microphone Y Resolution":                   [100,    0],
+            "Microphone Min X":                          [0,      0],
+            "Microphone Max X":                          [5000,   0],
+            "Microphone Min Y":                          [1e-6,   0],
+            "Microphone Max Y":                          [450,    0],
+            "Noise Hemisphere":                          [False,  0],
+            "Noise Hemisphere Radius":                   [20,     0],
+            "Noise Hemisphere Microphone Resolution":    [20,     0],
+            "Noise Hemisphere Phi Upper Bound":          [180,    0],
+            "Noise Hemisphere Phi Lower Bound":          [0,      0],
+            "Noise Hemisphere Theta Upper Bound":        [360,    0],
+            "Noise Hemisphere Theta Lower Bound":        [0,      0],
+        },
+    ]
 
     def __init__(self):
         super().__init__()
@@ -37,21 +78,16 @@ class AeroacousticsWidget(AnalysisDataWidget):
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[0])
         self.main_layout.addWidget(self.data_entry_widget)
 
-        _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-        _defaults_path = os.path.join(_root, "app_data", "defaults", "aeroacoustics_analysis.json")
-        with open(_defaults_path, "r") as defaults:
-            self.defaults = json.load(defaults)
-
-        self.data_entry_widget.load_data(self.defaults[0])
+        self.data_entry_widget.load_data(self._defaults[0])
         self.main_layout.addWidget(create_line_bar())
         self.setLayout(self.main_layout)
 
-    def on_analysis_change(self, index): 
+    def on_analysis_change(self, index):
         assert self.main_layout is not None
 
         self.main_layout.removeWidget(self.data_entry_widget)
         self.data_entry_widget = DataEntryWidget(self.data_units_labels[index])
-        self.data_entry_widget.load_data(self.defaults[index])
+        self.data_entry_widget.load_data(self._defaults[index])
         # self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.insertWidget(
             self.main_layout.count() - 1, self.data_entry_widget)
