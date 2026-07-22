@@ -1,14 +1,12 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/RCAIDE_Logo_No_Background.png" width=25% height=25%>
-</p>
-
-<p align="center">
+  <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/RCAIDE_Logo_No_Background.png" height="80">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://aerospace.illinois.edu">
-    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/Illinois_logo_fullcolor_rgb.png" height="90">
+    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/Illinois_logo_fullcolor_rgb.png" height="80">
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://www.leadsresearchgroup.com">
-    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/LEADS_logo_1.png" height="90">
+    <img src="https://raw.githubusercontent.com/leadsgroup/RCAIDE_Website/main/assets/img/LEADS_logo_1.png" height="80">
   </a>
 </p>
 
@@ -18,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="app_data/images/logo.png" alt="RCAIDE GUI logo" width="140">
+  <img src="app_data/images/logo.png" alt="RCAIDE GUI logo" width="120">
 </p>
 
 <h1 align="center">RCAIDE GUI</h1>
