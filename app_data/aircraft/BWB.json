@@ -19131,10 +19131,6 @@
             }
           }
         },
-        "Vref_VS_ratio": [
-          1.23,
-          0
-        ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "nose_gear": {
@@ -19151,7 +19147,11 @@
               0
             ]
           }
-        }
+        },
+        "Vref_VS_ratio": [
+          1.23,
+          0
+        ]
       }
     }
   ],

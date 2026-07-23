@@ -805,7 +805,7 @@ def make_pts_object(plotter, actor_group, pts, rgb_color, opacity):
 def make_actuator_disc(plotter, inner_radius, outer_radius, origin, rot_x, rot_y, rot_z, rgb_color, opacity):
     disc = pv.Disc(
         center=(0, 0, 0),
-        normal=(0, 0, 1),
+        normal=(1, 0, 0),
         inner=inner_radius,
         outer=outer_radius,
         r_res=50,

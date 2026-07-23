@@ -31,8 +31,9 @@ if ROOT not in sys.path:
 
 import rcaide_io
 import RCAIDE
+from utilities import APP_DATA
 
-AIRCRAFT_DIR = os.path.join(ROOT, 'app_data', 'aircraft')
+AIRCRAFT_DIR = os.path.join(APP_DATA, 'aircraft')
 
 # ---------------------------------------------------------------------------
 # Helper: find all aircraft JSON files

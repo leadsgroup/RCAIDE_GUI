@@ -13,11 +13,13 @@ from utilities import create_line_bar, Units, create_scroll_area
 from common_widgets import DataEntryWidget
 import rcaide_io
 
-_FAR_PARTS   = ["None", "23", "25", "35", "91", "107", "135"]
-_CATEGORIES  = ["None", "normal", "utility", "acrobatic", "commuter"]
+_FAR_PARTS        = ["None", "23", "25", "35", "91", "107", "135"]
+_CATEGORIES       = ["None", "normal", "utility", "acrobatic", "commuter"]
+_SERVICE_TYPES    = ["None", "short-range", "medium-range", "long-range",
+                     "business", "cargo", "commuter", "sst"]
 
 # Labels that are rendered as standalone QComboBoxes rather than in DataEntryWidget
-_COMBO_LABELS = {"FAR Part Classification Number", "Aircraft Category"}
+_COMBO_LABELS = {"FAR Part Classification Number", "Aircraft Category", "Aircraft Service Type"}
 
 
 class VehicleFrame(GeometryFrame):
@@ -62,8 +64,9 @@ class VehicleFrame(GeometryFrame):
         ("Maneuver Load Factor Max Cruise",   Units.Unitless,  "flight_envelope.maneuver.load_factor.velocity_max_cruise"),
         ("Maneuver Load Factor Max Dive",     Units.Unitless,  "flight_envelope.maneuver.load_factor.velocity_max_dive"),
         # --- Systems ---
-        ("Control Systems",          Units.Unitless,  "systems.control"),
-        ("Accessories",              Units.Unitless,  "systems.accessories"),
+        ("Control Systems",    Units.Unitless, "systems.control"),
+        # Aircraft Service Type rendered as QComboBox (excluded from DataEntryWidget)
+        ("Aircraft Service Type", Units.String, "systems.accessories"),
     ]
 
     def __init__(self):
@@ -109,6 +112,14 @@ class VehicleFrame(GeometryFrame):
         grid.addItem(
             QSpacerItem(80, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum), next_row, 7)
 
+        next_row += 1
+        self.service_type_combo = QComboBox()
+        self.service_type_combo.addItems(_SERVICE_TYPES)
+        grid.addWidget(QLabel("Aircraft Service Type:"), next_row, 0)
+        grid.addWidget(self.service_type_combo, next_row, 1, 1, 2)
+        grid.addItem(
+            QSpacerItem(80, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum), next_row, 3)
+
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_data)
         self.main_layout.addWidget(save_button)
@@ -145,6 +156,9 @@ class VehicleFrame(GeometryFrame):
         self._load_combo(self.far_combo,
                          data.get("FAR Part Classification Number", [None, 0]),
                          _FAR_PARTS)
+        self._load_combo(self.service_type_combo,
+                         data.get("Aircraft Service Type", [None, 0]),
+                         _SERVICE_TYPES)
 
     def create_rcaide_structure(self):
         raise NotImplementedError("This method should not be called")
@@ -158,6 +172,9 @@ class VehicleFrame(GeometryFrame):
 
         far_text = self.far_combo.currentText()
         data["FAR Part Classification Number"] = [None if far_text == "None" else int(far_text), 0]
+
+        svc_text = self.service_type_combo.currentText()
+        data["Aircraft Service Type"] = [None if svc_text == "None" else svc_text, 0]
 
         return data
 

@@ -71,7 +71,18 @@ class WingsFrame(GeometryFrame):
 
         # Add the data entry widget to the main layout
         self.data_entry_widget = DataEntryWidget(self.data_units_labels)
+
+        # Computed fields must update BEFORE auto-save reads them.
+        self.data_entry_widget.data_changed.connect(self._update_computed_fields)
         self.wire_auto_save(self.data_entry_widget)
+
+        # Mark Taper and Aspect Ratio as read-only computed outputs.
+        for key in ("Taper", "Aspect Ratio"):
+            field, unit_picker = self.data_entry_widget.data_fields[key]
+            field.setReadOnly(True)
+            field.setStyleSheet("background: transparent; color: #8899bb; border: 1px dashed #44556a;")
+            unit_picker.setEnabled(False)
+
         self.main_layout.addWidget(self.data_entry_widget)
         self.main_layout.addWidget(create_line_bar())
 
@@ -169,6 +180,37 @@ class WingsFrame(GeometryFrame):
 
         assert self.main_layout is not None
         self.main_layout.addLayout(buttons_layout)
+
+    def _update_computed_fields(self):
+        """Recompute Taper and Aspect Ratio from the current input field values."""
+        assert self.data_entry_widget is not None
+        fields = self.data_entry_widget.data_fields
+
+        # Taper = tip_chord / root_chord  (SI values, so units cancel correctly)
+        try:
+            root_le, root_up = fields["Root Chord"]
+            tip_le,  tip_up  = fields["Tip Chord"]
+            root_si = root_up.apply_unit(float(root_le.text())) if root_le.text() else None
+            tip_si  = tip_up.apply_unit(float(tip_le.text()))   if tip_le.text()  else None
+            if root_si and tip_si is not None and root_si != 0:
+                fields["Taper"][0].setText(f"{tip_si / root_si:.6g}")
+            else:
+                fields["Taper"][0].setText("")
+        except (ValueError, ZeroDivisionError):
+            fields["Taper"][0].setText("")
+
+        # Aspect Ratio = spans.projected² / areas.reference  (both in SI)
+        try:
+            span_le, span_up = fields["Spans Projected"]
+            area_le, area_up = fields["Reference Area"]
+            span_si = span_up.apply_unit(float(span_le.text())) if span_le.text() else None
+            area_si = area_up.apply_unit(float(area_le.text())) if area_le.text() else None
+            if span_si is not None and area_si and area_si != 0:
+                fields["Aspect Ratio"][0].setText(f"{span_si ** 2 / area_si:.6g}")
+            else:
+                fields["Aspect Ratio"][0].setText("")
+        except (ValueError, ZeroDivisionError):
+            fields["Aspect Ratio"][0].setText("")
 
     # noinspection DuplicatedCode
     def save_data(self):
@@ -331,11 +373,24 @@ class WingsFrame(GeometryFrame):
 
         wing.tag = data["name"]
         
-        # assign wing properties 
+        # assign wing properties
         for data_unit_label in self.data_units_labels:
             rcaide_label = data_unit_label[-1]
-            user_label = data_unit_label[0]
+            user_label   = data_unit_label[0]
             set_data(wing, rcaide_label, data[user_label][0])
+
+        # Always recompute derived properties from primary inputs so they are
+        # never out of sync with what the user actually entered.
+        try:
+            if wing.chords.root and wing.chords.root != 0:
+                wing.taper = wing.chords.tip / wing.chords.root
+        except Exception:
+            pass
+        try:
+            if wing.areas.reference and wing.areas.reference != 0:
+                wing.aspect_ratio = wing.spans.projected ** 2 / wing.areas.reference
+        except Exception:
+            pass
         
         wing.aerodynamic_center = data["Aerodynamic Center"][0][0]
 

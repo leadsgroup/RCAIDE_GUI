@@ -17326,10 +17326,6 @@
             }
           }
         },
-        "Vref_VS_ratio": [
-          1.207,
-          0
-        ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "nose_gear": {
@@ -17340,7 +17336,11 @@
             "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_condition": "down"
           }
-        }
+        },
+        "Vref_VS_ratio": [
+          1.207,
+          0
+        ]
       }
     },
     {
@@ -17381,10 +17381,6 @@
             }
           }
         },
-        "Vref_VS_ratio": [
-          1.207,
-          0
-        ],
         "landing_gears": {
           "__type__": "RCAIDE.Library.Components.Component.Container",
           "nose_gear": {
@@ -17395,7 +17391,11 @@
             "__type__": "RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear.Main_Landing_Gear",
             "gear_condition": "down"
           }
-        }
+        },
+        "Vref_VS_ratio": [
+          1.207,
+          0
+        ]
       }
     }
   ],
