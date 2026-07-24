@@ -244,6 +244,18 @@ class App(QMainWindow):
 def main():
     if sys.platform == "darwin":
         os.environ.setdefault("QT_MAC_WANTS_LAYER", "1")
+
+    if sys.platform.startswith("linux"):
+        import ctypes.util
+        if ctypes.util.find_library("EGL") is None:
+            print(
+                "Error: libEGL is not installed. PyQt6 requires it on Linux.\n"
+                "Install it with:  sudo apt install libegl1\n"
+                "(or the equivalent package for your distribution)",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
     window = App()

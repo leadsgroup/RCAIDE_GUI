@@ -56,7 +56,7 @@ dependencies = [
 ]
 dynamic = ["version"]
 
-[project.scripts]
+[project.gui-scripts]
 rcaide-gui = "main:main"
 
 [tool.setuptools]
