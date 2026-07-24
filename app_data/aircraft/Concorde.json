@@ -24502,14 +24502,14 @@
             "__type__": "RCAIDE.Framework.Networks.Fuel.Fuel",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "inner_right_turbojet": {
+              "outer_left_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
                   true,
                   0
                 ]
               },
-              "outer_right_turbojet": {
+              "inner_right_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
                   true,
@@ -24523,7 +24523,7 @@
                   0
                 ]
               },
-              "outer_left_turbojet": {
+              "outer_right_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
                   true,
@@ -24562,14 +24562,14 @@
             "__type__": "RCAIDE.Framework.Networks.Fuel.Fuel",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "inner_right_turbojet": {
+              "outer_left_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
                   true,
                   0
                 ]
               },
-              "outer_right_turbojet": {
+              "inner_right_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
                   true,
@@ -24583,7 +24583,7 @@
                   0
                 ]
               },
-              "outer_left_turbojet": {
+              "outer_right_turbojet": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.Turbojet",
                 "afterburner_active": [
                   true,

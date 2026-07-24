@@ -46570,29 +46570,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -46603,11 +46580,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -46623,17 +46623,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -46646,45 +46646,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -46697,113 +46663,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -46816,11 +46680,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -46845,29 +46845,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -46878,11 +46855,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -46898,17 +46898,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -46921,45 +46921,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -46972,113 +46938,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47091,11 +46955,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47120,29 +47120,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -47153,11 +47130,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -47173,17 +47173,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47196,45 +47196,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47247,113 +47213,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47366,11 +47230,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47395,29 +47395,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -47428,11 +47405,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -47448,17 +47448,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47471,45 +47471,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47522,113 +47488,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47641,11 +47505,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47670,29 +47670,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -47703,11 +47680,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -47723,17 +47723,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47746,45 +47746,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47797,113 +47763,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -47916,11 +47780,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -47961,29 +47961,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -47994,11 +47971,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -48014,17 +48014,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -48037,45 +48037,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -48088,113 +48054,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -48207,11 +48071,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -48252,29 +48252,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -48285,11 +48262,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -48305,17 +48305,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -48328,45 +48328,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -48379,113 +48345,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -48498,11 +48362,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -48527,29 +48527,6 @@
             "__type__": "RCAIDE.Framework.Networks.Electric.Electric",
             "propulsors": {
               "__type__": "RCAIDE.Framework.Networks.Network.Container",
-              "port_propulsor": {
-                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
-                "rotor": {
-                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
-                  "airfoils": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
-                    "naca_4412": {
-                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
-                      "polars": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
-                          null,
-                          0
-                        ],
-                        "drag_distribution_func": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
               "starboard_propulsor": {
                 "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
                 "rotor": {
@@ -48560,11 +48537,34 @@
                       "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
                       "polars": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "lift_distribution_func": [
+                        "drag_distribution_func": [
                           null,
                           0
                         ],
+                        "lift_distribution_func": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "port_propulsor": {
+                "__type__": "RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor",
+                "rotor": {
+                  "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller",
+                  "airfoils": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Converters.Rotor.Airfoil_Container",
+                    "naca_4412": {
+                      "__type__": "RCAIDE.Library.Components.Airfoils.Airfoil.Airfoil",
+                      "polars": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "drag_distribution_func": [
+                          null,
+                          0
+                        ],
+                        "lift_distribution_func": [
                           null,
                           0
                         ]
@@ -48580,17 +48580,17 @@
                 "__type__": "RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus.Electrical_Bus",
                 "battery_modules": {
                   "__type__": "RCAIDE.Library.Components.Component.Container",
-                  "lithium_ion_nmc4": {
+                  "lithium_ion_nmc12": {
                     "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
                     "cell": {
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
-                        "Voltage": [
+                        "Temperature": [
                           null,
                           0
                         ]
@@ -48603,45 +48603,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc11": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc12": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -48654,113 +48620,11 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
                         "Voltage": [
                           null,
                           0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc9": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
                         ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc3": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc7": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc8": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc5": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
-                          null,
-                          0
-                        ]
-                      }
-                    }
-                  },
-                  "lithium_ion_nmc6": {
-                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
-                    "cell": {
-                      "__type__": "RCAIDE.Framework.Core.Data.Data",
-                      "discharge_performance_map": {
-                        "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
-                          null,
-                          0
-                        ],
-                        "Voltage": [
                           null,
                           0
                         ]
@@ -48773,11 +48637,147 @@
                       "__type__": "RCAIDE.Framework.Core.Data.Data",
                       "discharge_performance_map": {
                         "__type__": "RCAIDE.Framework.Core.Data.Data",
-                        "Temperature": [
+                        "Voltage": [
                           null,
                           0
                         ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc4": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
                         "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc6": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc5": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc11": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc9": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc7": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc3": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
+                          null,
+                          0
+                        ]
+                      }
+                    }
+                  },
+                  "lithium_ion_nmc8": {
+                    "__type__": "RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.Lithium_Ion_NMC",
+                    "cell": {
+                      "__type__": "RCAIDE.Framework.Core.Data.Data",
+                      "discharge_performance_map": {
+                        "__type__": "RCAIDE.Framework.Core.Data.Data",
+                        "Voltage": [
+                          null,
+                          0
+                        ],
+                        "Temperature": [
                           null,
                           0
                         ]

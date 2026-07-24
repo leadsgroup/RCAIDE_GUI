@@ -7,17 +7,17 @@ memory, and displays it with Qt without writing a temporary diagram file.
 
 from html import escape
 from pathlib import Path
+import os
 import re
+
+from utilities import APP_DATA
 
 from PyQt6.QtCore import QByteArray, Qt
 from PyQt6.QtSvgWidgets import QSvgWidget
 from PyQt6.QtWidgets import QLabel, QScrollArea, QVBoxLayout, QWidget
 
-# Resolve the reusable pictograph library relative to the repository root.
-_SYMBOL_DIR = (
-    Path(__file__).resolve().parents[5]
-    / "app_data" / "images" / "powertrain_symbols"
-)
+# Resolve the reusable pictograph library via the installed app_data package.
+_SYMBOL_DIR = Path(os.path.join(APP_DATA, "images", "powertrain_symbols"))
 
 # Cache parsed fragments because the same icon may appear several times.
 _SYMBOL_CACHE: dict[str, str] = {}

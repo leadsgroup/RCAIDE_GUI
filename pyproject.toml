@@ -68,7 +68,7 @@ version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["tabs*", "common_widgets*"]
+include = ["tabs*", "common_widgets*", "app_data*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -77,10 +77,10 @@ markers = [
 ]
 
 [tool.setuptools.package-data]
-"*" = [
-    "app_data/images/*",
-    "app_data/style_sheets/*",
-    "app_data/defaults/*",
-    "app_data/aircraft/*",
-    "VERSION"
+"app_data" = [
+    "images/*",
+    "images/powertrain_symbols/*",
+    "style_sheets/*",
+    "aircraft/*",
 ]
+"" = ["VERSION"]

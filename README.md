@@ -58,23 +58,43 @@
 
 ## Quick Start
 
-Install from PyPI:
+> **Important:** RCAIDE-GUI and RCAIDE must be installed in the same Python environment. Installing them in separate environments will prevent the GUI from finding RCAIDE and may cause images and aircraft files to not load.
+
+**Step 1 — Create and activate a virtual environment (recommended)**
+
+```bash
+python -m venv rcaide_env
+# macOS / Linux
+source rcaide_env/bin/activate
+# Windows
+rcaide_env\Scripts\activate
+```
+
+**Step 2 — Upgrade pip** (pip 26+ required)
+
+```bash
+pip install --upgrade pip
+```
+
+**Step 3 — Install RCAIDE-GUI** (RCAIDE is installed automatically as a dependency)
 
 ```bash
 pip install RCAIDE-GUI
 ```
 
-Launch the desktop app:
+**Step 4 — Launch**
 
 ```bash
 rcaide-gui
 ```
 
-Or run from source:
+**Or run from source:**
 
 ```bash
 python main.py
 ```
+
+> **Note for existing RCAIDE users:** If RCAIDE is already installed in a virtual environment, activate that same environment before running `pip install RCAIDE-GUI`. Both packages must share the same environment.
 
 ## Design Workflow
 
@@ -203,9 +223,11 @@ flowchart LR
 ## Requirements
 
 - Python 3.9 or newer
-- PyQt6
-- pyvista and pyvistaqt
-- RCAIDE-LEADS, installed automatically with `RCAIDE-GUI`
+- pip 26 or newer (`pip install --upgrade pip`)
+- PyQt6, pyvista, pyvistaqt — installed automatically
+- RCAIDE-LEADS — installed automatically with `RCAIDE-GUI`
+
+> RCAIDE-GUI and RCAIDE **must be in the same Python environment**. If you use a virtual environment for RCAIDE, activate it before installing RCAIDE-GUI.
 
 For platform-specific setup notes, see the [RCAIDE installation guide](https://www.docs.rcaide.leadsresearchgroup.com/install.html).
 
