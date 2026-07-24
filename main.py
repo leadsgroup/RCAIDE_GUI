@@ -242,6 +242,8 @@ class App(QMainWindow):
         super().closeEvent(event)
 
 def main():
+    if sys.platform == "darwin":
+        os.environ.setdefault("QT_MAC_WANTS_LAYER", "1")
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
     window = App()
