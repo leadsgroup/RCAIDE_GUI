@@ -242,9 +242,6 @@ class App(QMainWindow):
         super().closeEvent(event)
 
 def main():
-    if sys.platform == "darwin":
-        os.environ.setdefault("QT_MAC_WANTS_LAYER", "1")
-
     if sys.platform.startswith("linux"):
         import ctypes.util
         if ctypes.util.find_library("EGL") is None:
