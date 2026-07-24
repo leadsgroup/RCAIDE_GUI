@@ -83,4 +83,4 @@ markers = [
     "style_sheets/*",
     "aircraft/*",
 ]
-"" = ["VERSION"]
+"*" = ["VERSION"]
