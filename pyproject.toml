@@ -56,6 +56,14 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+# Optional because production desktops can call the centrally hosted API.
+[project.optional-dependencies]
+agent-server = [
+    "fastapi>=0.115",
+    "pydantic>=2.7",
+    "uvicorn[standard]>=0.30"
+]
+
 [project.scripts]
 rcaide-gui = "main:main"
 
@@ -68,7 +76,8 @@ version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["tabs*", "common_widgets*"]
+# Package both the desktop helpers and the separately deployable API.
+include = ["tabs*", "common_widgets*", "agent_service*", "agent_server*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

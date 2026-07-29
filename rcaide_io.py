@@ -443,6 +443,9 @@ rcaide_results  = None
 # Results Viewer can browse it (stability derivatives, polar arrays, etc.).
 last_performance_result = None
 last_performance_label  = ""
+# Latest simulation/analysis traceback made available to the in-app assistant.
+# This is runtime-only state and is not written into saved project JSON.
+last_agent_error = ""
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -1373,7 +1376,7 @@ def _patch_cryogenic_tank_defaults(vehicle):
 
 
 def read_from_json(data_str, source_dir=None):
-    global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses, rcaide_results
+    global rcaide_vehicle, vehicle, rcaide_configs, config_data, analysis_data, mission_data, propulsor_names, rcaide_analyses, rcaide_results, last_agent_error
     from RCAIDE.Library.Components.Configs.Config import Config
     from RCAIDE.Input_Output.import_data import analyses_setup as _analyses_setup
 
@@ -1415,6 +1418,7 @@ def read_from_json(data_str, source_dir=None):
     # Loaded aircraft files do not include runtime mission results; clear any
     # previous run so the Results Viewer cannot show stale data for a new file.
     rcaide_results = None
+    last_agent_error = ""
 
     rcaide_analyses = _analyses_setup(analysis_data, rcaide_configs)
 

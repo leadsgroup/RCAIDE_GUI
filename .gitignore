@@ -275,3 +275,5 @@ meeting_notes.txt
 pyrightconfig.json
 
 src/*
+# DPAPI-encrypted model token used only by the local desktop prototype.
+.rcaide-agent-token.dat

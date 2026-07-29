@@ -1,0 +1,13 @@
+# Local deployment template for the shared RCAIDE model-service container.
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/agent/Dockerfile
+    environment:
+      # In production, provide this through the platform's secret manager.
+      GITHUB_MODELS_TOKEN: ${GITHUB_MODELS_TOKEN}
+      RCAIDE_GITHUB_MODEL: openai/gpt-4.1-mini
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

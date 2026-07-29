@@ -359,6 +359,7 @@ class SolveWidget(TabWidget):
         # Store results and refresh plots.
         print("Completed Mission Simulation")
         rcaide_io.rcaide_results = results
+        rcaide_io.last_agent_error = ""
         self.render_solve_plots(results)
         self._set_loading_state(False)
 
@@ -367,6 +368,7 @@ class SolveWidget(TabWidget):
         self._set_loading_state(False)
         print("Mission simulation failed.")
         print(error_message)
+        rcaide_io.last_agent_error = error_message
         QMessageBox.critical(self, "Mission Simulation Failed", error_message)
 
     def render_solve_plots(self, results):
