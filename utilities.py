@@ -1,6 +1,21 @@
+import importlib.resources as _pkg_resources
+import os as _os
 import numpy as np
 import math
 from PyQt6.QtWidgets import QLayout, QMessageBox, QFrame, QScrollArea, QVBoxLayout, QWidget
+
+
+def _resolve_app_data() -> str:
+    """Return the filesystem path to the app_data directory.
+
+    Works whether the package is run from source or installed via pip.
+    """
+    try:
+        return str(_pkg_resources.files("app_data"))
+    except Exception:
+        return _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "app_data")
+
+APP_DATA = _resolve_app_data()
 
 # Shared button style used across all powertrain and geometry editor widgets.
 BTN_STYLE = "color:#dbe7ff; font-weight:500; margin:0; padding:0;"

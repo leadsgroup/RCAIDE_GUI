@@ -56,6 +56,7 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+<<<<<<< HEAD
 # Optional because production desktops can call the centrally hosted API.
 [project.optional-dependencies]
 agent-server = [
@@ -65,6 +66,9 @@ agent-server = [
 ]
 
 [project.scripts]
+=======
+[project.gui-scripts]
+>>>>>>> 56429200e1e1a2ab0456521405e744c9e8058007
 rcaide-gui = "main:main"
 
 [tool.setuptools]
@@ -76,8 +80,12 @@ version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["."]
+<<<<<<< HEAD
 # Package both the desktop helpers and the separately deployable API.
 include = ["tabs*", "common_widgets*", "agent_service*", "agent_server*"]
+=======
+include = ["tabs*", "common_widgets*", "app_data*"]
+>>>>>>> 56429200e1e1a2ab0456521405e744c9e8058007
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -86,10 +94,10 @@ markers = [
 ]
 
 [tool.setuptools.package-data]
-"*" = [
-    "app_data/images/*",
-    "app_data/style_sheets/*",
-    "app_data/defaults/*",
-    "app_data/aircraft/*",
-    "VERSION"
+"app_data" = [
+    "images/*",
+    "images/powertrain_symbols/*",
+    "style_sheets/*",
+    "aircraft/*",
 ]
+"*" = ["VERSION"]

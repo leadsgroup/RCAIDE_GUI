@@ -750,6 +750,7 @@ class MissionWidget(TabWidget):
         self.tree.setHeaderLabels(["Mission Segments"])
         self.tree.setRootIsDecorated(False)
         self.tree.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.tree.itemChanged.connect(self.refresh_mission_overview)
         segments_v.addWidget(self.tree)
 
         # Action row: disable/enable segments and clear selected

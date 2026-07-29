@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget, QFrame, QComboBox, QFileDialog)
 
 # gui imports 
-from utilities import Units
+from utilities import Units, APP_DATA
 from common_widgets import DataEntryWidget
 import os
 import sys
@@ -106,15 +106,28 @@ class WingSectionWidget(QWidget):
         self.naca_layout.addStretch()
         airfoil_left_col.addLayout(self.naca_layout)
 
+        # Bundled airfoil picker
         self.file_layout = QHBoxLayout()
-        self.file_path_label = QLabel("Airfoil File Path:")
-        self.file_path_input = QLineEdit()
-        self.browse_button = QPushButton("Browse...")
-        self.browse_button.clicked.connect(self._browse_for_file)
+        self.file_path_label = QLabel("Airfoil File:")
+        self.airfoil_file_combo = QComboBox()
+        self._populate_airfoil_combo()
+        self.airfoil_file_combo.currentTextChanged.connect(self._on_airfoil_combo_changed)
         self.file_layout.addWidget(self.file_path_label)
-        self.file_layout.addWidget(self.file_path_input)
-        self.file_layout.addWidget(self.browse_button)
+        self.file_layout.addWidget(self.airfoil_file_combo)
+
+        # Hidden line-edit stores the resolved path; shown only for custom files
+        self.file_path_input = QLineEdit()
+        self.file_path_input.setPlaceholderText("Custom file path…")
+        self.browse_button = QPushButton("Browse…")
+        self.browse_button.clicked.connect(self._browse_for_file)
+        self.custom_file_layout = QHBoxLayout()
+        self.custom_file_layout.addWidget(self.file_path_input)
+        self.custom_file_layout.addWidget(self.browse_button)
+
         airfoil_right_col.addLayout(self.file_layout)
+        airfoil_right_col.addLayout(self.custom_file_layout)
+        self.file_path_input.hide()
+        self.browse_button.hide()
 
         airfoil_layout.addLayout(airfoil_left_col, 1)
         airfoil_layout.addLayout(airfoil_right_col, 1)
@@ -142,9 +155,7 @@ class WingSectionWidget(QWidget):
         self._update_airfoil_ui_state()
 
 
-    def create_rcaide_structure(self, data):  
-        ospath                                = os.path.abspath(__file__)
-        separator                             = os.path.sep    
+    def create_rcaide_structure(self, data):
         segment = RCAIDE.Library.Components.Wings.Segments.Segment()
 
         segment.tag                   = data["Segment Name"]
@@ -170,18 +181,72 @@ class WingSectionWidget(QWidget):
                 airfoil.number_of_points   = airfoil_points                
                 airfoil.NACA_4_Series_code = '0012'
             segment.append_airfoil(airfoil)          
-        elif airfoil_type == "Coordinate File": 
-            airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
-            airfoil.coordinate_file          = 'app_data' + separator + 'aircraft' + separator +  airfoil_coordinate_file_path  
-            airfoil.number_of_points         = airfoil_points  
-            segment.append_airfoil(airfoil)           
+        elif airfoil_type == "Coordinate File":
+            airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+            airfoil.coordinate_file          = os.path.join(APP_DATA, 'aircraft', airfoil_coordinate_file_path)
+            airfoil.number_of_points         = airfoil_points
+            segment.append_airfoil(airfoil)
 
         return segment
 
+    def _populate_airfoil_combo(self):
+        """Fill the airfoil combo with bundled .txt/.dat files plus a custom-browse option."""
+        self.airfoil_file_combo.blockSignals(True)
+        self.airfoil_file_combo.clear()
+        self.airfoil_file_combo.addItem("Select airfoil…")
+        aircraft_dir = os.path.join(APP_DATA, "aircraft")
+        if os.path.isdir(aircraft_dir):
+            for fname in sorted(os.listdir(aircraft_dir)):
+                if fname.lower().endswith((".txt", ".dat")):
+                    self.airfoil_file_combo.addItem(fname)
+        self.airfoil_file_combo.addItem("Browse for custom file…")
+        self.airfoil_file_combo.blockSignals(False)
+
+    def _on_airfoil_combo_changed(self, text):
+        if text == "Browse for custom file…":
+            self.file_path_input.show()
+            self.browse_button.show()
+            self._browse_for_file()
+        elif text and text != "Select airfoil…":
+            self.file_path_input.setText(text)
+            self.file_path_input.hide()
+            self.browse_button.hide()
+        else:
+            self.file_path_input.clear()
+            self.file_path_input.hide()
+            self.browse_button.hide()
+
     def _browse_for_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open Airfoil File", "", "Data Files (*.dat);;All Files (*)")
+        aircraft_dir = os.path.join(APP_DATA, "aircraft")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Open Airfoil File", aircraft_dir,
+            "Airfoil Files (*.txt *.dat);;All Files (*)"
+        )
         if file_path:
             self.file_path_input.setText(file_path)
+            self.file_path_input.show()
+            self.browse_button.show()
+
+    def _load_airfoil_file_path(self, path: str):
+        """Restore combo and/or file_path_input from a saved path string."""
+        fname = os.path.basename(path)
+        idx = self.airfoil_file_combo.findText(fname)
+        if idx >= 0:
+            self.airfoil_file_combo.blockSignals(True)
+            self.airfoil_file_combo.setCurrentIndex(idx)
+            self.airfoil_file_combo.blockSignals(False)
+            self.file_path_input.setText(fname)
+            self.file_path_input.hide()
+            self.browse_button.hide()
+        else:
+            # Custom / absolute path not in the bundled list
+            browse_idx = self.airfoil_file_combo.findText("Browse for custom file…")
+            self.airfoil_file_combo.blockSignals(True)
+            self.airfoil_file_combo.setCurrentIndex(browse_idx)
+            self.airfoil_file_combo.blockSignals(False)
+            self.file_path_input.setText(path)
+            self.file_path_input.show()
+            self.browse_button.show()
 
     def _update_airfoil_ui_state(self):
         selected_type = self.airfoil_type_combo.currentText()
@@ -200,18 +265,25 @@ class WingSectionWidget(QWidget):
             # hide left col
             self.naca_code_label.hide()
             self.naca_code_input.hide()
-            
-            # show right col
+
+            # show right col (combo always visible; path/browse only for custom)
             self.file_path_label.show()
-            self.file_path_input.show()
-            self.browse_button.show()
+            self.airfoil_file_combo.show()
+            current = self.airfoil_file_combo.currentText()
+            is_custom = current == "Browse for custom file…" or (
+                current not in ("Select airfoil…", "") and
+                self.airfoil_file_combo.findText(current) == -1
+            )
+            self.file_path_input.setVisible(is_custom)
+            self.browse_button.setVisible(is_custom)
             
-        else: 
-            # hide both
+        else:
+            # hide both columns
             self.naca_code_label.hide()
             self.naca_code_input.hide()
-            
+
             self.file_path_label.hide()
+            self.airfoil_file_combo.hide()
             self.file_path_input.hide()
             self.browse_button.hide()
     
@@ -223,10 +295,11 @@ class WingSectionWidget(QWidget):
         if airfoil_type != "None":
             data["Airfoil Type"] = airfoil_type
             data["Airfoil Code"] = self.naca_code_input.text()
-            data["Airfoil Coordinate File Path"] = self.file_path_input.text()
+            coord_path = self.file_path_input.text()
+            data["Airfoil Coordinate File Path"] = coord_path
             data_si["Airfoil Type"] = airfoil_type
             data_si["Airfoil Code"] = self.naca_code_input.text()
-            data_si["Airfoil Coordinate File Path"] = self.file_path_input.text()
+            data_si["Airfoil Coordinate File Path"] = coord_path
             data_si["Airfoil Points"] = 100 
         else:
             data_si["Airfoil Type"] = None
@@ -240,25 +313,25 @@ class WingSectionWidget(QWidget):
         self.data_entry_widget.load_data(section_data)
         self.name_layout.itemAt(2).widget().setText(section_data["Segment Name"])
 
-        if ("Airfoil" in section_data):
+        if "Airfoil" in section_data:
             file_path = section_data["Airfoil"][0]
             if file_path and file_path.strip():
                 self.airfoil_type_combo.setCurrentText("Coordinate File")
-                self.file_path_input.setText(file_path)
+                self._load_airfoil_file_path(file_path)
                 self.naca_code_input.setText("")
             else:
                 self.airfoil_type_combo.setCurrentText("None")
                 self.naca_code_input.setText("")
-                self.file_path_input.setText("")
         elif "Airfoil Type" in section_data:
             airfoil_type = section_data.get("Airfoil Type", "None")
             self.airfoil_type_combo.setCurrentText(airfoil_type if airfoil_type else "None")
             self.naca_code_input.setText(section_data.get("Airfoil Code", ""))
-            self.file_path_input.setText(section_data.get("Airfoil Coordinate File Path", ""))
+            coord_path = section_data.get("Airfoil Coordinate File Path", "")
+            if coord_path:
+                self._load_airfoil_file_path(coord_path)
         else:
             self.airfoil_type_combo.setCurrentText("None")
             self.naca_code_input.setText("")
-            self.file_path_input.setText("")
 
         self._update_airfoil_ui_state()
 

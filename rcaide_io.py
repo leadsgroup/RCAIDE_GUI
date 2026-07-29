@@ -8,9 +8,9 @@ from collections import OrderedDict
 from RCAIDE.Input_Output.load import read_RCAIDE_json_dict
 from RCAIDE.Framework.Core import Data, DataOrdered
 
-_ROOT         = os.path.dirname(os.path.abspath(__file__))
-_AIRCRAFT_DIR = os.path.join(_ROOT, "app_data", "aircraft")
-_AIRFOIL_DIR  = os.path.join(_ROOT, "app_data", "airfoils")
+from utilities import APP_DATA
+_AIRCRAFT_DIR = os.path.join(APP_DATA, "aircraft")
+_AIRFOIL_DIR  = os.path.join(APP_DATA, "airfoils")
 
 
 # ----------------------------------------------------------------------------------------------------------------------

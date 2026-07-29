@@ -14,7 +14,7 @@ from tabs.mission.mission import _extract_gui_segments
 from tabs.configurations.configurations import build_rcaide_configs_from_geometry
 
 # PtQT imports 
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QColorDialog
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QScrollArea, QProgressDialog, QMessageBox, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QColorDialog, QDialog, QTextEdit, QDialogButtonBox, QSizePolicy
 from PyQt6.QtCore import Qt, QSize, QObject, QThread, QTimer, pyqtSignal
 import pyqtgraph as pg
 
@@ -46,13 +46,17 @@ class _SolveWorker(QObject):
     def __init__(self, mission):
         super().__init__()
         self._mission = mission
+        self.cancel_requested = False
 
     def run(self):
         try:
-            # Let solver output stream directly to terminal so native progress bar rendering is preserved.
             results = self._mission.evaluate()
+            if self.cancel_requested:
+                return
             self.finished.emit(results, "")
         except Exception:
+            if self.cancel_requested:
+                return
             self.failed.emit(traceback.format_exc())
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -323,29 +327,54 @@ class SolveWidget(TabWidget):
             self._solve_thread.deleteLater()
             self._solve_thread = None
 
+    def _find_parent_tab_widget(self):
+        from PyQt6.QtWidgets import QTabWidget
+        w = self.parentWidget()
+        while w is not None:
+            if isinstance(w, QTabWidget):
+                return w
+            w = w.parentWidget()
+        return None
+
     def _set_loading_state(self, is_loading):
-        # Lock solve controls while mission is running.
         self.solve_button.setEnabled(not is_loading)
         self.tree.setEnabled(not is_loading)
 
+        parent_tabs = self._find_parent_tab_widget()
+
         if is_loading:
-            # Show modal loading popup.
-            dialog = QProgressDialog("Running mission simulation...", "", 0, 0, self)
+            # Disable all other tabs so the user cannot navigate away mid-solve.
+            if parent_tabs is not None:
+                my_index = parent_tabs.indexOf(self)
+                for i in range(parent_tabs.count()):
+                    if i != my_index:
+                        parent_tabs.setTabEnabled(i, False)
+
+            dialog = QProgressDialog("Running mission simulation…\n\nClose this window to cancel.", "Cancel", 0, 0, self)
             dialog.setWindowTitle("Simulating Mission")
-            dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-            dialog.setCancelButton(None)
+            dialog.setWindowModality(Qt.WindowModality.WindowModal)
             dialog.setMinimumDuration(0)
             dialog.setAutoClose(False)
             dialog.setAutoReset(False)
+            dialog.canceled.connect(self._on_cancel_requested)
             dialog.show()
             self.loading_dialog = dialog
             return
 
+        # Re-enable all tabs that were locked during the solve.
+        if parent_tabs is not None:
+            for i in range(parent_tabs.count()):
+                parent_tabs.setTabEnabled(i, True)
+
         if self.loading_dialog is not None:
-            # Hide loading popup when solve completes/fails.
             self.loading_dialog.close()
             self.loading_dialog.deleteLater()
             self.loading_dialog = None
+
+    def _on_cancel_requested(self):
+        if self._solve_worker is not None:
+            self._solve_worker.cancel_requested = True
+        self._set_loading_state(False)
 
     def _on_solve_finished(self, results, output):
         import rcaide_io
@@ -359,7 +388,6 @@ class SolveWidget(TabWidget):
         # Store results and refresh plots.
         print("Completed Mission Simulation")
         rcaide_io.rcaide_results = results
-        rcaide_io.last_agent_error = ""
         self.render_solve_plots(results)
         self._set_loading_state(False)
 
@@ -368,8 +396,29 @@ class SolveWidget(TabWidget):
         self._set_loading_state(False)
         print("Mission simulation failed.")
         print(error_message)
-        rcaide_io.last_agent_error = error_message
-        QMessageBox.critical(self, "Mission Simulation Failed", error_message)
+        self._show_error_dialog(error_message)
+
+    def _show_error_dialog(self, error_message):
+        """Show a scrollable, resizable error dialog so long tracebacks are fully readable."""
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Mission Simulation Failed")
+        dlg.resize(700, 420)
+
+        text_edit = QTextEdit(dlg)
+        text_edit.setReadOnly(True)
+        text_edit.setPlainText(error_message)
+        text_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+        text_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        buttons.accepted.connect(dlg.accept)
+
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("The mission simulation encountered an error:"))
+        layout.addWidget(text_edit)
+        layout.addWidget(buttons)
+        dlg.setLayout(layout)
+        dlg.exec()
 
     def render_solve_plots(self, results):
         # Main render entry point: rebuild plots from current checked options.

@@ -11,15 +11,16 @@ from PyQt6.QtCore import qInstallMessageHandler
 from PyQt6.QtGui import QPixmap, QDesktopServices
 from PyQt6.QtWidgets import (
     QFrame, QGridLayout, QPushButton, QSizePolicy,
-    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect, QStackedLayout
+    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsOpacityEffect, QStackedLayout,
+    QComboBox
 )
 from PyQt6.QtWidgets import QApplication
 
 # Python imports
 import os
 
-_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-_IMG  = os.path.join(_ROOT, "app_data", "images")
+from utilities import APP_DATA
+_IMG = os.path.join(APP_DATA, "images")
 
 # ------------------------------------------------------------------------------
 # Home Widget
@@ -162,25 +163,22 @@ class HomeWidget(TabWidget):
 
     def _build_header(self):
         header_layout = QGridLayout()
-        website_btn    = QPushButton("Website")
-        github_btn     = QPushButton("GitHub")
-        docs_btn       = QPushButton("Documentation")
-        contribute_btn = QPushButton("Contribute")
-        contact_btn    = QPushButton("Contact")
+        website_btn   = QPushButton("Website")
+        github_btn    = QPushButton("GitHub")
+        docs_btn      = QPushButton("Documentation")
+        community_btn = QPushButton("Community")
 
-        header_layout.addWidget(website_btn,    0, 0)
-        header_layout.addWidget(github_btn,     0, 1)
-        header_layout.addWidget(docs_btn,       0, 2)
-        header_layout.addWidget(contribute_btn, 0, 3)
-        header_layout.addWidget(contact_btn,    0, 4)
+        header_layout.addWidget(website_btn,   0, 0)
+        header_layout.addWidget(github_btn,    0, 1)
+        header_layout.addWidget(docs_btn,      0, 2)
+        header_layout.addWidget(community_btn, 0, 3)
         header_layout.setContentsMargins(12, 12, 12, 0)
         header_layout.setSpacing(10)
 
         website_btn.clicked.connect(   lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com")))
         github_btn.clicked.connect(    lambda: QDesktopServices.openUrl(QUrl("https://github.com/leadsgroup")))
         docs_btn.clicked.connect(      lambda: QDesktopServices.openUrl(QUrl("https://www.docs.rcaide.leadsresearchgroup.com")))
-        contribute_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
-        contact_btn.clicked.connect(   lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
+        community_btn.clicked.connect( lambda: QDesktopServices.openUrl(QUrl("https://www.rcaide.leadsresearchgroup.com/community")))
 
         return header_layout
 
@@ -356,6 +354,23 @@ QPushButton:hover {
         load_row.addWidget(load_btn)
         mission_layout.addLayout(load_row)
 
+        # Example aircraft dropdown
+        example_combo = QComboBox()
+        example_combo.addItem("— Load aircraft —")
+        aircraft_dir = os.path.join(_IMG, "..", "aircraft")
+        aircraft_dir = os.path.normpath(aircraft_dir)
+        if os.path.isdir(aircraft_dir):
+            for fname in sorted(os.listdir(aircraft_dir)):
+                if fname.lower().endswith(".json"):
+                    display = fname[:-5].replace("_", " ")
+                    example_combo.addItem(display, userData=os.path.join(aircraft_dir, fname))
+        example_combo.setMinimumWidth(230)
+        example_combo.setFixedHeight(36)
+        example_row = QHBoxLayout()
+        example_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        example_row.addWidget(example_combo)
+        mission_layout.addLayout(example_row)
+
         divider = QFrame()
         divider.setFixedHeight(2)
         divider.setStyleSheet("""
@@ -427,7 +442,18 @@ QPushButton:hover {
                 except Exception as e:
                     print(f"[Home] Geometry tab update error: {e}")
 
+        def _load_example(index):
+            if index == 0:
+                return
+            path = example_combo.itemData(index)
+            if path and hasattr(self.window(), "load_file"):
+                self.window().load_file(path)
+            example_combo.blockSignals(True)
+            example_combo.setCurrentIndex(0)
+            example_combo.blockSignals(False)
+
         load_btn.clicked.connect(lambda: self.window().load_all() if hasattr(self.window(), "load_all") else None)
+        example_combo.currentIndexChanged.connect(_load_example)
         scratch_btn.clicked.connect(go_to_geometry_tab)
 
         self.mission_frame.setMinimumSize(self._normal_mission_size)
