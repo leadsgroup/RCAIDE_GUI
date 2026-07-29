@@ -1,11 +1,16 @@
+"""RCAIDE desktop entry point, including the native AI assistant drawer."""
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QFileDialog, QMessageBox
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import QFileInfo
+from PyQt6.QtCore import QAbstractAnimation, QEasingCurve, QFileInfo, QPropertyAnimation, Qt
 from qt_material import apply_stylesheet
 import rcaide_io
+# Starts the development API automatically and leaves hosted deployments alone.
+from agent_service.bootstrap import start_local_agent_service, stop_local_agent_service
 from tabs import *
 from tabs.visualize_geometry import visualize_geometry
+# These two widgets provide the floating launcher and right-side chat drawer.
+from tabs.ai_assistant import AIAssistantButton, AIAssistantDock
 from utilities import APP_DATA
 
 import sys
@@ -19,6 +24,8 @@ if sys.platform == "win32":
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("LEADS.RCAIDE.GUI")
 
 class App(QMainWindow):
+    """Main RCAIDE window containing workflow tabs and the AI assistant drawer."""
+
     def __init__(self):
         super().__init__()
         self._vtk_shutdown = False
@@ -77,6 +84,19 @@ class App(QMainWindow):
         for widget, name in self.widgets:
             self.tabs.addTab(widget, name)
 
+        # The assistant is a compact in-app drawer, not a separate workflow tab.
+        self.ai_button = AIAssistantButton(self)
+        # Reserve a narrow edge rail so the collapsed logo never covers controls.
+        self.setContentsMargins(0, 0, AIAssistantButton.COLLAPSED_WIDTH + 12, 0)
+        self.ai_button.raise_()
+        self.ai_button.widthChanged.connect(self._position_ai_handle)
+
+        self.ai_dock = AIAssistantDock(self)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.ai_dock)
+        self.ai_dock.hide()
+        self.ai_button.clicked.connect(self.toggle_ai_assistant)
+        self.ai_dock.visibilityChanged.connect(self._sync_ai_handle)
+
         app = QApplication.instance()
         if app is not None:
             app.aboutToQuit.connect(self.shutdown_vtk)
@@ -95,6 +115,84 @@ class App(QMainWindow):
         assert isinstance(current_frame, TabWidget)
 
         current_frame.update_layout()
+
+        # Keep the assistant's active-tab and project summary current.
+        if hasattr(self, "ai_dock") and self.ai_dock.isVisible():
+            self.ai_dock.refresh_context_label()
+
+    def toggle_ai_assistant(self):
+        """Open or close the AI drawer without overlapping animations."""
+        if getattr(self, "_ai_drawer_animation", None) is not None:
+            if self._ai_drawer_animation.state() == QAbstractAnimation.State.Running:
+                return
+
+        if self.ai_dock.isVisible():
+            self._animate_ai_drawer(opening=False)
+            return
+
+        self.ai_button.play_launch_animation()
+        self._animate_ai_drawer(opening=True)
+
+    def _animate_ai_drawer(self, opening: bool):
+        """Animate the drawer while preserving the main engineering workspace."""
+        target_width = max(500, min(620, int(self.width() * 0.32)))
+        if opening:
+            self.ai_dock.setMinimumWidth(0)
+            self.ai_dock.setMaximumWidth(0)
+            self.ai_dock.show()
+            start_width, end_width = 0, target_width
+        else:
+            start_width, end_width = self.ai_dock.width(), 0
+            self.ai_dock.setMinimumWidth(0)
+            self.ai_dock.setMaximumWidth(max(start_width, target_width))
+
+        self.ai_dock.show()
+        self.ai_dock.raise_()
+        self.ai_button.set_expanded(opening)
+        self._ai_drawer_opening = opening
+        self._ai_drawer_animation = QPropertyAnimation(self.ai_dock, b"maximumWidth", self)
+        self._ai_drawer_animation.setDuration(360)
+        self._ai_drawer_animation.setStartValue(start_width)
+        self._ai_drawer_animation.setEndValue(end_width)
+        self._ai_drawer_animation.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self._ai_drawer_animation.valueChanged.connect(
+            lambda _value: self._position_ai_handle()
+        )
+        self._ai_drawer_animation.finished.connect(self._finish_ai_drawer_animation)
+        self._ai_drawer_animation.start()
+
+    def _finish_ai_drawer_animation(self):
+        """Restore normal dock constraints after opening or closing."""
+        if self._ai_drawer_opening:
+            self.ai_dock.setMinimumWidth(480)
+            self.ai_dock.setMaximumWidth(16777215)
+            self.ai_dock.refresh_context_label()
+        else:
+            self.ai_dock.hide()
+            self.ai_dock.setMinimumWidth(480)
+            self.ai_dock.setMaximumWidth(16777215)
+        self._sync_ai_handle(self.ai_dock.isVisible())
+
+    def _sync_ai_handle(self, visible: bool):
+        """Match launcher appearance to the current drawer state."""
+        self.ai_button.set_expanded(visible)
+        self._position_ai_handle()
+
+    def _position_ai_handle(self):
+        """Anchor the launcher inside its reserved right-edge rail."""
+        if not hasattr(self, "ai_button"):
+            return
+        x = max(0, self.width() - self.ai_button.width() - 7)
+        y = max(
+            self.menuBar().height() + 24,
+            self.height() - self.ai_button.height() - 26,
+        )
+        self.ai_button.move(x, y)
+        self.ai_button.raise_()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._position_ai_handle()
 
     def save_all(self):
         for widget, name in self.widgets:
@@ -254,6 +352,12 @@ def main():
             sys.exit(1)
 
     app = QApplication(sys.argv)
+    # Local development starts the API beside the GUI. A configured hosted
+    # service URL makes this a no-op, so production clients use the shared API.
+    local_agent_process = start_local_agent_service()
+    app.aboutToQuit.connect(
+        lambda: stop_local_agent_service(local_agent_process)
+    )
     app.setWindowIcon(QIcon(os.path.join(_IMG, "logo.png")))
     window = App()
     extra = {

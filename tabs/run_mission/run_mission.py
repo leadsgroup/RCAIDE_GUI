@@ -388,12 +388,16 @@ class SolveWidget(TabWidget):
         # Store results and refresh plots.
         print("Completed Mission Simulation")
         rcaide_io.rcaide_results = results
+        # A successful run clears any stale failure included in AI context.
+        rcaide_io.last_agent_error = ""
         self.render_solve_plots(results)
         self._set_loading_state(False)
 
     def _on_solve_failed(self, error_message):
         # Restore UI state and surface error details.
         self._set_loading_state(False)
+        # Preserve the traceback so the assistant can diagnose the latest run.
+        rcaide_io.last_agent_error = error_message
         print("Mission simulation failed.")
         print(error_message)
         self._show_error_dialog(error_message)

@@ -56,7 +56,6 @@ dependencies = [
 ]
 dynamic = ["version"]
 
-<<<<<<< HEAD
 # Optional because production desktops can call the centrally hosted API.
 [project.optional-dependencies]
 agent-server = [
@@ -65,10 +64,7 @@ agent-server = [
     "uvicorn[standard]>=0.30"
 ]
 
-[project.scripts]
-=======
 [project.gui-scripts]
->>>>>>> 56429200e1e1a2ab0456521405e744c9e8058007
 rcaide-gui = "main:main"
 
 [tool.setuptools]
@@ -80,12 +76,8 @@ version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["."]
-<<<<<<< HEAD
-# Package both the desktop helpers and the separately deployable API.
-include = ["tabs*", "common_widgets*", "agent_service*", "agent_server*"]
-=======
-include = ["tabs*", "common_widgets*", "app_data*"]
->>>>>>> 56429200e1e1a2ab0456521405e744c9e8058007
+# Package application data, desktop helpers, and the deployable AI API.
+include = ["tabs*", "common_widgets*", "app_data*", "agent_service*", "agent_server*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
