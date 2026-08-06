@@ -4,6 +4,7 @@ from . import configurations
 from . import analysis
 from . import geometry
 from . import home
+from . import learner
 from . import mission
 # Exposes the post-simulation results browser as a main application tab.
 from . import performance

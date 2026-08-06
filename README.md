@@ -56,6 +56,29 @@
 
  Developed and maintained by the [Lab for Electric Aircraft Design and Sustainability](https://www.leadsresearchgroup.com/).
 
+### Learner mode
+
+Choose **Mode → Learner Mode** for a classroom worksheet aimed at middle- and
+high-school students. It keeps the familiar RCAIDE workflow while reducing the
+engineering component definitions to the whole airplane, one trapezoidal wing,
+one fuselage body, simple tail stabilizers, and an SFC-only low-fidelity engine.
+A simplified version of the normal Mission Setup defines one straight, level
+cruise. Learners set the basic area and span/height of the horizontal and
+vertical stabilizers while RCAIDE fills in their tapered shapes and placement.
+Learner aircraft remain compatible with the normal JSON save/load workflow and
+can be inspected later in Advanced Mode.
+
+Learner Mode uses a smaller version of the normal workflow:
+
+- **Learner Setup** defines the aircraft, followed by **Visualize Geometry** and **How Planes Fly**.
+- **Mission Setup** defines a single cruise using altitude, speed, and distance.
+- **Run Mission** uses the normal RCAIDE solver and plots with advanced-only options hidden.
+
+The SFC-only engine does not define a complete propulsion network. RCAIDE solves
+the trimmed cruise aerodynamics, and learner fuel burn is estimated from the
+solved required thrust, SFC, and trip time. These conceptual results are not a
+substitute for engineering analysis or certification.
+
 ## Quick Start
 
 > **Important:** RCAIDE-GUI and RCAIDE must be installed in the same Python environment. Installing them in separate environments will prevent the GUI from finding RCAIDE and may cause images and aircraft files to not load.

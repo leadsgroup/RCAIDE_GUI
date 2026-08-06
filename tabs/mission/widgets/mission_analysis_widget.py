@@ -131,13 +131,13 @@ class MissionAnalysisWidget(TabWidget):
         return top_level_item.checkState(1) == Qt.CheckState.Checked
 
     def save_analyses(self):
-        if (not getattr(values, "config_data", None) and
-                not getattr(values, "rcaide_configs", None)):
+        if (not getattr(rcaide_io, "config_data", None) and
+                not getattr(rcaide_io, "rcaide_configs", None)):
             raise RuntimeError(
                 "No aircraft configuration data found. "
                 "Create a configuration in the Aircraft Configs tab."
             )
-        if (not getattr(values, "rcaide_configs", None) or
+        if (not getattr(rcaide_io, "rcaide_configs", None) or
                 not rcaide_io.rcaide_configs):
             from tabs.configurations.configurations import build_rcaide_configs_from_geometry
             try:

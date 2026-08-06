@@ -367,9 +367,15 @@ class SolveWidget(TabWidget):
                 parent_tabs.setTabEnabled(i, True)
 
         if self.loading_dialog is not None:
-            self.loading_dialog.close()
-            self.loading_dialog.deleteLater()
+            # Clear the shared reference before closing.  QProgressDialog may
+            # emit canceled() from close(), whose handler re-enters this method;
+            # retaining the reference until afterward caused the outer call to
+            # invoke deleteLater() on None.
+            dialog = self.loading_dialog
             self.loading_dialog = None
+            dialog.blockSignals(True)
+            dialog.close()
+            dialog.deleteLater()
 
     def _on_cancel_requested(self):
         if self._solve_worker is not None:

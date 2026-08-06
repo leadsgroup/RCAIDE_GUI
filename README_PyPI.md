@@ -4,6 +4,8 @@ The RCAIDE GUI is an interactive desktop application for [RCAIDE](https://pypi.o
 
 ## Features
 
+- **Learner Mode** — Learn the basic forces, then build a concept aircraft from plain-language inputs: one unsegmented main wing, simple horizontal and vertical stabilizers, one unsegmented fuselage, SFC-only engine efficiency, and one straight cruise mission
+- **Simplified RCAIDE Workflow** — Use learner-facing versions of the normal Mission Setup, Run Mission, and Results Viewer tabs with hidden configuration and analysis defaults
 - **Vehicle Setup** — Build up aircraft geometry using a component tree (wings, fuselages, nacelles, landing gear, booms, propulsors) with a live 3D preview
 - **Geometry Visualization** — Full 3D VTK rendering environment; inspect component placement and export top/front/side view images
 - **Configurations Setup** — Define base, takeoff, cruise, and landing configurations with control surface deflections and active propulsor settings

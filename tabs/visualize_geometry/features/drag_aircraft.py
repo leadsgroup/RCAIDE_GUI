@@ -123,6 +123,7 @@ def add_drag_button(self):
     # toolbar toggle button
     btn = QPushButton("✈️ Drag Aircraft")
     btn.setCheckable(True)
+    self._drag_button = btn
 
     self.toolbar.addSeparator()
     self.toolbar.addWidget(btn)
@@ -162,6 +163,7 @@ def add_drag_button(self):
             "Rotors": getattr(self, "rotor_actors", None),
             "Booms": getattr(self, "boom_actors", None),
             "Fuel Tanks": getattr(self, "fuel_tank_actors", None),
+            "Learner Callouts": getattr(self, "learner_label_actors", None),
         }
 
         # flatten each container into a simple list
@@ -172,6 +174,8 @@ def add_drag_button(self):
             flat[name] = lst
 
         return flat
+
+    self._collect_drag_aircraft_actors = _collect_aircraft_actors
     
     def toggle_drag(active):
         if active:
@@ -211,6 +215,15 @@ def _patch_drag():
     def wrapped(self, *args, **kwargs):
         old(self, *args, **kwargs)
         add_drag_button(self)
+        # A geometry refresh replaces all actors. Keep an already-created drag
+        # style pointed at the new aircraft and callout actors.
+        collector = getattr(self, "_collect_drag_aircraft_actors", None)
+        if getattr(self, "_drag_style", None) is not None and callable(collector):
+            self._drag_style.actors = collector()
+            self._drag_style.SetDefaultRenderer(self.renderer)
+            drag_button = getattr(self, "_drag_button", None)
+            if drag_button is not None and drag_button.isChecked():
+                self.render_window_interactor.SetInteractorStyle(self._drag_style)
 
     VisualizeGeometryWidget.run_solve = wrapped
     VisualizeGeometryWidget._drag_patched = True

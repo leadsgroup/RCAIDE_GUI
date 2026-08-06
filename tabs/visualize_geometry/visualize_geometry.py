@@ -19,6 +19,13 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_
 from RCAIDE.Library.Plots.Geometry.plot_3d_vehicle              import add_lopa_seats
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform, compute_fuel_volume
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations
+# Learner fuselages may have no user-defined cross-section segments.  The
+# shared helper supports both those simple bodies and fully segmented aircraft.
+from tabs.visualize_geometry.geometry_helper_functions import (
+    generate_fuselage_points_for_viewer,
+    learner_component_callout_data,
+)
+from vtkmodules.vtkRenderingCore import vtkBillboardTextActor3D
 
 # PyQt imports
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTreeWidget, QPushButton, QTreeWidgetItem, QHeaderView, QLabel, QToolBar, QColorDialog, QSpacerItem, QSizePolicy, QFrame, QLineEdit, QScrollArea
@@ -243,6 +250,9 @@ class VisualizeGeometryWidget(TabWidget):
         self.landing_gear_actors = []
         self.cabin_actors        = []
         self.system_actors       = []
+        # Keep learner annotations in their own actor group so scene refreshes
+        # can remove lines, anchor dots, and text without touching geometry.
+        self.learner_label_actors = []
 
         solve_button = QPushButton("Display")
         solve_button.clicked.connect(self.run_solve)
@@ -497,6 +507,9 @@ class VisualizeGeometryWidget(TabWidget):
         self.landing_gear_actors.clear()
         self.cabin_actors.clear()
         self.system_actors.clear()
+        # Remove stale references before rebuilding learner callouts for the
+        # newly displayed vehicle.
+        self.learner_label_actors.clear()
 
         self.renderer = self.plotter.renderer
         self.render_window_interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
@@ -553,7 +566,10 @@ class VisualizeGeometryWidget(TabWidget):
         # Plot fuselage
         # -------------------------------------------------------------------------
         for fuselage in geometry.fuselages:
-            GEOM = generate_3d_fuselage_points(fuselage, tessellation)
+            # Unlike RCAIDE's segmented-only generator, this wrapper also
+            # creates a smooth fallback body for learner fuselages with no
+            # cross-section stations.
+            GEOM = generate_fuselage_points_for_viewer(fuselage, tessellation)
             make_object(self.plotter, self.fuselage_actors, GEOM, fuselage_rgb_color, fuselage_opacity)
             if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
                 GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
@@ -739,6 +755,18 @@ class VisualizeGeometryWidget(TabWidget):
                     GEOM = generate_3d_cuboid_points(battery)
                     make_object(self.plotter, self.system_actors, GEOM, battery_rgb_color, battery_opacity)
 
+        # learner_component_callout_data returns an empty list for non-learner
+        # vehicles.  This keeps the shared Visualize Geometry tab unchanged and
+        # uncluttered in Advanced Mode.
+        callouts = learner_component_callout_data(geometry)
+        if callouts:
+            add_learner_component_callouts(
+                self.plotter,
+                self.renderer,
+                self.learner_label_actors,
+                callouts,
+            )
+
         # Set camera and background
         cam = self.renderer.GetActiveCamera()
         cam.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)
@@ -821,6 +849,67 @@ def make_actuator_disc(plotter, inner_radius, outer_radius, origin, rot_x, rot_y
     prop.SetDiffuse(1.0)
     prop.SetSpecular(0.0)
     return
+
+
+def add_learner_component_callouts(plotter, renderer, actor_group, callouts):
+    """Add world-space learner labels that remain attached during camera motion.
+
+    Every callout creates three VTK props: a leader line, a small anchor sphere,
+    and billboard text.  All three are appended to ``actor_group`` so the caller
+    can clear or translate the complete annotation as one managed set.
+    """
+    for callout in callouts:
+        # Both points are stored in aircraft coordinates, so camera rotation,
+        # pan, zoom, and whole-aircraft dragging transform the line naturally.
+        anchor = np.asarray(callout["anchor"], dtype=float)
+        label_position = np.asarray(callout["label_position"], dtype=float)
+        callout_length = float(np.linalg.norm(label_position - anchor))
+
+        # The leader is decorative rather than interactive and does not trigger
+        # a camera reset or an intermediate render while the scene is assembled.
+        line_actor = plotter.add_mesh(
+            pv.Line(anchor, label_position),
+            color="black",
+            line_width=2.0,
+            render_lines_as_tubes=True,
+            lighting=False,
+            pickable=False,
+            show_scalar_bar=False,
+            reset_camera=False,
+            render=False,
+        )
+        actor_group.append(line_actor)
+
+        # Scale the attachment dot with callout length while retaining a minimum
+        # visible size for compact learner aircraft.
+        anchor_actor = plotter.add_mesh(
+            pv.Sphere(radius=max(0.018, callout_length * 0.018), center=anchor),
+            color="black",
+            lighting=False,
+            pickable=False,
+            show_scalar_bar=False,
+            reset_camera=False,
+            render=False,
+        )
+        actor_group.append(anchor_actor)
+
+        # Billboard text always faces the camera but keeps its world position,
+        # making the label readable without detaching it from the aircraft.
+        text_actor = vtkBillboardTextActor3D()
+        text_actor.SetInput(str(callout["text"]))
+        text_actor.SetPosition(*label_position)
+        text_property = text_actor.GetTextProperty()
+        text_property.SetColor(1.0, 0.84, 0.0)
+        text_property.SetFontSize(15)
+        text_property.SetFontFamilyToArial()
+        text_property.SetBold(False)
+        text_property.SetItalic(False)
+        text_property.SetShadow(False)
+        # Yellow, background-free text matches the requested learner label style
+        # and avoids opaque boxes covering the model.
+        text_property.SetBackgroundOpacity(0.0)
+        renderer.AddActor(text_actor)
+        actor_group.append(text_actor)
 
 # ---------------------------------------
 # Load Visualize Geometry feature plugins

@@ -161,6 +161,9 @@ class MissionProfileWidget(QWidget):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         # Each phase entry is stored as (display_name, normalized_phase_type).
         self.phases = []
+        # Advanced mode retains its original multi-segment animation behavior.
+        # Learner mode opts in because its whole mission is one cruise segment.
+        self.animate_single_phase = False
         # 0..1 progress used to animate the moving marker along the profile.
         self._progress = 0.0
         self._timer = QTimer(self)
@@ -186,7 +189,9 @@ class MissionProfileWidget(QWidget):
         self.update()
 
     def _advance_animation(self):
-        if not self.phases or len(self.phases) < 2:
+        if not self.phases or (
+            len(self.phases) < 2 and not self.animate_single_phase
+        ):
             return
         self._progress += 0.005
         if self._progress > 1.0:
@@ -529,8 +534,8 @@ class MissionSummaryTable(QTableWidget):
                     if cfg_idx >= 0:
                         config_name = seg.config_selector.itemText(cfg_idx).strip()
                     if not config_name:
-                        cfgs = getattr(values, "rcaide_configs", None)
-                        if isinstance(cfgs, dict) and cfg_idx >= 0:
+                        cfgs = getattr(rcaide_io, "rcaide_configs", None)
+                        if hasattr(cfgs, "keys") and cfg_idx >= 0:
                             keys = list(cfgs.keys())
                             if cfg_idx < len(keys):
                                 config_name = str(keys[cfg_idx]).strip()
@@ -542,8 +547,8 @@ class MissionSummaryTable(QTableWidget):
                         seg.nested_dropdown.currentText() if hasattr(seg, "nested_dropdown") else "",
                         name,
                     )
-                    cfgs = getattr(values, "rcaide_configs", None)
-                    if isinstance(cfgs, dict):
+                    cfgs = getattr(rcaide_io, "rcaide_configs", None)
+                    if hasattr(cfgs, "keys"):
                         for key in cfgs.keys():
                             if self._norm(key) == self._norm(cfg_key):
                                 config_name = str(key)
