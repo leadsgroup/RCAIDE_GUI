@@ -100,7 +100,9 @@ def test_learner_defaults_do_not_build_aircraft_before_save():
 
 
 def test_default_learner_mission_is_one_straight_cruise():
-    """The hidden RCAIDE mission contains exactly the requested cruise point."""
+    """The hidden RCAIDE mission contains one production-style cruise segment."""
+    from tabs.learner.learner import LEARNER_CRUISE_CONTROL_POINTS
+
     mission = build_learner_mission(DEFAULT_LEARNER_DATA)
     segments = list(mission.segments)
 
@@ -109,6 +111,10 @@ def test_default_learner_mission_is_one_straight_cruise():
     assert segments[0].altitude == pytest.approx(3000.0)
     assert segments[0].air_speed == pytest.approx(70.0)
     assert segments[0].distance == pytest.approx(250_000.0)
+    assert (
+        segments[0].state.numerics.number_of_control_points
+        == LEARNER_CRUISE_CONTROL_POINTS
+    )
 
 
 # -----------------------------------------------------------------------------
@@ -593,4 +599,63 @@ def test_learner_workflow_tabs_are_simplified_real_rcaide_tabs():
 
     for widget in (mission, solve):
         widget.deleteLater()
+    app.processEvents()
+
+
+def test_learner_cruise_graphs_use_production_result_arrays():
+    """Learner plots use RCAIDE arrays plus pointwise low-fidelity engine data."""
+    import numpy as np
+    from PyQt6.QtWidgets import QApplication
+    from RCAIDE.Framework.Core import Data
+    from tabs.learner.rcaide_tabs import (
+        LearnerSolveWidget,
+        add_learner_low_fidelity_engine_results,
+    )
+
+    app = QApplication.instance() or QApplication([])
+    apply_learner_setup(DEFAULT_LEARNER_DATA)
+
+    results = Data()
+    results.segments = Data()
+    cruise = Data()
+    cruise.tag = "cruise"
+    cruise.conditions = Data()
+    cruise.conditions.frames = Data()
+    cruise.conditions.frames.wind = Data()
+    cruise.conditions.frames.wind.force_vector = np.array([
+        [-896.0, 0.0, -10787.0],
+        [-900.0, 0.0, -10790.0],
+        [-904.0, 0.0, -10793.0],
+    ])
+    cruise.conditions.frames.body = Data()
+    cruise.conditions.frames.inertial = Data()
+    cruise.conditions.frames.inertial.time = np.array([[0.0], [1800.0], [3600.0]])
+    cruise.conditions.frames.inertial.aircraft_range = np.array(
+        [[0.0], [125000.0], [250000.0]]
+    )
+    cruise.conditions.freestream = Data()
+    cruise.conditions.freestream.altitude = np.full((3, 1), 3000.0)
+    cruise.conditions.freestream.velocity = np.full((3, 1), 70.0)
+    cruise.conditions.energy = Data()
+    cruise.conditions.weights = Data()
+    results.segments.cruise = cruise
+
+    solve = LearnerSolveWidget()
+    add_learner_low_fidelity_engine_results(results)
+    assert cruise.conditions.frames.body.thrust_force_vector[:, 0] == pytest.approx(
+        [896.0, 900.0, 904.0]
+    )
+    assert cruise.conditions.energy.power[:, 0] == pytest.approx(
+        [62720.0, 63000.0, 63280.0]
+    )
+
+    # The inherited production renderer must preserve every RCAIDE time point.
+    parameters = solve._build_plot_parameters(results)
+    solve._render_aerodynamic_forces_pg(results, parameters)
+    power_curve = solve._dynamic_plot_widgets[0].listDataItems()[0]
+    x_values, y_values = power_curve.getData()
+    assert x_values == pytest.approx([0.0, 30.0, 60.0])
+    assert y_values == pytest.approx([0.06272, 0.063, 0.06328])
+
+    solve.deleteLater()
     app.processEvents()

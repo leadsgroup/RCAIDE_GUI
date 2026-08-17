@@ -21,6 +21,7 @@ from tabs.run_mission.run_mission import SolveWidget
 
 from .learner import (
     DEFAULT_LEARNER_DATA,
+    LEARNER_CRUISE_CONTROL_POINTS,
     _merged_learner_data,
     build_learner_mission,
     prepare_learner_rcaide_workflow,
@@ -136,7 +137,7 @@ class LearnerMissionSetupWidget(MissionWidget):
         for segment in self.segment_widgets:
             self._simplify_segment(segment)
         # MissionWidget builds the standard multi-point cruise while loading.
-        # Learner mode instead runs RCAIDE's quick trimmed cruise point.
+        # Learner mode runs its restricted production-style cruise segment.
         rcaide_io.rcaide_mission = build_learner_mission(
             getattr(rcaide_io, "learner_data", DEFAULT_LEARNER_DATA)
         )
@@ -149,11 +150,11 @@ class LearnerMissionSetupWidget(MissionWidget):
             return
         segment = self.segment_widgets[0]
         # Retain the regular Mission Setup record for compatibility with shared
-        # UI code, then enforce the hidden one-point cruise defaults.
+        # UI code, then enforce the hidden learner-cruise defaults.
         form_data = segment.get_form_data()
         form_data["Segment Name"] = "cruise"
         form_data["config"] = "base"
-        form_data["Control Points"] = 1
+        form_data["Control Points"] = LEARNER_CRUISE_CONTROL_POINTS
         form_data["flight forces"]["Forces in X axis"] = [True, 0]
         form_data["flight forces"]["Forces in Z axis"] = [True, 0]
         form_data["flight controls"]["Pitch Angle"] = [True, 0]
@@ -181,6 +182,70 @@ def _first_numeric(value):
         return float(np.nanmean(array)) if array.size else 0.0
     except (TypeError, ValueError):
         return 0.0
+
+
+def add_learner_low_fidelity_engine_results(results):
+    """Complete engine result arrays from RCAIDE drag at every control point.
+
+    The learner supplies SFC rather than a compressor, turbine, motor, or
+    propeller model. RCAIDE therefore solves the aerodynamic cruise first. In
+    steady flight the required thrust equals solved drag; multiplying that
+    thrust by solved airspeed supplies the corresponding low-fidelity power.
+    These arrays are stored in RCAIDE's normal result locations so the inherited
+    production plot renderer can be used without learner-specific graph data.
+    """
+    if results is None or not getattr(results, "segments", None):
+        return results
+
+    data = _merged_learner_data(
+        getattr(rcaide_io, "learner_data", DEFAULT_LEARNER_DATA)
+    )
+    # SFC is stored as kilograms of fuel per newton of thrust per hour.
+    sfc = float(data["engine"]["sfc_kg_per_n_hr"])
+
+    # RCAIDE segment containers normally expose values(), while lightweight
+    # test or compatibility containers may only be directly iterable.
+    try:
+        segments = results.segments.values()
+    except AttributeError:
+        segments = results.segments
+
+    for segment in segments:
+        try:
+            conditions = segment.conditions
+            # Wind-axis X force is negative drag. Its magnitude is the thrust
+            # required to maintain constant speed at each solved point.
+            wind_force = np.asarray(
+                conditions.frames.wind.force_vector, dtype=float
+            )
+            speed = np.asarray(
+                conditions.freestream.velocity, dtype=float
+            ).reshape(-1)
+            thrust = np.abs(wind_force[:, 0]).reshape(-1)
+        except (AttributeError, IndexError, TypeError, ValueError):
+            continue
+
+        point_count = thrust.size
+        # RCAIDE normally returns one speed for every force sample. Broadcast a
+        # scalar speed defensively so result arrays always remain aligned.
+        if speed.size == 1 and point_count > 1:
+            speed = np.full(point_count, speed[0], dtype=float)
+        elif speed.size != point_count:
+            speed = np.resize(speed, point_count)
+
+        # Populate exactly the fields used by the normal RCAIDE force and
+        # energy plots. Y/Z thrust are zero for this straight-cruise model.
+        thrust_vector = np.zeros((point_count, 3), dtype=float)
+        thrust_vector[:, 0] = thrust
+        conditions.frames.body.thrust_force_vector = thrust_vector
+        # Mechanical power follows P = F * V at every RCAIDE control point.
+        conditions.energy.power = (thrust * speed).reshape(-1, 1)
+        # Convert the hourly SFC relation into RCAIDE's kg/s mass-flow field.
+        conditions.weights.vehicle_mass_rate = (
+            thrust * sfc / 3600.0
+        ).reshape(-1, 1)
+
+    return results
 
 
 def add_learner_fuel_summary(results):
@@ -237,12 +302,12 @@ class LearnerSolveWidget(SolveWidget):
     # for the explanation card placed beside each learner graph.
     _GRAPH_EXPLANATIONS = {
         "Aerodynamic Forces: Power": (
-            "ENGINE POWER\nHow quickly the engine supplies energy. This learner "
-            "engine is defined only by fuel use, so RCAIDE may show zero here."
+            "ENGINE POWER\nHow quickly the engine supplies energy. It is calculated "
+            "from the required forward push multiplied by cruise speed."
         ),
         "Aerodynamic Forces: Thrust": (
-            "FORWARD PUSH\nThrust pushes the airplane forward. The learner engine "
-            "is not modeled in detail; the required push is reported above from drag."
+            "FORWARD PUSH\nThrust pushes the airplane forward. In steady cruise, "
+            "the required forward push equals RCAIDE's solved air resistance."
         ),
         "Aerodynamic Forces: Lift": (
             "UPWARD PUSH\nLift is made by the wing. In level cruise it should be "
@@ -407,6 +472,10 @@ class LearnerSolveWidget(SolveWidget):
 
     def _on_solve_finished(self, results, output):
         """Preserve production result handling and add a learner fuel narrative."""
+        # Fill simplified engine channels before the inherited completion
+        # handler renders the normal RCAIDE power and force plots.
+        results = add_learner_low_fidelity_engine_results(results)
+        # Attach the learner explanation without replacing the solver results.
         results = add_learner_fuel_summary(results)
         super()._on_solve_finished(results, output)
         summary = results.learner_summary

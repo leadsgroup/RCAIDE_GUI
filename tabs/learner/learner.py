@@ -193,32 +193,41 @@ def build_learner_vehicle(data):
     return vehicle
 
 
+# Four points expose RCAIDE's real mission history without making the learner
+# wait for the full control-point count used by more detailed analyses.
+LEARNER_CRUISE_CONTROL_POINTS = 4
+
+
 def build_learner_mission(data):
-    """Build the learner cruise with RCAIDE's trimmed single-point segment.
+    """Build the learner cruise with RCAIDE's production cruise segment.
 
     A complete propulsion network cannot be defined from SFC alone.  RCAIDE
-    therefore solves the level-flight aerodynamic state without propulsion;
-    learner fuel burn is derived afterward from RCAIDE drag and the entered SFC.
+    therefore solves the level-flight aerodynamic states without propulsion;
+    learner engine output and fuel burn are derived afterward from RCAIDE drag.
     """
     data = _merged_learner_data(data)
     mission_data = data["mission"]
-    # A single-point RCAIDE segment solves the trimmed cruise condition without
-    # pretending that SFC alone defines a complete physical propulsion network.
+    # Use the same distance-based cruise segment as the normal mission tool so
+    # the result contains genuine time, range, and condition arrays.  Horizontal
+    # force remains unsolved because SFC alone cannot define a propulsor.
     segment_type = (
-        RCAIDE.Framework.Mission.Segments.Single_Point
-        .Set_Speed_Set_Altitude_No_Propulsion
+        RCAIDE.Framework.Mission.Segments.Cruise
+        .Constant_Speed_Constant_Altitude
     )
     segment = segment_type()
     segment.tag = "cruise"
     segment.altitude = float(mission_data["altitude_m"])
     segment.air_speed = float(mission_data["speed_m_s"])
+    # Learner data stores distance in kilometers; RCAIDE expects SI meters.
     segment.distance = float(mission_data["distance_km"]) * 1000.0
     # Solve vertical equilibrium and pitch attitude.  Horizontal force is read
     # from aerodynamic drag afterward to estimate required engine push.
     segment.flight_dynamics.force_x = False
     segment.flight_dynamics.force_z = True
     segment.assigned_control_variables.pitch_angle.active = True
-    segment.control_points = 1
+    # Set RCAIDE's actual numerical setting, rather than only the form field,
+    # so the returned time history contains four solver-generated samples.
+    segment.state.numerics.number_of_control_points = LEARNER_CRUISE_CONTROL_POINTS
 
     # Attach the hidden learner analysis stack when it has already been built.
     analyses = getattr(rcaide_io, "rcaide_analyses", None)
@@ -232,6 +241,8 @@ def build_learner_mission(data):
         if base is not None:
             segment.analyses.extend(base)
 
+    # Keep the standard mission container even though Learner Mode permits only
+    # one segment. This lets the shared solver and plotters consume it normally.
     mission = RCAIDE.Framework.Mission.Sequential_Segments()
     mission.tag = "learner_cruise"
     mission.append_segment(segment)
@@ -248,7 +259,7 @@ def learner_mission_form_data(data):
         "top dropdown": 1,
         "nested dropdown": "Constant Speed-Constant Altitude",
         "config": "base",
-        "Control Points": 1,
+        "Control Points": LEARNER_CRUISE_CONTROL_POINTS,
         "Solver": "root",
         "Altitude": [float(mission["altitude_m"]), 0],
         "Air Speed": [float(mission["speed_m_s"]), 0],
@@ -305,8 +316,8 @@ def prepare_learner_rcaide_workflow(data):
 
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
     aerodynamics.vehicle = base_config
-    # Direct, modest-resolution VLM is much faster and more predictable for a
-    # one-point learner exercise than training a surrogate model.
+    # Direct, modest-resolution VLM is more predictable for the compact learner
+    # cruise than training a surrogate model.
     aerodynamics.settings.use_surrogate = False
     aerodynamics.settings.number_of_spanwise_vortices = 8
     aerodynamics.settings.number_of_chordwise_vortices = 4
