@@ -97,7 +97,7 @@ class AeroacousticsWidget(AnalysisDataWidget):
         if analysis_num == 0:
             aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()
         else:
-            aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based()
+            aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based_Frequency_Domain()
 
         settings  = aeroacoustics.settings
         values_si = self.data_entry_widget.get_values_si()

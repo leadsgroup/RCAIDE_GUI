@@ -31,10 +31,8 @@ class ElectricalBusWidget(BaseDistributorWidget):
         layout.addLayout(row)
 
         self.data_entry_widget = DataEntryWidget([
-            ("Efficiency",        Units.Unitless),
-            ("Voltage",           Units.Unitless),
-            ("Power Split Ratio", Units.Unitless),
-            ("Charging C-Rate",   Units.Unitless),
+            ("Efficiency",     Units.Unitless),
+            ("Design Voltage", Units.Unitless),
         ])
         layout.addWidget(self.data_entry_widget)
 
@@ -54,27 +52,24 @@ class ElectricalBusWidget(BaseDistributorWidget):
         data = {
             "distributor name":  self.section_name_edit.text(),
             "distributor_type":  "Electrical Bus",
-            "Efficiency":        fields.get("Efficiency",        [1.0, 0]),
-            "Voltage":           fields.get("Voltage",           [0.0, 0]),
-            "Power Split Ratio": fields.get("Power Split Ratio", [1.0, 0]),
-            "Charging C-Rate":   fields.get("Charging C-Rate",   [1.0, 0]),
+            "Efficiency":        fields.get("Efficiency",     [1.0, 0]),
+            "Design Voltage":    fields.get("Design Voltage", [0.0, 0]),
         }
         fields_si = self.data_entry_widget.get_values_si()
+        self.keep_loaded_component(data)
         return data, self.create_rcaide_structure(data, fields_si)
 
     def load_data_values(self, data):
         if "distributor name" in data:
             self.section_name_edit.setText(data["distributor name"])
         self.data_entry_widget.load_data(data)
-        self._loaded_propulsors = list(data.get("assigned_propulsors", []))
-        self._loaded_sources    = list(data.get("assigned_sources",    []))
+        self.load_connections(data)
 
     def create_rcaide_structure(self, data, fields_si=None):
-        bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+        # Start from the loaded electrical bus so settings the form does not show are kept
+        bus = self.base_distributor(RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus)
         bus.tag = data["distributor name"]
         if fields_si:
-            bus.efficiency        = fields_si.get("Efficiency",        [1.0])[0]
-            bus.voltage           = fields_si.get("Voltage",           [0.0])[0]
-            bus.power_split_ratio = fields_si.get("Power Split Ratio", [1.0])[0]
-            bus.charging_c_rate   = fields_si.get("Charging C-Rate",   [1.0])[0]
+            bus.efficiency     = fields_si.get("Efficiency",     [1.0])[0]
+            bus.design_voltage = fields_si.get("Design Voltage", [0.0])[0]
         return bus

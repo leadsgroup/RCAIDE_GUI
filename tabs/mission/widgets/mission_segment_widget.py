@@ -15,7 +15,7 @@ from tabs.mission.widgets.mission_segment_helper import (
     segment_data_fields,
     segment_rcaide_classes,
 )
-from utilities import Units, set_data, convert_name
+from utilities import Units, set_if_changed, convert_name
 import rcaide_io
 import RCAIDE
 from common_widgets import DataEntryWidget
@@ -36,6 +36,8 @@ class MissionSegmentWidget(QWidget):
     def __init__(self):
         super().__init__()
         self._combo_wheel_guard = _MissionComboWheelGuard(self)
+        # RCAIDE segment loaded from a file (stripped JSON dict); None for a new segment
+        self.loaded_segment = None
 
         # ============================================================
         # Root Layout
@@ -268,6 +270,8 @@ class MissionSegmentWidget(QWidget):
             "flight controls": self.flight_controls_widget.get_data(),
         }
         data.update(self.subsegment_entry_widget.get_values())
+        if self.loaded_segment is not None:
+            data["rcaide_component"] = self.loaded_segment
         return data
 
     def get_data(self):
@@ -277,6 +281,7 @@ class MissionSegmentWidget(QWidget):
 
     def load_data(self, data):
         self._suppress_defaults = True
+        self.loaded_segment = data.get("rcaide_component")
 
         self.segment_name_input.setText(data["Segment Name"])
         self.top_dropdown.setCurrentIndex(data["top dropdown"])
@@ -308,7 +313,11 @@ class MissionSegmentWidget(QWidget):
         top = self.top_dropdown.currentIndex()
         sub = self.nested_dropdown.currentText()
 
+        # Start from the saved segment (same type) so settings the form does not show are kept
         seg = segment_rcaide_classes[top][sub]()
+        loaded_type = (self.loaded_segment or {}).get("__type__", "")
+        if loaded_type == f"{type(seg).__module__}.{type(seg).__qualname__}":
+            rcaide_io.apply_saved_values(seg, self.loaded_segment)
         seg.tag = self.segment_name_input.text()
 
         if hasattr(seg, "state") and hasattr(seg.state, "numerics"):
@@ -324,13 +333,13 @@ class MissionSegmentWidget(QWidget):
         for label, _, rcaide_label in (
             self.subsegment_entry_widget.data_units_labels
         ):
-            set_data(seg, rcaide_label, vals_si[label][0])
+            set_if_changed(seg, rcaide_label, vals_si[label][0])
 
         dof_vals = self.dof_entry_widget.get_values()
         for label, _, rcaide_label in (
             self.dof_entry_widget.data_units_labels
         ):
-            set_data(seg, rcaide_label, dof_vals[label][0])
+            set_if_changed(seg, rcaide_label, dof_vals[label][0])
 
         cfg = convert_name(self.config_selector.currentText())
         analyses = rcaide_io.rcaide_analyses.get(cfg)
@@ -350,6 +359,6 @@ class MissionSegmentWidget(QWidget):
 
         seg.analyses.extend(analyses)
         self.flight_controls_widget.set_control_variables(seg)
-        seg.control_points = int(self.ctrl_points.text())
+        seg.state.numerics.number_of_control_points = int(self.ctrl_points.text())
 
         return seg

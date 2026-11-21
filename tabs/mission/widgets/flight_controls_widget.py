@@ -13,9 +13,16 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
 )
 
-from utilities import Units, create_line_bar, set_data
+from utilities import Units, create_line_bar, set_if_changed
 from common_widgets import DataEntryWidget
 import rcaide_io
+
+
+def same_propulsors(groups, selected):
+    """True when the propulsor groups hold exactly the selected propulsors."""
+    if not groups:
+        return False
+    return sorted(name for group in groups for name in group) == sorted(selected)
 
 # ------------------------------------------------------------------------------
 # Flight Controls Widget
@@ -121,7 +128,7 @@ class FlightControlsWidget(QWidget):
             for data_unit_label in data_units_labels:
                 rcaide_label = data_unit_label[-1]
                 user_label = data_unit_label[0]
-                set_data(segment, rcaide_label, data[user_label][0])
+                set_if_changed(segment, rcaide_label, data[user_label][0])
 
         # Use the propulsors the user checked; fall back to all available propulsors
         selected = [name for name, cb in self.propulsor_checkboxes.items() if cb.isChecked()]
@@ -137,10 +144,13 @@ class FlightControlsWidget(QWidget):
             except Exception:
                 pass
 
-        segment.assigned_control_variables.throttle.assigned_propulsors = [selected]
+        # Keep the saved throttle groups (e.g. separate lift and cruise groups) unless the selection changed
+        controls = segment.assigned_control_variables
+        if controls.throttle.active and not same_propulsors(controls.throttle.assigned_propulsors, selected):
+            controls.throttle.assigned_propulsors = [selected]
 
-        if getattr(segment.assigned_control_variables.thrust_vector_angle, "active", False):
-            segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors = [selected]
+        if getattr(controls.thrust_vector_angle, "active", False) and not same_propulsors(controls.thrust_vector_angle.assigned_propulsors, selected):
+            controls.thrust_vector_angle.assigned_propulsors = [selected]
 
         if getattr(segment.assigned_control_variables.blade_pitch_command, "active", False):
             rotor_tags = []
@@ -155,15 +165,6 @@ class FlightControlsWidget(QWidget):
             if rotor_tags:
                 segment.assigned_control_variables.blade_pitch_command.assigned_rotors = [rotor_tags]
 
-        if getattr(segment.assigned_control_variables.throttle, "active", False):
-            if hasattr(segment.assigned_control_variables.throttle, "initial_guess_values"):
-                if not segment.assigned_control_variables.throttle.initial_guess_values:
-                    segment.assigned_control_variables.throttle.initial_guess_values = [[0.7]]
-
-        if getattr(segment.assigned_control_variables.pitch_angle, "active", False):
-            if hasattr(segment.assigned_control_variables.pitch_angle, "initial_guess_values"):
-                if not segment.assigned_control_variables.pitch_angle.initial_guess_values:
-                    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[0.0]]
 
     def set_defaults(self, throttle=False, pitch_angle=False):
         for widget in self.data_entry_widgets:

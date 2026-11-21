@@ -7,8 +7,10 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                               QLineEdit, QPushButton, QFrame, QComboBox, QSizePolicy)
 from common_widgets import DataEntryWidget
 from utilities import Units
+import rcaide_io
 
 _SYSTEM_TYPES = [
+    "Generic System",
     "Avionics",
     "Auxiliary Power Unit",
     "Cabin Loads",
@@ -23,6 +25,7 @@ _SYSTEM_TYPES = [
 ]
 
 _TYPE_TO_RCAIDE = {
+    "Generic System":          RCAIDE.Library.Components.Powertrain.Systems.Systems,
     "Avionics":                RCAIDE.Library.Components.Powertrain.Systems.Avionics,
     "Auxiliary Power Unit":    RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit,
     "Cabin Loads":             RCAIDE.Library.Components.Powertrain.Systems.Cabin_Loads,
@@ -42,6 +45,8 @@ class SystemWidget(QWidget):
         super().__init__()
         self.index = index
         self.on_delete = on_delete
+        # RCAIDE component loaded from a file (stripped JSON dict); None for a new system
+        self.loaded_component = None
 
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
@@ -94,32 +99,45 @@ class SystemWidget(QWidget):
         data_si = self.data_entry_widget.get_values_si()
         data["System Type"] = self.type_combo.currentText()
         data["System Name"] = self.name_edit.text()
-        data_si["System Type"] = data["System Type"]
-        data_si["System Name"] = data["System Name"]
-        return data, self._build_rcaide(data_si)
+        if self.loaded_component is not None:
+            data["rcaide_component"] = self.loaded_component
+        return data, self.create_rcaide_structure(data_si)
 
-    def _build_rcaide(self, data):
-        cls = _TYPE_TO_RCAIDE.get(data["System Type"],
-                                  RCAIDE.Library.Components.Powertrain.Systems.Systems)
-        system = cls()
-        system.tag = data["System Name"] or system.tag
-        origin = data.get("Origin", [[[0, 0, 0]], 0])
-        if isinstance(origin, list) and len(origin) == 2:
-            origin = origin[0]
-        system.origin = origin if isinstance(origin[0], list) else [origin]
-        system.power_draw = data.get("Power Draw", [0, 0])
-        if isinstance(system.power_draw, list):
-            system.power_draw = system.power_draw[0]
-        mass = data.get("Uninstalled Mass", [0, 0])
-        if isinstance(mass, list):
-            mass = mass[0]
-        system.mass_properties.uninstalled = mass
+    def base_system(self):
+        """Return the loaded RCAIDE system if it is still the selected type, else a new one."""
+        cls = _TYPE_TO_RCAIDE[self.type_combo.currentText()]
+        if self.loaded_component is not None:
+            system = rcaide_io.component_from_dict(self.loaded_component)
+            if type(system) is cls:
+                return system
+        return cls()
+
+    def create_rcaide_structure(self, data_si):
+        # Start from the loaded system so settings the form does not show are kept
+        system = self.base_system()
+        system.tag = self.name_edit.text() or system.tag
+        if data_si["Origin"][0] is not None:
+            system.origin = data_si["Origin"][0]
+        if data_si["Power Draw"][0] is not None:
+            system.power_draw = data_si["Power Draw"][0]
+        # Only some RCAIDE systems (e.g. Avionics) carry an uninstalled mass
+        if "uninstalled_mass" in system and data_si["Uninstalled Mass"][0] is not None:
+            system.uninstalled_mass = data_si["Uninstalled Mass"][0]
         return system
 
     def load_data_values(self, data):
-        system_type = data.get("System Type", "Avionics")
-        idx = self.type_combo.findText(system_type)
+        self.loaded_component = data.get("rcaide_component")
+        idx = self.type_combo.findText(data.get("System Type", "Avionics"))
         if idx >= 0:
             self.type_combo.setCurrentIndex(idx)
         self.name_edit.setText(data.get("System Name", ""))
-        self.data_entry_widget.load_data(data)
+
+        # Read the form from the loaded system, then overlay saved fields
+        system = self.base_system()
+        form_data = {
+            "Origin":           [system.origin, 0],
+            "Power Draw":       [system.power_draw, 0],
+            "Uninstalled Mass": [system.get("uninstalled_mass"), 0],
+        }
+        form_data.update({k: v for k, v in data.items() if k in form_data})
+        self.data_entry_widget.load_data(form_data)

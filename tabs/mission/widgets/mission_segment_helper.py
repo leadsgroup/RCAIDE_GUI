@@ -52,7 +52,7 @@ segment_data_fields = [
             ("True Course Angle", Units.Angle, "true_course")
         ],
         "Constant Mach-Linear Altitude": [
-            ("Mach Number", Units.Unitless, "mach_number"), 
+            ("Mach Number", Units.Unitless, "mach"), 
             ("Distance", Units.Length, "distance"),
             ("Altitude Start", Units.Length, "altitude_start"), 
             ("Altitude End", Units.Length, "altitude_end"),
@@ -63,14 +63,14 @@ segment_data_fields = [
             ("Altitude End", Units.Length, "altitude_end"),
             ("Climb Angle", Units.Angle, "climb_angle"), 
             ("Air Speed", Units.Velocity, "air_speed"),
-            ("True Course Speed", Units.Velocity, "true_course_speed")
+            ("True Course Angle", Units.Angle, "true_course")
         ],
         "Constant Speed-Constant Angle": [
             ("Altitude Start", Units.Length, "altitude_start"), 
             ("Altitude End", Units.Length, "altitude_end"),
             ("Climb Angle", Units.Angle, "climb_angle"), 
             ("Air Speed", Units.Velocity, "air_speed"),
-            ("True Course Speed", Units.Velocity, "true_course_speed")
+            ("True Course Angle", Units.Angle, "true_course")
         ],
         "Constant Speed-Constant Rate": [
             ("Altitude Start", Units.Length, "altitude_start"), 
@@ -101,6 +101,16 @@ segment_data_fields = [
             ("Mach Number Start", Units.Unitless, "mach_number_start"), 
             ("True Course Angle", Units.Angle, "true_course")
         ],
+        "Constant Acceleration-Constant Pitchrate-Constant Angle": [
+            ("Altitude Start", Units.Length, "altitude_start"),
+            ("Altitude End", Units.Length, "altitude_end"),
+            ("Air Speed Start", Units.Velocity, "air_speed_start"),
+            ("Climb Angle", Units.Angle, "climb_angle"),
+            ("Acceleration", Units.Acceleration, "acceleration"),
+            ("Pitch Initial", Units.Angle, "pitch_initial"),
+            ("Pitch Final", Units.Angle, "pitch_final"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
         "Linear Speed-Constant Rate": [
             ("Altitude Start", Units.Length, "altitude_start"), 
             ("Altitude End", Units.Length, "altitude_end"),
@@ -127,9 +137,24 @@ segment_data_fields = [
         ],
         "Constant Dynamics Pressure-Constant Altitude": [
             ("Altitude", Units.Length, "altitude"),
+            ("Dynamic Pressure", Units.Pressure, "dynamic_pressure"),
+            ("Distance", Units.Length, "distance"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
+        "Constant Acceleration-Constant Pitchrate-Constant Altitude": [
+            ("Altitude", Units.Length, "altitude"),
             ("Acceleration", Units.Acceleration, "acceleration"),
             ("Air Speed Start", Units.Velocity, "air_speed_start"),
             ("Air Speed End", Units.Velocity, "air_speed_end"),
+            ("Pitch Initial", Units.Angle, "pitch_initial"),
+            ("Pitch Final", Units.Angle, "pitch_final"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
+        "Curved Constant Radius-Constant Speed-Constant Altitude": [
+            ("Altitude", Units.Length, "altitude"),
+            ("Air Speed", Units.Velocity, "air_speed"),
+            ("Turn Radius", Units.Length, "turn_radius"),
+            ("Turn Angle", Units.Angle, "turn_angle"),
             ("True Course Angle", Units.Angle, "true_course")
         ],
         "Constant Mach-Constant Altitude Loiter": [
@@ -209,6 +234,13 @@ segment_data_fields = [
             ("Mach Number Start", Units.Unitless, "mach_number_start"), 
             ("True Course Angle", Units.Angle, "true_course")
         ],
+        "Constant Throttle-Constant Speed": [
+            ("Altitude Start", Units.Length, "altitude_start"),
+            ("Altitude End", Units.Length, "altitude_end"),
+            ("Throttle", Units.Unitless, "throttle"),
+            ("Air Speed", Units.Velocity, "air_speed"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
         "Linear Speed-Constant Rate": [
             ("Altitude Start", Units.Length, "altitude_start"), 
             ("Altitude End", Units.Length, "altitude_end"),
@@ -224,9 +256,8 @@ segment_data_fields = [
             ("Velocity Start", Units.Velocity, "velocity_start"), 
             ("Velocity End", Units.Velocity, "velocity_end"), 
             ("Friction Coefficient", Units.Unitless, "friction_coefficient"),
-            ("Throttle", Units.Angle, "throttle"),
+            ("Throttle", Units.Unitless, "throttle"),
             ("Altitude", Units.Length, "altitude"),
-            ("Reverse Thrust Ratio", Units.Unitless, "reverse_thrust_ratio"),
             ("True Course Angle", Units.Angle, "true_course")
         ],
         "Takeoff": [
@@ -241,15 +272,42 @@ segment_data_fields = [
         "Battery Discharge": [
             ("Altitude", Units.Length, "altitude"), 
             ("Time", Units.Time, "time"), 
-            ("Current", Units.Unitless, "current"),
+            ("Cooling Time", Units.Time, "cooling_time"),
             ("Overcharge Contingency", Units.Unitless, "overcharge_contingency"),
             ("True Course Angle", Units.Angle, "true_course")
         ],
         "Battery Recharge": [
             ("Altitude", Units.Length, "altitude"), 
-            ("Time", Units.Time, "time"), 
-            ("Current", Units.Unitless, "current"),
+            ("Cutoff State of Charge", Units.Unitless, "cutoff_SOC"),
+            ("Cooling Time", Units.Time, "cooling_time"),
             ("Overcharge Contingency", Units.Unitless, "overcharge_contingency"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
+        "Dormancy": [
+            ("Altitude", Units.Length, "altitude"),
+            ("Time", Units.Time, "time"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
+        "Refuel": [
+            ("Altitude", Units.Length, "altitude"),
+            ("Time", Units.Time, "time"),
+            ("Refuel Target Fill Fraction", Units.Unitless, "refuel_target_fill_fraction"),
+            ("Nominal Fill Rate (kg/s)", Units.Unitless, "nominal_fill_rate"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
+        "Taxi": [
+            ("Altitude", Units.Length, "altitude"),
+            ("Air Speed", Units.Velocity, "air_speed"),
+            ("Distance", Units.Length, "distance"),
+            ("Ground Incline", Units.Angle, "ground_incline"),
+            ("Friction Coefficient", Units.Unitless, "friction_coefficient"),
+            ("True Course Angle", Units.Angle, "true_course")
+        ],
+        "Test Stand": [
+            ("Velocity", Units.Velocity, "velocity"),
+            ("Throttle", Units.Unitless, "throttle"),
+            ("Altitude", Units.Length, "altitude"),
+            ("Time", Units.Time, "time"),
             ("True Course Angle", Units.Angle, "true_course")
         ]
     }, 
@@ -259,23 +317,24 @@ segment_data_fields = [
             ("Altitude", Units.Length, "altitude"), 
             ("Air Speed", Units.Velocity, "air_speed"),
             ("Distance", Units.Length, "distance"), 
-            ("Acceleration Z", Units.Acceleration, "acceleration_z"),
-            ("True Course Angle", Units.Angle, "true_course")
+            ("Linear Acceleration Z", Units.Acceleration, "linear_acceleration_z"),
         ],
         "Set Speed-Set Altitude": [
             ("Altitude", Units.Length, "altitude"), 
             ("Air Speed", Units.Velocity, "air_speed"),
             ("Distance", Units.Length, "distance"), 
-            ("Acceleration X", Units.Acceleration, "acceleration_x"),
-            ("Acceleration Z", Units.Acceleration, "acceleration_z"),
-            ("State Numerics Number of Control Points", Units.Unitless, "state_numerics_control_points")
+            ("Linear Acceleration X", Units.Acceleration, "linear_acceleration_x"),
+            ("Linear Acceleration Z", Units.Acceleration, "linear_acceleration_z"),
+        ],
+        "Set Speed-Set Altitude-AVL Trimmed": [
+            ("Linear Acceleration X", Units.Acceleration, "linear_acceleration_x"),
+            ("Linear Acceleration Z", Units.Acceleration, "linear_acceleration_z"),
         ],
         "Set Speed-Set Throttle": [
             ("Altitude", Units.Length, "altitude"), 
             ("Air Speed", Units.Velocity, "air_speed"),
             ("Throttle", Units.Unitless, "throttle"), 
-            ("Acceleration Z", Units.Acceleration, "acceleration_z"),
-            ("True Course Angle", Units.Angle, "true_course")
+            ("Linear Acceleration Z", Units.Acceleration, "linear_acceleration_z"),
         ],
     }, 
     {
@@ -303,6 +362,7 @@ segment_data_fields = [
 segment_rcaide_classes = [
     { # Climb Subsegments
         "Constant CAS-Constant Rate": Segments.Climb.Constant_CAS_Constant_Rate,
+        "Constant Acceleration-Constant Pitchrate-Constant Angle": Segments.Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle,
         "Constant Dynamic Pressure-Constant Angle": Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle,
         "Constant Dynamic Pressure-Constant Rate": Segments.Climb.Constant_Dynamic_Pressure_Constant_Rate,
                 "Constant EAS-Constant Rate": Segments.Climb.Constant_EAS_Constant_Rate,
@@ -319,6 +379,8 @@ segment_rcaide_classes = [
     {
         # Cruise Subsegments
         "Constant Acceleration-Constant Altitude": Segments.Cruise.Constant_Acceleration_Constant_Altitude,
+        "Constant Acceleration-Constant Pitchrate-Constant Altitude": Segments.Cruise.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude,
+        "Curved Constant Radius-Constant Speed-Constant Altitude": Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude,
         "Constant Dynamic Pressure-Constant Altitude Loiter": Segments.Cruise.Constant_Dynamic_Pressure_Constant_Altitude_Loiter,
         "Constant Dynamics Pressure-Constant Altitude": Segments.Cruise.Constant_Dynamic_Pressure_Constant_Altitude,
         "Constant Mach-Constant Altitude Loiter": Segments.Cruise.Constant_Mach_Constant_Altitude_Loiter,
@@ -335,18 +397,24 @@ segment_rcaide_classes = [
         "Constant Speed-Constant Rate": Segments.Descent.Constant_Speed_Constant_Rate,
         "Linear Mach-Constant Rate": Segments.Descent.Linear_Mach_Constant_Rate,
         "Linear Speed-Constant Rate": Segments.Descent.Linear_Speed_Constant_Rate,
+        "Constant Throttle-Constant Speed": Segments.Descent.Constant_Throttle_Constant_Speed,
     }, 
     {
         # Ground Subsegments
         "Landing": Segments.Ground.Landing,
         "Takeoff": Segments.Ground.Takeoff,
         "Battery Discharge": Segments.Ground.Battery_Discharge,
-        "Battery Recharge": Segments.Ground.Battery_Recharge
+        "Battery Recharge": Segments.Ground.Battery_Recharge,
+        "Dormancy": Segments.Ground.Dormancy,
+        "Refuel": Segments.Ground.Refuel,
+        "Taxi": Segments.Ground.Taxi,
+        "Test Stand": Segments.Ground.Test_Stand,
     }, 
     {
         # Single Point Subsegments
         "Set Speed-Set Altitude-No Propulsion": Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion,
         "Set Speed-Set Altitude": Segments.Single_Point.Set_Speed_Set_Altitude,
+        "Set Speed-Set Altitude-AVL Trimmed": Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed,
         "Set Speed-Set Throttle": Segments.Single_Point.Set_Speed_Set_Throttle,
     }, 
     {

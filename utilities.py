@@ -68,6 +68,27 @@ def set_data(obj: dict, key: str, data):
     obj[key] = data
 
 
+def get_path_value(obj, path):
+    """Return the value at a dotted attribute path, or None when any part is missing."""
+    value = obj
+    for key in path.split("."):
+        value = value.get(key) if hasattr(value, "get") else None
+    return value
+
+
+def set_if_changed(obj, path, value):
+    """Set a dotted attribute path only when the form value is given and differs from the current value."""
+    if value is None:
+        return
+    current = get_path_value(obj, path)
+    try:
+        unchanged = current is not None and np.allclose(np.asarray(current, dtype=float), np.asarray(value, dtype=float), rtol=1e-12, atol=0.0)
+    except (TypeError, ValueError):
+        unchanged = current == value
+    if not unchanged:
+        set_data(obj, path, value)
+
+
 def clear_layout(layout: QLayout):
     """Clear all widgets from the layout."""
     while layout.count():
@@ -283,3 +304,17 @@ class Units:
 
     class String:
         pass
+
+
+# Component groups wired to distributors: (connectivity key, section title)
+CONNECTION_GROUPS = [
+    ("assigned_propulsors", "Propulsors"),
+    ("assigned_sources",    "Energy Sources"),
+    ("assigned_converters", "Converters"),
+    ("assigned_systems",    "Flight Systems"),
+]
+
+
+def empty_connections():
+    """Return a connectivity entry with an empty name list for every group."""
+    return {key: [] for key, _ in CONNECTION_GROUPS}

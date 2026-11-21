@@ -8,6 +8,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt
 
+from utilities import CONNECTION_GROUPS, empty_connections
+
 
 def _clear_layout(layout):
     while layout.count():
@@ -21,11 +23,12 @@ def _clear_layout(layout):
 
 
 class ConnectionMatrixFrame(QWidget):
-    """Two-section connection matrix: Propulsors → Distributors and Sources → Distributors.
+    """Connection matrix between distributors (columns) and components (rows).
 
-    Columns are distributors; rows are propulsors (top section) then energy sources
-    (bottom section).  A ticked checkbox at [row, col] means that component is
-    connected to that distributor.
+    Rows are grouped into Propulsors, Energy Sources, Converters and Flight
+    Systems.  A ticked checkbox at [row, col] means that component is connected
+    to that distributor, i.e. the distributor tag appears in the component's
+    RCAIDE ``assigned_distributors``.
 
     Call ``refresh()`` after component lists change to rebuild the grid while
     preserving existing checkbox states for components whose names haven't changed.
@@ -35,10 +38,8 @@ class ConnectionMatrixFrame(QWidget):
     def __init__(self):
         super().__init__()
 
-        # {prop_name: {dist_name: QCheckBox}}
-        self._propulsor_checks: dict[str, dict[str, QCheckBox]] = {}
-        # {src_name:  {dist_name: QCheckBox}}
-        self._source_checks: dict[str, dict[str, QCheckBox]] = {}
+        # {group key: {component name: {dist_name: QCheckBox}}}
+        self._checks: dict[str, dict[str, dict[str, QCheckBox]]] = {key: {} for key, _ in CONNECTION_GROUPS}
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(8, 8, 8, 8)
@@ -56,7 +57,7 @@ class ConnectionMatrixFrame(QWidget):
         outer.addWidget(scroll)
 
         self._empty_label = QLabel(
-            "Add distributors, propulsors, and sources,\n"
+            "Add distributors and components,\n"
             "then click  Refresh Connections  to populate the matrix."
         )
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -65,34 +66,26 @@ class ConnectionMatrixFrame(QWidget):
 
     # ── Public API ─────────────────────────────────────────────────────────
 
-    def refresh(
-        self,
-        propulsor_names: list[str],
-        source_names: list[str],
-        distributor_names: list[str],
-        connectivity: dict[str, dict],
-    ):
+    def refresh(self, component_names: dict[str, list[str]], distributor_names: list[str], connectivity: dict[str, dict]):
         """Rebuild the matrix.
 
-        ``connectivity`` maps distributor name → dict with keys
-        ``"assigned_propulsors"`` and ``"assigned_sources"`` (lists of names).
+        ``component_names`` maps each group key in ``CONNECTION_GROUPS`` to the
+        component names of that group.  ``connectivity`` maps distributor name
+        to a dict of the same keys holding the connected component names.
         Existing checkbox states are preserved for names that still exist.
         """
         # Snapshot current checked state before clearing
-        old_prop = {
-            p: {d: cb.isChecked() for d, cb in dmap.items()}
-            for p, dmap in self._propulsor_checks.items()
-        }
-        old_src = {
-            s: {d: cb.isChecked() for d, cb in dmap.items()}
-            for s, dmap in self._source_checks.items()
+        old_state = {
+            key: {name: {d: cb.isChecked() for d, cb in dmap.items()} for name, dmap in checks.items()}
+            for key, checks in self._checks.items()
         }
 
         _clear_layout(self._grid)
-        self._propulsor_checks.clear()
-        self._source_checks.clear()
+        for checks in self._checks.values():
+            checks.clear()
 
-        has_content = bool(distributor_names and (propulsor_names or source_names))
+        has_components = any(component_names.get(key) for key, _ in CONNECTION_GROUPS)
+        has_content    = bool(distributor_names and has_components)
         self._empty_label.setVisible(not has_content)
         self._grid_widget.setVisible(has_content)
 
@@ -111,27 +104,18 @@ class ConnectionMatrixFrame(QWidget):
             self._grid.addWidget(lbl, row, col)
         row += 1
 
-        # ── Propulsors section ────────────────────────────────────────────
-        if propulsor_names:
-            row = self._add_section_header("Propulsors", len(distributor_names), row)
-            for prop_name in propulsor_names:
+        # ── One section per component group ───────────────────────────────
+        for key, title in CONNECTION_GROUPS:
+            names = component_names.get(key, [])
+            if not names:
+                continue
+            row = self._add_section_header(title, len(distributor_names), row)
+            for name in names:
                 row = self._add_component_row(
-                    prop_name, distributor_names, connectivity,
-                    key="assigned_propulsors",
-                    checks_dict=self._propulsor_checks,
-                    old_state=old_prop,
-                    grid_row=row,
-                )
-
-        # ── Sources section ───────────────────────────────────────────────
-        if source_names:
-            row = self._add_section_header("Energy Sources", len(distributor_names), row)
-            for src_name in source_names:
-                row = self._add_component_row(
-                    src_name, distributor_names, connectivity,
-                    key="assigned_sources",
-                    checks_dict=self._source_checks,
-                    old_state=old_src,
+                    name, distributor_names, connectivity,
+                    key=key,
+                    checks_dict=self._checks[key],
+                    old_state=old_state[key],
                     grid_row=row,
                 )
 
@@ -140,25 +124,13 @@ class ConnectionMatrixFrame(QWidget):
         self._grid_widget.adjustSize()
 
     def get_connectivity(self) -> dict[str, dict]:
-        """Return ``{dist_name: {'assigned_propulsors': [...], 'assigned_sources': [...]}}``."""
+        """Return ``{dist_name: {group key: [component names]}}`` for every ticked checkbox."""
         result: dict[str, dict] = {}
-
-        for prop_name, dist_map in self._propulsor_checks.items():
-            for dist_name, cb in dist_map.items():
-                if cb.isChecked():
-                    entry = result.setdefault(
-                        dist_name, {"assigned_propulsors": [], "assigned_sources": []}
-                    )
-                    entry["assigned_propulsors"].append(prop_name)
-
-        for src_name, dist_map in self._source_checks.items():
-            for dist_name, cb in dist_map.items():
-                if cb.isChecked():
-                    entry = result.setdefault(
-                        dist_name, {"assigned_propulsors": [], "assigned_sources": []}
-                    )
-                    entry["assigned_sources"].append(src_name)
-
+        for key, checks in self._checks.items():
+            for name, dist_map in checks.items():
+                for dist_name, cb in dist_map.items():
+                    if cb.isChecked():
+                        result.setdefault(dist_name, empty_connections())[key].append(name)
         return result
 
     # ── Private helpers ────────────────────────────────────────────────────

@@ -5,24 +5,17 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame,
                               QSizePolicy, QSpacerItem, QComboBox)
 
-from tabs.geometry.widgets.powertrain.converters import TurboelectricGeneratorWidget
+from tabs.geometry.widgets.powertrain.converters import ConverterWidget, CONVERTER_CLASSES
 
 from utilities import BTN_STYLE
 
-_CONVERTER_TYPES = [
-    "Turboelectric Generator",
-]
-
-_CONVERTER_WIDGETS = {
-    "Turboelectric Generator": TurboelectricGeneratorWidget,
-}
+_CONVERTER_TYPES = list(CONVERTER_CLASSES)
 
 
 class ConverterFrame(QWidget):
     """Frame that manages a list of converter widgets.
 
     A type dropdown lets the user choose which converter kind to add.
-    Currently only Turboelectric Generator is implemented.
     """
 
     def __init__(self):
@@ -64,9 +57,8 @@ class ConverterFrame(QWidget):
 
     def add_selected_converter(self):
         converter_type = self.converter_type_dropdown.currentText()
-        cls = _CONVERTER_WIDGETS.get(converter_type, TurboelectricGeneratorWidget)
-        self.converter_sections_layout.addWidget(
-            cls(self.converter_sections_layout.count(), self.on_delete_button_pressed))
+        self.converter_sections_layout.addWidget(ConverterWidget(
+            self.converter_sections_layout.count(), self.on_delete_button_pressed, converter_type=converter_type))
 
     def get_data_values(self):
         data = []
@@ -76,7 +68,7 @@ class ConverterFrame(QWidget):
             if item is None:
                 continue
             widget = item.widget()
-            if not isinstance(widget, TurboelectricGeneratorWidget):
+            if not isinstance(widget, ConverterWidget):
                 continue
             conv_data, conv_obj = widget.get_data_values()
             data.append(conv_data)
@@ -95,7 +87,7 @@ class ConverterFrame(QWidget):
             widget.deleteLater()
 
         for section_data in data:
-            self.converter_sections_layout.addWidget(TurboelectricGeneratorWidget(
+            self.converter_sections_layout.addWidget(ConverterWidget(
                 self.converter_sections_layout.count(), self.on_delete_button_pressed, section_data))
 
     def delete_data(self):
@@ -117,7 +109,7 @@ class ConverterFrame(QWidget):
             if item is None:
                 continue
             widget = item.widget()
-            if widget is not None and isinstance(widget, TurboelectricGeneratorWidget):
+            if widget is not None and isinstance(widget, ConverterWidget):
                 widget.index = i
 
     def set_save_function(self, function):

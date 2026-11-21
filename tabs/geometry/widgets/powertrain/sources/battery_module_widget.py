@@ -9,15 +9,16 @@ from PyQt6.QtWidgets import (QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
 from tabs.geometry.widgets import GeometryDataWidget
 from common_widgets import DataEntryWidget
 from utilities import Units, BTN_STYLE
+import rcaide_io
 
 # Map display name → RCAIDE battery class
 _BATTERY_CLASS_MAP = {
-    "Lithium Ion NMC":   RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC,
-    "Lithium Ion LFP":   RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP,
-    "Lithium Sulfur":    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Sulfur,
-    "Aluminum Air":      RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air,
-    "Lithium Air":       RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Air,
-    "Generic":           RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module,
+    "Lithium Ion NMC":   RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC,
+    "Lithium Ion LFP":   RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP,
+    "Lithium Sulfur":    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Sulfur,
+    "Aluminum Air":      RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Aluminum_Air,
+    "Lithium Air":       RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Air,
+    "Generic":           RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module,
 }
 
 # Map RCAIDE __type__ suffix → display name (for JSON loading)
@@ -51,6 +52,8 @@ class BatteryModuleWidget(GeometryDataWidget):
         super().__init__()
         self.index = index
         self.on_delete = on_delete
+        # RCAIDE module loaded from a file (stripped JSON dict); None for a new module
+        self.loaded_component = None
 
         layout = QVBoxLayout()
 
@@ -119,10 +122,13 @@ class BatteryModuleWidget(GeometryDataWidget):
             "Parallel Cell Count": fields.get("Parallel Cell Count", [1,   0]),
             "Stacking Rows":       fields.get("Stacking Rows",       [3,   0]),
         }
+        if self.loaded_component is not None:
+            data["rcaide_component"] = self.loaded_component
         fields_si = self.data_entry_widget.get_values_si()
         return data, self.create_rcaide_structure(data, fields_si)
 
     def load_data_values(self, data):
+        self.loaded_component = data.get("rcaide_component")
         if "Source Name" in data:
             self.section_name_edit.setText(data["Source Name"])
         chemistry = data.get("Chemistry", "Lithium Ion NMC")
@@ -134,8 +140,13 @@ class BatteryModuleWidget(GeometryDataWidget):
     def create_rcaide_structure(self, data, fields_si=None):
         chemistry = data.get("Chemistry", "Lithium Ion NMC")
         cls = _BATTERY_CLASS_MAP.get(chemistry,
-              RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module)
+              RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module)
+        # Start from the loaded module (same chemistry) so settings the form does not show are kept
         module = cls()
+        if self.loaded_component is not None:
+            loaded = rcaide_io.component_from_dict(self.loaded_component)
+            if type(loaded) is cls:
+                module = loaded
         module.tag = data["Source Name"]
         if fields_si:
             module.capacity = fields_si.get("Capacity", [0.0])[0]

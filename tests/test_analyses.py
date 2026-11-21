@@ -1,7 +1,7 @@
 # tests/test_analyses.py
 #
 # Regression tests for RCAIDE_GUI: JSON loading and analysis runner pipeline.
-# No Qt dependency — runners are called directly after building state via rcaide_io.
+# Runners are called directly after building state via rcaide_io; missions are built by the Mission tab (offscreen Qt).
 #
 # Run with:  pytest tests/test_analyses.py -v
 #            pytest tests/test_analyses.py -v -k "cessna"  (single aircraft)
@@ -13,10 +13,6 @@ import os
 import sys
 import json
 import time
-import importlib
-import traceback
-from copy import deepcopy
-from collections import OrderedDict
 
 import pytest
 import numpy as np
@@ -28,6 +24,10 @@ import matplotlib.pyplot as plt
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+
+os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+from PyQt6.QtWidgets import QApplication
+QT_APP = QApplication.instance() or QApplication(sys.argv)
 
 import rcaide_io
 import RCAIDE
@@ -59,100 +59,14 @@ def load_aircraft(filename):
 
 
 # ---------------------------------------------------------------------------
-# Helper: build rcaide_mission from rcaide_io.mission_data without Qt
-#
-# The GUI builds missions via MissionSegmentWidget (a Qt widget). Here we
-# instantiate RCAIDE segment classes directly from the __type__ strings
-# stored in the JSON, avoiding any Qt dependency.
+# Helper: build rcaide_mission with the GUI Mission tab (offscreen Qt)
 # ---------------------------------------------------------------------------
 
 def build_mission():
-    """Build and assign rcaide_io.rcaide_mission from rcaide_io.mission_data.
-
-    Mirrors what MissionSegmentWidget.create_rcaide_segment() does:
-      - instantiates RCAIDE segment classes from __type__ strings
-      - applies scalar parameters from the JSON
-      - calls seg.analyses.extend(analyses) with the matching config's analyses
-        (same logic as MissionSegmentWidget line 351 so load/trim/payload-range
-         runners have a fully-linked analyses container on every segment)
-    """
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    for mission_entry in rcaide_io.mission_data:
-        if not isinstance(mission_entry, dict):
-            continue
-        for seg_dict in mission_entry.get('segments', []):
-            type_str = seg_dict.get('__type__', '')
-            if not type_str:
-                continue
-            mod_path, cls_name = type_str.rsplit('.', 1)
-            mod = importlib.import_module(mod_path)
-            seg = getattr(mod, cls_name)()
-            seg_clean = rcaide_io.strip_unit_arguments(seg_dict)
-            skip = {'__type__', 'features', 'settings', 'flight_dynamics', 'assigned_control_variables'}
-            for k, v in seg_clean.items():
-                if k not in skip:
-                    try:
-                        setattr(seg, k, v)
-                    except Exception:
-                        pass
-
-            # Apply solver type to the correct attribute path — mirrors
-            # MissionSegmentWidget.create_rcaide_segment line 321.
-            # setattr(seg, 'solver_type', ...) lands on the wrong attribute;
-            # converge.py checks segment.state.numerics.solver.type.
-            solver_type = seg_clean.get('solver_type', 'optimize')
-            if (hasattr(seg, 'state') and hasattr(seg.state, 'numerics')
-                    and hasattr(seg.state.numerics, 'solver')):
-                seg.state.numerics.solver.type = solver_type
-
-            # Apply flight_dynamics from JSON — force_x/force_z=True define the residuals.
-            # Without these, unknowns (throttle, pitch_angle) exceed residuals → non-square system.
-            fd_raw = seg_clean.get('flight_dynamics', {})
-            if fd_raw and hasattr(seg, 'flight_dynamics'):
-                fd = seg.flight_dynamics
-                for fd_name, fd_val in fd_raw.items():
-                    if fd_name == '__type__':
-                        continue
-                    if hasattr(fd, fd_name):
-                        try:
-                            setattr(fd, fd_name, fd_val)
-                        except Exception:
-                            pass
-
-            # Apply assigned_control_variables from JSON — the GUI saves throttle.active,
-            # pitch_angle.active, assigned_propulsors, and initial_guess_values here.
-            # Without this, throttle stays 0 for every root_finder segment and no fuel burns.
-            acv_raw = seg_clean.get('assigned_control_variables', {})
-            if acv_raw and hasattr(seg, 'assigned_control_variables'):
-                acv = seg.assigned_control_variables
-                for ctrl_name, ctrl_data in acv_raw.items():
-                    if ctrl_name == '__type__' or not isinstance(ctrl_data, dict):
-                        continue
-                    if hasattr(acv, ctrl_name):
-                        ctrl_obj = getattr(acv, ctrl_name)
-                        for field_name, field_val in ctrl_data.items():
-                            if field_name == '__type__':
-                                continue
-                            if hasattr(ctrl_obj, field_name):
-                                try:
-                                    setattr(ctrl_obj, field_name, field_val)
-                                except Exception:
-                                    pass
-
-            # Link config analyses — mirrors MissionSegmentWidget.create_rcaide_segment
-            cfg = seg_clean.get('config_tag', 'base')
-            analyses = rcaide_io.rcaide_analyses.get(cfg)
-            if analyses is None:
-                # Fall back to first available analyses container
-                for candidate in rcaide_io.rcaide_analyses.values():
-                    analyses = candidate
-                    break
-            if analyses is not None:
-                seg.analyses.extend(analyses)
-
-            mission.append_segment(seg)
-    rcaide_io.rcaide_mission = mission
-    return mission
+    """Build rcaide_io.rcaide_mission from rcaide_io.mission_data the way the GUI does, through the Mission tab."""
+    from tabs.mission.mission import MissionWidget
+    MissionWidget().load_from_values()
+    return rcaide_io.rcaide_mission
 
 
 # ---------------------------------------------------------------------------

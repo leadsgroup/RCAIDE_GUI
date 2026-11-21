@@ -3,7 +3,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame
 
 from common_widgets import DataEntryWidget
-from utilities import Units, convert_name, set_data
+from utilities import Units, convert_name, set_if_changed
 import rcaide_io
 
 
@@ -145,6 +145,8 @@ class BasePropulsorWidget(QWidget):
         # Store the section index so delete callbacks can remove the correct widget.
         self.index = index
         self.on_delete = on_delete
+        # RCAIDE component loaded from a file (stripped JSON dict); None for a new propulsor
+        self.loaded_component = None
 
         # Main vertical layout holds name, data-entry fields, divider, and delete button.
         self.main_layout = QVBoxLayout()
@@ -195,20 +197,22 @@ class BasePropulsorWidget(QWidget):
         data["Propulsor Type"] = self.propulsor_type
         data_si["Propulsor Tag"] = title
         data_si["Propulsor Type"] = self.propulsor_type
+        if self.loaded_component is not None:
+            data["rcaide_component"] = self.loaded_component
 
         rcaide_io.propulsor_names[0].append(convert_name(title))
         return data, self.create_rcaide_structure(data_si)
 
     def create_rcaide_structure(self, data):
-        # Build the RCAIDE propulsor and any required child components first.
-        propulsor = self._new_propulsor_with_subcomponents()
+        # Start from the loaded propulsor so settings the form does not show are kept.
+        propulsor = self.base_propulsor()
 
         propulsor.tag = data["Propulsor Tag"]
         # Apply each form value to its RCAIDE path, including nested component paths.
         for label, units, path in self.field_specs:
             if units == Units.Heading or not path:
                 continue
-            self._set_path_if_present(propulsor, path, data[label][0])
+            set_if_changed(propulsor, path, data[label][0])
 
         return propulsor
 
@@ -219,8 +223,9 @@ class BasePropulsorWidget(QWidget):
         self.data_entry_widget.load_data(self._defaults_to_widget_data(propulsor))
 
     def load_data_values(self, data):
-        # Start from RCAIDE defaults, then overlay whichever saved fields are present.
-        default_data = self._defaults_to_widget_data(self._new_propulsor_with_subcomponents())
+        # Read the form from the loaded propulsor (or RCAIDE defaults), then overlay saved fields.
+        self.loaded_component = data.get("rcaide_component")
+        default_data = self._defaults_to_widget_data(self.base_propulsor())
         default_data.update({
             label: data[label]
             for label, units, _path in self.field_specs
@@ -228,6 +233,12 @@ class BasePropulsorWidget(QWidget):
         })
         self.data_entry_widget.load_data(default_data)
         self.section_name_edit.setText(data.get("Propulsor Tag", ""))
+
+    def base_propulsor(self):
+        """Return the loaded RCAIDE propulsor, or a new one with RCAIDE defaults."""
+        if self.loaded_component is not None:
+            return rcaide_io.component_from_dict(self.loaded_component)
+        return self._new_propulsor_with_subcomponents()
 
     def _new_propulsor_with_subcomponents(self):
         # Create the main RCAIDE propulsor class declared by the subclass.
@@ -258,8 +269,3 @@ class BasePropulsorWidget(QWidget):
             except (KeyError, TypeError):
                 return None
         return value
-
-    @staticmethod
-    def _set_path_if_present(obj, path, value):
-        if value is not None:
-            set_data(obj, path, value)

@@ -9,22 +9,17 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QHBoxLayout,
                               QSpacerItem, QSizePolicy, QFrame, QComboBox)
 
 from tabs.geometry.widgets.powertrain.sources.fuel_tank_widget       import FuelTankWidget
-from tabs.geometry.widgets.powertrain.sources.battery_module_widget  import BatteryModuleWidget
+from tabs.geometry.widgets.powertrain.sources.battery_pack_widget    import BatteryPackWidget
 from common_widgets import DataEntryWidget
 
 _SOURCE_WIDGETS = {
-    "Fuel Tank":      FuelTankWidget,
-    "Battery Module": BatteryModuleWidget,
+    "Fuel Tank":    FuelTankWidget,
+    "Battery Pack": BatteryPackWidget,
 }
 
 _TYPE_FROM_RCAIDE_CLASS = {
-    "Fuel_Tank":             "Fuel Tank",
-    "Generic_Battery_Module":"Battery Module",
-    "Lithium_Ion_NMC":       "Battery Module",
-    "Lithium_Ion_LFP":       "Battery Module",
-    "Lithium_Sulfur":        "Battery Module",
-    "Aluminum_Air":          "Battery Module",
-    "Lithium_Air":           "Battery Module",
+    "Fuel_Tank":    "Fuel Tank",
+    "Battery_Pack": "Battery Pack",
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -33,7 +28,7 @@ _TYPE_FROM_RCAIDE_CLASS = {
 from utilities import BTN_STYLE
 
 class EnergySourceFrame(QWidget):
-    """Frame that manages a list of energy-source widgets (Fuel Tank, Battery Module).
+    """Frame that manages a list of energy-source widgets (Fuel Tank, Battery Pack).
 
     A type dropdown lets the user choose which source kind to add.
     ``load_data()`` detects the saved type from ``"source_type"`` (or, for
@@ -57,7 +52,7 @@ class EnergySourceFrame(QWidget):
         # ── Type dropdown + Add button ─────────────────────────────────────
         add_layout = QHBoxLayout()
         self.source_type_dropdown = QComboBox(self)
-        self.source_type_dropdown.addItems(["Fuel Tank", "Battery Module"])
+        self.source_type_dropdown.addItems(list(_SOURCE_WIDGETS))
         self.source_type_dropdown.setMinimumWidth(200)
         self.source_type_dropdown.currentTextChanged.connect(self._update_add_button_text)
         add_layout.addWidget(self.source_type_dropdown)
@@ -115,7 +110,7 @@ class EnergySourceFrame(QWidget):
             if item is None:
                 continue
             widget = item.widget()
-            if not isinstance(widget, (FuelTankWidget, BatteryModuleWidget)):
+            if not isinstance(widget, (FuelTankWidget, BatteryPackWidget)):
                 continue
             source_data, source = widget.get_data_values()
             data.append(source_data)
@@ -158,7 +153,7 @@ class EnergySourceFrame(QWidget):
             if item is None:
                 continue
             widget = item.widget()
-            if isinstance(widget, (FuelTankWidget, BatteryModuleWidget)):
+            if isinstance(widget, (FuelTankWidget, BatteryPackWidget)):
                 widget.index = i
 
     def set_save_function(self, function):

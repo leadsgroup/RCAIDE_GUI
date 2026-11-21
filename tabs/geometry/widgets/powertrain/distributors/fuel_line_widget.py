@@ -40,15 +40,16 @@ class FuelLineWidget(BaseDistributorWidget):
             "distributor name": self.section_name_edit.text(),
             "distributor_type": "Fuel Line",
         }
+        self.keep_loaded_component(data)
         return data, self.create_rcaide_structure(data)
 
     def load_data_values(self, data):
         if "distributor name" in data:
             self.section_name_edit.setText(data["distributor name"])
-        self._loaded_propulsors = list(data.get("assigned_propulsors", []))
-        self._loaded_sources    = list(data.get("assigned_sources",    []))
+        self.load_connections(data)
 
     def create_rcaide_structure(self, data):
-        line = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+        # Start from the loaded fuel line so settings the form does not show are kept
+        line = self.base_distributor(RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
         line.tag = data["distributor name"]
         return line

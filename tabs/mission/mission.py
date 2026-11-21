@@ -85,7 +85,8 @@ def _rcaide_seg_to_gui(seg_dict):
         if isinstance(ap_raw, list) and len(ap_raw) == 2 and isinstance(ap_raw[1], int) and not isinstance(ap_raw[1], bool):
             ap_raw = ap_raw[0]  # strip unit-arg wrapper → [[name1, name2]]
         if ap_raw and isinstance(ap_raw[0], list):
-            assigned_propulsors = ap_raw[0]
+            # one list per throttle group; the GUI shows every assigned propulsor
+            assigned_propulsors = [name for group in ap_raw for name in group]
         elif ap_raw and isinstance(ap_raw[0], str):
             assigned_propulsors = list(ap_raw)
         else:
@@ -96,6 +97,7 @@ def _rcaide_seg_to_gui(seg_dict):
 
     solver_type = seg_dict.get("solver_type", "root_finder")
     gui_data = {
+        "rcaide_component": rcaide_io.strip_unit_arguments(seg_dict),
         "Segment Name":    seg_dict.get("tag", ""),
         "top dropdown":    top_idx,
         "nested dropdown": sub_name,

@@ -6,7 +6,9 @@
 # ------------------------------------------------------------------------------
 import RCAIDE
 
-_Battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
+_Battery_Pack = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack
+_Coolant_Line = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line
+_Converter    = RCAIDE.Library.Components.Powertrain.Converters.Converter
 
 _NETWORK_CLASS_MAP = {
     "Fuel":      RCAIDE.Framework.Networks.Fuel,
@@ -16,14 +18,33 @@ _NETWORK_CLASS_MAP = {
     "Fuel Cell": RCAIDE.Framework.Networks.Fuel_Cell,
 }
 
-from utilities import BTN_STYLE
+from RCAIDE.Framework.Core import Data
+from utilities import BTN_STYLE, CONNECTION_GROUPS, empty_connections, set_data
 
-def _distributor_container(distributor):
-    if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-        return "busses"
-    if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-        return "coolant_lines"
-    return "fuel_lines"
+
+def nested_converter_paths(component, prefix=""):
+    """Yield (dotted path, converter) for every converter nested inside an RCAIDE component."""
+    for key, value in component.items():
+        if not isinstance(value, Data):
+            continue
+        path = prefix + key
+        if isinstance(value, _Converter):
+            yield path, value
+        yield from nested_converter_paths(value, path + ".")
+
+
+def share_nested_converters(propulsors, converters):
+    """Put each network converter that also sits inside a propulsor (e.g. a compressor motor) back into that propulsor, so both refer to one object."""
+    converter_by_tag = {converter.tag: converter for converter in converters}
+    for propulsor in propulsors:
+        for path, nested in list(nested_converter_paths(propulsor)):
+            if nested.tag in converter_by_tag:
+                set_data(propulsor, path, converter_by_tag[nested.tag])
+
+
+def assign_distributors(component, distributor_tags):
+    """Set RCAIDE ``assigned_distributors`` from a list of distributor tags (None when unconnected)."""
+    component.assigned_distributors = [list(distributor_tags)] if distributor_tags else None
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QTabWidget
 
@@ -41,10 +62,10 @@ from common_widgets import DataEntryWidget
 class PowertrainWidget(QWidget):
     """Tab-based editor for a single RCAIDE energy network.
 
-    Contains six sub-tabs: Distributors, Energy Sources, Propulsors, Systems,
-    Converters, and Connections.  The Connections tab shows a matrix of
-    Propulsors × Distributors and Sources × Distributors so that many-to-many
-    connectivity can be visualised and edited in one place.
+    Contains sub-tabs for Distributors, Propulsors, Energy Sources, Systems,
+    Converters, Connections and the Network Diagram.  The Connections tab shows
+    a matrix of propulsors, sources, converters and systems against
+    distributors so that many-to-many connectivity is edited in one place.
 
     ``network_type`` must be set by the parent (``PowertrainFrame``) before
     ``get_data_values()`` is called so the correct RCAIDE network class is
@@ -118,11 +139,13 @@ class PowertrainWidget(QWidget):
     def _refresh_matrix(self):
         """Rebuild the connection matrix from current component names and
         any previously saved connectivity data."""
-        propulsor_names  = self._collect_names(self.propulsor_frame.propulsor_sections_layout)
-        source_names     = self._collect_names(self.energy_source_frame.source_sections_layout)
+        component_names = {
+            "assigned_propulsors": self._collect_names(self.propulsor_frame.propulsor_sections_layout),
+            "assigned_sources":    self._collect_names(self.energy_source_frame.source_sections_layout),
+            "assigned_converters": self._collect_names(self.converter_frame.converter_sections_layout),
+            "assigned_systems":    self._collect_names(self.system_frame.systems_layout),
+        }
         distributor_names, connectivity = self._collect_distributor_info()
-        converter_names = self._collect_names(self.converter_frame.converter_sections_layout)
-        system_names = self._collect_names(self.system_frame.systems_layout)
 
         # Preserve each component's concrete editor type so the diagram can
         # distinguish components that share the same broad powertrain group.
@@ -133,21 +156,19 @@ class PowertrainWidget(QWidget):
 
         # Keep the editable matrix and its visual representation synchronized
         # from one snapshot of the current component names and connections.
-        self.connection_matrix_frame.refresh(
-            propulsor_names, source_names, distributor_names, connectivity
-        )
+        self.connection_matrix_frame.refresh(component_names, distributor_names, connectivity)
         self.powertrain_diagram.refresh(
-            propulsor_names, source_names, distributor_names, connectivity,
-            converter_names, system_names, component_types,
+            component_names["assigned_propulsors"], component_names["assigned_sources"],
+            distributor_names, connectivity,
+            component_names["assigned_converters"], component_names["assigned_systems"],
+            component_types,
         )
 
     def _collect_distributor_info(self) -> tuple[list[str], dict]:
         """Return (ordered list of distributor names, connectivity dict).
 
-        connectivity[dist_name] = {
-            'assigned_propulsors': [...],
-            'assigned_sources':    [...],
-        }
+        connectivity[dist_name] holds one list of connected component names
+        per key in ``CONNECTION_GROUPS``.
         """
         names = []
         connectivity: dict[str, dict] = {}
@@ -163,11 +184,8 @@ class PowertrainWidget(QWidget):
                 continue
             name = widget.section_name_edit.text()
             names.append(name)
-            # Read connectivity stored during load_data_values (or empty for new widgets)
-            connectivity[name] = {
-                "assigned_propulsors": list(getattr(widget, "_loaded_propulsors", [])),
-                "assigned_sources":    list(getattr(widget, "_loaded_sources",    [])),
-            }
+            # Connectivity stored during load_data_values (empty for new widgets)
+            connectivity[name] = {key: list(widget.loaded_connections.get(key, [])) for key, _ in CONNECTION_GROUPS}
         return names, connectivity
 
     @staticmethod
@@ -224,12 +242,7 @@ class PowertrainWidget(QWidget):
         # Inject connectivity from matrix into each distributor's data dict
         for d_data in distributor_data_list:
             name = d_data.get("distributor name", "")
-            if name in connectivity:
-                d_data["assigned_propulsors"] = connectivity[name]["assigned_propulsors"]
-                d_data["assigned_sources"]    = connectivity[name]["assigned_sources"]
-            else:
-                d_data.setdefault("assigned_propulsors", [])
-                d_data.setdefault("assigned_sources",    [])
+            d_data.update(connectivity.get(name, empty_connections()))
 
         data["distributor data"] = distributor_data_list
         data["source data"],    sources    = self.energy_source_frame.get_data_values()
@@ -246,36 +259,38 @@ class PowertrainWidget(QWidget):
         return data, net
 
     def create_rcaide_structure(self, data, distributors, sources, propulsors, converters, systems):
+        """Build the RCAIDE network: every component lists the tags of the distributors it connects to."""
         net_class = _NETWORK_CLASS_MAP.get(self.network_type, RCAIDE.Framework.Networks.Fuel)
         net = net_class()
 
-        for propulsor in propulsors:
-            net.propulsors.append(propulsor)
+        # Invert the per-distributor connectivity into per-component distributor tags
+        distributor_tags = {key: {} for key, _ in CONNECTION_GROUPS}
+        for d_data, distributor in zip(data.get("distributor data", []), distributors):
+            for key, _ in CONNECTION_GROUPS:
+                for name in d_data.get(key, []):
+                    distributor_tags[key].setdefault(name, []).append(distributor.tag)
+            net.distributors.append(distributor)
 
-        source_by_tag = {s.tag: s for s in sources}
-        distributor_data_list = data.get("distributor data", [])
+        coolant_tags = {d.tag for d in distributors if isinstance(d, _Coolant_Line)}
+        share_nested_converters(propulsors, converters)
 
-        for d_data, distributor in zip(distributor_data_list, distributors):
-            assigned = d_data.get("assigned_propulsors", [])
-            distributor.assigned_propulsors = [assigned]
-
-            for src_name in d_data.get("assigned_sources", []):
-                src = source_by_tag.get(src_name)
-                if src is None:
-                    continue
-                if isinstance(src, _Battery):
-                    distributor.battery_modules.append(src)
+        groups = [
+            ("assigned_propulsors", propulsors, net.propulsors),
+            ("assigned_sources",    sources,    net.sources),
+            ("assigned_converters", converters, net.converters),
+            ("assigned_systems",    systems,    net.systems),
+        ]
+        for key, components, container in groups:
+            for component in components:
+                tags = distributor_tags[key].get(component.tag, [])
+                if isinstance(component, _Battery_Pack):
+                    # The pack feeds electrical buses; its modules are cooled by coolant lines
+                    assign_distributors(component, [t for t in tags if t not in coolant_tags])
+                    for module in component.modules:
+                        assign_distributors(module, [t for t in tags if t in coolant_tags])
                 else:
-                    distributor.fuel_tanks.append(src)
-
-            getattr(net, _distributor_container(distributor)).append(distributor)
-
-        for converter in converters:
-            converter.assigned_propulsors = [[]]
-            net.converters.append(converter)
-
-        for system in systems:
-            net.systems.append(system)
+                    assign_distributors(component, tags)
+                container.append(component)
 
         return net
 

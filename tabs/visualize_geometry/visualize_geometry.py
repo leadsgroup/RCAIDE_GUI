@@ -691,51 +691,56 @@ class VisualizeGeometryWidget(TabWidget):
                 _Cryo        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank
                 _NonIntegral = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank
                 _Integral    = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank
-                for fuel_line in network.fuel_lines:
-                    for fuel_tank in fuel_line.fuel_tanks:
-                        if fuel_tank.wing_tag is not None:
-                            wing = geometry.wings[fuel_tank.wing_tag]
+                _Fuel_Tank   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank
+                for fuel_tank in network.sources:
+                    if not isinstance(fuel_tank, _Fuel_Tank):
+                        continue
+                    if fuel_tank.wing_tag is not None:
+                        wing = geometry.wings[fuel_tank.wing_tag]
 
-                            if issubclass(type(fuel_tank), _NonIntegral):
-                                if issubclass(type(fuel_tank), _Cryo) and getattr(fuel_tank, 'geometry_type', None) == 'conformal' and getattr(fuel_tank, 'transverse_tank', False):
-                                    seg_bounds = fuel_tank.transverse_tank_chord_bounds
-                                    GEOM = generate_aft_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
-                                    make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                                elif issubclass(type(fuel_tank), _Cryo) and getattr(fuel_tank, 'geometry_type', None) == 'conformal':
-                                    seg_bounds = fuel_tank.segments_bounding_tank
-                                    GEOM = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank)
-                                    make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                                    if wing.xz_plane_symmetric:
-                                        GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                                        make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                                else:
-                                    GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
-                                    make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-                                    if wing.xz_plane_symmetric:
-                                        GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                                        make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
-
-                            if type(fuel_tank) == _Integral:
+                        if issubclass(type(fuel_tank), _NonIntegral):
+                            if issubclass(type(fuel_tank), _Cryo) and getattr(fuel_tank, 'geometry_type', None) == 'conformal' and getattr(fuel_tank, 'transverse_tank', False):
+                                seg_bounds = fuel_tank.transverse_tank_chord_bounds
+                                GEOM = generate_aft_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
+                                make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
+                            elif issubclass(type(fuel_tank), _Cryo) and getattr(fuel_tank, 'geometry_type', None) == 'conformal':
                                 seg_bounds = fuel_tank.segments_bounding_tank
-                                GEOM = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank, plot_centerline=False)
+                                GEOM = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank)
+                                make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
+                                if wing.xz_plane_symmetric:
+                                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+                                    make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
+                            else:
+                                GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
                                 make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
                                 if wing.xz_plane_symmetric:
                                     GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                                     make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
 
-                        elif fuel_tank.fuselage_tag is not None:
-                            fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                            if type(fuel_tank) == _Integral:
-                                seg_bounds = fuel_tank.segments_bounding_tank
-                                GEOM = generate_integral_fuel_tank_points(fuselage, fuel_tank, seg_bounds, tessellation)
+                        if type(fuel_tank) == _Integral:
+                            seg_bounds = fuel_tank.segments_bounding_tank
+                            GEOM = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank, plot_centerline=False)
+                            make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
+                            if wing.xz_plane_symmetric:
+                                GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                                 make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
 
-                        elif issubclass(type(fuel_tank), _NonIntegral):
-                            GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
+                    elif fuel_tank.fuselage_tag is not None:
+                        fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
+                        if type(fuel_tank) == _Integral:
+                            seg_bounds = fuel_tank.segments_bounding_tank
+                            GEOM = generate_integral_fuel_tank_points(fuselage, fuel_tank, seg_bounds, tessellation)
                             make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
 
-            for bus in network.busses:
-                for battery in bus.battery_modules:
+                    elif issubclass(type(fuel_tank), _NonIntegral):
+                        GEOM = generate_non_integral_fuel_tank_points(fuel_tank, tessellation)
+                        make_object(self.plotter, self.fuel_tank_actors, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)
+
+            _Battery_Pack = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack
+            for battery_pack in network.sources:
+                if not isinstance(battery_pack, _Battery_Pack):
+                    continue
+                for battery in battery_pack.modules:
                     GEOM = generate_3d_cuboid_points(battery)
                     make_object(self.plotter, self.system_actors, GEOM, battery_rgb_color, battery_opacity)
 

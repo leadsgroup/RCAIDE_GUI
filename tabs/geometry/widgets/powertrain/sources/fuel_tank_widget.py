@@ -14,6 +14,7 @@ from PyQt6.QtCore import Qt
 from tabs.geometry.widgets import GeometryDataWidget
 from utilities import Units
 from common_widgets import DataEntryWidget
+import rcaide_io
 
 
 # ------------------------------------------------------------------------------
@@ -46,6 +47,8 @@ class FuelTankWidget(GeometryDataWidget):
         super().__init__()
         self.index     = index
         self.on_delete = on_delete
+        # RCAIDE tank loaded from a file (stripped JSON dict); None for a new tank
+        self.loaded_component = None
 
         layout = QVBoxLayout()
         layout.setSpacing(4)
@@ -123,7 +126,6 @@ class FuelTankWidget(GeometryDataWidget):
             ("Design Inlet Temperature", Units.Temperature),
             ("Ullage Volume Fraction",   Units.Unitless),
             ("Safety Factor",            Units.Unitless),
-            ("Pressure Factor",          Units.Unitless),
             ("Accessories Weight Factor",Units.Unitless),
         ]
         self.cryo_widget = DataEntryWidget(cryo_labels)
@@ -159,6 +161,7 @@ class FuelTankWidget(GeometryDataWidget):
         self.on_delete(self.index)
 
     def load_data_values(self, data):
+        self.loaded_component = data.get('rcaide_component')
         self.section_name_edit.setText(data.get('Source Name', ''))
 
         tank_type = data.get('tank_type', 'Fuel Tank')
@@ -215,15 +218,29 @@ class FuelTankWidget(GeometryDataWidget):
             d['geometry_type'] = geom_type
             d['transverse_tank'] = [transverse, 0]
 
+        if self.loaded_component is not None:
+            data['rcaide_component'] = self.loaded_component
         return data, self.create_rcaide_structure(data_si)
+
+    def base_tank(self, tank_type, fuel_type):
+        """Return the loaded tank and fuel when the selected types still match them, else new ones."""
+        tank = self._TANK_CLASS[tank_type]()
+        fuel = self._FUEL_CLASS[fuel_type]()
+        if self.loaded_component is not None:
+            loaded = rcaide_io.component_from_dict(self.loaded_component)
+            if type(loaded) is type(tank):
+                tank = loaded
+                if type(loaded.get('fuel')) is type(fuel):
+                    fuel = loaded.fuel
+        return tank, fuel
 
     def create_rcaide_structure(self, data):
         name      = data.get('Source Name', '')
         tank_type = data.get('tank_type', 'Fuel Tank')
         fuel_type = data.get('fuel_type', 'Jet A1')
 
-        tank_factory = self._TANK_CLASS.get(tank_type, self._TANK_CLASS['Fuel Tank'])
-        tank = tank_factory()
+        # Start from the loaded tank so settings the form does not show are kept
+        tank, fuel = self.base_tank(tank_type, fuel_type)
         tank.tag = name
 
         origin = data.get('Fuel Tank Origin', [[0, 0, 0]])
@@ -255,11 +272,7 @@ class FuelTankWidget(GeometryDataWidget):
             tank.design_inlet_temperature      = _first(data.get('Design Inlet Temperature',  [20, 0]))
             tank.ullage_volume_fraction        = _first(data.get('Ullage Volume Fraction',    [0.07, 0]))
             tank.safety_factor                 = _first(data.get('Safety Factor',             [1.6, 0]))
-            tank.pressure_factor               = _first(data.get('Pressure Factor',           [5, 0]))
             tank.tank_accesories_weight_factor = _first(data.get('Accessories Weight Factor', [1.5, 0]))
-
-        fuel_factory = self._FUEL_CLASS.get(fuel_type, self._FUEL_CLASS['Jet A1'])
-        fuel = fuel_factory()
 
         fuel_origin = data.get('Fuel Origin', [[0, 0, 0]])
         fuel.origin = fuel_origin[0] if isinstance(fuel_origin, (list, tuple)) else fuel_origin

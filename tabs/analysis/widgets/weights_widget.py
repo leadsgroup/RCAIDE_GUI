@@ -25,7 +25,6 @@ class WeightsWidget(AnalysisDataWidget):
         "Electric Transport":            RCAIDE.Framework.Analyses.Weights.Electric_Transport,
         "Electric General Aviation":     RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation,
         "Electric VTOL":                 RCAIDE.Framework.Analyses.Weights.Electric_VTOL,
-        "Hybrid":                        RCAIDE.Framework.Analyses.Weights.Hybrid,
         "Cryogenic Transport":           RCAIDE.Framework.Analyses.Weights.Cryogenic_Transport,
         "Cryogenic BWB":                 RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB,
     }

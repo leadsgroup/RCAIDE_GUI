@@ -4,6 +4,8 @@
 # Python imports
 import ast
 
+import numpy as np
+
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QLineEdit, QLabel, QGridLayout, QWidget, QSizePolicy, QSpacerItem, QCheckBox, QHBoxLayout, \
@@ -307,6 +309,9 @@ class DataEntryWidget(QWidget):
                     # Three coordinate boxes and one unit picker.
                     x_line_edit, y_line_edit, z_line_edit, unit_picker = self.data_fields[label]
                     value, index = data[label]
+                    # RCAIDE stores positions as numpy arrays; show them like plain lists.
+                    if isinstance(value, np.ndarray):
+                        value = value.tolist()
                     # Unwrap [[x, y, z]] if needed.
                     if isinstance(value, list) and value and isinstance(value[0], list):
                         value = value[0]
@@ -324,6 +329,9 @@ class DataEntryWidget(QWidget):
                     # Normal value field and unit picker.
                     line_edit, unit_picker = self.data_fields[label]
                     value, index = data[label]
+                    # RCAIDE sometimes stores a scalar as a 1x1 array; show it as a plain number.
+                    if isinstance(value, (list, np.ndarray)) and np.size(value) == 1:
+                        value = np.asarray(value).item()
                     # Show None as an empty field.
                     line_edit.setText("" if value is None else str(value))
                     unit_picker.set_index(index)

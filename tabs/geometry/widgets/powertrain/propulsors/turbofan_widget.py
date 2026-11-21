@@ -9,10 +9,71 @@ import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QComboBox, QFileDialog
 from tabs.geometry.widgets.powertrain.nacelles.nacelle_section_widget import NacelleSectionWidget
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan  
-from utilities import Units, convert_name, clear_layout, set_data
+from utilities import Units, convert_name, clear_layout, set_data, set_if_changed, get_path_value
 from common_widgets import DataEntryWidget
 from PyQt6.QtCore import Qt
 import rcaide_io
+
+
+# Turbofan form fields as (display label, GUI unit type, RCAIDE attribute path)
+TURBOFAN_FIELDS = [
+    ("Origin",                                  Units.Position,    "origin"),
+    ("Engine Length",                           Units.Length,      "length"),
+    ("Diameter",                                Units.Length,      "diameter"),
+    ("Bypass Ratio",                            Units.Unitless,    "bypass_ratio"),
+    ("Design Point",                            Units.Heading,     ""),
+    ("Design Altitude",                         Units.Length,      "design_altitude"),
+    ("Design Mach Number",                      Units.Unitless,    "design_mach_number"),
+    ("Design ISA Deviation",                    Units.Temperature, "design_isa_deviation"),
+    ("Design Thrust",                           Units.Force,       "design_thrust"),
+    ("Rated Takeoff Thrust",                    Units.Force,       "rated_takeoff_thrust"),
+    ("Takeoff Combustor Exit Temperature Ratio", Units.Unitless,   "takeoff_combustor_exit_temperature_ratio"),
+    ("Fan",                                     Units.Heading,     ""),
+    ("Fan Polytropic Efficiency",               Units.Unitless,    "fan.polytropic_efficiency"),
+    ("Fan Pressure Ratio",                      Units.Unitless,    "fan.pressure_ratio"),
+    ("Fan Rated Angular Velocity (rad/s)",      Units.Unitless,    "fan.rated_angular_velocity"),
+    ("Inlet Nozzle",                            Units.Heading,     ""),
+    ("Inlet Nozzle Polytropic Efficiency",      Units.Unitless,    "inlet_nozzle.polytropic_efficiency"),
+    ("Inlet Nozzle Pressure Ratio",             Units.Unitless,    "inlet_nozzle.pressure_ratio"),
+    ("Inlet Nozzle Compressibility Effects",    Units.Boolean,     "inlet_nozzle.compressibility_effects"),
+    ("Low Pressure Compressor",                 Units.Heading,     ""),
+    ("LPC Polytropic Efficiency",               Units.Unitless,    "low_pressure_compressor.polytropic_efficiency"),
+    ("LPC Pressure Ratio",                      Units.Unitless,    "low_pressure_compressor.pressure_ratio"),
+    ("High Pressure Compressor",                Units.Heading,     ""),
+    ("HPC Polytropic Efficiency",               Units.Unitless,    "high_pressure_compressor.polytropic_efficiency"),
+    ("HPC Pressure Ratio",                      Units.Unitless,    "high_pressure_compressor.pressure_ratio"),
+    ("Low Pressure Turbine",                    Units.Heading,     ""),
+    ("LPT Mechanical Efficiency",               Units.Unitless,    "low_pressure_turbine.mechanical_efficiency"),
+    ("LPT Polytropic Efficiency",               Units.Unitless,    "low_pressure_turbine.polytropic_efficiency"),
+    ("High Pressure Turbine",                   Units.Heading,     ""),
+    ("HPT Mechanical Efficiency",               Units.Unitless,    "high_pressure_turbine.mechanical_efficiency"),
+    ("HPT Polytropic Efficiency",               Units.Unitless,    "high_pressure_turbine.polytropic_efficiency"),
+    ("Combustor",                               Units.Heading,     ""),
+    ("Combustor Efficiency",                    Units.Unitless,    "combustor.efficiency"),
+    ("Combustor Pressure Loss Coeff",           Units.Unitless,    "combustor.alphac"),
+    ("Combustor Turbine Inlet Temp",            Units.Temperature, "combustor.turbine_inlet_temperature"),
+    ("Combustor Pressure Ratio",                Units.Unitless,    "combustor.pressure_ratio"),
+    ("Core Nozzle",                             Units.Heading,     ""),
+    ("Core Nozzle Polytropic Efficiency",       Units.Unitless,    "core_nozzle.polytropic_efficiency"),
+    ("Core Nozzle Pressure Ratio",              Units.Unitless,    "core_nozzle.pressure_ratio"),
+    ("Fan Nozzle",                              Units.Heading,     ""),
+    ("Fan Nozzle Polytropic Efficiency",        Units.Unitless,    "fan_nozzle.polytropic_efficiency"),
+    ("Fan Nozzle Pressure Ratio",               Units.Unitless,    "fan_nozzle.pressure_ratio"),
+]
+
+# Sub-components a new turbofan needs before its fields can be set
+TURBOFAN_SUBCOMPONENTS = {
+    "fan":                      RCAIDE.Library.Components.Powertrain.Converters.Fan,
+    "ram":                      RCAIDE.Library.Components.Powertrain.Converters.Ram,
+    "inlet_nozzle":             RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle,
+    "low_pressure_compressor":  RCAIDE.Library.Components.Powertrain.Converters.Compressor,
+    "high_pressure_compressor": RCAIDE.Library.Components.Powertrain.Converters.Compressor,
+    "low_pressure_turbine":     RCAIDE.Library.Components.Powertrain.Converters.Turbine,
+    "high_pressure_turbine":    RCAIDE.Library.Components.Powertrain.Converters.Turbine,
+    "combustor":                RCAIDE.Library.Components.Powertrain.Converters.Combustor,
+    "core_nozzle":              RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle,
+    "fan_nozzle":               RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle,
+}
 
 
 class TurbofanWidget(QWidget):
@@ -28,44 +89,7 @@ class TurbofanWidget(QWidget):
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-        data_units_labels = [
-            ("Origin", Units.Position),
-            ("Engine Length", Units.Length),
-            ("Diameter", Units.Length),
-            ("Bypass Ratio", Units.Unitless),
-            ("Design Altitude", Units.Length),
-            ("Design Mach Number", Units.Unitless),
-            ("Design Thrust", Units.Force),
-            ("Fan", Units.Heading),
-            ("Fan Polytropic Efficiency", Units.Unitless),
-            ("Fan Pressure Ratio", Units.Unitless),
-            ("Inlet Nozzle", Units.Heading),
-            ("Inlet Nozzle Polytropic Efficiency", Units.Unitless),
-            ("Inlet Nozzle Pressure Ratio", Units.Unitless),
-            ("Low Pressure Compressor", Units.Heading),
-            ("LPC Polytropic Efficiency", Units.Unitless),
-            ("LPC Pressure Ratio", Units.Unitless),
-            ("High Pressure Compressor", Units.Heading),
-            ("HPC Polytropic Efficiency", Units.Unitless),
-            ("HPC Pressure Ratio", Units.Unitless),
-            ("Low Pressure Turbine", Units.Heading),
-            ("LPT Mechanical Efficiency", Units.Unitless),
-            ("LPT Polytropic Efficiency", Units.Unitless),
-            ("High Pressure Turbine", Units.Heading),
-            ("HPT Mechanical Efficiency", Units.Unitless),
-            ("HPT Polytropic Efficiency", Units.Unitless),
-            ("Combustor", Units.Heading),
-            ("Combustor Efficiency", Units.Unitless),
-            ("Combustor Pressure Loss Coeff", Units.Unitless),
-            ("Combustor Turbine Inlet Temp", Units.Temperature),
-            ("Combustor Pressure Ratio", Units.Unitless),
-            ("Core Nozzle", Units.Heading),
-            ("Core Nozzle Polytropic Efficiency", Units.Unitless),
-            ("Core Nozzle Pressure Ratio", Units.Unitless),
-            ("Fan Nozzle", Units.Heading),
-            ("Fan Nozzle Polytropic Efficiency", Units.Unitless),
-            ("Fan Nozzle Pressure Ratio", Units.Unitless),
-        ]
+        self.loaded_component = None
 
         self.name_layout = QHBoxLayout()
         self.section_name_edit = QLineEdit(self)
@@ -73,7 +97,7 @@ class TurbofanWidget(QWidget):
         self.name_layout.addWidget(self.section_name_edit)
         self.main_layout.addLayout(self.name_layout)
 
-        self.data_entry_widget = DataEntryWidget(data_units_labels)
+        self.data_entry_widget = DataEntryWidget([(label, units) for label, units, _path in TURBOFAN_FIELDS])
         self.main_layout.addWidget(self.data_entry_widget)
 
         line_bar = QFrame()
@@ -185,8 +209,8 @@ class TurbofanWidget(QWidget):
 
         self.setLayout(self.main_layout)
 
-        if data_values:
-            self.load_data_values(data_values)
+        # Saved aircraft data fills the form; a new turbofan starts from RCAIDE defaults
+        self.load_data_values(data_values or {})
 
     def _browse_for_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open Airfoil File", "", "Data Files (*.dat);;All Files (*)")
@@ -264,6 +288,8 @@ class TurbofanWidget(QWidget):
         data["Propulsor Type"] = "Turbofan"
         data_si["Propulsor Tag"] = title
         data_si["Propulsor Type"] = "Turbofan"
+        if self.loaded_component is not None:
+            data["rcaide_component"] = self.loaded_component
 
         if self.nacelle_active:
             nacelle_data = self.nacelle_general_widget.get_values()
@@ -309,84 +335,33 @@ class TurbofanWidget(QWidget):
 
         return data, self.create_rcaide_structure(data_si)
 
-    def create_rcaide_structure(self, data):
+    def base_turbofan(self):
+        """Return the loaded RCAIDE turbofan, or a new one with RCAIDE defaults and all sub-components."""
+        if self.loaded_component is not None:
+            return rcaide_io.component_from_dict(self.loaded_component)
         turbofan = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+        for attr_name, component_class in TURBOFAN_SUBCOMPONENTS.items():
+            component = component_class()
+            component.tag = attr_name
+            turbofan[attr_name] = component
+        turbofan.combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+        return turbofan
+
+    def create_rcaide_structure(self, data):
+        # Start from the loaded turbofan so settings the form does not show are kept
+        turbofan = self.base_turbofan()
         turbofan.tag = data["Propulsor Tag"]
-        turbofan.origin = data["Origin"][0]
-        turbofan.length = data["Engine Length"][0]
-        turbofan.diameter = data["Diameter"][0]
-        turbofan.bypass_ratio = data["Bypass Ratio"][0]
-        turbofan.design_altitude = data["Design Altitude"][0]
-        turbofan.design_mach_number = data["Design Mach Number"][0]
-        turbofan.design_thrust = data["Design Thrust"][0]
-            
-        fan = RCAIDE.Library.Components.Powertrain.Converters.Fan()
-        fan.tag = "fan"
-        fan.polytropic_efficiency = data["Fan Polytropic Efficiency"][0]
-        fan.pressure_ratio = data["Fan Pressure Ratio"][0]
-        turbofan.fan = fan
-            
-        turbofan.working_fluid = RCAIDE.Library.Attributes.Gases.Air()
-        ram = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-        ram.tag = "ram"
-        turbofan.ram = ram
-            
-        inlet_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
-        inlet_nozzle.tag = "inlet nozzle"
-        inlet_nozzle.polytropic_efficiency = data["Inlet Nozzle Polytropic Efficiency"][0]
-        inlet_nozzle.pressure_ratio = data["Inlet Nozzle Pressure Ratio"][0]
-        turbofan.inlet_nozzle = inlet_nozzle
+        for label, units, path in TURBOFAN_FIELDS:
+            if units == Units.Heading or label not in data:
+                continue
+            set_if_changed(turbofan, path, data[label][0])
 
-        low_pressure_compressor = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
-        low_pressure_compressor.tag = "lpc"
-        low_pressure_compressor.polytropic_efficiency = data["LPC Polytropic Efficiency"][0]
-        low_pressure_compressor.pressure_ratio = data["LPC Pressure Ratio"][0]
-        turbofan.low_pressure_compressor = low_pressure_compressor
-
-        high_pressure_compressor = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
-        high_pressure_compressor.tag = "hpc"
-        high_pressure_compressor.polytropic_efficiency = data["HPC Polytropic Efficiency"][0]
-        high_pressure_compressor.pressure_ratio = data["HPC Pressure Ratio"][0]
-        turbofan.high_pressure_compressor = high_pressure_compressor
-
-        low_pressure_turbine = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
-        low_pressure_turbine.tag = "lpt"
-        low_pressure_turbine.mechanical_efficiency = data["LPT Mechanical Efficiency"][0]
-        low_pressure_turbine.polytropic_efficiency = data["LPT Polytropic Efficiency"][0]
-        turbofan.low_pressure_turbine = low_pressure_turbine
-
-        high_pressure_turbine = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
-        high_pressure_turbine.tag = "hpt"
-        high_pressure_turbine.mechanical_efficiency = data["HPT Mechanical Efficiency"][0]
-        high_pressure_turbine.polytropic_efficiency = data["HPT Polytropic Efficiency"][0]
-        turbofan.high_pressure_turbine = high_pressure_turbine
-
-        combustor = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
-        combustor.tag = "comb"
-        combustor.efficiency = data["Combustor Efficiency"][0]
-        combustor.alphac = data["Combustor Pressure Loss Coeff"][0]
-        combustor.turbine_inlet_temperature = data["Combustor Turbine Inlet Temp"][0]
-        combustor.pressure_ratio = data["Combustor Pressure Ratio"][0]
-        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-        turbofan.combustor = combustor
-
-        core_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
-        core_nozzle.tag = "core nozzle"
-        core_nozzle.polytropic_efficiency = data["Core Nozzle Polytropic Efficiency"][0]
-        core_nozzle.pressure_ratio = data["Core Nozzle Pressure Ratio"][0]
-        turbofan.core_nozzle = core_nozzle
-
-        fan_nozzle = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
-        fan_nozzle.tag = "fan nozzle"
-        fan_nozzle.polytropic_efficiency = data["Fan Nozzle Polytropic Efficiency"][0]
-        fan_nozzle.pressure_ratio = data["Fan Nozzle Pressure Ratio"][0]
-        turbofan.fan_nozzle = fan_nozzle
-
-        if "nacelle_si" in data:
-            n_data = data["nacelle_si"]
-            n_type = n_data.get("Nacelle Type", "Generic Nacelle")
-            if (n_type == "Select Nacelle Type"):
-                return turbofan
+        # The nacelle comes from the nacelle form below; no form means no nacelle
+        loaded_nacelle   = turbofan.nacelle
+        turbofan.nacelle = None
+        n_data = data.get("nacelle_si", {})
+        n_type = n_data.get("Nacelle Type", "Select Nacelle Type")
+        if n_type != "Select Nacelle Type":
             if (n_type == "Generic Nacelle"):
                 nacelle = RCAIDE.Library.Components.Nacelles.Nacelle()
             elif (n_type == "Stack Nacelle"):
@@ -395,9 +370,11 @@ class TurbofanWidget(QWidget):
                 nacelle = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
             else:
                 nacelle = RCAIDE.Library.Components.Nacelles.Nacelle() #set as default
-            
-
             nacelle.tag = str(data["Propulsor Tag"]) + "_nacelle"
+
+            # Keep the loaded nacelle (tag, airfoil, other settings) when its type is unchanged
+            if type(loaded_nacelle) is type(nacelle):
+                nacelle = loaded_nacelle
         
             nacelle.length          = n_data["Nacelle Length"][0]
             nacelle.inlet_diameter  = n_data["Inlet Diameter"][0]
@@ -426,6 +403,8 @@ class TurbofanWidget(QWidget):
                 pass
             
             if n_type == "Stack Nacelle":
+                # Sections come from the section editors
+                nacelle.segments = RCAIDE.Framework.Core.Container()
                 for seg in n_data.get("section_objects", []):
                     if seg is not None:
                         nacelle.append_segment(seg)
@@ -438,7 +417,14 @@ class TurbofanWidget(QWidget):
         return turbofan
 
     def load_data_values(self, data):
-        self.data_entry_widget.load_data(data)
+        self.loaded_component = data.get("rcaide_component")
+        turbofan = self.base_turbofan()
+        form_data = {}
+        for label, units, path in TURBOFAN_FIELDS:
+            if units == Units.Heading:
+                continue
+            form_data[label] = data.get(label, [get_path_value(turbofan, path), 0])
+        self.data_entry_widget.load_data(form_data)
         self.section_name_edit.setText(data.get("Propulsor Tag", ""))
         
         if "nacelle_data" in data:   
